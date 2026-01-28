@@ -38,16 +38,27 @@ const CommonCard = ({
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
-                        mb: 2,
-                        backgroundColor: "rgb(238, 238, 238)",
-                        p: 1.5,
-                        borderRadius: "8px",
+                        mb: 3,
+                        background: "linear-gradient(to right, #f8fafc, #f1f5f9)",
+                        p: 2,
+                        borderRadius: "10px",
+                        border: "1px solid #e2e8f0"
                     }}
                 >
                     <Typography
                         variant="subtitle1"
-                        sx={{ fontWeight: 500, }}
+                        sx={{
+                            fontWeight: 800,
+                            color: "#0f172a",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1.5,
+                            textTransform: "uppercase",
+                            letterSpacing: 0.5,
+                            fontSize: "0.85rem"
+                        }}
                     >
+                        <Box sx={{ width: 4, height: 18, bgcolor: "#3b82f6", borderRadius: 1 }} />
                         {title}
                     </Typography>
                     {onAdd && (
@@ -57,9 +68,15 @@ const CommonCard = ({
                             onClick={onAdd}
                             sx={{
                                 textTransform: "none",
-                                fontWeight: 500,
-                                // borderRadius: "8px",
-
+                                fontWeight: 700,
+                                borderRadius: 2,
+                                bgcolor: "#3b82f6",
+                                px: 3,
+                                boxShadow: "0 4px 6px -1px rgba(59, 130, 246, 0.2)",
+                                "&:hover": {
+                                    bgcolor: "#2563eb",
+                                    boxShadow: "0 10px 15px -3px rgba(59, 130, 246, 0.3)"
+                                }
                             }}
                         >
                             {addText || "Add New"}
