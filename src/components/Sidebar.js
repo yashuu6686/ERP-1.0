@@ -161,7 +161,7 @@ export default function Sidebar({ children }) {
         sx={{
           flexGrow: 1,
           padding: "16px",
-          bgcolor: "#f8fafc",
+          // bgcolor: "#f8fafc",
           height: "100vh",
           display: 'flex',
           flexDirection: 'column'
@@ -215,27 +215,6 @@ export default function Sidebar({ children }) {
 
         <Box sx={{ flexGrow: 1 }}>
           {children}
-        </Box>
-
-        {/* Global Footer */}
-        <Box
-          sx={{
-            py: 3,
-            mt: 'auto',
-            textAlign: "center",
-            borderTop: "1px solid #e2e8f0",
-          }}
-        >
-          <MuiTypography
-            variant="caption"
-            sx={{
-              color: "#94a3b8",
-              fontSize: "12px",
-              fontWeight: 500
-            }}
-          >
-            © 2024 ERP System • Scanbo Healthcare Precision Manufacturing
-          </MuiTypography>
         </Box>
       </Box>
     </Box>
