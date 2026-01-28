@@ -354,14 +354,6 @@ export default function RejectedGoods() {
 
   return (
     <Box>
-      <Box sx={{ mb: 2 }}>
-        <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb">
-          <Link component={NextLink} underline="hover" color="inherit" href="/">
-            Home
-          </Link>
-          <Typography color="text.primary">Rejected Goods</Typography>
-        </Breadcrumbs>
-      </Box>
 
       <CommonCard
         title="Rejected Goods"

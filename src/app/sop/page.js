@@ -80,15 +80,6 @@ export default function SOPForm() {
 
   return (
     <Box>
-      <Box sx={{ mb: 2 }}>
-        <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb">
-          <Link component={NextLink} underline="hover" color="inherit" href="/">
-            Home
-          </Link>
-          <Typography color="text.primary">SOP</Typography>
-        </Breadcrumbs>
-      </Box>
-
       <CommonCard title="Standard Operating Procedures (SOP)">
         <Box sx={{ p: 1 }}>
           {currentPage === "device-testing" ? (
@@ -510,7 +501,7 @@ export default function SOPForm() {
                 </Box>
                 <CardContent sx={{ background: "linear-gradient(135deg, #f8fafc, #f1f5f9)", p: 3 }}>
                   <Grid container spacing={3}>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, sm: 6, md: 6 }}>
                       <TextField
                         fullWidth
                         size="small"
@@ -527,7 +518,7 @@ export default function SOPForm() {
                         }}
                       />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, sm: 6, md: 6 }}>
                       <TextField
                         fullWidth
                         size="small"

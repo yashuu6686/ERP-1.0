@@ -15,10 +15,26 @@ import {
   IconButton,
   Typography,
   Tooltip,
-  Divider,
+  Breadcrumbs,
+  Link,
+  Paper,
+  Card,
+  CardContent,
+  InputAdornment,
+  Grid,
 } from '@mui/material';
-import { Add, Delete, Save, Visibility, CheckCircle, NavigateNext } from '@mui/icons-material';
-
+import {
+  Add,
+  Delete,
+  Save,
+  Visibility,
+  CheckCircle,
+  NavigateNext,
+  Build,
+  Person,
+  FactCheck
+} from '@mui/icons-material';
+import NextLink from 'next/link';
 import CommonCard from '../../../components/CommonCard';
 
 export default function BOMCreator() {
@@ -67,156 +83,234 @@ export default function BOMCreator() {
     ));
   };
 
+  const textFieldStyle = {
+    "& .MuiOutlinedInput-root": {
+      bgcolor: "white",
+      "&:hover": {
+        "& > fieldset": { borderColor: "#1172ba" },
+      },
+    },
+  };
+
   return (
     <Box>
-  
-      <CommonCard
-        title="Create New BOM"
-        addText="Add Material"
-        onAdd={addMaterial}
-      >
-        <Box sx={{ p: 1 }}>
-          <TableContainer
+      <CommonCard title="Bill of Materials (BOM) Management">
+        <Box sx={{ p: 0.25 }}>
+          <Card
             sx={{
-              mb: 4,
-              borderRadius: 2,
-              border: '1px solid #e0e0e0',
-              maxHeight: 600,
-              overflow: 'auto'
+              mb: 1,
+              border: "1px solid #e9ecef",
+              borderRadius: 1.5,
+              boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
             }}
           >
-            <Table stickyHeader size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ bgcolor: '#f5f5f5', fontWeight: 700, color: '#1172ba', minWidth: 60 }}>
-                    Sr.
-                  </TableCell>
-                  <TableCell sx={{ bgcolor: '#f5f5f5', fontWeight: 700, color: '#1172ba', minWidth: 150 }}>
-                    Part Number
-                  </TableCell>
-                  <TableCell sx={{ bgcolor: '#f5f5f5', fontWeight: 700, color: '#1172ba', minWidth: 150 }}>
-                    Supplier Part
-                  </TableCell>
-                  <TableCell sx={{ bgcolor: '#f5f5f5', fontWeight: 700, color: '#1172ba', minWidth: 90 }}>
-                    Qty
-                  </TableCell>
-                  <TableCell sx={{ bgcolor: '#f5f5f5', fontWeight: 700, color: '#1172ba', minWidth: 150 }}>
-                    Material Name
-                  </TableCell>
-                  <TableCell sx={{ bgcolor: '#f5f5f5', fontWeight: 700, color: '#1172ba', minWidth: 180 }}>
-                    Manufacturer
-                  </TableCell>
-                  <TableCell sx={{ bgcolor: '#f5f5f5', fontWeight: 700, color: '#1172ba', minWidth: 200 }}>
-                    Technical Details
-                  </TableCell>
-                  <TableCell sx={{ bgcolor: '#f5f5f5', fontWeight: 700, color: '#1172ba', width: 60 }}>
-                    Action
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {materials.map((material, index) => (
-                  <TableRow
-                    key={material.id}
-                    sx={{ '&:hover': { bgcolor: '#f8f9fa' } }}
-                  >
-                    <TableCell sx={{ fontWeight: 600 }}>{index + 1}</TableCell>
-                    <TableCell>
-                      <TextField
-                        fullWidth size="small" value={material.scanboPartNumber}
-                        onChange={(e) => updateMaterial(material.id, 'scanboPartNumber', e.target.value)}
-                        placeholder="Part No"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        fullWidth size="small" value={material.supplierPartNumber}
-                        onChange={(e) => updateMaterial(material.id, 'supplierPartNumber', e.target.value)}
-                        placeholder="Supplier Part"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        fullWidth size="small" type="number" value={material.quantity}
-                        onChange={(e) => updateMaterial(material.id, 'quantity', e.target.value)}
-                        placeholder="Qty"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        fullWidth size="small" value={material.materialName}
-                        onChange={(e) => updateMaterial(material.id, 'materialName', e.target.value)}
-                        placeholder="Material"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        fullWidth size="small" value={material.manufacturerName}
-                        onChange={(e) => updateMaterial(material.id, 'manufacturerName', e.target.value)}
-                        placeholder="Manufacturer"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        fullWidth size="small" multiline maxRows={2} value={material.technicalDetails}
-                        onChange={(e) => updateMaterial(material.id, 'technicalDetails', e.target.value)}
-                        placeholder="Details"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <IconButton
-                        onClick={() => deleteMaterial(material.id)}
-                        disabled={materials.length === 1}
-                        color="error" size="small"
-                      >
-                        <Delete fontSize="small" />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-
-          {/* Footer Actions */}
-          <Box sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            pt: 3,
-            gap: 2,
-            flexWrap: 'wrap'
-          }}>
-            <Box sx={{ display: 'flex', gap: 2 }}>
+            <Box
+              sx={{
+                p: 2,
+                background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
+                color: "white",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                <Build />
+                <Typography variant="h6" fontWeight={600}>
+                  Material List Specifications
+                </Typography>
+              </Box>
               <Button
-                variant="outlined"
+                variant="contained"
                 size="small"
-                startIcon={<Visibility />}
-                sx={{ borderColor: '#1172ba', color: '#1172ba', textTransform: 'none', fontWeight: 600 }}
+                startIcon={<Add />}
+                onClick={addMaterial}
+                sx={{
+                  backgroundColor: "rgba(255,255,255,0.15)",
+                  "&:hover": { backgroundColor: "rgba(255,255,255,0.25)" },
+                  textTransform: "none",
+                }}
               >
-                Reviewed By:
-              </Button>
-              <Button
-                variant="outlined"
-                size="small"
-                startIcon={<CheckCircle />}
-                sx={{ borderColor: '#2e7d32', color: '#1b5e20', textTransform: 'none', fontWeight: 600 }}
-              >
-                Approved By:
+                Add Material
               </Button>
             </Box>
+            <TableContainer sx={{ maxHeight: 300, overflow: 'auto' }}>
+              <Table size="small" stickyHeader>
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 700, bgcolor: "#f8fafc", color: "#495057", minWidth: 40, py: 0.5, fontSize: '0.75rem' }}>Sr.</TableCell>
+                    <TableCell sx={{ fontWeight: 700, bgcolor: "#f8fafc", color: "#495057", minWidth: 120, py: 0.5, fontSize: '0.75rem' }}>Part Number</TableCell>
+                    <TableCell sx={{ fontWeight: 700, bgcolor: "#f8fafc", color: "#495057", minWidth: 120, py: 0.5, fontSize: '0.75rem' }}>Supplier Part</TableCell>
+                    <TableCell sx={{ fontWeight: 700, bgcolor: "#f8fafc", color: "#495057", minWidth: 60, py: 0.5, fontSize: '0.75rem' }}>Qty</TableCell>
+                    <TableCell sx={{ fontWeight: 700, bgcolor: "#f8fafc", color: "#495057", minWidth: 140, py: 0.5, fontSize: '0.75rem' }}>Material Name</TableCell>
+                    <TableCell sx={{ fontWeight: 700, bgcolor: "#f8fafc", color: "#495057", minWidth: 160, py: 0.5, fontSize: '0.75rem' }}>Manufacturer</TableCell>
+                    <TableCell sx={{ fontWeight: 700, bgcolor: "#f8fafc", color: "#495057", minWidth: 200, py: 0.5, fontSize: '0.75rem' }}>Technical Details</TableCell>
+                    <TableCell sx={{ fontWeight: 700, bgcolor: "#f8fafc", color: "#495057", width: 50, textAlign: 'center', py: 0.5, fontSize: '0.75rem' }}>Action</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {materials.map((material, index) => (
+                    <TableRow key={material.id} sx={{ "&:hover": { bgcolor: "#f8f9fa" } }}>
+                      <TableCell sx={{ py: 0.2, fontSize: '0.75rem' }}>{index + 1}</TableCell>
+                      <TableCell sx={{ py: 0.2 }}>
+                        <TextField
+                          fullWidth size="small"
+                          value={material.scanboPartNumber}
+                          onChange={(e) => updateMaterial(material.id, 'scanboPartNumber', e.target.value)}
+                          sx={{ ...textFieldStyle, "& .MuiInputBase-input": { py: 0.5, fontSize: '0.75rem' } }}
+                        />
+                      </TableCell>
+                      <TableCell sx={{ py: 0.2 }}>
+                        <TextField
+                          fullWidth size="small"
+                          value={material.supplierPartNumber}
+                          onChange={(e) => updateMaterial(material.id, 'supplierPartNumber', e.target.value)}
+                          sx={{ ...textFieldStyle, "& .MuiInputBase-input": { py: 0.5, fontSize: '0.75rem' } }}
+                        />
+                      </TableCell>
+                      <TableCell sx={{ py: 0.2 }}>
+                        <TextField
+                          fullWidth size="small"
+                          value={material.quantity}
+                          onChange={(e) => updateMaterial(material.id, 'quantity', e.target.value)}
+                          sx={{ ...textFieldStyle, "& .MuiInputBase-input": { py: 0.5, fontSize: '0.75rem' } }}
+                        />
+                      </TableCell>
+                      <TableCell sx={{ py: 0.2 }}>
+                        <TextField
+                          fullWidth size="small"
+                          value={material.materialName}
+                          onChange={(e) => updateMaterial(material.id, 'materialName', e.target.value)}
+                          sx={{ ...textFieldStyle, "& .MuiInputBase-input": { py: 0.5, fontSize: '0.75rem' } }}
+                        />
+                      </TableCell>
+                      <TableCell sx={{ py: 0.2 }}>
+                        <TextField
+                          fullWidth size="small"
+                          value={material.manufacturerName}
+                          onChange={(e) => updateMaterial(material.id, 'manufacturerName', e.target.value)}
+                          sx={{ ...textFieldStyle, "& .MuiInputBase-input": { py: 0.5, fontSize: '0.75rem' } }}
+                        />
+                      </TableCell>
+                      <TableCell sx={{ py: 0.2 }}>
+                        <TextField
+                          fullWidth size="small" multiline maxRows={2}
+                          value={material.technicalDetails}
+                          onChange={(e) => updateMaterial(material.id, 'technicalDetails', e.target.value)}
+                          sx={{ ...textFieldStyle, "& .MuiInputBase-input": { py: 0.5, fontSize: '0.75rem' } }}
+                        />
+                      </TableCell>
+                      <TableCell sx={{ textAlign: 'center', py: 0.2 }}>
+                        <IconButton
+                          color="error"
+                          size="small"
+                          onClick={() => deleteMaterial(material.id)}
+                          disabled={materials.length === 1}
+                          sx={{ p: 0.2 }}
+                        >
+                          <Delete sx={{ fontSize: 16 }} />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Card>
 
+          {/* Authorization Section */}
+          <Card
+            sx={{
+              mb: 2,
+              border: "1px solid #e9ecef",
+              borderRadius: 2,
+              boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+            }}
+          >
+            <Box
+              sx={{
+                p: 2,
+                background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
+                color: "white",
+                display: "flex",
+                alignItems: "center",
+                gap: 1.5,
+              }}
+            >
+              <FactCheck />
+              <Typography variant="h6" fontWeight={600}>
+                BOM Authorization
+              </Typography>
+            </Box>
+            <CardContent sx={{ background: "linear-gradient(135deg, #f8fafc, #f1f5f9)", p: 3 }}>
+              <Grid container spacing={3}>
+                <Grid size={{ xs: 12, sm: 6, md: 6 }}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Reviewed By"
+                    placeholder="Enter reviewer name"
+                    sx={textFieldStyle}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Visibility sx={{ color: "#1172ba", fontSize: 20 }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 6 }}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Approved By"
+                    placeholder="Enter approver name"
+                    sx={textFieldStyle}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Person sx={{ color: "#2e7d32", fontSize: 20 }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+
+          {/* Action Buttons */}
+          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mt: 2 }}>
+            <Button
+              variant="outlined"
+              sx={{
+                borderColor: "#1172ba",
+                color: "#1172ba",
+                borderRadius: 2,
+                px: 4,
+                py: 1.5,
+                textTransform: "none",
+                fontWeight: 600,
+                "&:hover": {
+                  borderColor: "#0d5a94",
+                  bgcolor: "#f0f7ff",
+                },
+              }}
+            >
+              Reset
+            </Button>
             <Button
               variant="contained"
               startIcon={<Save />}
               sx={{
-                backgroundColor: '#1172ba',
-                "&:hover": { backgroundColor: "#0d5a94" },
-                px: 4,
-                py: 1.2,
+                backgroundColor: "#1172ba",
                 borderRadius: 2,
-                textTransform: 'none',
-                fontWeight: 700,
+                px: 4,
+                py: 1.5,
+                textTransform: "none",
+                fontWeight: 600,
+                "&:hover": { backgroundColor: "#0d5a94" },
               }}
             >
               Save BOM

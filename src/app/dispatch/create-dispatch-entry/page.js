@@ -151,17 +151,6 @@ export default function CreateDispatchEntry() {
 
   return (
     <Box>
-      <Box sx={{ mb: 2 }}>
-        <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb">
-          <Link component={NextLink} underline="hover" color="inherit" href="/">
-            Home
-          </Link>
-          <Link component={NextLink} underline="hover" color="inherit" href="/dispatch">
-            Dispatch
-          </Link>
-          <Typography color="text.primary">Create Entry</Typography>
-        </Breadcrumbs>
-      </Box>
 
       <CommonCard title="Create Dispatch Entry">
         <Box sx={{ p: 1 }}>

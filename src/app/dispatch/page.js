@@ -321,14 +321,6 @@ export default function DispatchDetails() {
 
   return (
     <Box>
-      <Box sx={{ mb: 2 }}>
-        <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb">
-          <Link component={NextLink} underline="hover" color="inherit" href="/">
-            Home
-          </Link>
-          <Typography color="text.primary">Dispatch</Typography>
-        </Breadcrumbs>
-      </Box>
 
       <CommonCard
         title="Dispatch Details"

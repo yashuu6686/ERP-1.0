@@ -95,14 +95,6 @@ export default function CertificateOfAnalysis() {
 
   return (
     <Box>
-      <Box sx={{ mb: 2 }}>
-        <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb">
-          <Link component={NextLink} underline="hover" color="inherit" href="/">
-            Home
-          </Link>
-          <Typography color="text.primary">COA</Typography>
-        </Breadcrumbs>
-      </Box>
 
       <CommonCard title="Certificate of Analysis">
         {/* Certificate Details Section */}

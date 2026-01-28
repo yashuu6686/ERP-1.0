@@ -24,7 +24,9 @@ import {
   Description,
   LocalShipping,
   Cancel,
+  NavigateNext,
 } from "@mui/icons-material";
+import { Breadcrumbs, Link as MuiLink, Typography as MuiTypography } from "@mui/material";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 // import '../../styles/globals.css'
@@ -156,14 +158,85 @@ export default function Sidebar({ children }) {
 
       <Box
         component="main"
-        style={{
+        sx={{
           flexGrow: 1,
-          padding: "12px",
-          // padding: 3,
-          // backgroundColor: "#f9fafb",
+          padding: "16px",
+          bgcolor: "#f8fafc",
+          minHeight: "100vh",
+          display: 'flex',
+          flexDirection: 'column'
         }}
       >
-        {children}
+        {/* Global Breadcrumbs */}
+        {pathname !== "/" && (
+          <Box sx={{ mb: 2 }}>
+            <Breadcrumbs
+              separator={<NavigateNext fontSize="small" sx={{ color: '#94a3b8' }} />}
+              aria-label="breadcrumb"
+            >
+              <MuiLink
+                component={Link}
+                underline="hover"
+                color="inherit"
+                href="/"
+                sx={{ display: 'flex', alignItems: 'center', fontSize: '0.875rem', color: '#64748b' }}
+              >
+                Home
+              </MuiLink>
+              {pathname.split('/').filter(x => x).map((part, index, array) => {
+                const path = `/${array.slice(0, index + 1).join('/')}`;
+                const menuItem = menuItems.find(item => item.path === path);
+                const isLast = index === array.length - 1;
+                const label = menuItem ? menuItem.text : part.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+                return isLast ? (
+                  <MuiTypography
+                    key={path}
+                    sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#1e293b' }}
+                  >
+                    {label}
+                  </MuiTypography>
+                ) : (
+                  <MuiLink
+                    key={path}
+                    component={Link}
+                    underline="hover"
+                    color="inherit"
+                    href={path}
+                    sx={{ fontSize: '0.875rem', color: '#64748b' }}
+                  >
+                    {label}
+                  </MuiLink>
+                );
+              })}
+            </Breadcrumbs>
+          </Box>
+        )}
+
+        <Box sx={{ flexGrow: 1 }}>
+          {children}
+        </Box>
+
+        {/* Global Footer */}
+        <Box
+          sx={{
+            py: 3,
+            mt: 'auto',
+            textAlign: "center",
+            borderTop: "1px solid #e2e8f0",
+          }}
+        >
+          <MuiTypography
+            variant="caption"
+            sx={{
+              color: "#94a3b8",
+              fontSize: "12px",
+              fontWeight: 500
+            }}
+          >
+            © 2024 ERP System • Scanbo Healthcare Precision Manufacturing
+          </MuiTypography>
+        </Box>
       </Box>
     </Box>
   );
