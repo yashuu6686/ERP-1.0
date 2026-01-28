@@ -15,8 +15,20 @@ import {
   TableRow,
   Card,
   CardContent,
+  Chip,
+  InputAdornment,
 } from "@mui/material";
-import { ArrowForward, Save } from "@mui/icons-material";
+import {
+  ArrowForward,
+  Save,
+  Devices,
+  Business,
+  Person,
+  FactCheck,
+  Inventory,
+  ArrowBack,
+  CalendarToday,
+} from "@mui/icons-material";
 import CommonCard from "../../components/CommonCard";
 
 export default function SOPForm() {
@@ -52,310 +64,516 @@ export default function SOPForm() {
     { step: 19, components: "Final Check" },
   ];
 
+  // Common styles for text fields to match other pages
+  const textFieldStyle = {
+    "& .MuiOutlinedInput-root": {
+      bgcolor: "white",
+      "&:hover": {
+        "& > fieldset": { borderColor: "#1172ba" },
+      },
+    },
+  };
+
   return (
     <CommonCard title="Standard Operating Procedures (SOP)">
-      {currentPage === "device-testing" ? (
-        <Box>
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: 600,
-              color: "#1172ba",
-              mb: 3,
-            }}
-          >
-            Device Testing
-          </Typography>
-
-          <Card
-            sx={{
-              mb: 4,
-              boxShadow: "none",
-              border: "1px solid #e5e7eb",
-              borderRadius: "8px",
-            }}
-          >
-            <CardContent>
-              <Typography
-                variant="subtitle1"
-                sx={{ fontWeight: 600, mb: 3, color: "#374151" }}
+      <Box sx={{ p: 1 }}>
+        {currentPage === "device-testing" ? (
+          <>
+            {/* Device Information Card */}
+            <Card
+              sx={{
+                mb: 4,
+                border: "1px solid #e9ecef",
+                borderRadius: 2,
+              }}
+            >
+              <Box
+                sx={{
+                  p: 2,
+                  background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
+                  color: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1.5,
+                }}
               >
-                Device Information
-              </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={3}>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    label="Device ID"
-                    value={formData.deviceId}
-                    onChange={(e) => handleInputChange("deviceId", e.target.value)}
-                    variant="outlined"
-                  />
+                <Devices />
+                <Typography variant="h6" fontWeight={600}>
+                  Device Information
+                </Typography>
+              </Box>
+              <CardContent sx={{ background: "linear-gradient(135deg, #f8fafc, #f1f5f9)", p: 3 }}>
+                <Grid container spacing={3}>
+                  <Grid item sx={{ xs: 12, sm: 4, md: 4 }}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Device ID"
+                      value={formData.deviceId}
+                      onChange={(e) => handleInputChange("deviceId", e.target.value)}
+                      sx={textFieldStyle}
+                    />
+                  </Grid>
+                  <Grid item sx={{ xs: 12, sm: 4, md: 4 }}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Date"
+                      type="date"
+                      value={formData.date}
+                      onChange={(e) => handleInputChange("date", e.target.value)}
+                      InputLabelProps={{ shrink: true }}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <CalendarToday sx={{ color: "#1172ba", fontSize: 20 }} />
+                          </InputAdornment>
+                        ),
+                      }}
+                      sx={textFieldStyle}
+                    />
+                  </Grid>
+                  <Grid item sx={{ xs: 12, sm: 4, md: 4 }}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Company Name"
+                      value={formData.companyName}
+                      onChange={(e) => handleInputChange("companyName", e.target.value)}
+                      sx={textFieldStyle}
+                    />
+                  </Grid>
+                  <Grid item sx={{ xs: 12, sm: 4, md: 4 }}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Company Address"
+                      value={formData.companyAddress}
+                      onChange={(e) => handleInputChange("companyAddress", e.target.value)}
+                      sx={textFieldStyle}
+                    />
+                  </Grid>
+                  <Grid item sx={{ xs: 12, sm: 4, md: 4 }}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Assisted By"
+                      value={formData.assistedBy}
+                      onChange={(e) => handleInputChange("assistedBy", e.target.value)}
+                      sx={textFieldStyle}
+                    />
+                  </Grid>
+                  <Grid item sx={{ xs: 12, sm: 4, md: 4 }}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Done By"
+                      value={formData.doneBy}
+                      onChange={(e) => handleInputChange("doneBy", e.target.value)}
+                      sx={textFieldStyle}
+                    />
+                  </Grid>
                 </Grid>
-                <Grid item xs={12} md={3}>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    label="Date"
-                    type="date"
-                    value={formData.date}
-                    onChange={(e) => handleInputChange("date", e.target.value)}
-                    InputLabelProps={{ shrink: true }}
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item xs={12} md={3}>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    label="Company Name"
-                    value={formData.companyName}
-                    onChange={(e) =>
-                      handleInputChange("companyName", e.target.value)
-                    }
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item xs={12} md={3}>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    label="Company Address"
-                    value={formData.companyAddress}
-                    onChange={(e) =>
-                      handleInputChange("companyAddress", e.target.value)
-                    }
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    label="Assisted By"
-                    value={formData.assistedBy}
-                    onChange={(e) =>
-                      handleInputChange("assistedBy", e.target.value)
-                    }
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    label="Done By"
-                    value={formData.doneBy}
-                    onChange={(e) => handleInputChange("doneBy", e.target.value)}
-                    variant="outlined"
-                  />
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <TableContainer
-            component={Paper}
-            variant="outlined"
-            sx={{ borderRadius: "8px", mb: 4 }}
-          >
-            <Table size="small">
-              <TableHead sx={{ bgcolor: "#f3f4f6" }}>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: 600 }}>Step</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Task to Test</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Parameter</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Test Methodology</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Expected Result</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Check</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Remarks</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {deviceTestingSteps.map((row) => (
-                  <TableRow key={row.step} hover>
-                    <TableCell sx={{ fontWeight: 600 }}>{row.step}</TableCell>
-                    <TableCell>{row.task}</TableCell>
-                    <TableCell>
-                      <TextField size="small" variant="outlined" />
-                    </TableCell>
-                    <TableCell>
-                      <TextField size="small" variant="outlined" />
-                    </TableCell>
-                    <TableCell>
-                      <TextField size="small" variant="outlined" />
-                    </TableCell>
-                    <TableCell>
-                      <TextField size="small" variant="outlined" />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        size="small"
-                        type="date"
-                        variant="outlined"
-                        InputLabelProps={{ shrink: true }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField size="small" variant="outlined" />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-
-          <Grid container spacing={2} sx={{ mb: 4 }}>
-            {[
-              { label: "Testing By", name: "testingBy" },
-              { label: "Testing Date", name: "testingDate", type: "date" },
-              { label: "Verified By", name: "verifiedBy" },
-              { label: "Verified Date", name: "verifiedDate", type: "date" },
-            ].map((field) => (
-              <Grid item xs={12} md={3} key={field.name}>
-                <TextField
-                  fullWidth
-                  size="small"
-                  label={field.label}
-                  type={field.type || "text"}
-                  value={formData[field.name]}
-                  onChange={(e) => handleInputChange(field.name, e.target.value)}
-                  InputLabelProps={field.type === "date" ? { shrink: true } : {}}
-                  variant="outlined"
-                />
-              </Grid>
-            ))}
-          </Grid>
-
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <Button
-              variant="contained"
-              endIcon={<ArrowForward />}
-              onClick={() => setCurrentPage("packaging")}
+            {/* Device Testing Table */}
+            <Card
               sx={{
-                backgroundColor: "#1172ba",
-                borderRadius: "8px",
-                textTransform: "none",
-                "&:hover": { backgroundColor: "#0d5a94" },
+                mb: 4,
+                border: "1px solid #e9ecef",
+                borderRadius: 2,
+                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
               }}
             >
-              Next
-            </Button>
-          </Box>
-        </Box>
-      ) : (
-        <Box>
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: 600,
-              color: "#1172ba",
-              mb: 3,
-            }}
-          >
-            Packaging Process
-          </Typography>
+              <Box
+                sx={{
+                  p: 2,
+                  background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
+                  color: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1.5,
+                }}
+              >
+                <FactCheck />
+                <Typography variant="h6" fontWeight={600}>
+                  Device Testing Process
+                </Typography>
+              </Box>
+              <Box sx={{ overflowX: "auto" }}>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow sx={{ background: "linear-gradient(135deg, #f8fafc, #f1f5f9)" }}>
+                      <TableCell sx={{ fontWeight: 700, color: "#495057" }}>Step</TableCell>
+                      <TableCell sx={{ fontWeight: 700, color: "#495057" }}>Task to Test</TableCell>
+                      <TableCell sx={{ fontWeight: 700, color: "#495057", width: 140 }}>Parameter</TableCell>
+                      <TableCell sx={{ fontWeight: 700, color: "#495057", width: 140 }}>Test Methodology</TableCell>
+                      <TableCell sx={{ fontWeight: 700, color: "#495057", width: 140 }}>Expected Result</TableCell>
+                      <TableCell sx={{ fontWeight: 700, color: "#495057", width: 100 }}>Check</TableCell>
+                      <TableCell sx={{ fontWeight: 700, color: "#495057", width: 140 }}>Date</TableCell>
+                      <TableCell sx={{ fontWeight: 700, color: "#495057" }}>Remarks</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {deviceTestingSteps.map((row) => (
+                      <TableRow key={row.step} sx={{ "&:hover": { bgcolor: "#f8f9fa" } }}>
+                        <TableCell>
+                          <Chip
+                            label={row.step}
+                            size="small"
+                            sx={{
+                              bgcolor: "#1172ba",
+                              color: "white",
+                              fontWeight: 600,
+                              minWidth: 32,
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell sx={{ fontWeight: 500 }}>{row.task}</TableCell>
+                        <TableCell>
+                          <TextField size="small" fullWidth sx={textFieldStyle} />
+                        </TableCell>
+                        <TableCell>
+                          <TextField size="small" fullWidth sx={textFieldStyle} />
+                        </TableCell>
+                        <TableCell>
+                          <TextField size="small" fullWidth sx={textFieldStyle} />
+                        </TableCell>
+                        <TableCell>
+                          <TextField size="small" fullWidth sx={textFieldStyle} />
+                        </TableCell>
+                        <TableCell>
+                          <TextField
+                            size="small"
+                            type="date"
+                            fullWidth
+                            InputLabelProps={{ shrink: true }}
+                            sx={textFieldStyle}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <TextField size="small" fullWidth sx={textFieldStyle} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Box>
+            </Card>
 
-          <TableContainer
-            component={Paper}
-            variant="outlined"
-            sx={{ borderRadius: "8px", mb: 4 }}
-          >
-            <Table size="small">
-              <TableHead sx={{ bgcolor: "#f3f4f6" }}>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: 600 }}>Step</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Components</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Parameter</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Expected Result</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Assisted By</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Done By</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Remarks</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {packagingSteps.map((row) => (
-                  <TableRow key={row.step} hover>
-                    <TableCell sx={{ fontWeight: 600 }}>{row.step}</TableCell>
-                    <TableCell>{row.components}</TableCell>
-                    <TableCell>
-                      <TextField size="small" variant="outlined" />
-                    </TableCell>
-                    <TableCell>
-                      <TextField size="small" variant="outlined" />
-                    </TableCell>
-                    <TableCell>
-                      <TextField size="small" variant="outlined" />
-                    </TableCell>
-                    <TableCell>
-                      <TextField size="small" variant="outlined" />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        size="small"
-                        type="date"
-                        variant="outlined"
-                        InputLabelProps={{ shrink: true }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField size="small" variant="outlined" />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-
-          <Grid container spacing={2} sx={{ mb: 4 }}>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                size="small"
-                label="Packed By"
-                value={formData.packedBy}
-                onChange={(e) => handleInputChange("packedBy", e.target.value)}
-                variant="outlined"
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                size="small"
-                label="Checked By"
-                value={formData.checkedBy}
-                onChange={(e) => handleInputChange("checkedBy", e.target.value)}
-                variant="outlined"
-              />
-            </Grid>
-          </Grid>
-
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Button
-              variant="outlined"
-              onClick={() => setCurrentPage("device-testing")}
-              sx={{ borderRadius: "8px", textTransform: "none" }}
-            >
-              Back
-            </Button>
-            <Button
-              variant="contained"
-              startIcon={<Save />}
+            {/* Verification Section */}
+            <Card
               sx={{
-                backgroundColor: "#28a745",
-                borderRadius: "8px",
-                textTransform: "none",
-                "&:hover": { backgroundColor: "#218838" },
+                mb: 4,
+                border: "1px solid #e9ecef",
+                borderRadius: 2,
+                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
               }}
             >
-              Save
-            </Button>
-          </Box>
-        </Box>
-      )}
+              <Box
+                sx={{
+                  p: 2,
+                  background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
+                  color: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1.5,
+                }}
+              >
+                <FactCheck />
+                <Typography variant="h6" fontWeight={600}>
+                  Verification Process
+                </Typography>
+              </Box>
+              <CardContent sx={{ background: "linear-gradient(135deg, #f8fafc, #f1f5f9)", p: 3 }}>
+                <Grid container spacing={3}>
+                  <Grid item sx={{ xs: 12, sm: 6, md: 3 }}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Testing By"
+                      value={formData.testingBy}
+                      onChange={(e) => handleInputChange("testingBy", e.target.value)}
+                      sx={textFieldStyle}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Person sx={{ color: "#1172ba", fontSize: 20 }} />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Grid>
+                  <Grid item sx={{ xs: 12, sm: 6, md: 3 }}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Verified By"
+                      value={formData.verifiedBy}
+                      onChange={(e) => handleInputChange("verifiedBy", e.target.value)}
+                      sx={textFieldStyle}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <FactCheck sx={{ color: "#1172ba", fontSize: 20 }} />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Grid>
+                  <Grid item sx={{ xs: 12, sm: 6, md: 3 }}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Testing Date"
+                      type="date"
+                      value={formData.testingDate}
+                      onChange={(e) => handleInputChange("testingDate", e.target.value)}
+                      InputLabelProps={{ shrink: true }}
+                      sx={textFieldStyle}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <CalendarToday sx={{ color: "#1172ba", fontSize: 20 }} />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Grid>
+                  <Grid item sx={{ xs: 12, sm: 6, md: 3 }}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Verified Date"
+                      type="date"
+                      value={formData.verifiedDate}
+                      onChange={(e) => handleInputChange("verifiedDate", e.target.value)}
+                      InputLabelProps={{ shrink: true }}
+                      sx={textFieldStyle}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <CalendarToday sx={{ color: "#1172ba", fontSize: 20 }} />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+
+            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+              <Button
+                variant="contained"
+                endIcon={<ArrowForward />}
+                onClick={() => setCurrentPage("packaging")}
+                sx={{
+                  backgroundColor: "#1172ba",
+                  borderRadius: 2,
+                  px: 4,
+                  py: 1.5,
+                  textTransform: "none",
+                  fontWeight: 600,
+                  "&:hover": { backgroundColor: "#0d5a94" },
+                }}
+              >
+                Next Step: Packaging
+              </Button>
+            </Box>
+          </>
+        ) : (
+          <>
+            {/* Packaging Table */}
+            <Card
+              sx={{
+                mb: 4,
+                border: "1px solid #e9ecef",
+                borderRadius: 2,
+                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+              }}
+            >
+              <Box
+                sx={{
+                  p: 2,
+                  background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
+                  color: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1.5,
+                }}
+              >
+                <Inventory />
+                <Typography variant="h6" fontWeight={600}>
+                  Packaging Process
+                </Typography>
+              </Box>
+              <Box sx={{ overflowX: "auto" }}>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow sx={{ background: "linear-gradient(135deg, #f8fafc, #f1f5f9)" }}>
+                      <TableCell sx={{ fontWeight: 700, color: "#495057" }}>Step</TableCell>
+                      <TableCell sx={{ fontWeight: 700, color: "#495057" }}>Components</TableCell>
+                      <TableCell sx={{ fontWeight: 700, color: "#495057", width: 140 }}>Parameter</TableCell>
+                      <TableCell sx={{ fontWeight: 700, color: "#495057", width: 140 }}>Expected Result</TableCell>
+                      <TableCell sx={{ fontWeight: 700, color: "#495057", width: 140 }}>Assisted By</TableCell>
+                      <TableCell sx={{ fontWeight: 700, color: "#495057", width: 140 }}>Done By</TableCell>
+                      <TableCell sx={{ fontWeight: 700, color: "#495057", width: 140 }}>Date</TableCell>
+                      <TableCell sx={{ fontWeight: 700, color: "#495057" }}>Remarks</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {packagingSteps.map((row) => (
+                      <TableRow key={row.step} sx={{ "&:hover": { bgcolor: "#f8f9fa" } }}>
+                        <TableCell>
+                          <Chip
+                            label={row.step}
+                            size="small"
+                            sx={{
+                              bgcolor: "#1172ba",
+                              color: "white",
+                              fontWeight: 600,
+                              minWidth: 32,
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell sx={{ fontWeight: 500 }}>{row.components}</TableCell>
+                        <TableCell>
+                          <TextField size="small" fullWidth sx={textFieldStyle} />
+                        </TableCell>
+                        <TableCell>
+                          <TextField size="small" fullWidth sx={textFieldStyle} />
+                        </TableCell>
+                        <TableCell>
+                          <TextField size="small" fullWidth sx={textFieldStyle} />
+                        </TableCell>
+                        <TableCell>
+                          <TextField size="small" fullWidth sx={textFieldStyle} />
+                        </TableCell>
+                        <TableCell>
+                          <TextField
+                            size="small"
+                            type="date"
+                            fullWidth
+                            InputLabelProps={{ shrink: true }}
+                            sx={textFieldStyle}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <TextField size="small" fullWidth sx={textFieldStyle} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Box>
+            </Card>
+
+            {/* Final Signatures */}
+            <Card
+              sx={{
+                mb: 4,
+                border: "1px solid #e9ecef",
+                borderRadius: 2,
+                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+              }}
+            >
+              <Box
+                sx={{
+                  p: 2,
+                  background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
+                  color: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1.5,
+                }}
+              >
+                <FactCheck />
+                <Typography variant="h6" fontWeight={600}>
+                  Final Authorization
+                </Typography>
+              </Box>
+              <CardContent sx={{ background: "linear-gradient(135deg, #f8fafc, #f1f5f9)", p: 3 }}>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Packed By"
+                      value={formData.packedBy}
+                      onChange={(e) => handleInputChange("packedBy", e.target.value)}
+                      sx={textFieldStyle}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Person sx={{ color: "#1172ba", fontSize: 20 }} />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Checked By"
+                      value={formData.checkedBy}
+                      onChange={(e) => handleInputChange("checkedBy", e.target.value)}
+                      sx={textFieldStyle}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <FactCheck sx={{ color: "#1172ba", fontSize: 20 }} />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Button
+                variant="outlined"
+                startIcon={<ArrowBack />}
+                onClick={() => setCurrentPage("device-testing")}
+                sx={{
+                  borderColor: "#1172ba",
+                  color: "#1172ba",
+                  borderRadius: 2,
+                  px: 4,
+                  py: 1.5,
+                  textTransform: "none",
+                  fontWeight: 600,
+                  "&:hover": {
+                    borderColor: "#0d5a94",
+                    bgcolor: "#f0f7ff",
+                  },
+                }}
+              >
+                Back
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={<Save />}
+                sx={{
+                  backgroundColor: "#1172ba", // Changed to blue to match theme
+                  borderRadius: 2,
+                  px: 4,
+                  py: 1.5,
+                  textTransform: "none",
+                  fontWeight: 600,
+                  "&:hover": { backgroundColor: "#0d5a94" },
+                }}
+              >
+                Save SOP
+              </Button>
+            </Box>
+          </>
+        )}
+      </Box>
     </CommonCard>
   );
 }
