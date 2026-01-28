@@ -17,6 +17,8 @@ import {
   Button,
   useMediaQuery,
   useTheme,
+  Breadcrumbs,
+  Link,
 } from "@mui/material";
 import {
   Visibility,
@@ -27,8 +29,10 @@ import {
   Warning,
   CheckCircle,
   Schedule,
+  NavigateNext,
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
+import NextLink from "next/link";
 import CommonCard from "../../components/CommonCard";
 
 const dispatchData = [
@@ -122,8 +126,7 @@ export default function DispatchDetails() {
     });
   };
 
-  // Mobile Card View
-  const MobileCard = ({ item, index }) => {
+  const MobileCard = ({ item }) => {
     const statusInfo = getStatusColor(item.status);
     return (
       <Card
@@ -317,216 +320,225 @@ export default function DispatchDetails() {
   };
 
   return (
-    <CommonCard
-      title="Dispatch Details"
-      addText={isSmall ? "Create" : "Create Dispatch Entry"}
-      onAdd={() => router.push("/dispatch/create-dispatch-entry")}
-      searchPlaceholder="Search Order, Product, Contact, Tracking..."
-      searchValue={search}
-      onSearchChange={(e) => setSearch(e.target.value)}
-    >
-      {/* Desktop Table View */}
-      {!isMobile ? (
-        <Box sx={{ overflowX: "auto" }}>
-          <Table size="small">
-            <TableHead>
-              <TableRow
-                sx={{
-                  bgcolor: "#f8f9fa",
-                  "& th": {
-                    fontWeight: 600,
-                    color: "#495057",
-                    borderBottom: "2px solid #dee2e6",
-                    py: 1.5,
-                  },
-                }}
-              >
-                <TableCell sx={{ width: "60px" }}>Sr. No.</TableCell>
-                <TableCell>Order Details</TableCell>
-                <TableCell>Product</TableCell>
-                <TableCell align="center">Status</TableCell>
-                <TableCell>Order Date</TableCell>
-                <TableCell>Shipping Date</TableCell>
-                <TableCell>Sales Platform</TableCell>
-                <TableCell>Contact Person</TableCell>
-                <TableCell>Address</TableCell>
-                <TableCell>Tracking Info</TableCell>
-                <TableCell align="center">Evidence</TableCell>
-                <TableCell align="center">Actions</TableCell>
-              </TableRow>
-            </TableHead>
+    <Box>
+      <Box sx={{ mb: 2 }}>
+        <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb">
+          <Link component={NextLink} underline="hover" color="inherit" href="/">
+            Home
+          </Link>
+          <Typography color="text.primary">Dispatch</Typography>
+        </Breadcrumbs>
+      </Box>
 
-            <TableBody>
-              {filtered.map((row, i) => {
-                const statusInfo = getStatusColor(row.status);
-                return (
-                  <TableRow
-                    key={row.id}
-                    hover
-                    sx={{
-                      "&:hover": { bgcolor: "#f8f9fa" },
-                      transition: "background-color 0.2s",
-                    }}
-                  >
-                    <TableCell sx={{ color: "#6c757d" }}>{i + 1}</TableCell>
-                    <TableCell>
-                      <Typography
-                        variant="body2"
-                        sx={{ fontWeight: 600, color: "#1172ba" }}
-                      >
-                        {row.order}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: 500 }}>
-                      {row.product}
-                    </TableCell>
-                    <TableCell align="center">
-                      <Chip
-                        label={row.status}
-                        size="small"
-                        sx={{
-                          backgroundColor: statusInfo.bg,
-                          color: statusInfo.color,
-                          fontWeight: 600,
-                          fontSize: "0.75rem",
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell>{formatDate(row.orderDate)}</TableCell>
-                    <TableCell>{formatDate(row.shippingDate)}</TableCell>
-                    <TableCell>{row.platform}</TableCell>
-                    <TableCell>{row.contact}</TableCell>
-                    <TableCell>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          maxWidth: "200px",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {row.address}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontWeight: 600,
-                          color: row.tracking === "-" ? "#999" : "#1172ba",
-                        }}
-                      >
-                        {row.tracking}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                      <IconButton
-                        size="small"
-                        sx={{
-                          color: "#6c757d",
-                          "&:hover": { bgcolor: "#e9ecef" },
-                        }}
-                      >
-                        <Download fontSize="small" />
-                      </IconButton>
-                    </TableCell>
-                    <TableCell align="center">
+      <CommonCard
+        title="Dispatch Details"
+        addText={isSmall ? "Create" : "Create Dispatch Entry"}
+        onAdd={() => router.push("/dispatch/create-dispatch-entry")}
+        searchPlaceholder="Search Order, Product, Contact, Tracking..."
+        searchValue={search}
+        onSearchChange={(e) => setSearch(e.target.value)}
+      >
+        {!isMobile ? (
+          <Box sx={{ overflowX: "auto" }}>
+            <Table size="small">
+              <TableHead>
+                <TableRow
+                  sx={{
+                    bgcolor: "#f8f9fa",
+                    "& th": {
+                      fontWeight: 600,
+                      color: "#495057",
+                      borderBottom: "2px solid #dee2e6",
+                      py: 1.5,
+                    },
+                  }}
+                >
+                  <TableCell sx={{ width: "60px" }}>Sr. No.</TableCell>
+                  <TableCell>Order Details</TableCell>
+                  <TableCell>Product</TableCell>
+                  <TableCell align="center">Status</TableCell>
+                  <TableCell>Order Date</TableCell>
+                  <TableCell>Shipping Date</TableCell>
+                  <TableCell>Sales Platform</TableCell>
+                  <TableCell>Contact Person</TableCell>
+                  <TableCell>Address</TableCell>
+                  <TableCell>Tracking Info</TableCell>
+                  <TableCell align="center">Evidence</TableCell>
+                  <TableCell align="center">Actions</TableCell>
+                </TableRow>
+              </TableHead>
+
+              <TableBody>
+                {filtered.map((row, i) => {
+                  const statusInfo = getStatusColor(row.status);
+                  return (
+                    <TableRow
+                      key={row.id}
+                      hover
+                      sx={{
+                        "&:hover": { bgcolor: "#f8f9fa" },
+                        transition: "background-color 0.2s",
+                      }}
+                    >
+                      <TableCell sx={{ color: "#6c757d" }}>{i + 1}</TableCell>
+                      <TableCell>
+                        <Typography
+                          variant="body2"
+                          sx={{ fontWeight: 600, color: "#1172ba" }}
+                        >
+                          {row.order}
+                        </Typography>
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 500 }}>
+                        {row.product}
+                      </TableCell>
+                      <TableCell align="center">
+                        <Chip
+                          label={row.status}
+                          size="small"
+                          sx={{
+                            backgroundColor: statusInfo.bg,
+                            color: statusInfo.color,
+                            fontWeight: 600,
+                            fontSize: "0.75rem",
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell>{formatDate(row.orderDate)}</TableCell>
+                      <TableCell>{formatDate(row.shippingDate)}</TableCell>
+                      <TableCell>{row.platform}</TableCell>
+                      <TableCell>{row.contact}</TableCell>
+                      <TableCell>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            maxWidth: "200px",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {row.address}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontWeight: 600,
+                            color: row.tracking === "-" ? "#999" : "#1172ba",
+                          }}
+                        >
+                          {row.tracking}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="center">
+                        <IconButton
+                          size="small"
+                          sx={{
+                            color: "#6c757d",
+                            "&:hover": { bgcolor: "#e9ecef" },
+                          }}
+                        >
+                          <Download fontSize="small" />
+                        </IconButton>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Box
+                          sx={{
+                            display: "flex",
+                            gap: 0.5,
+                            justifyContent: "center",
+                          }}
+                        >
+                          <IconButton
+                            size="small"
+                            onClick={() => router.push(`/dispatch/${row.id}`)}
+                            sx={{
+                              color: "#1172ba",
+                              "&:hover": { bgcolor: "#e3f2fd" },
+                            }}
+                          >
+                            <Visibility fontSize="small" />
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            sx={{
+                              color: "#28a745",
+                              "&:hover": { bgcolor: "#d4edda" },
+                            }}
+                          >
+                            <Edit fontSize="small" />
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            sx={{
+                              color: "#dc3545",
+                              "&:hover": { bgcolor: "#f8d7da" },
+                            }}
+                          >
+                            <Delete fontSize="small" />
+                          </IconButton>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+
+                {filtered.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={12} align="center" sx={{ py: 8 }}>
                       <Box
                         sx={{
                           display: "flex",
-                          gap: 0.5,
-                          justifyContent: "center",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          gap: 2,
                         }}
                       >
-                        <IconButton
-                          size="small"
-                          onClick={() => router.push(`/dispatch/${row.id}`)}
-                          sx={{
-                            color: "#1172ba",
-                            "&:hover": { bgcolor: "#e3f2fd" },
-                          }}
-                        >
-                          <Visibility fontSize="small" />
-                        </IconButton>
-                        <IconButton
-                          size="small"
-                          sx={{
-                            color: "#28a745",
-                            "&:hover": { bgcolor: "#d4edda" },
-                          }}
-                        >
-                          <Edit fontSize="small" />
-                        </IconButton>
-                        <IconButton
-                          size="small"
-                          sx={{
-                            color: "#dc3545",
-                            "&:hover": { bgcolor: "#f8d7da" },
-                          }}
-                        >
-                          <Delete fontSize="small" />
-                        </IconButton>
+                        <LocalShipping sx={{ fontSize: 64, color: "#dee2e6" }} />
+                        <Typography variant="h6" sx={{ color: "#6c757d" }}>
+                          No dispatch records found
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: "#adb5bd" }}>
+                          Try adjusting your search criteria
+                        </Typography>
                       </Box>
                     </TableCell>
                   </TableRow>
-                );
-              })}
-
-              {filtered.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={12} align="center" sx={{ py: 8 }}>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        gap: 2,
-                      }}
-                    >
-                      <LocalShipping sx={{ fontSize: 64, color: "#dee2e6" }} />
-                      <Typography variant="h6" sx={{ color: "#6c757d" }}>
-                        No dispatch records found
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: "#adb5bd" }}>
-                        Try adjusting your search criteria
-                      </Typography>
-                    </Box>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </Box>
-      ) : (
-        // Mobile Card View
-        <Box>
-          {filtered.length > 0 ? (
-            filtered.map((item, index) => (
-              <MobileCard key={item.id} item={item} index={index} />
-            ))
-          ) : (
-            <Box
-              sx={{
-                textAlign: "center",
-                py: 8,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 2,
-              }}
-            >
-              <LocalShipping sx={{ fontSize: 64, color: "#dee2e6" }} />
-              <Typography variant="h6" sx={{ color: "#6c757d" }}>
-                No dispatch records found
-              </Typography>
-              <Typography variant="body2" sx={{ color: "#adb5bd" }}>
-                Try adjusting your search criteria
-              </Typography>
-            </Box>
-          )}
-        </Box>
-      )}
-    </CommonCard>
+                )}
+              </TableBody>
+            </Table>
+          </Box>
+        ) : (
+          <Box>
+            {filtered.length > 0 ? (
+              filtered.map((item) => (
+                <MobileCard key={item.id} item={item} />
+              ))
+            ) : (
+              <Box
+                sx={{
+                  textAlign: "center",
+                  py: 8,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 2,
+                }}
+              >
+                <LocalShipping sx={{ fontSize: 64, color: "#dee2e6" }} />
+                <Typography variant="h6" sx={{ color: "#6c757d" }}>
+                  No dispatch records found
+                </Typography>
+                <Typography variant="body2" sx={{ color: "#adb5bd" }}>
+                  Try adjusting your search criteria
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        )}
+      </CommonCard>
+    </Box>
   );
 }

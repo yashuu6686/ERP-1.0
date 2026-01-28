@@ -12,8 +12,10 @@ import {
   Dialog,
   DialogContent,
 } from "@mui/material";
-import { Visibility, Edit, Download } from "@mui/icons-material";
+import { Visibility, Edit, Download, NavigateNext } from "@mui/icons-material";
 import CreateMaterialRequest from "./CreateMaterialRequest";
+import { Breadcrumbs, Link, Typography } from "@mui/material";
+import NextLink from "next/link";
 import CommonCard from "../../components/CommonCard";
 
 const requestsData = [
@@ -46,68 +48,71 @@ export default function MaterialIssueRequests() {
   );
 
   return (
-    <CommonCard
-      title="Material Issue Requests"
-      addText="Create Material Request"
-      onAdd={() => setOpenDialog(true)}
-      searchPlaceholder="Search Request No..."
-      searchValue={search}
-      onSearchChange={(e) => setSearch(e.target.value)}
-    >
-      <Box sx={{ overflowX: "auto" }}>
-        <Table size="small">
-          <TableHead sx={{ bgcolor: "#f3f4f6" }}>
-            <TableRow>
-              <TableCell sx={{ fontWeight: 400 }}>Sr. No.</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>
-                Material Issue Request No.
-              </TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Product Name</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>BOM Number</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Required Qty</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Start Date</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>End Date</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {filtered.map((row, i) => (
-              <TableRow key={row.id} hover>
-                <TableCell>{i + 1}</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: "#1172ba" }}>
-                  {row.requestNo}
+    <Box>
+   
+      <CommonCard
+        title="Material Issue Requests"
+        addText="Create Material Request"
+        onAdd={() => setOpenDialog(true)}
+        searchPlaceholder="Search Request No..."
+        searchValue={search}
+        onSearchChange={(e) => setSearch(e.target.value)}
+      >
+        <Box sx={{ overflowX: "auto" }}>
+          <Table size="small">
+            <TableHead sx={{ bgcolor: "#f3f4f6" }}>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 400 }}>Sr. No.</TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>
+                  Material Issue Request No.
                 </TableCell>
-                <TableCell>
-                  <Chip label={row.product} color="primary" size="small" />
-                </TableCell>
-                <TableCell>{row.bom}</TableCell>
-                <TableCell>{row.qty}</TableCell>
-                <TableCell>{row.start}</TableCell>
-                <TableCell>{row.end}</TableCell>
-                <TableCell>
-                  <IconButton color="primary" size="small">
-                    <Visibility fontSize="small" />
-                  </IconButton>
-                  <IconButton color="warning" size="small">
-                    <Edit fontSize="small" />
-                  </IconButton>
-                  <IconButton color="success" size="small">
-                    <Download fontSize="small" />
-                  </IconButton>
-                </TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>Product Name</TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>BOM Number</TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>Required Qty</TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>Start Date</TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>End Date</TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>Actions</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Box>
+            </TableHead>
 
-      {/* Dialog */}
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} >
-        <DialogContent dividers>
-          <CreateMaterialRequest onClose={() => setOpenDialog(false)} />
-        </DialogContent>
-      </Dialog>
-    </CommonCard>
+            <TableBody>
+              {filtered.map((row, i) => (
+                <TableRow key={row.id} hover>
+                  <TableCell>{i + 1}</TableCell>
+                  <TableCell sx={{ fontWeight: 600, color: "#1172ba" }}>
+                    {row.requestNo}
+                  </TableCell>
+                  <TableCell>
+                    <Chip label={row.product} color="primary" size="small" />
+                  </TableCell>
+                  <TableCell>{row.bom}</TableCell>
+                  <TableCell>{row.qty}</TableCell>
+                  <TableCell>{row.start}</TableCell>
+                  <TableCell>{row.end}</TableCell>
+                  <TableCell>
+                    <IconButton color="primary" size="small">
+                      <Visibility fontSize="small" />
+                    </IconButton>
+                    <IconButton color="warning" size="small">
+                      <Edit fontSize="small" />
+                    </IconButton>
+                    <IconButton color="success" size="small">
+                      <Download fontSize="small" />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Box>
+
+        {/* Dialog */}
+        <Dialog open={openDialog} onClose={() => setOpenDialog(false)} >
+          <DialogContent dividers>
+            <CreateMaterialRequest onClose={() => setOpenDialog(false)} />
+          </DialogContent>
+        </Dialog>
+      </CommonCard>
+    </Box>
   );
 }

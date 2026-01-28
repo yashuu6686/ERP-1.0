@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import {
   Box,
@@ -8,7 +9,7 @@ import {
   Button,
 } from "@mui/material";
 import { Save } from "@mui/icons-material";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function CreateMaterialRequest() {
   const router = useRouter();
@@ -46,7 +47,7 @@ export default function CreateMaterialRequest() {
         <Grid container spacing={3}>
           <Grid item xs={12} md={6} size={{xs:12,md:6}}>
             <TextField
-          
+          size="small"
               fullWidth
               label="Product Name"
               name="productName"
@@ -58,6 +59,7 @@ export default function CreateMaterialRequest() {
           <Grid item xs={12} md={6} size={{xs:12,md:6}}>
             <TextField
               fullWidth
+              size="small"
               label="BOM Number"
               name="bomNumber"
               value={form.bomNumber}
@@ -68,6 +70,7 @@ export default function CreateMaterialRequest() {
           <Grid item xs={12} md={6} size={{xs:12,md:6}}>
             <TextField
               fullWidth
+              size="small"
               type="number"
               label="Required Quantity"
               name="requiredQty"
@@ -78,6 +81,7 @@ export default function CreateMaterialRequest() {
 
           <Grid item xs={12} md={6} size={{xs:12,md:6}}>
             <TextField
+              size="small"
               fullWidth
               type="date"
               label="Start Date"
@@ -91,6 +95,7 @@ export default function CreateMaterialRequest() {
           <Grid item xs={12} md={6} size={{xs:12,md:6}}>
             <TextField
               fullWidth
+              size="small"
               type="date"
               label="End Date"
               InputLabelProps={{ shrink: true }}
@@ -103,6 +108,7 @@ export default function CreateMaterialRequest() {
           <Grid item xs={12} md={6} size={{xs:12,md:6}}>
             <TextField
               fullWidth
+              size="small"
               label="Requested By"
               name="requestedBy"
               value={form.requestedBy}
@@ -113,6 +119,7 @@ export default function CreateMaterialRequest() {
           <Grid item xs={12} md={6} size={{xs:12,md:6}}>
             <TextField
               fullWidth
+              size="small"
               label="Approved By"
               name="approvedBy"
               value={form.approvedBy}
@@ -133,7 +140,7 @@ export default function CreateMaterialRequest() {
           <Button
             variant="outlined"
             onClick={() => router.back()}
-            sx={{ textTransform: "none", fontWeight: 600 }}
+            sx={{ textTransform: "none", fontWeight: 500 }}
           >
             Cancel
           </Button>
@@ -144,8 +151,8 @@ export default function CreateMaterialRequest() {
             onClick={handleSubmit}
             sx={{
               textTransform: "none",
-              fontWeight: 600,
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              fontWeight: 500,
+              // background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
               px: 4,
             }}
           >

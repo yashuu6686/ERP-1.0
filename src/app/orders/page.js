@@ -10,8 +10,10 @@ import {
   IconButton,
   Chip,
 } from "@mui/material";
-import { Visibility } from "@mui/icons-material";
+import { Visibility, NavigateNext } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
+import { Breadcrumbs, Link, Typography } from "@mui/material";
+import NextLink from "next/link";
 import CommonCard from "../../components/CommonCard";
 
 const ordersData = [
@@ -52,75 +54,78 @@ export default function CustomerOrders() {
   );
 
   return (
-    <CommonCard
-      title="Customer Order"
-      addText="Create Order"
-      onAdd={() => router.push("/orders/create-new-order")}
-      searchPlaceholder="Search Order No, Customer..."
-      searchValue={search}
-      onSearchChange={(e) => setSearch(e.target.value)}
-    >
-      <Box sx={{ overflowX: "auto" }}>
-        <Table size="small">
-          <TableHead sx={{ bgcolor: "#f3f4f6" }}>
-            <TableRow>
-              <TableCell sx={{ fontWeight: 400 }}>Sr. No.</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Order No.</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Products</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Customer Name</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Order Date</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Contact Number</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Customer Address</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Delivery Date</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Order Status</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Order Reference</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Actions</TableCell>
-            </TableRow>
-          </TableHead>
+    <Box>
 
-          <TableBody>
-            {filtered.map((row, i) => (
-              <TableRow key={row.id} hover>
-                <TableCell>{i + 1}</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: "#1172ba" }}>
-                  {row.orderNo}
-                </TableCell>
-                <TableCell>{row.products}</TableCell>
-                <TableCell>{row.customerName}</TableCell>
-                <TableCell>{row.orderDate}</TableCell>
-                <TableCell>{row.contact}</TableCell>
-                <TableCell>{row.address}</TableCell>
-                <TableCell>{row.deliveryDate}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={row.status}
-                    color={row.status === "Completed" ? "success" : "warning"}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>{row.reference}</TableCell>
-                <TableCell>
-                  <IconButton
-                    color="primary"
-                    size="small"
-                    onClick={() => router.push(`/orders/${row.id}`)}
-                  >
-                    <Visibility fontSize="small" />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-
-            {filtered.length === 0 && (
+      <CommonCard
+        title="Customer Order"
+        addText="Create Order"
+        onAdd={() => router.push("/orders/create-new-order")}
+        searchPlaceholder="Search Order No, Customer..."
+        searchValue={search}
+        onSearchChange={(e) => setSearch(e.target.value)}
+      >
+        <Box sx={{ overflowX: "auto" }}>
+          <Table size="small">
+            <TableHead sx={{ bgcolor: "#f3f4f6" }}>
               <TableRow>
-                <TableCell colSpan={11} align="center">
-                  No customer orders found
-                </TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>Sr. No.</TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>Order No.</TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>Products</TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>Customer Name</TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>Order Date</TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>Contact Number</TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>Customer Address</TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>Delivery Date</TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>Order Status</TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>Order Reference</TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>Actions</TableCell>
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </Box>
-    </CommonCard>
+            </TableHead>
+
+            <TableBody>
+              {filtered.map((row, i) => (
+                <TableRow key={row.id} hover>
+                  <TableCell>{i + 1}</TableCell>
+                  <TableCell sx={{ fontWeight: 600, color: "#1172ba" }}>
+                    {row.orderNo}
+                  </TableCell>
+                  <TableCell>{row.products}</TableCell>
+                  <TableCell>{row.customerName}</TableCell>
+                  <TableCell>{row.orderDate}</TableCell>
+                  <TableCell>{row.contact}</TableCell>
+                  <TableCell>{row.address}</TableCell>
+                  <TableCell>{row.deliveryDate}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={row.status}
+                      color={row.status === "Completed" ? "success" : "warning"}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell>{row.reference}</TableCell>
+                  <TableCell>
+                    <IconButton
+                      color="primary"
+                      size="small"
+                      onClick={() => router.push(`/orders/${row.id}`)}
+                    >
+                      <Visibility fontSize="small" />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+
+              {filtered.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={11} align="center">
+                    No customer orders found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </Box>
+      </CommonCard>
+    </Box>
   );
 }

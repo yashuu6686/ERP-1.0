@@ -24,6 +24,8 @@ import {
   useMediaQuery,
   useTheme,
   Divider,
+  Breadcrumbs,
+  Link,
 } from "@mui/material";
 import {
   Visibility,
@@ -32,7 +34,9 @@ import {
   Warning,
   CheckCircle,
   Cancel,
+  NavigateNext,
 } from "@mui/icons-material";
+import NextLink from "next/link";
 import CommonCard from "../../components/CommonCard";
 
 const rejectedData = [
@@ -90,7 +94,6 @@ export default function RejectedGoods() {
   const [tab, setTab] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
   const [search, setSearch] = useState("");
-  const [selectedItem, setSelectedItem] = useState(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
@@ -168,7 +171,7 @@ export default function RejectedGoods() {
   };
 
   // Mobile Card View
-  const MobileCard = ({ item, index }) => {
+  const MobileCard = ({ item }) => {
     const statusInfo = getStatusColor(item.status);
     return (
       <Card
@@ -350,338 +353,348 @@ export default function RejectedGoods() {
   };
 
   return (
-    <CommonCard
-      title="Rejected Goods"
-      addText={isSmall ? "Add" : "Add Rejected Items"}
-      onAdd={() => setOpenDialog(true)}
-      searchPlaceholder="Search Rejection ID, Source, Goods..."
-      searchValue={search}
-      onSearchChange={(e) => setSearch(e.target.value)}
-    >
-      <Tabs
-        value={tab}
-        onChange={handleTabChange}
-        variant={isSmall ? "scrollable" : "standard"}
-        scrollButtons={isSmall ? "auto" : false}
-        allowScrollButtonsMobile
-        sx={{
-          mb: 3,
-          minHeight: isSmall ? "40px" : "48px",
-          "& .MuiTab-root": {
-            fontWeight: 600,
-            textTransform: "none",
-            fontSize: isSmall ? "0.85rem" : "0.95rem",
-            minHeight: isSmall ? "40px" : "48px",
-            px: isSmall ? 2 : 3,
-            color: "#666",
-            "&.Mui-selected": {
-              color: "#1172ba",
-            },
-          },
-          "& .MuiTabs-indicator": {
-            backgroundColor: "#1172ba",
-            height: "3px",
-            borderRadius: "3px 3px 0 0",
-          },
-        }}
+    <Box>
+      <Box sx={{ mb: 2 }}>
+        <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb">
+          <Link component={NextLink} underline="hover" color="inherit" href="/">
+            Home
+          </Link>
+          <Typography color="text.primary">Rejected Goods</Typography>
+        </Breadcrumbs>
+      </Box>
+
+      <CommonCard
+        title="Rejected Goods"
+        addText={isSmall ? "Add" : "Add Rejected Items"}
+        onAdd={() => setOpenDialog(true)}
+        searchPlaceholder="Search Rejection ID, Source, Goods..."
+        searchValue={search}
+        onSearchChange={(e) => setSearch(e.target.value)}
       >
-        <Tab label="Total Rejected" />
-        <Tab label="Return to Vendor" />
-        <Tab label="Scrapped" />
-      </Tabs>
+        <Tabs
+          value={tab}
+          onChange={handleTabChange}
+          variant={isSmall ? "scrollable" : "standard"}
+          scrollButtons={isSmall ? "auto" : false}
+          allowScrollButtonsMobile
+          sx={{
+            mb: 3,
+            minHeight: isSmall ? "40px" : "48px",
+            "& .MuiTab-root": {
+              fontWeight: 600,
+              textTransform: "none",
+              fontSize: isSmall ? "0.85rem" : "0.95rem",
+              minHeight: isSmall ? "40px" : "48px",
+              px: isSmall ? 2 : 3,
+              color: "#666",
+              "&.Mui-selected": {
+                color: "#1172ba",
+              },
+            },
+            "& .MuiTabs-indicator": {
+              backgroundColor: "#1172ba",
+              height: "3px",
+              borderRadius: "3px 3px 0 0",
+            },
+          }}
+        >
+          <Tab label="Total Rejected" />
+          <Tab label="Return to Vendor" />
+          <Tab label="Scrapped" />
+        </Tabs>
 
-      {/* Desktop Table View */}
-      {!isMobile ? (
-        <Box sx={{ overflowX: "auto" }}>
-          <Table size="small">
-            <TableHead>
-              <TableRow
-                sx={{
-                  bgcolor: "#f8f9fa",
-                  "& th": {
-                    fontWeight: 600,
-                    color: "#495057",
-                    borderBottom: "2px solid #dee2e6",
-                    py: 1.5,
-                  },
-                }}
-              >
-                <TableCell sx={{ width: "60px" }}>S. No.</TableCell>
-                <TableCell>Rejection ID</TableCell>
-                <TableCell>Source Type</TableCell>
-                <TableCell>Source Reference</TableCell>
-                <TableCell>Rejected Goods</TableCell>
-                <TableCell align="center">Quantity</TableCell>
-                <TableCell>Date</TableCell>
-                <TableCell>Rejection Reason</TableCell>
-                <TableCell align="center">Status</TableCell>
-                <TableCell align="center">Actions</TableCell>
-              </TableRow>
-            </TableHead>
+        {/* Desktop Table View */}
+        {!isMobile ? (
+          <Box sx={{ overflowX: "auto" }}>
+            <Table size="small">
+              <TableHead>
+                <TableRow
+                  sx={{
+                    bgcolor: "#f8f9fa",
+                    "& th": {
+                      fontWeight: 600,
+                      color: "#495057",
+                      borderBottom: "2px solid #dee2e6",
+                      py: 1.5,
+                    },
+                  }}
+                >
+                  <TableCell sx={{ width: "60px" }}>S. No.</TableCell>
+                  <TableCell>Rejection ID</TableCell>
+                  <TableCell>Source Type</TableCell>
+                  <TableCell>Source Reference</TableCell>
+                  <TableCell>Rejected Goods</TableCell>
+                  <TableCell align="center">Quantity</TableCell>
+                  <TableCell>Date</TableCell>
+                  <TableCell>Rejection Reason</TableCell>
+                  <TableCell align="center">Status</TableCell>
+                  <TableCell align="center">Actions</TableCell>
+                </TableRow>
+              </TableHead>
 
-            <TableBody>
-              {filteredData.map((row, i) => {
-                const statusInfo = getStatusColor(row.status);
-                return (
-                  <TableRow
-                    key={row.id}
-                    hover
-                    sx={{
-                      "&:hover": { bgcolor: "#f8f9fa" },
-                      transition: "background-color 0.2s",
-                    }}
-                  >
-                    <TableCell sx={{ color: "#6c757d" }}>{i + 1}</TableCell>
-                    <TableCell>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        {getSeverityIcon(row.severity)}
+              <TableBody>
+                {filteredData.map((row, i) => {
+                  const statusInfo = getStatusColor(row.status);
+                  return (
+                    <TableRow
+                      key={row.id}
+                      hover
+                      sx={{
+                        "&:hover": { bgcolor: "#f8f9fa" },
+                        transition: "background-color 0.2s",
+                      }}
+                    >
+                      <TableCell sx={{ color: "#6c757d" }}>{i + 1}</TableCell>
+                      <TableCell>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                          {getSeverityIcon(row.severity)}
+                          <Typography
+                            variant="body2"
+                            sx={{ fontWeight: 600, color: "#1172ba" }}
+                          >
+                            {row.rejectionId}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell>{row.sourceType}</TableCell>
+                      <TableCell sx={{ color: "#495057" }}>
+                        {row.sourceRef}
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 500 }}>{row.goods}</TableCell>
+                      <TableCell align="center">
+                        <Chip
+                          label={row.qty}
+                          size="small"
+                          sx={{
+                            bgcolor: "#fee",
+                            color: "#dc3545",
+                            fontWeight: 600,
+                            minWidth: "50px",
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell>{formatDate(row.date)}</TableCell>
+                      <TableCell>
                         <Typography
                           variant="body2"
-                          sx={{ fontWeight: 600, color: "#1172ba" }}
+                          sx={{
+                            maxWidth: "200px",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
                         >
-                          {row.rejectionId}
+                          {row.reason}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Chip
+                          label={statusInfo.label}
+                          size="small"
+                          sx={{
+                            backgroundColor: statusInfo.bg,
+                            color: statusInfo.color,
+                            fontWeight: 600,
+                            fontSize: "0.75rem",
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell align="center">
+                        <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
+                          <IconButton
+                            size="small"
+                            sx={{
+                              color: "#1172ba",
+                              "&:hover": { bgcolor: "#e3f2fd" },
+                            }}
+                          >
+                            <Visibility fontSize="small" />
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            sx={{
+                              color: "#28a745",
+                              "&:hover": { bgcolor: "#d4edda" },
+                            }}
+                          >
+                            <Edit fontSize="small" />
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            sx={{
+                              color: "#dc3545",
+                              "&:hover": { bgcolor: "#f8d7da" },
+                            }}
+                          >
+                            <Delete fontSize="small" />
+                          </IconButton>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+
+                {filteredData.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={10} align="center" sx={{ py: 8 }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          gap: 2,
+                        }}
+                      >
+                        <Warning sx={{ fontSize: 64, color: "#dee2e6" }} />
+                        <Typography variant="h6" sx={{ color: "#6c757d" }}>
+                          No rejected goods found
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: "#adb5bd" }}>
+                          Try adjusting your search or filter criteria
                         </Typography>
                       </Box>
                     </TableCell>
-                    <TableCell>{row.sourceType}</TableCell>
-                    <TableCell sx={{ color: "#495057" }}>
-                      {row.sourceRef}
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: 500 }}>{row.goods}</TableCell>
-                    <TableCell align="center">
-                      <Chip
-                        label={row.qty}
-                        size="small"
-                        sx={{
-                          bgcolor: "#fee",
-                          color: "#dc3545",
-                          fontWeight: 600,
-                          minWidth: "50px",
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell>{formatDate(row.date)}</TableCell>
-                    <TableCell>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          maxWidth: "200px",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {row.reason}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Chip
-                        label={statusInfo.label}
-                        size="small"
-                        sx={{
-                          backgroundColor: statusInfo.bg,
-                          color: statusInfo.color,
-                          fontWeight: 600,
-                          fontSize: "0.75rem",
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell align="center">
-                      <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
-                        <IconButton
-                          size="small"
-                          sx={{
-                            color: "#1172ba",
-                            "&:hover": { bgcolor: "#e3f2fd" },
-                          }}
-                        >
-                          <Visibility fontSize="small" />
-                        </IconButton>
-                        <IconButton
-                          size="small"
-                          sx={{
-                            color: "#28a745",
-                            "&:hover": { bgcolor: "#d4edda" },
-                          }}
-                        >
-                          <Edit fontSize="small" />
-                        </IconButton>
-                        <IconButton
-                          size="small"
-                          sx={{
-                            color: "#dc3545",
-                            "&:hover": { bgcolor: "#f8d7da" },
-                          }}
-                        >
-                          <Delete fontSize="small" />
-                        </IconButton>
-                      </Box>
-                    </TableCell>
                   </TableRow>
-                );
-              })}
+                )}
+              </TableBody>
+            </Table>
+          </Box>
+        ) : (
+          <Box>
+            {filteredData.length > 0 ? (
+              filteredData.map((item) => (
+                <MobileCard key={item.id} item={item} />
+              ))
+            ) : (
+              <Box
+                sx={{
+                  textAlign: "center",
+                  py: 8,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 2,
+                }}
+              >
+                <Warning sx={{ fontSize: 64, color: "#dee2e6" }} />
+                <Typography variant="h6" sx={{ color: "#6c757d" }}>
+                  No rejected goods found
+                </Typography>
+                <Typography variant="body2" sx={{ color: "#adb5bd" }}>
+                  Try adjusting your search or filter criteria
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        )}
 
-              {filteredData.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={10} align="center" sx={{ py: 8 }}>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        gap: 2,
-                      }}
-                    >
-                      <Warning sx={{ fontSize: 64, color: "#dee2e6" }} />
-                      <Typography variant="h6" sx={{ color: "#6c757d" }}>
-                        No rejected goods found
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: "#adb5bd" }}>
-                        Try adjusting your search or filter criteria
-                      </Typography>
-                    </Box>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </Box>
-      ) : (
-        // Mobile Card View
-        <Box>
-          {filteredData.length > 0 ? (
-            filteredData.map((item, index) => (
-              <MobileCard key={item.id} item={item} index={index} />
-            ))
-          ) : (
-            <Box
+        {/* Add Rejected Items Dialog */}
+        <Dialog
+          open={openDialog}
+          onClose={() => setOpenDialog(false)}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle sx={{ fontWeight: 700 }}>Add Rejected Items</DialogTitle>
+          <DialogContent dividers>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Rejection ID"
+                  name="rejectionId"
+                  onChange={handleChange}
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Source Type"
+                  name="sourceType"
+                  onChange={handleChange}
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Source Reference"
+                  name="sourceReference"
+                  onChange={handleChange}
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  type="date"
+                  label="Date"
+                  name="date"
+                  InputLabelProps={{ shrink: true }}
+                  onChange={handleChange}
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Rejected Goods"
+                  name="rejectedGoods"
+                  onChange={handleChange}
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  type="number"
+                  label="Rejected Quantity"
+                  name="rejectedQty"
+                  onChange={handleChange}
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Rejection Reason"
+                  name="reason"
+                  onChange={handleChange}
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Rejected By"
+                  name="rejectedBy"
+                  onChange={handleChange}
+                  size="small"
+                />
+              </Grid>
+            </Grid>
+          </DialogContent>
+          <DialogActions sx={{ p: 2 }}>
+            <Button onClick={() => setOpenDialog(false)} sx={{ textTransform: "none" }}>
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleSubmit}
               sx={{
-                textAlign: "center",
-                py: 8,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 2,
+                backgroundColor: "#1172ba",
+                fontWeight: 600,
+                textTransform: "none",
+                borderRadius: "8px",
+                "&:hover": { backgroundColor: "#0d5a94" },
               }}
             >
-              <Warning sx={{ fontSize: 64, color: "#dee2e6" }} />
-              <Typography variant="h6" sx={{ color: "#6c757d" }}>
-                No rejected goods found
-              </Typography>
-              <Typography variant="body2" sx={{ color: "#adb5bd" }}>
-                Try adjusting your search or filter criteria
-              </Typography>
-            </Box>
-          )}
-        </Box>
-      )}
-
-      {/* Add Rejected Items Dialog */}
-      <Dialog
-        open={openDialog}
-        onClose={() => setOpenDialog(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle sx={{ fontWeight: 700 }}>Add Rejected Items</DialogTitle>
-        <DialogContent dividers>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                label="Rejection ID"
-                name="rejectionId"
-                onChange={handleChange}
-                size="small"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                label="Source Type"
-                name="sourceType"
-                onChange={handleChange}
-                size="small"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                label="Source Reference"
-                name="sourceReference"
-                onChange={handleChange}
-                size="small"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                type="date"
-                label="Date"
-                name="date"
-                InputLabelProps={{ shrink: true }}
-                onChange={handleChange}
-                size="small"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                label="Rejected Goods"
-                name="rejectedGoods"
-                onChange={handleChange}
-                size="small"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                type="number"
-                label="Rejected Quantity"
-                name="rejectedQty"
-                onChange={handleChange}
-                size="small"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                label="Rejection Reason"
-                name="reason"
-                onChange={handleChange}
-                size="small"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                label="Rejected By"
-                name="rejectedBy"
-                onChange={handleChange}
-                size="small"
-              />
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button onClick={() => setOpenDialog(false)} sx={{ textTransform: "none" }}>
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleSubmit}
-            sx={{
-              backgroundColor: "#1172ba",
-              fontWeight: 500,
-              textTransform: "none",
-              borderRadius: "8px",
-              "&:hover": { backgroundColor: "#0d5a94" },
-            }}
-          >
-            Submit Rejection
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </CommonCard>
+              Submit Rejection
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </CommonCard>
+    </Box>
   );
 }

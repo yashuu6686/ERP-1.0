@@ -10,39 +10,39 @@ import {
   TableCell,
   TableBody,
   Chip,
+  Breadcrumbs,
+  Link,
 } from "@mui/material";
-import { useRouter } from "next/router";
+import { useParams } from "next/navigation";
+import { NavigateNext } from "@mui/icons-material";
+import NextLink from "next/link";
 
 export default function StockMovementHistory() {
-  const router = useRouter();
-  const { id } = router.query;
-
-  if (!router.isReady) {
-    return <Typography sx={{ p: 3 }}>Loading...</Typography>;
-  }
+  const params = useParams();
+  const id = params?.id;
 
   const historyData = [
-  {
-    materialId: "SIPL.ASY.PBT.001",
-    date: "10-01-2026",
-    type: "IN (Purchase)",
-    ref: "PO-2026-001",
-    qty: 300,
-    balance: 600,
-    from: "Vendor A",
-    remarks: "ABC",
-  },
-  {
-    materialId: "SIPL.ASY.PBT.001",
-    date: "11-01-2026",
-    type: "OUT (Production)",
-    ref: "MIR-2026-001",
-    qty: -100,
-    balance: 500,
-    from: "Production",
-    remarks: "XYZ",
-  },
-];
+    {
+      materialId: "SIPL.ASY.PBT.001",
+      date: "10-01-2026",
+      type: "IN (Purchase)",
+      ref: "PO-2026-001",
+      qty: 300,
+      balance: 600,
+      from: "Vendor A",
+      remarks: "ABC",
+    },
+    {
+      materialId: "SIPL.ASY.PBT.001",
+      date: "11-01-2026",
+      type: "OUT (Production)",
+      ref: "MIR-2026-001",
+      qty: -100,
+      balance: 500,
+      from: "Production",
+      remarks: "XYZ",
+    },
+  ];
 
 
   const filtered = historyData.filter(
