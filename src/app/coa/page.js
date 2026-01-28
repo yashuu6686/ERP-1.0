@@ -356,7 +356,7 @@ export default function CertificateOfAnalysis() {
         </Box>
         <CardContent sx={{ background: "linear-gradient(135deg, #f8fafc, #f1f5f9)", p: 3 }}>
           <Grid container spacing={3}>
-            <Grid item sx={{ xs: 12, sm: 4, md: 4 }}>
+            <Grid size={{ xs: 12, sm: 4, md: 4 }}>
               <TextField
                 fullWidth
                 size="small"
@@ -372,7 +372,7 @@ export default function CertificateOfAnalysis() {
                 }}
               />
             </Grid>
-            <Grid item sx={{ xs: 12, sm: 4, md: 4 }}>
+            <Grid size={{ xs: 12, sm: 4, md: 4 }}>
               <TextField
                 fullWidth
                 size="small"
@@ -388,7 +388,7 @@ export default function CertificateOfAnalysis() {
                 }}
               />
             </Grid>
-            <Grid item sx={{ xs: 12, sm: 4, md: 4 }}>
+            <Grid size={{ xs: 12, sm: 4, md: 4 }}>
               <TextField
                 fullWidth
                 size="small"
@@ -405,7 +405,7 @@ export default function CertificateOfAnalysis() {
                 }}
               />
             </Grid>
-            <Grid item sx={{ xs: 12, sm: 4, md: 4 }}>
+            <Grid size={{ xs: 12, sm: 4, md: 4 }}>
               <TextField
                 fullWidth
                 size="small"
