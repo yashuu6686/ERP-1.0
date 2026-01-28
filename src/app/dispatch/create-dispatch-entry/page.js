@@ -151,7 +151,6 @@ export default function CreateDispatchEntry() {
 
   return (
     <Box>
-
       <CommonCard title="Create Dispatch Entry">
         <Box sx={{ p: 1 }}>
           {/* Company Information */}
@@ -179,7 +178,7 @@ export default function CreateDispatchEntry() {
             </Box>
             <CardContent sx={{ background: "linear-gradient(135deg, #f8fafc, #f1f5f9)" }}>
               <Grid container spacing={3}>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} md={6} size={{xs:12,md:6}}>
                   <TextField
                     fullWidth
                     size="small"
@@ -195,7 +194,7 @@ export default function CreateDispatchEntry() {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} md={6} size={{xs:12,md:6}}>
                   <TextField
                     fullWidth
                     size="small"
@@ -206,7 +205,7 @@ export default function CreateDispatchEntry() {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} md={6} size={{xs:12,md:6}}>
                   <TextField
                     fullWidth
                     size="small"
@@ -218,7 +217,7 @@ export default function CreateDispatchEntry() {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} md={6} size={{xs:12,md:6}}>
                   <TextField
                     fullWidth
                     size="small"
@@ -258,7 +257,7 @@ export default function CreateDispatchEntry() {
             </Box>
             <CardContent sx={{ background: "linear-gradient(135deg, #f8fafc, #f1f5f9)" }}>
               <Grid container spacing={3}>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={4} size={{xs:12,md:4}}>
                   <TextField
                     fullWidth
                     label="Order Number"
@@ -285,7 +284,7 @@ export default function CreateDispatchEntry() {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={4} size={{xs:12,md:4}}>
                   <TextField
                     fullWidth
                     type="date"
@@ -308,7 +307,7 @@ export default function CreateDispatchEntry() {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={4} size={{xs:12,md:4}}>
                   <TextField
                     fullWidth
                     label="Tracking Number"
@@ -337,7 +336,7 @@ export default function CreateDispatchEntry() {
           {/* Customer + Delivery */}
           <Grid container spacing={3} sx={{ mb: 4 }}>
             {/* Customer */}
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={6} size={{xs:12,md:6}}>
               <Card
                 sx={{
                   height: "100%",
@@ -361,7 +360,7 @@ export default function CreateDispatchEntry() {
                 </Box>
                 <CardContent sx={{ p: 3 }}>
                   <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} size={{xs:12}}>
                       <TextField
                         fullWidth
                         value={formData.customerName}
@@ -375,7 +374,7 @@ export default function CreateDispatchEntry() {
                         placeholder="Enter customer name"
                       />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} size={{xs:12}}>
                       <TextField
                         fullWidth
                         value={formData.deliveryAddress}
@@ -391,7 +390,7 @@ export default function CreateDispatchEntry() {
                         }}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} sm={6} size={{xs:12,sm:6}}>
                       <TextField
                         fullWidth
                         value={formData.contactPerson}
@@ -405,7 +404,7 @@ export default function CreateDispatchEntry() {
                         }}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} sm={6} size={{xs:12,sm:6}}>
                       <TextField
                         fullWidth
                         value={formData.contactNo}
@@ -425,7 +424,7 @@ export default function CreateDispatchEntry() {
             </Grid>
 
             {/* Delivery */}
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={6} size={{xs:12,md:6}}>
               <Card
                 sx={{
                   height: "100%",
@@ -449,7 +448,7 @@ export default function CreateDispatchEntry() {
                 </Box>
                 <CardContent sx={{ p: 3 }}>
                   <Grid container spacing={2}>
-                    <Grid item xs={6}>
+                    <Grid item xs={6} size={{xs:6}}>
                       <TextField
                         fullWidth
                         type="date"
@@ -464,7 +463,7 @@ export default function CreateDispatchEntry() {
                         }}
                       />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={6} size={{xs:6}}>
                       <TextField
                         fullWidth
                         value={formData.courierCompany}
@@ -478,7 +477,7 @@ export default function CreateDispatchEntry() {
                         }}
                       />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={6} size={{xs:6}}>
                       <TextField
                         fullWidth
                         value={formData.referenceNo}
@@ -492,7 +491,7 @@ export default function CreateDispatchEntry() {
                         }}
                       />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={6} size={{xs:6}}>
                       <TextField
                         fullWidth
                         value={formData.salesPlatform}

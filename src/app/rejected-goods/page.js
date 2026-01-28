@@ -234,7 +234,7 @@ export default function RejectedGoods() {
           <Divider sx={{ my: 1.5 }} />
 
           <Grid container spacing={1.5}>
-            <Grid item xs={6}>
+            <Grid item xs={6} size={{ xs: 12, md: 6 }}>
               <Typography
                 variant="caption"
                 sx={{ color: "#999", display: "block", mb: 0.5 }}
@@ -245,7 +245,7 @@ export default function RejectedGoods() {
                 {item.sourceType}
               </Typography>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={6} size={{ xs: 12, md: 6 }}  >
               <Typography
                 variant="caption"
                 sx={{ color: "#999", display: "block", mb: 0.5 }}
@@ -256,7 +256,7 @@ export default function RejectedGoods() {
                 {item.sourceRef}
               </Typography>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={6} size={{ xs: 12, md: 6 }}>
               <Typography
                 variant="caption"
                 sx={{ color: "#999", display: "block", mb: 0.5 }}
@@ -270,8 +270,9 @@ export default function RejectedGoods() {
                 {item.qty} units
               </Typography>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={6} size={{ xs: 12, md: 6 }}>
               <Typography
+              
                 variant="caption"
                 sx={{ color: "#999", display: "block", mb: 0.5 }}
               >
@@ -281,7 +282,7 @@ export default function RejectedGoods() {
                 {formatDate(item.date)}
               </Typography>
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} size={{ xs: 12, md: 6 }}>
               <Typography
                 variant="caption"
                 sx={{ color: "#999", display: "block", mb: 0.5 }}

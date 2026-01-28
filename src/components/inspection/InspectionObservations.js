@@ -65,7 +65,7 @@ const InspectionObservations = ({
                             fontWeight: 600
                         }}
                     >
-                        Add Row
+                        Add Raw
                     </Button>
                     <Button
                         variant="contained"

@@ -162,7 +162,7 @@ export default function Sidebar({ children }) {
           flexGrow: 1,
           padding: "16px",
           bgcolor: "#f8fafc",
-          minHeight: "100vh",
+          height: "100vh",
           display: 'flex',
           flexDirection: 'column'
         }}

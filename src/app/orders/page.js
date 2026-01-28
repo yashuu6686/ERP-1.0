@@ -68,42 +68,42 @@ export default function CustomerOrders() {
           <Table size="small">
             <TableHead sx={{ bgcolor: "#f3f4f6" }}>
               <TableRow>
-                <TableCell sx={{ fontWeight: 400 }}>Sr. No.</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Order No.</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Products</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Customer Name</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Order Date</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Contact Number</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Customer Address</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Delivery Date</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Order Status</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Order Reference</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Actions</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Sr.No.</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Order No.</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Products</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Customer Name</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Order Date</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Contact Number</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Customer Address</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Delivery Date</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Order Status</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Order Reference</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Actions</TableCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
               {filtered.map((row, i) => (
                 <TableRow key={row.id} hover>
-                  <TableCell>{i + 1}</TableCell>
-                  <TableCell sx={{ fontWeight: 600, color: "#1172ba" }}>
+                  <TableCell align="center">{i + 1}</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 600, color: "#1172ba" }}>
                     {row.orderNo}
                   </TableCell>
-                  <TableCell>{row.products}</TableCell>
-                  <TableCell>{row.customerName}</TableCell>
-                  <TableCell>{row.orderDate}</TableCell>
-                  <TableCell>{row.contact}</TableCell>
-                  <TableCell>{row.address}</TableCell>
-                  <TableCell>{row.deliveryDate}</TableCell>
-                  <TableCell>
+                  <TableCell align="center">{row.products}</TableCell>
+                  <TableCell align="center">{row.customerName}</TableCell>
+                  <TableCell align="center">{row.orderDate}</TableCell>
+                  <TableCell align="center">{row.contact}</TableCell>
+                  <TableCell align="center">{row.address}</TableCell>
+                  <TableCell align="center">{row.deliveryDate}</TableCell>
+                  <TableCell align="center">
                     <Chip
                       label={row.status}
                       color={row.status === "Completed" ? "success" : "warning"}
                       size="small"
                     />
                   </TableCell>
-                  <TableCell>{row.reference}</TableCell>
-                  <TableCell>
+                  <TableCell align="center">{row.reference}</TableCell>
+                  <TableCell align="center">
                     <IconButton
                       color="primary"
                       size="small"

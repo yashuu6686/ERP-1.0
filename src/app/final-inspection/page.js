@@ -67,31 +67,31 @@ export default function FinalQualityCheck() {
           <Table size="small">
             <TableHead sx={{ bgcolor: "#f3f4f6" }}>
               <TableRow>
-                <TableCell sx={{ fontWeight: 400 }}>Sr. No.</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Final Inspection No</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Total Checked</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Approved</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Rejected</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Result</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Checking Date</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Remarks</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Approved By</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Approval Date</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Actions</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Sr. No.</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Final Inspection No</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Total Checked</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Approved</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Rejected</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Result</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Checking Date</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Remarks</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Approved By</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Approval Date</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Actions</TableCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
               {filtered.map((row, i) => (
                 <TableRow key={row.id} hover>
-                  <TableCell>{i + 1}</TableCell>
-                  <TableCell sx={{ fontWeight: 600, color: "#1172ba" }}>
+                  <TableCell align="center">{i + 1}</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 600, color: "#1172ba" }}>
                     {row.inspectionNo}
                   </TableCell>
-                  <TableCell>{row.total}</TableCell>
-                  <TableCell>{row.approved}</TableCell>
-                  <TableCell>{row.rejected}</TableCell>
-                  <TableCell>
+                  <TableCell align="center">{row.total}</TableCell>
+                  <TableCell align="center">{row.approved}</TableCell>
+                  <TableCell align="center">{row.rejected}</TableCell>
+                  <TableCell align="center">
                     <Chip
                       label={row.result}
                       color={
@@ -104,11 +104,11 @@ export default function FinalQualityCheck() {
                       size="small"
                     />
                   </TableCell>
-                  <TableCell>{row.date}</TableCell>
-                  <TableCell>{row.remarks}</TableCell>
-                  <TableCell>{row.approvedBy}</TableCell>
-                  <TableCell>{row.approvalDate}</TableCell>
-                  <TableCell>
+                  <TableCell align="center">{row.date}</TableCell>
+                  <TableCell align="center">{row.remarks}</TableCell>
+                  <TableCell align="center">{row.approvedBy}</TableCell>
+                  <TableCell align="center">{row.approvalDate}</TableCell>
+                  <TableCell align="center">
                     <IconButton
                       color="primary"
                       size="small"

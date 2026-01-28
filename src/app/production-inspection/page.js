@@ -66,27 +66,27 @@ export default function AfterProductionInspection() {
           <Table size="small" stickyHeader>
             <TableHead>
               <TableRow sx={{ background: "linear-gradient(135deg, #f8fafc, #f1f5f9)" }}>
-                <TableCell sx={{ fontWeight: 700, color: "#334155", py: 1.5 }}>Sr. No.</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: "#334155", py: 1.5 }}>Quality Check No.</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: "#334155", py: 1.5 }}>Checked Qty</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: "#334155", py: 1.5 }}>Accepted Qty</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: "#334155", py: 1.5 }}>Rejected Qty</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: "#334155", py: 1.5 }}>Inspection Result</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: "#334155", py: 1.5 }}>Inspection Date</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: "#334155", py: 1.5 }}>Approved By</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: "#334155", textAlign: 'center', py: 1.5 }}>Actions</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 500, color: "#334155", py: 1.5 }}>Sr. No.</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 500, color: "#334155", py: 1.5 }}>Quality Check No.</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 500, color: "#334155", py: 1.5 }}>Checked Qty</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 500, color: "#334155", py: 1.5 }}>Accepted Qty</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 500, color: "#334155", py: 1.5 }}>Rejected Qty</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 500, color: "#334155", py: 1.5 }}>Inspection Result</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 500, color: "#334155", py: 1.5 }}>Inspection Date</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 500, color: "#334155", py: 1.5 }}>Approved By</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 500, color: "#334155", textAlign: 'center', py: 1.5 }}>Actions</TableCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
               {filtered.map((row, i) => (
                 <TableRow key={row.id} hover sx={{ "&:hover": { bgcolor: "#f8fafc" } }}>
-                  <TableCell sx={{ py: 1 }}>{i + 1}</TableCell>
-                  <TableCell sx={{ fontWeight: 600, color: "#1172ba", py: 1 }}>
+                  <TableCell align="center" sx={{ py: 1 }}>{i + 1}</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 600, color: "#1172ba", py: 1 }}>
                     {row.checkNo}
                   </TableCell>
-                  <TableCell sx={{ py: 1 }}>{row.checkedQty}</TableCell>
-                  <TableCell sx={{ py: 1 }}>
+                  <TableCell align="center" sx={{ py: 1 }}>{row.checkedQty}</TableCell>
+                  <TableCell align="center" sx={{ py: 1 }}>
                     <Chip
                       label={row.acceptedQty}
                       size="small"
@@ -98,7 +98,7 @@ export default function AfterProductionInspection() {
                       }}
                     />
                   </TableCell>
-                  <TableCell sx={{ py: 1 }}>
+                  <TableCell align="center" sx={{ py: 1 }}>
                     <Chip
                       label={row.rejectedQty}
                       size="small"
@@ -110,7 +110,7 @@ export default function AfterProductionInspection() {
                       }}
                     />
                   </TableCell>
-                  <TableCell sx={{ py: 1 }}>
+                  <TableCell align="center" sx={{ py: 1 }}>
                     <Chip
                       label={row.result.split(' / ')[0]}
                       size="small"
@@ -118,9 +118,9 @@ export default function AfterProductionInspection() {
                       sx={{ fontWeight: 600 }}
                     />
                   </TableCell>
-                  <TableCell sx={{ py: 1, color: "#64748b" }}>{row.date}</TableCell>
-                  <TableCell sx={{ py: 1, fontWeight: 500 }}>{row.approvedBy}</TableCell>
-                  <TableCell sx={{ textAlign: 'center', py: 1 }}>
+                  <TableCell align="center" sx={{ py: 1, color: "#64748b" }}>{row.date}</TableCell>
+                  <TableCell align="center" sx={{ py: 1, fontWeight: 500 }}>{row.approvedBy}</TableCell>
+                  <TableCell align="center" sx={{ textAlign: 'center', py: 1 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'center', gap: 0.5 }}>
                       <Tooltip title="View Details">
                         <IconButton size="small" sx={{ color: "#1e293b", bgcolor: "#f1f5f9", "&:hover": { bgcolor: "#e2e8f0" } }}>
