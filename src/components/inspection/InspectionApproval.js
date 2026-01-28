@@ -1,0 +1,113 @@
+import React from 'react';
+import {
+    Box,
+    TextField,
+    Typography,
+    Grid,
+    Card,
+    CardContent,
+} from '@mui/material';
+
+const InspectionApproval = ({ approvalData, onChange }) => {
+    const handleChange = (section, field) => (event) => {
+        onChange?.(section, field, event.target.value);
+    };
+
+    return (
+        <Card
+            elevation={0}
+            sx={{
+                marginBottom: 4,
+                borderRadius: 2,
+                border: '1px solid #e2e8f0',
+                overflow: 'hidden',
+            }}
+        >
+            <Box
+                sx={{
+                    padding: 2,
+                    background: 'linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)',
+                }}
+            >
+                <Typography variant="subtitle1" sx={{ color: '#fff', fontWeight: 600 }}>
+                    Approval
+                </Typography>
+            </Box>
+
+            <CardContent sx={{ padding: 3 }}>
+                <Grid container spacing={4}>
+                    <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+                        <Box sx={{ p: 2, border: '1px solid #e2e8f0', borderRadius: 2 }}>
+                            <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+                                Updated By
+                            </Typography>
+                            <Grid container spacing={2}>
+                                <Grid item xs={6} size={{ xs: 6 }}>
+                                    <Typography variant="caption" sx={{ display: 'block', mb: 0.5 }}>
+                                        name
+                                    </Typography>
+                                    <TextField
+                                        fullWidth
+                                        size="small"
+                                        placeholder="signature images"
+                                        value={approvalData?.updatedByName || ''}
+                                        onChange={handleChange('updatedBy', 'name')}
+                                    />
+                                </Grid>
+                                <Grid item xs={6} size={{ xs: 6 }}>
+                                    <Typography variant="caption" sx={{ display: 'block', mb: 0.5 }}>
+                                        date
+                                    </Typography>
+                                    <TextField
+                                        fullWidth
+                                        size="small"
+                                        type="date"
+                                        InputLabelProps={{ shrink: true }}
+                                        value={approvalData?.updatedByDate || ''}
+                                        onChange={handleChange('updatedBy', 'date')}
+                                    />
+                                </Grid>
+                            </Grid>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+                        <Box sx={{ p: 2, border: '1px solid #e2e8f0', borderRadius: 2 }}>
+                            <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+                                Approved By
+                            </Typography>
+                            <Grid container spacing={2}>
+                                <Grid item xs={6} size={{ xs: 6 }}>
+                                    <Typography variant="caption" sx={{ display: 'block', mb: 0.5 }}>
+                                        name
+                                    </Typography>
+                                    <TextField
+                                        fullWidth
+                                        size="small"
+                                        placeholder="signature images"
+                                        value={approvalData?.approvedByName || ''}
+                                        onChange={handleChange('approvedBy', 'name')}
+                                    />
+                                </Grid>
+                                <Grid item xs={6} size={{ xs: 6 }}>
+                                    <Typography variant="caption" sx={{ display: 'block', mb: 0.5 }}>
+                                        date
+                                    </Typography>
+                                    <TextField
+                                        fullWidth
+                                        size="small"
+                                        type="date"
+                                        InputLabelProps={{ shrink: true }}
+                                        value={approvalData?.approvedByDate || ''}
+                                        onChange={handleChange('approvedBy', 'date')}
+                                    />
+                                </Grid>
+                            </Grid>
+                        </Box>
+                    </Grid>
+                </Grid>
+            </CardContent>
+        </Card>
+    );
+};
+
+export default InspectionApproval;
