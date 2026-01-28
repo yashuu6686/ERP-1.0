@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import {
   Paper,
@@ -16,7 +17,7 @@ import {
   CardContent,
 } from "@mui/material";
 import { ArrowForward, Save } from "@mui/icons-material";
-import CommonCard from "../../src/components/CommonCard";
+import CommonCard from "../../components/CommonCard";
 
 export default function SOPForm() {
   const [currentPage, setCurrentPage] = useState("device-testing");

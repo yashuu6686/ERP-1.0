@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import {
   Box,
@@ -10,8 +11,8 @@ import {
   Chip,
 } from "@mui/material";
 import { Visibility, Edit, Download } from "@mui/icons-material";
-import { useRouter } from "next/router";
-import CommonCard from "../../src/components/CommonCard";
+import { useRouter } from "next/navigation";
+import CommonCard from "../../components/CommonCard";
 
 const inspectionData = [
   {

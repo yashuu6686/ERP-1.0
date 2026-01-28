@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import {
   Box,
@@ -32,7 +33,7 @@ import {
   Save,
   Preview,
 } from "@mui/icons-material";
-import CommonCard from "../../../src/components/CommonCard";
+import CommonCard from "../../../components/CommonCard";
 
 export default function CreatePurchaseOrder() {
   const [items, setItems] = useState([
@@ -259,7 +260,7 @@ export default function CreatePurchaseOrder() {
             <Card
               sx={{
                 height: "100%",
-                borderRadius: 2,               
+                borderRadius: 2,
               }}
             >
               <Box
@@ -319,7 +320,7 @@ export default function CreatePurchaseOrder() {
                       sx={{
                         background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
                       }}
- 
+
                     />
                   </Grid>
                   <Grid item xs={6} size={{ xs: 12, md: 6 }}>
@@ -529,7 +530,7 @@ export default function CreatePurchaseOrder() {
 
         {/* Summary + Actions */}
         <Grid container spacing={3}>
-          <Grid item xs={12} md={8 } size={{ xs: 12, md: 12 }}>
+          <Grid item xs={12} md={8} size={{ xs: 12, md: 12 }}>
             <Card sx={{ background: "#f8fafc", p: 2 }}>
               <Grid container spacing={2}>
                 <Grid item xs={6} sm={3} size={{ xs: 6, sm: 3 }}>
@@ -580,63 +581,63 @@ export default function CreatePurchaseOrder() {
             </Card>
 
             {/* Action Buttons */}
-          
+
           </Grid>
-            <Grid item xs={12} md={4} size={{ xs: 12, md: 12 }}>
-              <Paper sx={{ p: 3, border: "2px solid #1172ba", borderRadius: 2 }}>
-                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                  <Typography color="textSecondary">Subtotal:</Typography>
-                  <Typography fontWeight={600}>₹{subtotal.toFixed(2)}</Typography>
-                </Box>
-                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                  <Typography color="textSecondary">Tax ({taxRate}%):</Typography>
-                  <Typography fontWeight={600}>₹{taxAmount.toFixed(2)}</Typography>
-                </Box>
-                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                  <Typography color="textSecondary">Discount ({discount}%):</Typography>
-                  <Typography fontWeight={600} color="error">-₹{discountAmount.toFixed(2)}</Typography>
-                </Box>
-                <Divider sx={{ my: 2 }} />
-                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                  <Typography variant="h6" fontWeight={700}>Grand Total:</Typography>
-                  <Typography variant="h6" fontWeight={700} color="primary">₹{grandTotal.toFixed(2)}</Typography>
-                </Box>
-              </Paper>
-            </Grid>
+          <Grid item xs={12} md={4} size={{ xs: 12, md: 12 }}>
+            <Paper sx={{ p: 3, border: "2px solid #1172ba", borderRadius: 2 }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                <Typography color="textSecondary">Subtotal:</Typography>
+                <Typography fontWeight={600}>₹{subtotal.toFixed(2)}</Typography>
+              </Box>
+              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                <Typography color="textSecondary">Tax ({taxRate}%):</Typography>
+                <Typography fontWeight={600}>₹{taxAmount.toFixed(2)}</Typography>
+              </Box>
+              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                <Typography color="textSecondary">Discount ({discount}%):</Typography>
+                <Typography fontWeight={600} color="error">-₹{discountAmount.toFixed(2)}</Typography>
+              </Box>
+              <Divider sx={{ my: 2 }} />
+              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                <Typography variant="h6" fontWeight={700}>Grand Total:</Typography>
+                <Typography variant="h6" fontWeight={700} color="primary">₹{grandTotal.toFixed(2)}</Typography>
+              </Box>
+            </Paper>
+          </Grid>
 
         </Grid>
-            <Box sx={{ mt: 4, display: "flex", gap: 2,justifyContent:'end',alignItems:"end" }}>
-              <Button
-                variant="outlined"
-                // startIcon={<Preview />}
-                sx={{
-                  borderColor: "#1172ba",
-                  color: "#1172ba",
-                  borderRadius: 2,
-                  px: 4,
-                  py: 1.5,
-                  textTransform: "none",
-                  fontWeight: 500,
-                }}
-              >
-                Clear
-              </Button>
-              <Button
-                variant="contained"
-                startIcon={<Save />}
-                sx={{
-                  backgroundColor: "#1172ba",
-                  "&:hover": { backgroundColor: "#0d5a94" },
-                  borderRadius: 2,
-                  px: 4,
-                  py: 1.5,
-                  textTransform: "none",
-                  fontWeight: 500,
-                }}
-              >
-                Create Purchase Order
-              </Button>
-            </Box>
+        <Box sx={{ mt: 4, display: "flex", gap: 2, justifyContent: 'end', alignItems: "end" }}>
+          <Button
+            variant="outlined"
+            // startIcon={<Preview />}
+            sx={{
+              borderColor: "#1172ba",
+              color: "#1172ba",
+              borderRadius: 2,
+              px: 4,
+              py: 1.5,
+              textTransform: "none",
+              fontWeight: 500,
+            }}
+          >
+            Clear
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<Save />}
+            sx={{
+              backgroundColor: "#1172ba",
+              "&:hover": { backgroundColor: "#0d5a94" },
+              borderRadius: 2,
+              px: 4,
+              py: 1.5,
+              textTransform: "none",
+              fontWeight: 500,
+            }}
+          >
+            Create Purchase Order
+          </Button>
+        </Box>
       </Box>
     </CommonCard>
   );

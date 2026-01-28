@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import {
   Box,
@@ -14,8 +15,8 @@ import {
   Edit,
   Download,
 } from "@mui/icons-material";
-import { useRouter } from "next/router";
-import CommonCard from "../../src/components/CommonCard";
+import { useRouter } from "next/navigation";
+import CommonCard from "../../components/CommonCard";
 
 export default function IncomingInspection() {
   const router = useRouter();

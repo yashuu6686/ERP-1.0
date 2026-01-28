@@ -1,5 +1,6 @@
+"use client";
 import React from "react";
-import CommonCard from "../../src/components/CommonCard";
+import CommonCard from "../../components/CommonCard";
 import { Typography } from "@mui/material";
 
 function Dashboard() {

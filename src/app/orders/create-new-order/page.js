@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import {
   Box,
@@ -10,7 +11,7 @@ import {
   Paper,
 } from "@mui/material";
 import { Add, Remove } from "@mui/icons-material";
-import CommonCard from "../../../src/components/CommonCard";
+import CommonCard from "../../../components/CommonCard";
 
 export default function CreateOrder() {
   const [kitQty, setKitQty] = useState(6);

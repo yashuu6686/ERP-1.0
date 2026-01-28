@@ -1,3 +1,4 @@
+"use client";
 import * as React from "react";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
@@ -24,7 +25,7 @@ import {
   LocalShipping,
   Cancel,
 } from "@mui/icons-material";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 // import '../../styles/globals.css'
 
@@ -65,6 +66,7 @@ export default function Sidebar({ children }) {
   //   const [selectedIndex, setSelectedIndex] = React.useState(0);
 
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleListItemClick = (index, path) => {
     setSelectedIndex(index);
@@ -98,8 +100,8 @@ export default function Sidebar({ children }) {
         >
           {menuItems.map((item, index) => {
             const isActive =
-              router.pathname === item.path ||
-              router.pathname.startsWith(item.path + "/");
+              pathname === item.path ||
+              pathname?.startsWith(item.path + "/");
 
             return (
               <Link key={index} href={item.path} passHref legacyBehavior>

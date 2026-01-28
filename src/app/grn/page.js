@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import {
   Box,
@@ -16,8 +17,8 @@ import {
   TextField,
 } from "@mui/material";
 import { Add, Save } from "@mui/icons-material";
-import { useRouter } from "next/router";
-import CommonCard from "../../src/components/CommonCard";
+import { useRouter } from "next/navigation";
+import CommonCard from "../../components/CommonCard";
 
 export default function GRNTable() {
   const router = useRouter();

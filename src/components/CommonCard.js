@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
     Box,
@@ -105,7 +106,7 @@ const CommonCard = ({
                 {/* Content Section */}
                 <Box sx={{ minHeight: "300px" }}>{children}</Box>
 
-               
+
             </Paper>
         </Box>
     );

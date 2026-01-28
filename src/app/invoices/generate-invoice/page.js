@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import {
   Box,
@@ -16,7 +17,7 @@ import {
   Paper,
 } from "@mui/material";
 import { Add, Delete } from "@mui/icons-material";
-import CommonCard from "../../../src/components/CommonCard";
+import CommonCard from "../../../components/CommonCard";
 
 export default function InvoiceGenerator() {
   const [products, setProducts] = useState([

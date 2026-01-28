@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from 'react';
 import {
   Box,
@@ -29,7 +30,7 @@ import {
   Inventory as InventoryIcon,
   CalendarToday as CalendarIcon,
 } from '@mui/icons-material';
-import CommonCard from '../../../src/components/CommonCard';
+import CommonCard from '../../../components/CommonCard';
 
 export default function MaterialInspectionForm() {
   const [observations, setObservations] = useState([

@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from 'react';
 import {
   Box,
@@ -15,7 +16,7 @@ import {
   Divider,
 } from '@mui/material';
 import { Add, Delete, Save, Visibility, CheckCircle } from '@mui/icons-material';
-import CommonCard from '../../../src/components/CommonCard';
+import CommonCard from '../../../components/CommonCard';
 
 export default function BOMCreator() {
   const [materials, setMaterials] = useState([

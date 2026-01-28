@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import {
   Box,
@@ -13,7 +14,7 @@ import {
 } from "@mui/material";
 import { Visibility, Edit, Download } from "@mui/icons-material";
 import CreateMaterialRequest from "./CreateMaterialRequest";
-import CommonCard from "../../src/components/CommonCard";
+import CommonCard from "../../components/CommonCard";
 
 const requestsData = [
   {
@@ -102,7 +103,7 @@ export default function MaterialIssueRequests() {
       </Box>
 
       {/* Dialog */}
-      <Dialog  open={openDialog} onClose={() => setOpenDialog(false)} >
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} >
         <DialogContent dividers>
           <CreateMaterialRequest onClose={() => setOpenDialog(false)} />
         </DialogContent>

@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from 'react';
 import {
   Box,
@@ -25,7 +26,7 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-import CommonCard from '../../../src/components/CommonCard';
+import CommonCard from '../../../components/CommonCard';
 
 export default function FinalInspectionForm() {
   const [qualityRows, setQualityRows] = useState([

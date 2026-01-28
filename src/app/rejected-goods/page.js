@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import {
   Box,
@@ -16,7 +17,7 @@ import {
   Grid,
   TextField,
 } from "@mui/material";
-import CommonCard from "../../src/components/CommonCard";
+import CommonCard from "../../components/CommonCard";
 
 const rejectedData = [
   {
