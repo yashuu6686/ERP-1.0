@@ -14,8 +14,11 @@ import {
   Visibility,
   Edit,
   Download,
+  NavigateNext,
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
+import { Breadcrumbs, Link, Typography } from "@mui/material";
+import NextLink from "next/link";
 import CommonCard from "../../components/CommonCard";
 
 export default function IncomingInspection() {
@@ -23,6 +26,7 @@ export default function IncomingInspection() {
   const [search, setSearch] = useState("");
 
   const inspections = [
+    // ... data
     {
       id: 1,
       inspectionNo: "002",
@@ -61,75 +65,78 @@ export default function IncomingInspection() {
   );
 
   return (
-    <CommonCard
-      title="Incoming Inspection"
-      addText="Add Material Inspection"
-      onAdd={() => router.push("/incoming-inspection/add-material-inspection")}
-      searchPlaceholder="Search Inspections"
-      searchValue={search}
-      onSearchChange={(e) => setSearch(e.target.value)}
-    >
-      <Box sx={{ overflowX: "auto" }}>
-        <Table size="small">
-          <TableHead sx={{ bgcolor: "#f3f4f6" }}>
-            <TableRow>
-              <TableCell sx={{ fontWeight: 400 }}>Sr. No.</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Inspection No</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Received Date</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>GRN Number</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Supplier</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Serial No</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Received Qty</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Checked Qty</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Visual Notes</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Accepted</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Rejected</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Checked By</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {filtered.map((row, i) => (
-              <TableRow key={row.id} hover sx={{ transition: "0.2s" }}>
-                <TableCell>{i + 1}</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: "#1172ba" }}>
-                  {row.inspectionNo}
-                </TableCell>
-                <TableCell>{row.date}</TableCell>
-                <TableCell>{row.grn}</TableCell>
-                <TableCell>{row.supplier}</TableCell>
-                <TableCell>{row.serial}</TableCell>
-                <TableCell>
-                  <Chip label={row.receivedQty} size="small" />
-                </TableCell>
-                <TableCell>
-                  <Chip label={row.checkedQty} size="small" color="info" />
-                </TableCell>
-                <TableCell sx={{ maxWidth: 200 }}>{row.notes}</TableCell>
-                <TableCell>
-                  <Chip label={row.accepted} color="success" size="small" />
-                </TableCell>
-                <TableCell>
-                  <Chip label={row.rejected} color="error" size="small" />
-                </TableCell>
-                <TableCell>{row.checkedBy}</TableCell>
-                <TableCell>
-                  <IconButton color="primary">
-                    <Visibility />
-                  </IconButton>
-                  <IconButton color="warning">
-                    <Edit />
-                  </IconButton>
-                  <IconButton color="success">
-                    <Download />
-                  </IconButton>
-                </TableCell>
+    <Box>
+      
+      <CommonCard
+        title="Incoming Inspection"
+        addText="Add Material Inspection"
+        onAdd={() => router.push("/incoming-inspection/add-material-inspection")}
+        searchPlaceholder="Search Inspections"
+        searchValue={search}
+        onSearchChange={(e) => setSearch(e.target.value)}
+      >
+        <Box sx={{ overflowX: "auto" }}>
+          <Table size="small">
+            <TableHead sx={{ bgcolor: "#f3f4f6" }}>
+              <TableRow>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Sr.No.</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Inspection No</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Received Date</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>GRN Number</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Supplier</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Serial No</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Received Qty</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Checked Qty</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Visual Notes</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Accepted</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Rejected</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Checked By</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Actions</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Box>
-    </CommonCard>
+            </TableHead>
+
+            <TableBody>
+              {filtered.map((row, i) => (
+                <TableRow key={row.id} hover sx={{ transition: "0.2s" }}>
+                  <TableCell align="center">{i + 1}</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 400, color: "#1172ba" }}>
+                    {row.inspectionNo}
+                  </TableCell>
+                  <TableCell align="center">{row.date}</TableCell>
+                  <TableCell align="center">{row.grn}</TableCell>
+                  <TableCell align="center">{row.supplier}</TableCell>
+                  <TableCell align="center">{row.serial}</TableCell>
+                  <TableCell align="center">
+                    <Chip label={row.receivedQty} size="small" />
+                  </TableCell>
+                  <TableCell align="center">
+                    <Chip label={row.checkedQty} size="small" color="info" />
+                  </TableCell>
+                  <TableCell align="center" sx={{ maxWidth: 200 }}>{row.notes}</TableCell>
+                  <TableCell align="center">
+                    <Chip label={row.accepted} color="success" size="small" />
+                  </TableCell>
+                  <TableCell align="center">
+                    <Chip label={row.rejected} color="error" size="small" />
+                  </TableCell>
+                  <TableCell align="center">{row.checkedBy}</TableCell>
+                  <TableCell align="center">
+                    <IconButton color="primary">
+                      <Visibility />
+                    </IconButton>
+                    <IconButton color="warning">
+                      <Edit />
+                    </IconButton>
+                    <IconButton color="success">
+                      <Download />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Box>
+      </CommonCard>
+    </Box>
   );
 }
