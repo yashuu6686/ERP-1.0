@@ -94,7 +94,7 @@ export default function BOMCreator() {
 
   return (
     <Box>
-      <CommonCard title="Bill of Materials (BOM) Management">
+      <CommonCard title="Create BOM">
         <Box sx={{ p: 0.25 }}>
           <Card
             sx={{
@@ -126,9 +126,8 @@ export default function BOMCreator() {
                 startIcon={<Add />}
                 onClick={addMaterial}
                 sx={{
-                  backgroundColor: "rgba(255,255,255,0.15)",
-                  "&:hover": { backgroundColor: "rgba(255,255,255,0.25)" },
-                  textTransform: "none",
+                  backgroundColor: "white",
+                  color: "#1172ba",
                 }}
               >
                 Add Material
@@ -251,13 +250,6 @@ export default function BOMCreator() {
                     label="Reviewed By"
                     placeholder="Enter reviewer name"
                     sx={textFieldStyle}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <Visibility sx={{ color: "#1172ba", fontSize: 20 }} />
-                        </InputAdornment>
-                      ),
-                    }}
                   />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6, md: 6 }}>
@@ -267,13 +259,6 @@ export default function BOMCreator() {
                     label="Approved By"
                     placeholder="Enter approver name"
                     sx={textFieldStyle}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <Person sx={{ color: "#2e7d32", fontSize: 20 }} />
-                        </InputAdornment>
-                      ),
-                    }}
                   />
                 </Grid>
               </Grid>
@@ -291,7 +276,7 @@ export default function BOMCreator() {
                 px: 4,
                 py: 1.5,
                 textTransform: "none",
-                fontWeight: 600,
+                fontWeight: 500,
                 "&:hover": {
                   borderColor: "#0d5a94",
                   bgcolor: "#f0f7ff",
@@ -309,7 +294,7 @@ export default function BOMCreator() {
                 px: 4,
                 py: 1.5,
                 textTransform: "none",
-                fontWeight: 600,
+                fontWeight: 500,
                 "&:hover": { backgroundColor: "#0d5a94" },
               }}
             >

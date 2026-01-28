@@ -32,7 +32,7 @@ import {
   NavigateNext,
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
-import NextLink from "next/link";
+// import NextLink from "next/link";
 import CommonCard from "../../components/CommonCard";
 
 const dispatchData = [
@@ -321,7 +321,6 @@ export default function DispatchDetails() {
 
   return (
     <Box>
-
       <CommonCard
         title="Dispatch Details"
         addText={isSmall ? "Create" : "Create Dispatch Entry"}
@@ -345,16 +344,16 @@ export default function DispatchDetails() {
                     },
                   }}
                 >
-                  <TableCell sx={{ width: "60px" }}>Sr. No.</TableCell>
-                  <TableCell>Order Details</TableCell>
-                  <TableCell>Product</TableCell>
+                  <TableCell align="center" sx={{ width: "60px" }}>Sr. No.</TableCell>
+                  <TableCell align="center">Order Details</TableCell>
+                  <TableCell align="center">Product</TableCell>
                   <TableCell align="center">Status</TableCell>
-                  <TableCell>Order Date</TableCell>
-                  <TableCell>Shipping Date</TableCell>
-                  <TableCell>Sales Platform</TableCell>
-                  <TableCell>Contact Person</TableCell>
-                  <TableCell>Address</TableCell>
-                  <TableCell>Tracking Info</TableCell>
+                  <TableCell align="center">Order Date</TableCell>
+                  <TableCell align="center">Shipping Date</TableCell>
+                  <TableCell align="center">Sales Platform</TableCell>
+                  <TableCell align="center">Contact Person</TableCell>
+                  <TableCell align="center">Address</TableCell>
+                  <TableCell align="center">Tracking Info</TableCell>
                   <TableCell align="center">Evidence</TableCell>
                   <TableCell align="center">Actions</TableCell>
                 </TableRow>
@@ -372,8 +371,8 @@ export default function DispatchDetails() {
                         transition: "background-color 0.2s",
                       }}
                     >
-                      <TableCell sx={{ color: "#6c757d" }}>{i + 1}</TableCell>
-                      <TableCell>
+                      <TableCell align="center" sx={{ color: "#6c757d" }}>{i + 1}</TableCell>
+                      <TableCell align="center">
                         <Typography
                           variant="body2"
                           sx={{ fontWeight: 600, color: "#1172ba" }}
@@ -381,7 +380,7 @@ export default function DispatchDetails() {
                           {row.order}
                         </Typography>
                       </TableCell>
-                      <TableCell sx={{ fontWeight: 500 }}>
+                      <TableCell align="center" sx={{ fontWeight: 500 }}>
                         {row.product}
                       </TableCell>
                       <TableCell align="center">
@@ -396,11 +395,11 @@ export default function DispatchDetails() {
                           }}
                         />
                       </TableCell>
-                      <TableCell>{formatDate(row.orderDate)}</TableCell>
-                      <TableCell>{formatDate(row.shippingDate)}</TableCell>
-                      <TableCell>{row.platform}</TableCell>
-                      <TableCell>{row.contact}</TableCell>
-                      <TableCell>
+                      <TableCell align="center">{formatDate(row.orderDate)}</TableCell>
+                      <TableCell align="center">{formatDate(row.shippingDate)}</TableCell>
+                      <TableCell align="center">{row.platform}</TableCell>
+                      <TableCell align="center">{row.contact}</TableCell>
+                      <TableCell align="center">
                         <Typography
                           variant="body2"
                           sx={{
@@ -413,7 +412,7 @@ export default function DispatchDetails() {
                           {row.address}
                         </Typography>
                       </TableCell>
-                      <TableCell>
+                      <TableCell align="center">
                         <Typography
                           variant="body2"
                           sx={{

@@ -389,7 +389,7 @@ export default function CreatePurchaseOrder() {
                   color: "#1172ba",
                   borderRadius: 2,
                   textTransform: "none",
-                  fontWeight: 600,
+                  fontWeight: 500,
                   px: 3,
                 }}
               >
@@ -405,35 +405,35 @@ export default function CreatePurchaseOrder() {
                       background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
                     }}
                   >
-                    <TableCell sx={{ fontWeight: 700, color: "#495057" }}>
-                      Sr
+                    <TableCell align="center" sx={{ fontWeight: 500, color: "#495057" }}>
+                      Sr.No
                     </TableCell>
-                    <TableCell
+                    <TableCell align="center"
                       sx={{
-                        fontWeight: 700,
+                        fontWeight: 500,
                         color: "#495057",
                         minWidth: 250,
                       }}
                     >
                       Item Name
                     </TableCell>
-                    <TableCell
-                      sx={{ fontWeight: 700, color: "#495057", width: 120 }}
+                    <TableCell    align="center"
+                      sx={{ fontWeight: 500, color: "#495057", width: 120 }}
                     >
                       Quantity
                     </TableCell>
-                    <TableCell
-                      sx={{ fontWeight: 700, color: "#495057", width: 140 }}
+                    <TableCell    align="center"
+                      sx={{ fontWeight: 500, color: "#495057", width: 140 }}
                     >
                       Unit Price (₹)
                     </TableCell>
-                    <TableCell
-                      sx={{ fontWeight: 700, color: "#495057", width: 140 }}
+                    <TableCell    align="center"
+                      sx={{ fontWeight: 500, color: "#495057", width: 140 }}
                     >
                       Total (₹)
                     </TableCell>
-                    <TableCell
-                      sx={{ fontWeight: 700, color: "#495057", width: 80 }}
+                    <TableCell    align="center"
+                      sx={{ fontWeight: 500, color: "#495057", width: 80 }}
                     >
                       Action
                     </TableCell>
@@ -449,18 +449,18 @@ export default function CreatePurchaseOrder() {
                         transition: "background-color 0.2s",
                       }}
                     >
-                      <TableCell>
+                      <TableCell align="center">
                         <Chip
                           label={i + 1}
                           sx={{
                             bgcolor: "#1172ba",
                             color: "white",
-                            fontWeight: 600,
+                            fontWeight: 500,
                             minWidth: 32,
                           }}
                         />
                       </TableCell>
-                      <TableCell>
+                      <TableCell align="center">
                         <TextField
                           fullWidth
                           placeholder="Enter item name..."
@@ -478,7 +478,7 @@ export default function CreatePurchaseOrder() {
                           }}
                         />
                       </TableCell>
-                      <TableCell>
+                      <TableCell align="center">
                         <TextField
                           type="number"
                           placeholder="0"
@@ -489,7 +489,7 @@ export default function CreatePurchaseOrder() {
                           size="small"
                         />
                       </TableCell>
-                      <TableCell>
+                      <TableCell align="center">
                         <TextField
                           type="number"
                           placeholder="0.00"
@@ -505,7 +505,7 @@ export default function CreatePurchaseOrder() {
                           }}
                         />
                       </TableCell>
-                      <TableCell>
+                      <TableCell align="center">
                         <Typography
                           fontWeight={600}
                           sx={{ color: "#2d3748" }}
@@ -513,7 +513,7 @@ export default function CreatePurchaseOrder() {
                           ₹{item.total.toFixed(2)}
                         </Typography>
                       </TableCell>
-                      <TableCell>
+                      <TableCell align="center">
                         <Tooltip title="Remove item">
                           <IconButton
                             color="error"

@@ -54,24 +54,24 @@ export default function BOMList() {
           <Table size="small">
             <TableHead sx={{ bgcolor: "#f3f4f6" }}>
               <TableRow>
-                <TableCell sx={{ fontWeight: 400 }}>Sr. No.</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>BOM Number</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Created Date</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Approved By</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Actions</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Sr. No.</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>BOM Number</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Created Date</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Approved By</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Actions</TableCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
               {filtered.map((row, i) => (
                 <TableRow key={row.id} hover>
-                  <TableCell>{i + 1}</TableCell>
-                  <TableCell sx={{ fontWeight: 600, color: "#1172ba" }}>
+                  <TableCell align="center">{i + 1}</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 600, color: "#1172ba" }}>
                     {row.number}
                   </TableCell>
-                  <TableCell>{row.date}</TableCell>
-                  <TableCell>{row.approvedBy}</TableCell>
-                  <TableCell>
+                  <TableCell align="center">{row.date}</TableCell>
+                  <TableCell align="center">{row.approvedBy}</TableCell>
+                  <TableCell align="center">
                     <IconButton
                       color="primary"
                       size="small"

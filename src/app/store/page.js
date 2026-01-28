@@ -149,12 +149,13 @@ export default function Store() {
           <Table size="small">
             <TableHead sx={{ bgcolor: "#f3f4f6" }}>
               <TableRow>
-                <TableCell sx={{ fontWeight: 400 }}>Material Code</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Material Name</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Category</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Available Qty</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Minimum Qty</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Last Updated</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Sr. No.</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Material Code</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Material Name</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Category</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Available Qty</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Minimum Qty</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Last Updated</TableCell>
                 <TableCell sx={{ fontWeight: 400 }}>Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -162,21 +163,24 @@ export default function Store() {
             <TableBody>
               {filtered.map((row, i) => (
                 <TableRow key={i} hover sx={{ transition: "0.2s" }}>
-                  <TableCell sx={{ fontWeight: 600, color: "#1172ba" }}>
+                   <TableCell align="center" sx={{ fontWeight: 600, }}>
+                    {i + 1}
+                  </TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 600, color: "#1172ba" }}>
                     {row.code}
                   </TableCell>
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell>{row.category}</TableCell>
-                  <TableCell>
+                  <TableCell align="center">{row.name}</TableCell>
+                  <TableCell align="center">{row.category}</TableCell>
+                  <TableCell align="center">
                     <Chip
                       label={row.available}
                       color={row.available <= row.minimum ? "error" : "success"}
                       size="small"
                     />
                   </TableCell>
-                  <TableCell>{row.minimum}</TableCell>
-                  <TableCell>{row.updated}</TableCell>
-                  <TableCell>
+                  <TableCell align="center">{row.minimum}</TableCell>
+                  <TableCell align="center">{row.updated}</TableCell>
+                  <TableCell align="center">
                     <IconButton
                       color="primary"
                       size="small"

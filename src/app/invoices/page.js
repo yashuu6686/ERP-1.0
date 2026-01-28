@@ -71,46 +71,46 @@ export default function Invoices() {
           <Table size="small">
             <TableHead sx={{ bgcolor: "#f3f4f6" }}>
               <TableRow>
-                <TableCell sx={{ fontWeight: 400 }}>Sr. No.</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Invoice No.</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Invoice Date</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Due Date</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Customer Name</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Product</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Status</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Total Amount</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Paid</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Balance</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Payment Status</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Order Date</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Sr. No.</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Invoice No.</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Invoice Date</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Due Date</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Customer Name</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Product</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Status</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Total Amount</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Paid</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Balance</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Payment Status</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Order Date</TableCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
               {filtered.map((row, i) => (
                 <TableRow key={row.id} hover>
-                  <TableCell>{i + 1}</TableCell>
-                  <TableCell sx={{ fontWeight: 600, color: "#1172ba" }}>
+                  <TableCell align="center">{i + 1}</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 600, color: "#1172ba" }}>
                     {row.invoiceNo}
                   </TableCell>
-                  <TableCell>{row.invoiceDate}</TableCell>
-                  <TableCell>{row.dueDate}</TableCell>
-                  <TableCell>{row.customer}</TableCell>
-                  <TableCell>{row.product}</TableCell>
-                  <TableCell>
+                  <TableCell align="center">{row.invoiceDate}</TableCell>
+                  <TableCell align="center">{row.dueDate}</TableCell>
+                  <TableCell align="center">{row.customer}</TableCell>
+                  <TableCell align="center">{row.product}</TableCell>
+                  <TableCell align="center">
                     <Chip label={row.status} color="info" size="small" />
                   </TableCell>
-                  <TableCell>₹{row.total.toLocaleString()}</TableCell>
-                  <TableCell>₹{row.paid.toLocaleString()}</TableCell>
-                  <TableCell>₹{row.balance.toLocaleString()}</TableCell>
-                  <TableCell>
+                  <TableCell align="center">₹{row.total.toLocaleString()}</TableCell>
+                  <TableCell align="center">₹{row.paid.toLocaleString()}</TableCell>
+                  <TableCell align="center">₹{row.balance.toLocaleString()}</TableCell>
+                  <TableCell align="center">
                     <Chip
                       label={row.paymentStatus}
                       color={row.paymentStatus === "Paid" ? "success" : "warning"}
                       size="small"
                     />
                   </TableCell>
-                  <TableCell>{row.orderDate}</TableCell>
+                  <TableCell align="center">{row.orderDate}</TableCell>
                 </TableRow>
               ))}
 

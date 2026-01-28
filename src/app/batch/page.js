@@ -61,34 +61,34 @@ export default function Batch() {
           <Table size="small">
             <TableHead sx={{ bgcolor: "#f3f4f6" }}>
               <TableRow>
-                <TableCell sx={{ fontWeight: 400 }}>S. No.</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Batch No</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>S. No.</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Batch No</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>
                   Material Issue Request No.
                 </TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Check Number</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Product Sr No</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Accepted Qty</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Batch Status</TableCell>
-                <TableCell sx={{ fontWeight: 400 }}>Actions</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Check Number</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Product Sr No</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Accepted Qty</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Batch Status</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 400 }}>Actions</TableCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
               {filtered.map((row, i) => (
                 <TableRow key={row.id} hover>
-                  <TableCell>{i + 1}</TableCell>
-                  <TableCell sx={{ fontWeight: 600, color: "#1172ba" }}>
+                  <TableCell align="center">{i + 1}</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 600, color: "#1172ba" }}>
                     {row.batchNo}
                   </TableCell>
-                  <TableCell>{row.requestNo}</TableCell>
-                  <TableCell>{row.checkNo}</TableCell>
-                  <TableCell>{row.productSr}</TableCell>
-                  <TableCell>{row.acceptedQty}</TableCell>
-                  <TableCell>
+                  <TableCell align="center">{row.requestNo}</TableCell>
+                  <TableCell align="center">{row.checkNo}</TableCell>
+                  <TableCell align="center">{row.productSr}</TableCell>
+                  <TableCell align="center">{row.acceptedQty}</TableCell>
+                  <TableCell align="center">
                     <Chip label={row.status} color="success" size="small" />
                   </TableCell>
-                  <TableCell>
+                  <TableCell align="center">
                     <IconButton
                       color="primary"
                       size="small"
