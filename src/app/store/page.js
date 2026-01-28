@@ -19,9 +19,13 @@ import {
   DialogActions,
   Grid,
   TextField,
+  Breadcrumbs,
+  Link,
+  Typography,
 } from "@mui/material";
-import { Visibility, Save } from "@mui/icons-material";
+import { Visibility, Save, NavigateNext } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
+import NextLink from "next/link";
 import CommonCard from "../../components/CommonCard";
 
 const materialsData = [
@@ -93,190 +97,196 @@ export default function Store() {
   };
 
   return (
-    <CommonCard
-      title="Store"
-      addText="Add Material"
-      onAdd={() => setOpenDialog(true)}
-      searchPlaceholder="Search Materials"
-      searchValue={search}
-      onSearchChange={(e) => setSearch(e.target.value)}
-    >
-      {/* Tabs */}
-      <Tabs
-        value={tab}
-        onChange={handleTabChange}
-        TabIndicatorProps={{
-          style: { display: "none" },
-        }}
-        sx={{
-          mb: 3,
-          minHeight: "45px",
-          borderBottom: "1px solid #e2e8f0",
-          "& .MuiTab-root": {
-            fontWeight: 500,
-            textTransform: "none",
-            fontSize: "15px",
-            minHeight: "45px",
-            px: 3,
-            color: "#64748b",
-            borderRadius: "10px 10px 0 0",
-            transition: "all 0.2s",
-            "&:hover": {
-              color: "#1172ba",
-              backgroundColor: "rgba(17, 114, 186, 0.04)",
-            },
-            "&.Mui-selected": {
-              color: "#fff",
-              backgroundColor: "#1172ba",
-            },
-          },
-        }}
+    <Box>
+   
+      <CommonCard
+        title="Store"
+        addText="Add Material"
+        onAdd={() => setOpenDialog(true)}
+        searchPlaceholder="Search Materials"
+        searchValue={search}
+        onSearchChange={(e) => setSearch(e.target.value)}
       >
-        <Tab label="Raw Materials" />
-        <Tab label="IT Items" />
-        <Tab label="Finished Products" />
-        <Tab label="Other Items" />
-      </Tabs>
-
-      {/* Table */}
-      <Box sx={{ overflowX: "auto" }}>
-        <Table size="small">
-          <TableHead sx={{ bgcolor: "#f3f4f6" }}>
-            <TableRow>
-              <TableCell sx={{ fontWeight: 400 }}>Material Code</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Material Name</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Category</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Available Qty</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Minimum Qty</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Last Updated</TableCell>
-              <TableCell sx={{ fontWeight: 400 }}>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {filtered.map((row, i) => (
-              <TableRow key={i} hover sx={{ transition: "0.2s" }}>
-                <TableCell sx={{ fontWeight: 600, color: "#1172ba" }}>
-                  {row.code}
-                </TableCell>
-                <TableCell>{row.name}</TableCell>
-                <TableCell>{row.category}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={row.available}
-                    color={row.available <= row.minimum ? "error" : "success"}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>{row.minimum}</TableCell>
-                <TableCell>{row.updated}</TableCell>
-                <TableCell>
-                  <IconButton
-                    color="primary"
-                    size="small"
-                    onClick={() => router.push(`/store/${row.code}`)}
-                  >
-                    <Visibility fontSize="small" />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Box>
-
-      {/* Dialog */}
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth>
-        <DialogTitle sx={{ fontWeight: 700 }}>Add Raw Material</DialogTitle>
-        <DialogContent dividers>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                label="Material Name"
-                name="name"
-                onChange={handleChange}
-                // size="small"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                label="Material Code"
-                name="code"
-                onChange={handleChange}
-                // size="small"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                label="Category"
-                name="category"
-                onChange={handleChange}
-                // size="small"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                type="number"
-                label="Available Quantity"
-                name="available"
-                onChange={handleChange}
-                // size="small"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                type="number"
-                label="Minimum Stock Level"
-                name="minimum"
-                onChange={handleChange}
-                // size="small"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                label="Unit"
-                name="unit"
-                onChange={handleChange}
-                // size="small"
-              />
-            </Grid>
-            <Grid item xs={12} size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                label="Storage Location"
-                name="location"
-                onChange={handleChange}
-                // size="small"
-              />
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button onClick={() => setOpenDialog(false)} sx={{ textTransform: "none" }}>
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={<Save />}
-            onClick={handleSave}
-            sx={{
-              backgroundColor: "#1172ba",
-              fontWeight: 600,
+        {/* Tabs */}
+        <Tabs
+          value={tab}
+          onChange={handleTabChange}
+          TabIndicatorProps={{
+            style: { display: "none" },
+          }}
+          sx={{
+            mb: 3,
+            minHeight: "45px",
+            borderBottom: "1px solid #e2e8f0",
+            "& .MuiTab-root": {
+              fontWeight: 500,
               textTransform: "none",
-              borderRadius: "8px",
-              "&:hover": { backgroundColor: "#0d5a94" },
-            }}
-          >
-            Save Material
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </CommonCard>
+              fontSize: "15px",
+              minHeight: "45px",
+              px: 3,
+              color: "#64748b",
+              borderRadius: "10px 10px 0 0",
+              transition: "all 0.2s",
+              "&:hover": {
+                color: "#1172ba",
+                backgroundColor: "rgba(17, 114, 186, 0.04)",
+              },
+              "&.Mui-selected": {
+                color: "#fff",
+                backgroundColor: "#1172ba",
+              },
+            },
+          }}
+        >
+          <Tab label="Raw Materials" />
+          <Tab label="IT Items" />
+          <Tab label="Finished Products" />
+          <Tab label="Other Items" />
+        </Tabs>
+
+        {/* Table */}
+        <Box sx={{ overflowX: "auto" }}>
+          <Table size="small">
+            <TableHead sx={{ bgcolor: "#f3f4f6" }}>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 400 }}>Material Code</TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>Material Name</TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>Category</TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>Available Qty</TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>Minimum Qty</TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>Last Updated</TableCell>
+                <TableCell sx={{ fontWeight: 400 }}>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+
+            <TableBody>
+              {filtered.map((row, i) => (
+                <TableRow key={i} hover sx={{ transition: "0.2s" }}>
+                  <TableCell sx={{ fontWeight: 600, color: "#1172ba" }}>
+                    {row.code}
+                  </TableCell>
+                  <TableCell>{row.name}</TableCell>
+                  <TableCell>{row.category}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={row.available}
+                      color={row.available <= row.minimum ? "error" : "success"}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell>{row.minimum}</TableCell>
+                  <TableCell>{row.updated}</TableCell>
+                  <TableCell>
+                    <IconButton
+                      color="primary"
+                      size="small"
+                      onClick={() => router.push(`/store/${row.code}`)}
+                    >
+                      <Visibility fontSize="small" />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Box>
+
+        {/* Dialog */}
+        <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth>
+          <DialogTitle sx={{ fontWeight: 700 }}>Add Raw Material</DialogTitle>
+          <DialogContent dividers>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  fullWidth
+                  label="Material Name"
+                  name="name"
+                  onChange={handleChange}
+                size="small"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  fullWidth
+                  label="Material Code"
+                  name="code"
+                  onChange={handleChange}
+                size="small"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  fullWidth
+                  label="Category"
+                  name="category"
+                  onChange={handleChange}
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  fullWidth
+                  type="number"
+                  size="small"
+                  label="Available Quantity"
+                  name="available"
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  type="number"
+                  label="Minimum Stock Level"
+                  name="minimum"
+                  onChange={handleChange}
+                // size="small"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  label="Unit"
+                  name="unit"
+                  onChange={handleChange}
+                // size="small"
+                />
+              </Grid>
+              <Grid item xs={12} size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  label="Storage Location"
+                  name="location"
+                  onChange={handleChange}
+                // size="small"
+                />
+              </Grid>
+            </Grid>
+          </DialogContent>
+          <DialogActions sx={{ p: 2 }}>
+            <Button onClick={() => setOpenDialog(false)} sx={{ textTransform: "none" }}>
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<Save />}
+              onClick={handleSave}
+              sx={{
+                backgroundColor: "#1172ba",
+                fontWeight: 600,
+                textTransform: "none",
+                borderRadius: "8px",
+                "&:hover": { backgroundColor: "#0d5a94" },
+              }}
+            >
+              Save Material
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </CommonCard>
+    </Box>
   );
 }

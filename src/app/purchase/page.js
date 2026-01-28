@@ -17,8 +17,11 @@ import {
   Delete,
   Download,
   FilterList,
+  NavigateNext,
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
+import { Breadcrumbs, Link, Typography } from "@mui/material";
+import NextLink from "next/link";
 import CommonCard from "../../components/CommonCard";
 
 export default function PurchaseOrderTable() {
@@ -79,82 +82,85 @@ export default function PurchaseOrderTable() {
   };
 
   return (
-    <CommonCard
-      title="Purchase Orders"
-      addText="Create Purchase Order"
-      onAdd={() => router.push("purchase/create-purchase")}
-      searchPlaceholder="Search PO, Vendor, Item..."
-      searchValue={searchTerm}
-      onSearchChange={(e) => setSearchTerm(e.target.value)}
-      searchExtra={
-        <Select
-          size="small"
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-          startAdornment={<FilterList sx={{ mr: 1, color: "#6b7280" }} />}
-          sx={{ borderRadius: "8px", minWidth: "150px" }}
-        >
-          <MenuItem value="All">All Status</MenuItem>
-          <MenuItem value="Pending">Pending</MenuItem>
-          <MenuItem value="Approved">Approved</MenuItem>
-          <MenuItem value="Rejected">Rejected</MenuItem>
-          <MenuItem value="Completed">Completed</MenuItem>
-        </Select>
-      }
-    >
-      <Table size="small">
-        <TableHead sx={{ bgcolor: "#f3f4f6" }}>
-          <TableRow>
-            <TableCell sx={{ fontWeight: 400 }}>Sr</TableCell>
-            <TableCell sx={{ fontWeight: 400 }}>PO Number</TableCell>
-            <TableCell sx={{ fontWeight: 400 }}>Date</TableCell>
-            <TableCell sx={{ fontWeight: 400 }}>Vendor</TableCell>
-            <TableCell sx={{ fontWeight: 400 }}>Item</TableCell>
-            <TableCell sx={{ fontWeight: 400 }}>Qty</TableCell>
-            <TableCell sx={{ fontWeight: 400 }}>Price</TableCell>
-            <TableCell sx={{ fontWeight: 400 }}>Total</TableCell>
-            <TableCell sx={{ fontWeight: 400 }}>Status</TableCell>
-            <TableCell sx={{ fontWeight: 400 }}>Actions</TableCell>
-          </TableRow>
-        </TableHead>
-
-        <TableBody>
-          {filteredOrders.map((order, i) => (
-            <TableRow key={order.id} hover>
-              <TableCell>{i + 1}</TableCell>
-              <TableCell sx={{ color: "#1172ba", fontWeight: 600 }}>
-                {order.poNumber}
-              </TableCell>
-              <TableCell>{order.orderDate}</TableCell>
-              <TableCell>{order.vendorName}</TableCell>
-              <TableCell>{order.itemDescription}</TableCell>
-              <TableCell>{order.quantity}</TableCell>
-              <TableCell>₹{order.unitPrice.toLocaleString()}</TableCell>
-              <TableCell sx={{ fontWeight: 700 }}>
-                ₹{order.totalAmount.toLocaleString()}
-              </TableCell>
-              <TableCell>
-                <Chip
-                  label={order.status}
-                  color={getStatusColor(order.status)}
-                  size="small"
-                />
-              </TableCell>
-              <TableCell>
-                <IconButton color="primary" size="small">
-                  <Edit fontSize="small" />
-                </IconButton>
-                <IconButton color="error" size="small">
-                  <Delete fontSize="small" />
-                </IconButton>
-                <IconButton color="success" size="small">
-                  <Download fontSize="small" />
-                </IconButton>
-              </TableCell>
+    <Box>
+  
+      <CommonCard
+        title="Purchase Orders"
+        addText="Create Purchase Order"
+        onAdd={() => router.push("purchase/create-purchase")}
+        searchPlaceholder="Search PO, Vendor, Item..."
+        searchValue={searchTerm}
+        onSearchChange={(e) => setSearchTerm(e.target.value)}
+        searchExtra={
+          <Select
+            size="small"
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            startAdornment={<FilterList sx={{ mr: 1, color: "#6b7280" }} />}
+            sx={{ borderRadius: "8px", minWidth: "150px" }}
+          >
+            <MenuItem value="All">All Status</MenuItem>
+            <MenuItem value="Pending">Pending</MenuItem>
+            <MenuItem value="Approved">Approved</MenuItem>
+            <MenuItem value="Rejected">Rejected</MenuItem>
+            <MenuItem value="Completed">Completed</MenuItem>
+          </Select>
+        }
+      >
+        <Table size="small">
+          <TableHead sx={{ bgcolor: "#f3f4f6" }}>
+            <TableRow>
+              <TableCell align="center" sx={{ fontWeight: 400 }}>Sr</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 400 }}>PO Number</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 400 }}>Date</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 400 }}>Vendor</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 400 }}>Item</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 400 }}>Qty</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 400 }}>Price</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 400 }}>Total</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 400 }}>Status</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 400 }}>Actions</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </CommonCard>
+          </TableHead>
+
+          <TableBody>
+            {filteredOrders.map((order, i) => (
+              <TableRow key={order.id} hover>
+                <TableCell align="center">{i + 1}</TableCell>
+                <TableCell align="center" sx={{ color: "#1172ba", fontWeight: 600 }}>
+                  {order.poNumber}
+                </TableCell>
+                <TableCell align="center">{order.orderDate}</TableCell>
+                <TableCell align="center">{order.vendorName}</TableCell>
+                <TableCell align="center">{order.itemDescription}</TableCell>
+                <TableCell align="center">{order.quantity}</TableCell>
+                <TableCell align="center">₹{order.unitPrice.toLocaleString()}</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 700 }}>
+                  ₹{order.totalAmount.toLocaleString()}
+                </TableCell>
+                <TableCell>
+                  <Chip
+                    label={order.status}
+                    color={getStatusColor(order.status)}
+                    size="small"
+                  />
+                </TableCell>
+                <TableCell>
+                  <IconButton color="primary" size="small">
+                    <Edit fontSize="small" />
+                  </IconButton>
+                  <IconButton color="error" size="small">
+                    <Delete fontSize="small" />
+                  </IconButton>
+                  <IconButton color="success" size="small">
+                    <Download fontSize="small" />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CommonCard>
+    </Box>
   );
 }

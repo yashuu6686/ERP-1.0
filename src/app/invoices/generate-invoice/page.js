@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import React, { useState } from "react";
 import {
   Box,
@@ -15,8 +15,22 @@ import {
   IconButton,
   Divider,
   Paper,
+  Card,
+  CardContent,
+  Tooltip,
 } from "@mui/material";
-import { Add, Delete } from "@mui/icons-material";
+import {
+  Add,
+  Delete,
+  Receipt,
+  Person,
+  LocalShipping,
+  Inventory,
+  LocalOffer,
+  Assessment,
+  Save,
+  Close,
+} from "@mui/icons-material";
 import CommonCard from "../../../components/CommonCard";
 
 export default function InvoiceGenerator() {
@@ -65,166 +79,472 @@ export default function InvoiceGenerator() {
     <CommonCard title="Generate Invoice">
       <Box sx={{ p: 1 }}>
         {/* Invoice Details */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} md={4}>
-            <TextField fullWidth label="Invoice No." variant="outlined" size="small" />
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <TextField
-              fullWidth
-              label="Invoice Date"
-              type="date"
-              variant="outlined"
-              size="small"
-              InputLabelProps={{ shrink: true }}
-            />
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <TextField
-              fullWidth
-              label="Due Date"
-              type="date"
-              variant="outlined"
-              size="small"
-              InputLabelProps={{ shrink: true }}
-            />
-          </Grid>
-        </Grid>
+        <Card
+          elevation={0}
+          sx={{
+            mb: 4,
+            borderRadius: 2,
+            border: '1px solid #e2e8f0',
+            overflow: 'hidden',
+          }}
+        >
+          <Box
+            sx={{
+              padding: 2,
+              background: 'linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2,
+            }}
+          >
+            <Receipt sx={{ color: '#fff' }} />
+            <Typography variant="subtitle1" sx={{ color: '#fff', fontWeight: 600 }}>
+              Invoice Details
+            </Typography>
+          </Box>
+          <CardContent sx={{ p: 3, bgcolor: '#f8fafc' }}>
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={4} size={{ xs: 12, md: 4 }}>
+                <TextField
+                  fullWidth
+                  label="Invoice No."
+                  variant="outlined"
+                  size="small"
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      bgcolor: "white",
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} md={4} size={{ xs: 12, md: 4 }}>
+                <TextField
+                  fullWidth
+                  label="Invoice Date"
+                  type="date"
+                  variant="outlined"
+                  size="small"
+                  InputLabelProps={{ shrink: true }}
+                  sx={{
+                    "& .MuiOutlinedInput-root": { bgcolor: "white" },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} md={4} size={{ xs: 12, md: 4 }}>
+                <TextField
+                  fullWidth
+                  label="Due Date"
+                  type="date"
+                  variant="outlined"
+                  size="small"
+                  InputLabelProps={{ shrink: true }}
+                  sx={{
+                    "& .MuiOutlinedInput-root": { bgcolor: "white" },
+                  }}
+                />
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
 
         {/* Info Grid */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
           {/* Customer */}
-          <Grid item xs={12} md={6}>
-            <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, bgcolor: "#f8fafc" }}>
-              <Typography variant="subtitle1" fontWeight={700} mb={2} color="primary">Customer Information</Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}><TextField fullWidth label="Customer Name" size="small" sx={{ bgcolor: "#fff" }} /></Grid>
-                <Grid item xs={12} sm={6}><TextField fullWidth label="Organization" size="small" sx={{ bgcolor: "#fff" }} /></Grid>
-                <Grid item xs={12}><TextField fullWidth label="Address" size="small" sx={{ bgcolor: "#fff" }} /></Grid>
-                <Grid item xs={12} sm={6}><TextField fullWidth label="Contact No." size="small" sx={{ bgcolor: "#fff" }} /></Grid>
-                <Grid item xs={12} sm={6}><TextField fullWidth label="Drug Licence" size="small" sx={{ bgcolor: "#fff" }} /></Grid>
-              </Grid>
-            </Paper>
+          <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+            <Card
+              elevation={0}
+              sx={{
+                height: "100%",
+                borderRadius: 2,
+                border: '1px solid #e2e8f0',
+                overflow: 'hidden',
+              }}
+            >
+              <Box
+                sx={{
+                  p: 2,
+                  background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
+                  color: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1.5,
+                }}
+              >
+                <Person sx={{ color: '#fff' }} />
+                <Typography variant="subtitle1" fontWeight={600}>
+                  Customer Information
+                </Typography>
+              </Box>
+              <CardContent sx={{ p: 3, bgcolor: '#f8fafc' }}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
+                    <TextField
+                      fullWidth
+                      label="Customer Name"
+                      size="small"
+                      sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
+                    <TextField
+                      fullWidth
+                      label="Organization"
+                      size="small"
+                      sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} size={{ xs: 12 }}>
+                    <TextField
+                      fullWidth
+                      label="Address"
+                      size="small"
+                      sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
+                    <TextField
+                      fullWidth
+                      label="Contact No."
+                      size="small"
+                      sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
+                    <TextField
+                      fullWidth
+                      label="Drug Licence"
+                      size="small"
+                      sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                    />
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
           </Grid>
 
           {/* Delivery */}
-          <Grid item xs={12} md={6}>
-            <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, bgcolor: "#f8fafc" }}>
-              <Typography variant="subtitle1" fontWeight={700} mb={2} color="primary">Delivery Information</Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12}><TextField fullWidth label="Organization" size="small" sx={{ bgcolor: "#fff" }} /></Grid>
-                <Grid item xs={12}><TextField fullWidth label="Address" size="small" sx={{ bgcolor: "#fff" }} /></Grid>
-                <Grid item xs={12}><TextField fullWidth label="Contact No." size="small" sx={{ bgcolor: "#fff" }} /></Grid>
-              </Grid>
-            </Paper>
+          <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+            <Card
+              elevation={0}
+              sx={{
+                height: "100%",
+                borderRadius: 2,
+                border: '1px solid #e2e8f0',
+                overflow: 'hidden',
+              }}
+            >
+              <Box
+                sx={{
+                  p: 2,
+                  background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
+                  color: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1.5,
+                }}
+              >
+                <LocalShipping sx={{ color: '#fff' }} />
+                <Typography variant="subtitle1" fontWeight={600}>
+                  Delivery Information
+                </Typography>
+              </Box>
+              <CardContent sx={{ p: 3, bgcolor: '#f8fafc' }}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} size={{ xs: 12 }}>
+                    <TextField
+                      fullWidth
+                      label="Organization"
+                      size="small"
+                      sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} size={{ xs: 12 }}>
+                    <TextField
+                      fullWidth
+                      label="Address"
+                      size="small"
+                      sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} size={{ xs: 12 }}>
+                    <TextField
+                      fullWidth
+                      label="Contact No."
+                      size="small"
+                      sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                    />
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
           </Grid>
         </Grid>
 
         {/* Products Table */}
-        <Paper variant="outlined" sx={{ p: 3, mb: 4, borderRadius: 2, bgcolor: "#f8fafc" }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-            <Typography variant="subtitle1" fontWeight={700} color="primary">Products in Order</Typography>
+        <Card
+          elevation={0}
+          sx={{
+            mb: 4,
+            borderRadius: 2,
+            border: '1px solid #e2e8f0',
+            overflow: 'hidden',
+          }}
+        >
+          <Box
+            sx={{
+              p: 2,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              background: 'linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)',
+              color: "#fff"
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Inventory sx={{ color: '#fff' }} />
+              <Typography variant="subtitle1" fontWeight={600}>
+                Products in Order
+              </Typography>
+            </Box>
             <Button
               variant="contained"
               size="small"
               startIcon={<Add />}
               onClick={addProduct}
-              sx={{ bgcolor: "#1172ba", "&:hover": { bgcolor: "#0d5a94" } }}
+              sx={{
+                bgcolor: "white",
+                color: "#1172ba",
+                "&:hover": { bgcolor: "#f0f0f0" },
+                borderRadius: 2,
+                textTransform: "none",
+                fontWeight: 600,
+                px: 3
+              }}
             >
               Add Product
             </Button>
           </Box>
 
-          <TableContainer sx={{ bgcolor: "#fff", borderRadius: 1 }}>
+          <TableContainer sx={{ bgcolor: "#f8fafc" }}>
             <Table size="small">
               <TableHead>
-                <TableRow sx={{ bgcolor: "#f5f5f5" }}>
-                  <TableCell sx={{ fontWeight: 700 }}>Sr.</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Item Name</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>HSN/SAC</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Qty</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Price</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Tax %</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Tax</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Total</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Action</TableCell>
+                <TableRow sx={{ bgcolor: "#f1f5f9" }}>
+                  <TableCell align="center" sx={{ fontWeight: 500 }}>Sr.</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 500 }}>Item Name</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 500 }}>HSN/SAC</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 500 }}>Qty</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 500 }}>Price</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 500 }}>Tax %</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 500 }}>Tax</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 500 }}>Total</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 500 }}>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {products.map((product, index) => (
                   <TableRow key={product.id}>
                     <TableCell>{index + 1}</TableCell>
-                    <TableCell><TextField size="small" placeholder="Item" /></TableCell>
-                    <TableCell><TextField size="small" placeholder="HSN" /></TableCell>
-                    <TableCell><TextField size="small" placeholder="Qty" sx={{ width: 80 }} /></TableCell>
-                    <TableCell><TextField size="small" placeholder="Price" sx={{ width: 100 }} /></TableCell>
-                    <TableCell><TextField size="small" placeholder="Tax %" sx={{ width: 80 }} /></TableCell>
-                    <TableCell>₹{product.taxAmount}</TableCell>
-                    <TableCell fontWeight={600}>₹{product.amount}</TableCell>
                     <TableCell>
-                      <IconButton color="error" size="small" onClick={() => removeProduct(product.id)}>
-                        <Delete fontSize="small" />
-                      </IconButton>
+                      <TextField
+                        size="small"
+                        placeholder="Item Name"
+                        fullWidth
+                        sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <TextField
+                        size="small"
+                        placeholder="HSN/SAC"
+                        fullWidth
+                        sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <TextField
+                        size="small"
+                        placeholder="Qty"
+                        sx={{ width: 80, "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <TextField
+                        size="small"
+                        placeholder="Price"
+                        sx={{ width: 100, "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <TextField
+                        size="small"
+                        placeholder="Tax %"
+                        sx={{ width: 80, "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                      />
+                    </TableCell>
+                    <TableCell>₹{product.taxAmount}</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>₹{product.amount}</TableCell>
+                    <TableCell>
+                      <Tooltip title="Delete">
+                        <IconButton color="error" size="small" onClick={() => removeProduct(product.id)}>
+                          <Delete fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
-        </Paper>
+        </Card>
 
-        {/* Summary */}
+        {/* Summary & Notes */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} md={6}>
-            <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, bgcolor: "#f8fafc" }}>
-              <Typography variant="subtitle1" fontWeight={700} mb={2} color="primary">Discounts & Notes</Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}><TextField fullWidth label="Discount" size="small" sx={{ bgcolor: "#fff" }} /></Grid>
-                <Grid item xs={12} sm={6}><TextField fullWidth label="Other Discount" size="small" sx={{ bgcolor: "#fff" }} /></Grid>
-                <Grid item xs={12}><TextField fullWidth label="Paid Amount" size="small" sx={{ bgcolor: "#fff" }} /></Grid>
-                <Grid item xs={12}><TextField fullWidth label="Note" multiline rows={3} sx={{ bgcolor: "#fff" }} /></Grid>
-              </Grid>
-            </Paper>
+          {/* Discounts & Notes */}
+          <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+            <Card
+              elevation={0}
+              sx={{
+                height: "100%",
+                borderRadius: 2,
+                border: '1px solid #e2e8f0',
+                overflow: 'hidden',
+              }}
+            >
+              <Box
+                sx={{
+                  p: 2,
+                  background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
+                  color: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1.5,
+                }}
+              >
+                <LocalOffer sx={{ color: '#fff' }} />
+                <Typography variant="subtitle1" fontWeight={600}>
+                  Discounts & Notes
+                </Typography>
+              </Box>
+              <CardContent sx={{ p: 3, bgcolor: '#f8fafc' }}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
+                    <TextField
+                      fullWidth
+                      label="Discount"
+                      size="small"
+                      sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
+                    <TextField
+                      fullWidth
+                      label="Other Discount"
+                      size="small"
+                      sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} size={{ xs: 12 }}>
+                    <TextField
+                      fullWidth
+                      label="Paid Amount"
+                      size="small"
+                      sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} size={{ xs: 12 }}>
+                    <TextField
+                      fullWidth
+                      label="Note"
+                      multiline
+                      rows={3}
+                      sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                    />
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
           </Grid>
 
-          <Grid item xs={12} md={6}>
-            <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, bgcolor: "#f8fafc" }}>
-              <Typography variant="subtitle1" fontWeight={700} mb={2} color="primary">Summary</Typography>
-              <Box sx={{ bgcolor: "#fff", p: 2, borderRadius: 1 }}>
-                {[
-                  { label: "Subtotal", value: "₹1,125" },
-                  { label: "Discount", value: "-₹21,335" },
-                  { label: "Other Discount", value: "-₹3,847" },
-                  { label: "GST", value: "₹0" },
-                ].map((item) => (
-                  <Box key={item.label} sx={{ display: "flex", justifyContent: "space-between", mb: 1.5 }}>
-                    <Typography color="textSecondary">{item.label}</Typography>
-                    <Typography fontWeight={500}>{item.value}</Typography>
-                  </Box>
-                ))}
-                <Divider sx={{ my: 2 }} />
-                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1.5 }}>
-                  <Typography variant="h6" fontWeight={700}>Grand Total</Typography>
-                  <Typography variant="h6" fontWeight={700} color="primary">₹25,222.50</Typography>
-                </Box>
+          {/* Summary */}
+          <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+            <Card
+              elevation={0}
+              sx={{
+                height: "100%",
+                borderRadius: 2,
+                border: '1px solid #e2e8f0',
+                overflow: 'hidden',
+              }}
+            >
+              <Box
+                sx={{
+                  p: 2,
+                  background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
+                  color: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1.5,
+                }}
+              >
+                <Assessment sx={{ color: '#fff' }} />
+                <Typography variant="subtitle1" fontWeight={600}>
+                  Invoice Summary
+                </Typography>
               </Box>
-            </Paper>
+              <CardContent sx={{ p: 3, bgcolor: '#f8fafc' }}>
+                <Box sx={{ bgcolor: "#fff", p: 2, borderRadius: 2, border: '1px dashed #cbd5e1' }}>
+                  {[
+                    { label: "Subtotal", value: "₹1,125" },
+                    { label: "Discount", value: "-₹21,335" },
+                    { label: "Other Discount", value: "-₹3,847" },
+                    { label: "GST", value: "₹0" },
+                  ].map((item, idx) => (
+                    <Box key={idx} sx={{ display: "flex", justifyContent: "space-between", mb: 1.5 }}>
+                      <Typography color="textSecondary" variant="body2">{item.label}</Typography>
+                      <Typography fontWeight={500}>{item.value}</Typography>
+                    </Box>
+                  ))}
+                  <Divider sx={{ my: 2, borderStyle: 'dashed' }} />
+                  <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0 }}>
+                    <Typography variant="h6" fontWeight={700}>Grand Total</Typography>
+                    <Typography variant="h6" fontWeight={700} color="primary">₹25,222.50</Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
           </Grid>
         </Grid>
 
-        {/* Action Button */}
-        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}>
+        {/* Action Buttons */}
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 6, gap: 2 }}>
+          <Button
+            variant="outlined"
+            size="large"
+            startIcon={<Close />}
+            sx={{
+              px: 4,
+              py: 1.5,
+              fontWeight: 500,
+              borderRadius: 2,
+              textTransform: "none",
+              borderColor: "#e2e8f0",
+              color: "#64748b",
+              "&:hover": { bgcolor: "#f1f5f9", borderColor: "#cbd5e1" }
+            }}
+          >
+            Cancel
+          </Button>
           <Button
             variant="contained"
             size="large"
+            startIcon={<Save />}
             sx={{
               px: 6,
               py: 1.5,
-              fontWeight: 700,
+              fontWeight: 500,
               borderRadius: 2,
               bgcolor: "#1172ba",
-              "&:hover": { bgcolor: "#0d5a94" },
-              textTransform: "none"
+              textTransform: "none",
             }}
           >
             Save Invoice

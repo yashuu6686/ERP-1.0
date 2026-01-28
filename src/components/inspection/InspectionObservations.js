@@ -21,7 +21,8 @@ const InspectionObservations = ({
     onAdd,
     onAddColumn = () => { },
     onRemove,
-    onChange
+    onChange,
+    icon: Icon = null
 }) => {
     return (
         <Card
@@ -43,9 +44,12 @@ const InspectionObservations = ({
                     gap: 2,
                 }}
             >
-                <Typography variant="subtitle1" sx={{ color: '#fff', fontWeight: 600 }}>
-                    Observations
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    {Icon && <Icon sx={{ color: '#fff' }} />}
+                    <Typography variant="subtitle1" sx={{ color: '#fff', fontWeight: 600 }}>
+                        Observations
+                    </Typography>
+                </Box>
                 <Box sx={{ display: 'flex', gap: 1 }}>
                     <Button
                         variant="contained"
@@ -81,10 +85,10 @@ const InspectionObservations = ({
                     </Button>
                 </Box>
             </Box>
-            <TableContainer>
+            <TableContainer sx={{ backgroundColor: '#f8fafc' }}>
                 <Table size="small">
                     <TableHead>
-                        <TableRow sx={{ bgcolor: '#f5f5f5' }}>
+                        <TableRow sx={{ bgcolor: '#f1f5f9' }}>
                             <TableCell sx={{ fontWeight: 700 }}>Sr.No</TableCell>
                             <TableCell sx={{ fontWeight: 700 }}>Parameter</TableCell>
                             <TableCell sx={{ fontWeight: 700 }}>Specification</TableCell>
@@ -104,39 +108,49 @@ const InspectionObservations = ({
                                 <TableCell>{index + 1}</TableCell>
                                 <TableCell>
                                     <TextField
+                                        fullWidth
                                         size="small"
                                         value={obs.parameter || ''}
                                         onChange={(e) => onChange(obs.id, 'parameter', e.target.value)}
+                                        sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
                                     />
                                 </TableCell>
                                 <TableCell>
                                     <TextField
+                                        fullWidth
                                         size="small"
                                         value={obs.specification || ''}
                                         onChange={(e) => onChange(obs.id, 'specification', e.target.value)}
+                                        sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
                                     />
                                 </TableCell>
                                 <TableCell>
                                     <TextField
+                                        fullWidth
                                         size="small"
                                         value={obs.method || ''}
                                         onChange={(e) => onChange(obs.id, 'method', e.target.value)}
+                                        sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
                                     />
                                 </TableCell>
                                 {observationColumns.map((col) => (
                                     <TableCell key={col.id}>
                                         <TextField
+                                            fullWidth
                                             size="small"
                                             value={obs[col.id] || ''}
                                             onChange={(e) => onChange(obs.id, col.id, e.target.value)}
+                                            sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
                                         />
                                     </TableCell>
                                 ))}
                                 <TableCell>
                                     <TextField
+                                        fullWidth
                                         size="small"
                                         value={obs.remarks || ''}
                                         onChange={(e) => onChange(obs.id, 'remarks', e.target.value)}
+                                        sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
                                     />
                                 </TableCell>
                                 <TableCell>
