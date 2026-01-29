@@ -96,7 +96,7 @@ export default function PurchaseOrderTable() {
         <Table size="small">
           <TableHead>
             <TableRow sx={{ bgcolor: "#f1f5f9" }}>
-              <TableCell align="center" sx={{ fontWeight: 600, color: "#475569", py: 1.5 }}>Sr.</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 600, color: "#475569", py: 1.5 }}>Sr.No.</TableCell>
               <TableCell align="center" sx={{ fontWeight: 600, color: "#475569", py: 1.5 }}>PO Number</TableCell>
               <TableCell align="center" sx={{ fontWeight: 600, color: "#475569", py: 1.5 }}>Date</TableCell>
               <TableCell align="center" sx={{ fontWeight: 600, color: "#475569", py: 1.5 }}>Vendor Name</TableCell>
@@ -113,9 +113,7 @@ export default function PurchaseOrderTable() {
             {filteredOrders.map((order, i) => (
               <TableRow
                 key={order.id}
-                hover
                 sx={{
-                  "&:hover": { bgcolor: "#f8fafc" },
                   transition: "background-color 0.2s"
                 }}
               >
@@ -135,7 +133,7 @@ export default function PurchaseOrderTable() {
                   </Typography>
                 </TableCell>
                 <TableCell align="center">
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: "#1e293b" }}>
+                  <Typography variant="body2" sx={{ color: "#1e293b" }}>
                     {order.vendorName}
                   </Typography>
                 </TableCell>
@@ -166,7 +164,7 @@ export default function PurchaseOrderTable() {
                   </Typography>
                 </TableCell>
                 <TableCell align="center">
-                  <Typography variant="body2" sx={{ fontWeight: 800, color: "#0f172a" }}>
+                  <Typography variant="body2" sx={{ color: "#0f172a" }}>
                     ₹{order.totalAmount.toLocaleString()}
                   </Typography>
                 </TableCell>
@@ -196,7 +194,7 @@ export default function PurchaseOrderTable() {
                     <IconButton
                       size="small"
                       sx={{
-                        color: "#1e293b",
+                        color: "rgb(17, 114, 186)",
                         bgcolor: "#f1f5f9",
                         "&:hover": { bgcolor: "#e2e8f0" }
                       }}

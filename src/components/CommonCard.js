@@ -39,10 +39,11 @@ const CommonCard = ({
                         justifyContent: "space-between",
                         alignItems: "center",
                         mb: 3,
-                        background: "linear-gradient(to right, #f8fafc, #f1f5f9)",
-                        p: 2,
-                        borderRadius: "10px",
-                        border: "1px solid #e2e8f0"
+                        backgroundColor: "#f8fafc",
+                        p: "16px 24px",
+                        borderRadius: "12px",
+                        border: "1px solid #e2e8f0",
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.02)"
                     }}
                 >
                     <Typography
@@ -52,31 +53,36 @@ const CommonCard = ({
                             color: "#0f172a",
                             display: "flex",
                             alignItems: "center",
-                            gap: 1.5,
+                            gap: 2,
                             textTransform: "uppercase",
-                            letterSpacing: 0.5,
-                            fontSize: "0.85rem"
+                            letterSpacing: "0.1em",
+                            fontSize: "0.8rem"
                         }}
                     >
-                        <Box sx={{ width: 4, height: 18, bgcolor: "#3b82f6", borderRadius: 1 }} />
+                        <Box sx={{ width: 4, height: 20, bgcolor: "#2563eb", borderRadius: 1 }} />
                         {title}
                     </Typography>
                     {onAdd && (
                         <Button
                             variant="contained"
-                            startIcon={<Add />}
+                            startIcon={<Add sx={{ fontSize: 20 }} />}
                             onClick={onAdd}
                             sx={{
                                 textTransform: "none",
                                 fontWeight: 700,
-                                borderRadius: 2,
-                                bgcolor: "#3b82f6",
+                                borderRadius: "8px",
+                                bgcolor: "#2563eb",
+                                color: "#ffffff",
                                 px: 3,
-                                boxShadow: "0 4px 6px -1px rgba(59, 130, 246, 0.2)",
+                                py: 1,
+                                fontSize: '0.85rem',
+                                boxShadow: "0 4px 6px -1px rgba(37, 99, 235, 0.2)",
                                 "&:hover": {
-                                    bgcolor: "#2563eb",
-                                    boxShadow: "0 10px 15px -3px rgba(59, 130, 246, 0.3)"
-                                }
+                                    bgcolor: "#1d4ed8",
+                                    transform: "translateY(-1px)",
+                                    boxShadow: "0 10px 15px -3px rgba(37, 99, 235, 0.3)"
+                                },
+                                transition: "all 0.2s"
                             }}
                         >
                             {addText || "Add New"}

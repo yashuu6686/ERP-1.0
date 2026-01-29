@@ -98,7 +98,7 @@ export default function Store() {
 
   return (
     <Box>
-   
+
       <CommonCard
         title="Store"
         addText="Add Material"
@@ -162,8 +162,8 @@ export default function Store() {
 
             <TableBody>
               {filtered.map((row, i) => (
-                <TableRow key={i} hover sx={{ transition: "0.2s" }}>
-                   <TableCell align="center" sx={{ fontWeight: 600, }}>
+                <TableRow key={i} sx={{ transition: "0.2s" }}>
+                  <TableCell align="center" sx={{ fontWeight: 600, }}>
                     {i + 1}
                   </TableCell>
                   <TableCell align="center" sx={{ fontWeight: 600, color: "#1172ba" }}>
@@ -182,9 +182,13 @@ export default function Store() {
                   <TableCell align="center">{row.updated}</TableCell>
                   <TableCell align="center">
                     <IconButton
-                      color="primary"
                       size="small"
                       onClick={() => router.push(`/store/${row.code}`)}
+                      sx={{
+                        color: "rgb(17, 114, 186)",
+                        bgcolor: "#f1f5f9",
+                        "&:hover": { bgcolor: "#e2e8f0" }
+                      }}
                     >
                       <Visibility fontSize="small" />
                     </IconButton>
@@ -206,7 +210,7 @@ export default function Store() {
                   label="Material Name"
                   name="name"
                   onChange={handleChange}
-                size="small"
+                  size="small"
                 />
               </Grid>
               <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
@@ -215,7 +219,7 @@ export default function Store() {
                   label="Material Code"
                   name="code"
                   onChange={handleChange}
-                size="small"
+                  size="small"
                 />
               </Grid>
               <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>

@@ -66,7 +66,7 @@ export default function IncomingInspection() {
 
   return (
     <Box>
-      
+
       <CommonCard
         title="Incoming Inspection"
         addText="Add Material Inspection"
@@ -97,7 +97,7 @@ export default function IncomingInspection() {
 
             <TableBody>
               {filtered.map((row, i) => (
-                <TableRow key={row.id} hover sx={{ transition: "0.2s" }}>
+                <TableRow key={row.id} sx={{ transition: "0.2s" }}>
                   <TableCell align="center">{i + 1}</TableCell>
                   <TableCell align="center" sx={{ fontWeight: 400, color: "#1172ba" }}>
                     {row.inspectionNo}
@@ -121,14 +121,35 @@ export default function IncomingInspection() {
                   </TableCell>
                   <TableCell align="center">{row.checkedBy}</TableCell>
                   <TableCell align="center">
-                    <IconButton color="primary">
-                      <Visibility />
+                    <IconButton
+                      size="small"
+                      sx={{
+                        color: "rgb(17, 114, 186)",
+                        bgcolor: "#f1f5f9",
+                        "&:hover": { bgcolor: "#e2e8f0" }
+                      }}
+                    >
+                      <Visibility fontSize="small" />
                     </IconButton>
-                    <IconButton color="warning">
-                      <Edit />
+                    <IconButton
+                      size="small"
+                      sx={{
+                        color: "#dc2626",
+                        bgcolor: "#fef2f2",
+                        "&:hover": { bgcolor: "#fee2e2" }
+                      }}
+                    >
+                      <Edit fontSize="small" />
                     </IconButton>
-                    <IconButton color="success">
-                      <Download />
+                    <IconButton
+                      size="small"
+                      sx={{
+                        color: "#0891b2",
+                        bgcolor: "#ecfeff",
+                        "&:hover": { bgcolor: "#cffafe" }
+                      }}
+                    >
+                      <Download fontSize="small" />
                     </IconButton>
                   </TableCell>
                 </TableRow>

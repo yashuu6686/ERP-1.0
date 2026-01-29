@@ -365,9 +365,7 @@ export default function DispatchDetails() {
                   return (
                     <TableRow
                       key={row.id}
-                      hover
                       sx={{
-                        "&:hover": { bgcolor: "#f8f9fa" },
                         transition: "background-color 0.2s",
                       }}
                     >
@@ -427,8 +425,9 @@ export default function DispatchDetails() {
                         <IconButton
                           size="small"
                           sx={{
-                            color: "#6c757d",
-                            "&:hover": { bgcolor: "#e9ecef" },
+                            color: "#0891b2",
+                            bgcolor: "#ecfeff",
+                            "&:hover": { bgcolor: "#cffafe" },
                           }}
                         >
                           <Download fontSize="small" />
@@ -446,8 +445,9 @@ export default function DispatchDetails() {
                             size="small"
                             onClick={() => router.push(`/dispatch/${row.id}`)}
                             sx={{
-                              color: "#1172ba",
-                              "&:hover": { bgcolor: "#e3f2fd" },
+                              color: "rgb(17, 114, 186)",
+                              bgcolor: "#f1f5f9",
+                              "&:hover": { bgcolor: "#e2e8f0" }
                             }}
                           >
                             <Visibility fontSize="small" />
@@ -455,8 +455,9 @@ export default function DispatchDetails() {
                           <IconButton
                             size="small"
                             sx={{
-                              color: "#28a745",
-                              "&:hover": { bgcolor: "#d4edda" },
+                              color: "#dc2626",
+                              bgcolor: "#fef2f2",
+                              "&:hover": { bgcolor: "#fee2e2" }
                             }}
                           >
                             <Edit fontSize="small" />
@@ -464,8 +465,9 @@ export default function DispatchDetails() {
                           <IconButton
                             size="small"
                             sx={{
-                              color: "#dc3545",
-                              "&:hover": { bgcolor: "#f8d7da" },
+                              color: "#dc2626",
+                              bgcolor: "#fef2f2",
+                              "&:hover": { bgcolor: "#fee2e2" }
                             }}
                           >
                             <Delete fontSize="small" />

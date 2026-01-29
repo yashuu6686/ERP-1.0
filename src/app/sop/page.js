@@ -222,7 +222,7 @@ export default function SOPForm() {
                     </TableHead>
                     <TableBody>
                       {deviceTestingSteps.map((row) => (
-                        <TableRow key={row.step} sx={{ "&:hover": { bgcolor: "#f8f9fa" } }}>
+                        <TableRow key={row.step} sx={{}}>
                           <TableCell>
                             <Chip
                               label={row.step}
@@ -430,7 +430,7 @@ export default function SOPForm() {
                     </TableHead>
                     <TableBody>
                       {packagingSteps.map((row) => (
-                        <TableRow key={row.step} sx={{ "&:hover": { bgcolor: "#f8f9fa" } }}>
+                        <TableRow key={row.step} sx={{}}>
                           <TableCell>
                             <Chip
                               label={row.step}

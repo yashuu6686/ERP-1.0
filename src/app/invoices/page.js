@@ -58,7 +58,7 @@ export default function Invoices() {
 
   return (
     <Box>
-     
+
       <CommonCard
         title="Invoices"
         addText="Generate Invoice"
@@ -88,7 +88,7 @@ export default function Invoices() {
 
             <TableBody>
               {filtered.map((row, i) => (
-                <TableRow key={row.id} hover>
+                <TableRow key={row.id}>
                   <TableCell align="center">{i + 1}</TableCell>
                   <TableCell align="center" sx={{ fontWeight: 600, color: "#1172ba" }}>
                     {row.invoiceNo}

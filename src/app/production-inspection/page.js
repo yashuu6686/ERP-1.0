@@ -80,7 +80,7 @@ export default function AfterProductionInspection() {
 
             <TableBody>
               {filtered.map((row, i) => (
-                <TableRow key={row.id} hover sx={{ "&:hover": { bgcolor: "#f8fafc" } }}>
+                <TableRow key={row.id} sx={{ transition: "background-color 0.2s" }}>
                   <TableCell align="center" sx={{ py: 1 }}>{i + 1}</TableCell>
                   <TableCell align="center" sx={{ fontWeight: 600, color: "#1172ba", py: 1 }}>
                     {row.checkNo}
@@ -123,17 +123,39 @@ export default function AfterProductionInspection() {
                   <TableCell align="center" sx={{ textAlign: 'center', py: 1 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'center', gap: 0.5 }}>
                       <Tooltip title="View Details">
-                        <IconButton size="small" sx={{ color: "#1e293b", bgcolor: "#f1f5f9", "&:hover": { bgcolor: "#e2e8f0" } }}>
+                        <IconButton
+                          size="small"
+                          onClick={() => router.push(`/production-inspection/${row.id}`)}
+                          sx={{
+                            color: "rgb(17, 114, 186)",
+                            bgcolor: "#f1f5f9",
+                            "&:hover": { bgcolor: "#e2e8f0" }
+                          }}
+                        >
                           <Visibility fontSize="small" />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Edit">
-                        <IconButton size="small" sx={{ color: "#1172ba", bgcolor: "#eff6ff", "&:hover": { bgcolor: "#dbeafe" } }}>
+                        <IconButton
+                          size="small"
+                          sx={{
+                            color: "#dc2626",
+                            bgcolor: "#fef2f2",
+                            "&:hover": { bgcolor: "#fee2e2" }
+                          }}
+                        >
                           <Edit fontSize="small" />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Download Report">
-                        <IconButton size="small" sx={{ color: "#166534", bgcolor: "#f0fdf4", "&:hover": { bgcolor: "#dcfce7" } }}>
+                        <IconButton
+                          size="small"
+                          sx={{
+                            color: "#0891b2",
+                            bgcolor: "#ecfeff",
+                            "&:hover": { bgcolor: "#cffafe" }
+                          }}
+                        >
                           <Download fontSize="small" />
                         </IconButton>
                       </Tooltip>
