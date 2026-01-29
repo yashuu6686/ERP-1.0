@@ -1,9 +1,10 @@
 "use client";
 import React, { useState } from "react";
-import { Box, Typography, Chip } from "@mui/material";
+import { Box, Typography, Chip, IconButton } from "@mui/material";
 import CommonCard from "../../components/CommonCard";
 import GlobalTable from "../../components/GlobalTable";
 import CreateGRNDialog from "./components/CreateGRNDialog";
+import { Download, Edit, Visibility } from "@mui/icons-material";
 
 export default function GRNTable() {
   const [search, setSearch] = useState("");
@@ -118,6 +119,38 @@ export default function GRNTable() {
           size="small"
           sx={{ fontWeight: 600 }}
         />
+      ),
+    },
+     {
+      label: "Actions",
+      align: "center",
+      render: (row) => (
+        <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
+          <IconButton
+            size="small"
+            onClick={() => router.push(`/final-inspection/${row.id}`)}
+            sx={{
+              color: "rgb(17, 114, 186)",
+              bgcolor: "#f1f5f9",
+              "&:hover": { bgcolor: "#e2e8f0" },
+            }}
+          >
+            <Visibility fontSize="small" />
+          </IconButton>
+          <IconButton color="warning" size="small">
+            <Edit fontSize="small" />
+          </IconButton>
+          <IconButton
+            size="small"
+            sx={{
+              color: "#0891b2",
+              bgcolor: "#ecfeff",
+              "&:hover": { bgcolor: "#cffafe" },
+            }}
+          >
+            <Download fontSize="small" />
+          </IconButton>
+        </Box>
       ),
     },
   ];

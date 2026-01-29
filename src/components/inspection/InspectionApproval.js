@@ -7,6 +7,7 @@ import {
     Card,
     CardContent,
 } from '@mui/material';
+import { FactCheck } from '@mui/icons-material';
 
 const InspectionApproval = ({ approvalData, onChange }) => {
     const handleChange = (section, field) => (event) => {
@@ -27,8 +28,12 @@ const InspectionApproval = ({ approvalData, onChange }) => {
                 sx={{
                     padding: 2,
                     background: 'linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 2,
                 }}
             >
+                <FactCheck sx={{ color: '#fff', fontSize: 24 }} />
                 <Typography variant="subtitle1" sx={{ color: '#fff', fontWeight: 600 }}>
                     Approval
                 </Typography>

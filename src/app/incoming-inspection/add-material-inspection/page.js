@@ -1,13 +1,20 @@
 "use client";
 import React, { useState } from "react";
-import { Box, Button, Breadcrumbs, Link, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Stepper,
+  Step,
+  StepLabel,
+  Typography,
+} from "@mui/material";
 import {
   CheckCircle as CheckCircleIcon,
   Save as SaveIcon,
   Science as ScienceIcon,
-  NavigateNext,
+  ArrowBack,
+  ArrowForward,
 } from "@mui/icons-material";
-import NextLink from "next/link";
 import CommonCard from "../../../components/CommonCard";
 import InspectionObservations from "@/components/inspection/InspectionObservations";
 import InspectionSummary from "@/components/inspection/InspectionSummary";
@@ -15,7 +22,15 @@ import InspectionApproval from "@/components/inspection/InspectionApproval";
 import MaterialInformation from "./components/MaterialInformation";
 import VerificationChecks from "./components/VerificationChecks";
 
+const steps = [
+  "Material Information & Verification",
+  "Observations",
+  "Summary & Approval",
+];
+
 export default function MaterialInspectionForm() {
+  const [activeStep, setActiveStep] = useState(0);
+
   const [observations, setObservations] = useState([
     {
       id: 1,
@@ -43,6 +58,14 @@ export default function MaterialInspectionForm() {
     approvedByName: "",
     approvedByDate: "",
   });
+
+  const handleNext = () => {
+    setActiveStep((prevStep) => prevStep + 1);
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevStep) => prevStep - 1);
+  };
 
   const handleSummaryChange = (field, value) => {
     setSummaryData((prev) => ({ ...prev, [field]: value }));
@@ -101,28 +124,17 @@ export default function MaterialInspectionForm() {
     alert("Inspection Submitted Successfully!");
   };
 
-  return (
-    <Box>
-      <Box sx={{ mb: 2 }}>
-        <Breadcrumbs separator={<NavigateNext fontSize="small" />}>
-          <Link
-            component={NextLink}
-            underline="hover"
-            color="inherit"
-            href="/incoming-inspection"
-          >
-            Incoming Inspection
-          </Link>
-          <Typography color="text.primary">Add Inspection</Typography>
-        </Breadcrumbs>
-      </Box>
-
-      <CommonCard title="Material Inspection">
-        <Box sx={{ p: 1 }}>
-          <MaterialInformation />
-
-          <VerificationChecks />
-
+  const renderStepContent = (step) => {
+    switch (step) {
+      case 0:
+        return (
+          <>
+            <MaterialInformation />
+            <VerificationChecks />
+          </>
+        );
+      case 1:
+        return (
           <InspectionObservations
             observations={observations}
             observationColumns={observationColumns}
@@ -132,41 +144,125 @@ export default function MaterialInspectionForm() {
             onChange={handleObservationChange}
             icon={ScienceIcon}
           />
+        );
+      case 2:
+        return (
+          <>
+            <InspectionSummary
+              summaryData={summaryData}
+              onChange={handleSummaryChange}
+            />
+            <InspectionApproval
+              approvalData={approvalData}
+              onChange={handleApprovalChange}
+            />
+          </>
+        );
+      default:
+        return null;
+    }
+  };
 
-          <InspectionSummary
-            summaryData={summaryData}
-            onChange={handleSummaryChange}
-          />
+  return (
+    <Box>
+      <CommonCard title="Material Inspection">
+        <Box sx={{ p: 1 }}>
+          {/* Stepper */}
+          <Stepper
+            activeStep={activeStep}
+            alternativeLabel
+            sx={{
+              mb: 4,
+              "& .MuiStepLabel-label": {
+                fontWeight: 500,
+              },
+              "& .MuiStepLabel-label.Mui-active": {
+                color: "#1172ba",
+                fontWeight: 600,
+              },
+              "& .MuiStepLabel-label.Mui-completed": {
+                color: "#10b981",
+                fontWeight: 600,
+              },
+              "& .MuiStepIcon-root.Mui-active": {
+                color: "#1172ba",
+              },
+              "& .MuiStepIcon-root.Mui-completed": {
+                color: "#10b981",
+              },
+            }}
+          >
+            {steps.map((label) => (
+              <Step key={label}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
 
-          <InspectionApproval
-            approvalData={approvalData}
-            onChange={handleApprovalChange}
-          />
+          {/* Step Content */}
+          <Box sx={{ minHeight: 400 }}>{renderStepContent(activeStep)}</Box>
 
-          <Box sx={{ display: "flex", justifyContent: "end", gap: 2, mt: 4 }}>
+          {/* Navigation Buttons */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mt: 4,
+              pt: 3,
+              borderTop: "1px solid #e2e8f0",
+            }}
+          >
             <Button
               variant="outlined"
-              size="large"
-              startIcon={<SaveIcon />}
-              sx={{ borderRadius: 2, textTransform: "none", fontWeight: 600 }}
-            >
-              Save Draft
-            </Button>
-            <Button
-              variant="contained"
-              size="large"
-              startIcon={<CheckCircleIcon />}
-              onClick={handleSubmit}
+              startIcon={<ArrowBack />}
+              onClick={handleBack}
+              disabled={activeStep === 0}
               sx={{
                 borderRadius: 2,
                 textTransform: "none",
                 fontWeight: 600,
-                backgroundColor: "#1172ba",
-                "&:hover": { backgroundColor: "#0d5a94" },
+                visibility: activeStep === 0 ? "hidden" : "visible",
               }}
             >
-              Submit Inspection
+              Previous
             </Button>
+
+            <Box sx={{ display: "flex", gap: 2 }}>
+              {activeStep === steps.length - 1 ? (
+                <Button
+                  variant="contained"
+                  size="large"
+                  startIcon={<CheckCircleIcon />}
+                  onClick={handleSubmit}
+                  sx={{
+                    borderRadius: 2,
+                    textTransform: "none",
+                    fontWeight: 600,
+                    backgroundColor: "#1172ba",
+                    "&:hover": { backgroundColor: "#0d5a94" },
+                  }}
+                >
+                  Submit Inspection
+                </Button>
+              ) : (
+                <Button
+                  variant="contained"
+                  size="large"
+                  endIcon={<ArrowForward />}
+                  onClick={handleNext}
+                  sx={{
+                    borderRadius: 2,
+                    textTransform: "none",
+                    fontWeight: 600,
+                    backgroundColor: "#1172ba",
+                    "&:hover": { backgroundColor: "#0d5a94" },
+                  }}
+                >
+                  Next
+                </Button>
+              )}
+            </Box>
           </Box>
         </Box>
       </CommonCard>

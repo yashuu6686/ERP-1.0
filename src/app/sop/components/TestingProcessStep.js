@@ -92,12 +92,12 @@ export default function TestingProcessStep({ formData, handleInputChange, handle
                     <Table stickyHeader size="small">
                         <TableHead>
                             <TableRow>
-                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 700, width: 60 }}>#</TableCell>
-                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 700 }}>Task</TableCell>
-                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 700, width: 140 }}>Parameter</TableCell>
-                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 700, width: 140 }}>Methodology</TableCell>
-                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 700, width: 140 }}>Expected</TableCell>
-                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 700, width: 100 }}>Check</TableCell>
+                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500, width: 60 }}>Sr.No</TableCell>
+                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500 }}>Task</TableCell>
+                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500, width: 140 }}>Parameter</TableCell>
+                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500, width: 140 }}>Methodology</TableCell>
+                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500, width: 140 }}>Expected</TableCell>
+                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500, width: 100 }}>Check</TableCell>
                                 <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 700 }}>Remarks</TableCell>
                             </TableRow>
                         </TableHead>
@@ -105,9 +105,9 @@ export default function TestingProcessStep({ formData, handleInputChange, handle
                             {deviceTestingSteps.map((row, idx) => (
                                 <TableRow key={row.step} sx={{ "&:hover": { bgcolor: "rgba(17, 114, 186, 0.04)" } }}>
                                     <TableCell>
-                                        <Typography variant="body2" fontWeight={700} color="primary">{row.step}</Typography>
+                                        <Typography variant="body2" fontWeight={500} color="primary">{row.step}</Typography>
                                     </TableCell>
-                                    <TableCell sx={{ fontWeight: 600 }}>{row.task}</TableCell>
+                                    <TableCell sx={{ fontWeight: 500 }}>{row.task}</TableCell>
                                     <TableCell>
                                         <TextField
                                             size="small"
