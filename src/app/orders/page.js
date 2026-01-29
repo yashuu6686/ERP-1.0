@@ -1,10 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import { Box, Chip, IconButton } from "@mui/material";
-import { Visibility } from "@mui/icons-material";
+import { Box, Chip, IconButton, Tooltip } from "@mui/material";
+import { Download, Edit, Visibility } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
 import GlobalTable from "../../components/GlobalTable";
+import EditIcon from '@mui/icons-material/Edit';
 
 const ordersData = [
   {
@@ -108,17 +109,38 @@ export default function CustomerOrders() {
       label: "Actions",
       align: "center",
       render: (row) => (
-        <IconButton
-          size="small"
-          onClick={() => router.push(`/orders/${row.id}`)}
-          sx={{
-            color: "rgb(17, 114, 186)",
-            bgcolor: "#f1f5f9",
-            "&:hover": { bgcolor: "#e2e8f0" },
-          }}
-        >
-          <Visibility fontSize="small" />
-        </IconButton>
+        <Box sx={{ display: "flex", justifyContent: "center", gap: 0.5 }}>
+          <Tooltip title="View Details">
+            <IconButton
+              size="small"
+              onClick={() => router.push(`/production-inspection/${row.id}`)}
+              sx={{
+                color: "rgb(17, 114, 186)",
+                bgcolor: "#f1f5f9",
+                "&:hover": { bgcolor: "#e2e8f0" },
+              }}
+            >
+              <Visibility fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Edit">
+            <IconButton color="warning" size="small">
+              <Edit fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Download Report">
+            <IconButton
+              size="small"
+              sx={{
+                color: "#0891b2",
+                bgcolor: "#ecfeff",
+                "&:hover": { bgcolor: "#cffafe" },
+              }}
+            >
+              <Download fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
       ),
     },
   ];

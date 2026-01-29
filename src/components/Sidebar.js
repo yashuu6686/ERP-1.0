@@ -76,7 +76,7 @@ export default function Sidebar({ children }) {
   };
 
   return (
-    <Box style={{ display: "flex", minHeight: "110vh" }}>
+    <Box style={{ display: "flex", minHeight: "120vh" }}>
       <Drawer
         variant="permanent"
         sx={{

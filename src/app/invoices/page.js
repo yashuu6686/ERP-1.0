@@ -1,9 +1,10 @@
 "use client";
 import React, { useState } from "react";
-import { Box, Chip } from "@mui/material";
+import { Box, Chip, IconButton, Tooltip } from "@mui/material";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
 import GlobalTable from "../../components/GlobalTable";
+import { Download, Edit, Visibility } from "@mui/icons-material";
 
 const invoicesData = [
   {
@@ -118,6 +119,44 @@ export default function Invoices() {
       label: "Order Date",
       align: "center",
       accessor: "orderDate",
+    },
+     {
+      label: "Actions",
+      align: "center",
+      render: (row) => (
+        <Box sx={{ display: "flex", justifyContent: "center", gap: 0.5 }}>
+          <Tooltip title="View Details">
+            <IconButton
+              size="small"
+              onClick={() => router.push(`/production-inspection/${row.id}`)}
+              sx={{
+                color: "rgb(17, 114, 186)",
+                bgcolor: "#f1f5f9",
+                "&:hover": { bgcolor: "#e2e8f0" },
+              }}
+            >
+              <Visibility fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Edit">
+            <IconButton color="warning" size="small">
+              <Edit fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Download Report">
+            <IconButton
+              size="small"
+              sx={{
+                color: "#0891b2",
+                bgcolor: "#ecfeff",
+                "&:hover": { bgcolor: "#cffafe" },
+              }}
+            >
+              <Download fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      ),
     },
   ];
 
