@@ -17,7 +17,32 @@ const GlobalTable = ({ columns, data, onRowClick }) => {
         <TableContainer
             component={Paper}
             elevation={0}
-            sx={{ border: "1px solid #e2e8f0", borderRadius: 2, overflowX: "auto" }}
+            sx={{
+                border: "1px solid #e2e8f0",
+                borderRadius: 2,
+                overflowX: "auto",
+                // Custom Scrollbar Styles
+                "&::-webkit-scrollbar": {
+                    height: "6px",
+                    width: "6px",
+                },
+                "&::-webkit-scrollbar-track": {
+                    background: "transparent",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                    backgroundColor: "transparent",
+                    borderRadius: "10px",
+                    transition: "background-color 0.3s",
+                },
+                "&:hover::-webkit-scrollbar-thumb": {
+                    backgroundColor: "#94a3b8",
+                },
+                scrollbarWidth: "thin",
+                scrollbarColor: "transparent transparent",
+                "&:hover": {
+                    scrollbarColor: "#94a3b8 transparent",
+                },
+            }}
         >
             <Table size="small">
                 <TableHead sx={{ bgcolor: "#f1f5f9" }}>
