@@ -1,11 +1,13 @@
 "use client";
 import React, { useState } from "react";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Breadcrumbs, Link, Typography } from "@mui/material";
 import {
   CheckCircle as CheckCircleIcon,
   Save as SaveIcon,
   Science as ScienceIcon,
+  NavigateNext,
 } from "@mui/icons-material";
+import NextLink from "next/link";
 import CommonCard from "../../../components/CommonCard";
 import InspectionObservations from "@/components/inspection/InspectionObservations";
 import InspectionSummary from "@/components/inspection/InspectionSummary";
@@ -101,6 +103,20 @@ export default function MaterialInspectionForm() {
 
   return (
     <Box>
+      <Box sx={{ mb: 2 }}>
+        <Breadcrumbs separator={<NavigateNext fontSize="small" />}>
+          <Link
+            component={NextLink}
+            underline="hover"
+            color="inherit"
+            href="/incoming-inspection"
+          >
+            Incoming Inspection
+          </Link>
+          <Typography color="text.primary">Add Inspection</Typography>
+        </Breadcrumbs>
+      </Box>
+
       <CommonCard title="Material Inspection">
         <Box sx={{ p: 1 }}>
           <MaterialInformation />
