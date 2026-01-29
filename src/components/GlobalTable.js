@@ -38,7 +38,7 @@ const GlobalTable = ({ columns, data, onRowClick }) => {
                     backgroundColor: "#94a3b8",
                 },
                 scrollbarWidth: "thin",
-                scrollbarColor: "transparent transparent",
+                scrollbarColor: "#94a3b8 transparent",
                 "&:hover": {
                     scrollbarColor: "#94a3b8 transparent",
                 },
@@ -78,7 +78,7 @@ const GlobalTable = ({ columns, data, onRowClick }) => {
                                 }}
                             >
                                 {columns.map((col, colIndex) => (
-                                    <TableCell key={colIndex} align={col.align || "left"}>
+                                    <TableCell sx={{whiteSpace: "nowrap",}} key={colIndex} align={col.align || "left"}>
                                         {col.render
                                             ? col.render(row, rowIndex)
                                             : row[col.accessor] || "-"}
