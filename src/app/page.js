@@ -313,7 +313,7 @@ export default function DashboardPage() {
             </Box>
             <Grid container spacing={2.5}>
               {quickNav.map((item, idx) => (
-                <Grid item xs={6} sm={4} md={3} size={{ xs: 6, sm: 4, md: 3 }}   key={idx}>
+                <Grid item xs={6} sm={4} md={3} size={{ xs: 6, sm: 4, md: 3 }} key={idx}>
                   <ModuleCard item={item} router={router} />
                 </Grid>
               ))}
