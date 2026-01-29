@@ -125,11 +125,30 @@ export default function FinalInspectionForm() {
   return (
     <CommonCard title="Final Inspection Verification">
       <Box sx={{ p: 2 }}>
-        <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 5 }}>
+        <Stepper  activeStep={activeStep} alternativeLabel   sx={{
+              mb: 4,
+              "& .MuiStepLabel-label": {
+                fontWeight: 500,
+              },
+              "& .MuiStepLabel-label.Mui-active": {
+                color: "#1172ba",
+                fontWeight: 600,
+              },
+              "& .MuiStepLabel-label.Mui-completed": {
+                color: "#1172ba",
+                fontWeight: 600,
+              },
+              "& .MuiStepIcon-root.Mui-active": {
+                color: "#1172ba",
+              },
+              "& .MuiStepIcon-root.Mui-completed": {
+                color: "#1172ba",
+              },
+            }}>
           {steps.map((label) => (
             <Step key={label}>
               <StepLabel>
-                <Typography variant="caption" fontWeight={600}>
+                <Typography >
                   {label}
                 </Typography>
               </StepLabel>
