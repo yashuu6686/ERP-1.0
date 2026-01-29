@@ -34,24 +34,64 @@ import {
 import { Breadcrumbs, Link } from '@mui/material';
 import NextLink from 'next/link';
 import CommonCard from '../../../components/CommonCard';
+import InspectionObservations from '@/components/inspection/InspectionObservations';
+import InspectionSummary from '@/components/inspection/InspectionSummary';
+import InspectionApproval from '@/components/inspection/InspectionApproval';
 
 export default function MaterialInspectionForm() {
   const [observations, setObservations] = useState([
     { id: 1, parameter: '', specification: '', method: '', observation: '', remarks: '' },
   ]);
+  const [observationColumns, setObservationColumns] = useState([
+    { id: 'observation', label: 'Observation' }
+  ]);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [summaryData, setSummaryData] = useState({
+    acceptedQuantity: '',
+    rejectedQuantity: '',
+    holdScrapQuantity: '',
+    other: '',
+    comments: ''
+  });
+  const [approvalData, setApprovalData] = useState({
+    updatedByName: '',
+    updatedByDate: '',
+    approvedByName: '',
+    approvedByDate: ''
+  });
+
+  const handleSummaryChange = (field, value) => {
+    setSummaryData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleApprovalChange = (section, field, value) => {
+    const key = `${section}${field.charAt(0).toUpperCase() + field.slice(1)}`;
+    setApprovalData(prev => ({ ...prev, [key]: value }));
+  };
 
   const addObservation = () => {
-    setObservations([
-      ...observations,
-      {
-        id: observations.length + 1,
-        parameter: '',
-        specification: '',
-        method: '',
-        observation: '',
-        remarks: '',
-      },
+    const nextId = observations.length > 0 ? Math.max(...observations.map(o => o.id)) + 1 : 1;
+    const newObservation = {
+      id: nextId,
+      parameter: '',
+      specification: '',
+      method: '',
+      remarks: '',
+    };
+    // Ensure all current observation columns exist in the new row
+    observationColumns.forEach(col => {
+      newObservation[col.id] = '';
+    });
+
+    setObservations([...observations, newObservation]);
+  };
+
+  const addObservationColumn = () => {
+    const nextColNum = observationColumns.length + 1;
+    const newColId = `observation_${nextColNum}`;
+    setObservationColumns([
+      ...observationColumns,
+      { id: newColId, label: `Observation ${nextColNum}` }
     ]);
   };
 
@@ -77,7 +117,7 @@ export default function MaterialInspectionForm() {
 
   return (
     <Box>
-    
+
       <CommonCard title="Material Inspection">
         <Box sx={{ p: 1 }}>
           {/* Material Information Section */}
@@ -214,64 +254,25 @@ export default function MaterialInspectionForm() {
           </Card>
 
           {/* Observations Section */}
-          <Card
-            elevation={0}
-            sx={{
-              marginBottom: 4,
-              borderRadius: 2,
-              border: '1px solid #e2e8f0',
-              overflow: 'hidden',
-            }}
-          >
-            <Box
-              sx={{
-                padding: 2,
-                background: 'linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <ScienceIcon sx={{ color: '#fff', fontSize: 24 }} />
-                <Typography variant="subtitle1" sx={{ color: '#fff', fontWeight: 600 }}>
-                  Observations
-                </Typography>
-              </Box>
-              <Button
-                variant="contained"
-                size="small"
-                startIcon={<AddIcon />}
-                onClick={addObservation}
-                sx={{ bgcolor: '#fff', color: '#1172ba', '&:hover': { bgcolor: '#f0f9ff' } }}
-              >
-                Add Row
-              </Button>
-            </Box>
+          <InspectionObservations
+            observations={observations}
+            observationColumns={observationColumns}
+            onAdd={addObservation}
+            onAddColumn={addObservationColumn}
+            onRemove={removeObservation}
+            onChange={handleObservationChange}
+            icon={ScienceIcon}
+          />
 
-            <CardContent sx={{ padding: 3 }}>
-              {observations.map((obs, index) => (
-                <Box key={obs.id} sx={{ mb: 3, p: 2, bgcolor: '#f8fafc', borderRadius: 2, border: '1px solid #e2e8f0' }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <Chip label={`#${obs.id}`} size="small" color="primary" sx={{ mr: 2 }} />
-                    <Box sx={{ flex: 1 }} />
-                    {observations.length > 1 && (
-                      <IconButton size="small" color="error" onClick={() => removeObservation(obs.id)}>
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    )}
-                  </Box>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6} md={4}><TextField label="Parameter" fullWidth size="small" /></Grid>
-                    <Grid item xs={12} sm={6} md={4}><TextField label="Specification" fullWidth size="small" /></Grid>
-                    <Grid item xs={12} sm={6} md={4}><TextField label="Method" fullWidth size="small" /></Grid>
-                    <Grid item xs={12} sm={6} md={4}><TextField label="Observation" fullWidth size="small" /></Grid>
-                    <Grid item xs={12} sm={6} md={8}><TextField label="Remarks" fullWidth size="small" /></Grid>
-                  </Grid>
-                </Box>
-              ))}
-            </CardContent>
-          </Card>
+          <InspectionSummary
+            summaryData={summaryData}
+            onChange={handleSummaryChange}
+          />
+
+          <InspectionApproval
+            approvalData={approvalData}
+            onChange={handleApprovalChange}
+          />
 
           {/* Submit Actions */}
           <Box sx={{ display: 'flex', justifyContent: 'end', gap: 2, mt: 4 }}>
