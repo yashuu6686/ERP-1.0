@@ -69,19 +69,19 @@ const CommonCard = ({
                             onClick={onAdd}
                             sx={{
                                 textTransform: "none",
-                                fontWeight: 700,
+                                fontWeight: 500,
                                 borderRadius: "8px",
-                                bgcolor: "#2563eb",
+                                // bgcolor: "#2563eb",
                                 color: "#ffffff",
                                 px: 3,
                                 py: 1,
                                 fontSize: '0.85rem',
-                                boxShadow: "0 4px 6px -1px rgba(37, 99, 235, 0.2)",
-                                "&:hover": {
-                                    bgcolor: "#1d4ed8",
-                                    transform: "translateY(-1px)",
-                                    boxShadow: "0 10px 15px -3px rgba(37, 99, 235, 0.3)"
-                                },
+                                // boxShadow: "0 4px 6px -1px rgba(37, 99, 235, 0.2)",
+                                // "&:hover": {
+                                //     bgcolor: "#1d4ed8",
+                                //     transform: "translateY(-1px)",
+                                //     boxShadow: "0 10px 15px -3px rgba(37, 99, 235, 0.3)"
+                                // },
                                 transition: "all 0.2s"
                             }}
                         >
