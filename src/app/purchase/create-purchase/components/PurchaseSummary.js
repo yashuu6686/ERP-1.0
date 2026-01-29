@@ -10,6 +10,11 @@ const PurchaseSummary = ({
     taxAmount,
     discountAmount,
     grandTotal,
+    shippingCharges,
+    setShippingCharges,
+    otherDiscount,
+    setOtherDiscount,
+    otherDiscountAmount,
 }) => {
     return (
         <Grid container spacing={3}>
@@ -41,22 +46,22 @@ const PurchaseSummary = ({
                         <Grid item size={{ xs: 6, sm: 3 }}>
                             <TextField
                                 fullWidth
-                                label="Tax Rate (%)"
+                                label="Enter Shipping Charges"
                                 type="number"
                                 size="small"
-                                value={taxRate}
-                                onChange={(e) => setTaxRate(parseFloat(e.target.value) || 0)}
+                                value={shippingCharges}
+                                onChange={(e) => setShippingCharges(parseFloat(e.target.value) || 0)}
                                 sx={{ bgcolor: "white" }}
                             />
                         </Grid>
                         <Grid item size={{ xs: 6, sm: 3 }}>
                             <TextField
                                 fullWidth
-                                label="Tax Rate (%)"
+                                label="Enter Other Discount (%)"
                                 type="number"
                                 size="small"
-                                value={taxRate}
-                                onChange={(e) => setTaxRate(parseFloat(e.target.value) || 0)}
+                                value={otherDiscount}
+                                onChange={(e) => setOtherDiscount(parseFloat(e.target.value) || 0)}
                                 sx={{ bgcolor: "white" }}
                             />
                         </Grid>
@@ -76,6 +81,16 @@ const PurchaseSummary = ({
                             <Typography color="textSecondary">Discount ({discount}%):</Typography>
                             <Typography fontWeight={600} color="error">
                                 -₹{discountAmount.toFixed(2)}
+                            </Typography>
+                        </Box>
+                        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                            <Typography color="textSecondary">Shipping Charges:</Typography>
+                            <Typography fontWeight={600}>₹{shippingCharges.toFixed(2)}</Typography>
+                        </Box>
+                        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                            <Typography color="textSecondary">Other Discount ({otherDiscount}%):</Typography>
+                            <Typography fontWeight={600} color="error">
+                                -₹{otherDiscountAmount.toFixed(2)}
                             </Typography>
                         </Box>
                         <Divider sx={{ my: 2 }} />
