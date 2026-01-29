@@ -87,12 +87,12 @@ export default function PackagingDetailsStep({ formData, handleInputChange, hand
                     <Table size="small">
                         <TableHead>
                             <TableRow>
-                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 700, width: 60 }}>#</TableCell>
-                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 700 }}>Components</TableCell>
-                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 700 }}>Parameter</TableCell>
-                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 700 }}>Expected Result</TableCell>
-                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 700 }}>Status</TableCell>
-                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 700 }}>Remarks</TableCell>
+                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500, width: 60 }}>Sr.No</TableCell>
+                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500 }}>Components</TableCell>
+                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500 }}>Parameter</TableCell>
+                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500 }}>Expected Result</TableCell>
+                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500 }}>Status</TableCell>
+                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500 }}>Remarks</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -101,7 +101,7 @@ export default function PackagingDetailsStep({ formData, handleInputChange, hand
                                     <TableCell>
                                         <Typography variant="body2" fontWeight={700} color="primary">{row.step}</Typography>
                                     </TableCell>
-                                    <TableCell sx={{ fontWeight: 600 }}>{row.components}</TableCell>
+                                    <TableCell sx={{ fontWeight: 500 }}>{row.components}</TableCell>
                                     <TableCell>
                                         <TextField
                                             size="small" fullWidth defaultValue={row.parameter}
@@ -174,4 +174,4 @@ export default function PackagingDetailsStep({ formData, handleInputChange, hand
             </Card>
         </Fade>
     );
-}
+}5
