@@ -1,9 +1,10 @@
 "use client";
 import React, { useState } from "react";
-import { Box } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
+import { Visibility, Edit, Download } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
-import BOMTable from "./components/BOMTable";
+import GlobalTable from "../../components/GlobalTable";
 
 const bomData = [
   {
@@ -28,6 +29,54 @@ export default function BOMList() {
     b.number.toLowerCase().includes(search.toLowerCase())
   );
 
+  const columns = [
+    {
+      label: "Sr. No.",
+      align: "center",
+      render: (row, index) => index + 1,
+    },
+    {
+      label: "BOM Number",
+      align: "center",
+      render: (row) => (
+        <span style={{ fontWeight: 600, color: "#1172ba" }}>
+          {row.number}
+        </span>
+      ),
+    },
+    {
+      label: "Created Date",
+      align: "center",
+      accessor: "date",
+    },
+    {
+      label: "Approved By",
+      align: "center",
+      accessor: "approvedBy",
+    },
+    {
+      label: "Actions",
+      align: "center",
+      render: (row) => (
+        <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
+          <IconButton
+            color="primary"
+            size="small"
+            onClick={() => router.push(`/bom/${row.id}`)}
+          >
+            <Visibility fontSize="small" />
+          </IconButton>
+          <IconButton color="warning" size="small">
+            <Edit fontSize="small" />
+          </IconButton>
+          <IconButton color="success" size="small">
+            <Download fontSize="small" />
+          </IconButton>
+        </Box>
+      ),
+    },
+  ];
+
   return (
     <Box>
       <CommonCard
@@ -38,10 +87,7 @@ export default function BOMList() {
         searchValue={search}
         onSearchChange={(e) => setSearch(e.target.value)}
       >
-        <BOMTable
-          data={filtered}
-          onView={(id) => router.push(`/bom/${id}`)}
-        />
+        <GlobalTable columns={columns} data={filtered} />
       </CommonCard>
     </Box>
   );

@@ -1,9 +1,10 @@
 "use client";
 import React, { useState } from "react";
-import { Box } from "@mui/material";
+import { Box, Chip, IconButton, Tooltip } from "@mui/material";
+import { Visibility, Edit, Download } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
-import InspectionListTable from "./components/InspectionListTable";
+import GlobalTable from "../../components/GlobalTable";
 
 const inspectionData = [
   {
@@ -38,6 +39,127 @@ export default function AfterProductionInspection() {
     i.checkNo.toLowerCase().includes(search.toLowerCase())
   );
 
+  const columns = [
+    {
+      label: "Sr. No.",
+      align: "center",
+      render: (row, index) => index + 1,
+    },
+    {
+      label: "Quality Check No.",
+      align: "center",
+      render: (row) => (
+        <span style={{ fontWeight: 600, color: "#1172ba" }}>
+          {row.checkNo}
+        </span>
+      ),
+    },
+    {
+      label: "Checked Qty",
+      align: "center",
+      accessor: "checkedQty",
+    },
+    {
+      label: "Accepted Qty",
+      align: "center",
+      render: (row) => (
+        <Chip
+          label={row.acceptedQty}
+          size="small"
+          sx={{
+            bgcolor: "#dcfce7",
+            color: "#166534",
+            fontWeight: 700,
+            minWidth: 40,
+          }}
+        />
+      ),
+    },
+    {
+      label: "Rejected Qty",
+      align: "center",
+      render: (row) => (
+        <Chip
+          label={row.rejectedQty}
+          size="small"
+          sx={{
+            bgcolor: "#fee2e2",
+            color: "#991b1b",
+            fontWeight: 700,
+            minWidth: 40,
+          }}
+        />
+      ),
+    },
+    {
+      label: "Inspection Result",
+      align: "center",
+      render: (row) => (
+        <Chip
+          label={row.result.split(" / ")[0]}
+          size="small"
+          variant="outlined"
+          sx={{ fontWeight: 600 }}
+        />
+      ),
+    },
+    {
+      label: "Inspection Date",
+      align: "center",
+      accessor: "date",
+    },
+    {
+      label: "Approved By",
+      align: "center",
+      accessor: "approvedBy",
+    },
+    {
+      label: "Actions",
+      align: "center",
+      render: (row) => (
+        <Box sx={{ display: "flex", justifyContent: "center", gap: 0.5 }}>
+          <Tooltip title="View Details">
+            <IconButton
+              size="small"
+              onClick={() => router.push(`/production-inspection/${row.id}`)}
+              sx={{
+                color: "rgb(17, 114, 186)",
+                bgcolor: "#f1f5f9",
+                "&:hover": { bgcolor: "#e2e8f0" },
+              }}
+            >
+              <Visibility fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Edit">
+            <IconButton
+              size="small"
+              sx={{
+                color: "#dc2626",
+                bgcolor: "#fef2f2",
+                "&:hover": { bgcolor: "#fee2e2" },
+              }}
+            >
+              <Edit fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Download Report">
+            <IconButton
+              size="small"
+              sx={{
+                color: "#0891b2",
+                bgcolor: "#ecfeff",
+                "&:hover": { bgcolor: "#cffafe" },
+              }}
+            >
+              <Download fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      ),
+    },
+  ];
+
   return (
     <Box>
       <CommonCard
@@ -50,10 +172,7 @@ export default function AfterProductionInspection() {
         searchValue={search}
         onSearchChange={(e) => setSearch(e.target.value)}
       >
-        <InspectionListTable
-          data={filtered}
-          onView={(id) => router.push(`/production-inspection/${id}`)}
-        />
+        <GlobalTable columns={columns} data={filtered} />
       </CommonCard>
     </Box>
   );

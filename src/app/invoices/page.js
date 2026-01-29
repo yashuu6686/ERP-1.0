@@ -1,9 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import { Box } from "@mui/material";
+import { Box, Chip } from "@mui/material";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
-import InvoiceListTable from "./components/InvoiceListTable";
+import GlobalTable from "../../components/GlobalTable";
 
 const invoicesData = [
   {
@@ -46,6 +46,81 @@ export default function Invoices() {
       inv.customer.toLowerCase().includes(search.toLowerCase())
   );
 
+  const columns = [
+    {
+      label: "Sr. No.",
+      align: "center",
+      render: (row, index) => index + 1,
+    },
+    {
+      label: "Invoice No.",
+      align: "center",
+      render: (row) => (
+        <span style={{ fontWeight: 600, color: "#1172ba" }}>
+          {row.invoiceNo}
+        </span>
+      ),
+    },
+    {
+      label: "Invoice Date",
+      align: "center",
+      accessor: "invoiceDate",
+    },
+    {
+      label: "Due Date",
+      align: "center",
+      accessor: "dueDate",
+    },
+    {
+      label: "Customer Name",
+      align: "center",
+      accessor: "customer",
+    },
+    {
+      label: "Product",
+      align: "center",
+      accessor: "product",
+    },
+    {
+      label: "Status",
+      align: "center",
+      render: (row) => (
+        <Chip label={row.status} color="info" size="small" />
+      ),
+    },
+    {
+      label: "Total Amount",
+      align: "center",
+      render: (row) => `₹${row.total.toLocaleString()}`,
+    },
+    {
+      label: "Paid",
+      align: "center",
+      render: (row) => `₹${row.paid.toLocaleString()}`,
+    },
+    {
+      label: "Balance",
+      align: "center",
+      render: (row) => `₹${row.balance.toLocaleString()}`,
+    },
+    {
+      label: "Payment Status",
+      align: "center",
+      render: (row) => (
+        <Chip
+          label={row.paymentStatus}
+          color={row.paymentStatus === "Paid" ? "success" : "warning"}
+          size="small"
+        />
+      ),
+    },
+    {
+      label: "Order Date",
+      align: "center",
+      accessor: "orderDate",
+    },
+  ];
+
   return (
     <Box>
       <CommonCard
@@ -56,7 +131,7 @@ export default function Invoices() {
         searchValue={search}
         onSearchChange={(e) => setSearch(e.target.value)}
       >
-        <InvoiceListTable data={filtered} />
+        <GlobalTable columns={columns} data={filtered} />
       </CommonCard>
     </Box>
   );

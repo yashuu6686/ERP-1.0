@@ -1,9 +1,10 @@
 "use client";
 import React, { useState } from "react";
-import { Box } from "@mui/material";
+import { Box, Chip, IconButton } from "@mui/material";
+import { Visibility } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
-import OrderListTable from "./components/OrderListTable";
+import GlobalTable from "../../components/GlobalTable";
 
 const ordersData = [
   {
@@ -42,6 +43,86 @@ export default function CustomerOrders() {
       o.customerName.toLowerCase().includes(search.toLowerCase())
   );
 
+  const columns = [
+    {
+      label: "Sr.No.",
+      align: "center",
+      render: (row, index) => index + 1,
+    },
+    {
+      label: "Order No.",
+      align: "center",
+      render: (row) => (
+        <span style={{ fontWeight: 600, color: "#1172ba" }}>
+          {row.orderNo}
+        </span>
+      ),
+    },
+    {
+      label: "Products",
+      align: "center",
+      accessor: "products",
+    },
+    {
+      label: "Customer Name",
+      align: "center",
+      accessor: "customerName",
+    },
+    {
+      label: "Order Date",
+      align: "center",
+      accessor: "orderDate",
+    },
+    {
+      label: "Contact Number",
+      align: "center",
+      accessor: "contact",
+    },
+    {
+      label: "Customer Address",
+      align: "center",
+      accessor: "address",
+    },
+    {
+      label: "Delivery Date",
+      align: "center",
+      accessor: "deliveryDate",
+    },
+    {
+      label: "Order Status",
+      align: "center",
+      render: (row) => (
+        <Chip
+          label={row.status}
+          color={row.status === "Completed" ? "success" : "warning"}
+          size="small"
+        />
+      ),
+    },
+    {
+      label: "Order Reference",
+      align: "center",
+      accessor: "reference",
+    },
+    {
+      label: "Actions",
+      align: "center",
+      render: (row) => (
+        <IconButton
+          size="small"
+          onClick={() => router.push(`/orders/${row.id}`)}
+          sx={{
+            color: "rgb(17, 114, 186)",
+            bgcolor: "#f1f5f9",
+            "&:hover": { bgcolor: "#e2e8f0" },
+          }}
+        >
+          <Visibility fontSize="small" />
+        </IconButton>
+      ),
+    },
+  ];
+
   return (
     <Box>
       <CommonCard
@@ -52,10 +133,7 @@ export default function CustomerOrders() {
         searchValue={search}
         onSearchChange={(e) => setSearch(e.target.value)}
       >
-        <OrderListTable
-          data={filtered}
-          onView={(id) => router.push(`/orders/${id}`)}
-        />
+        <GlobalTable columns={columns} data={filtered} />
       </CommonCard>
     </Box>
   );

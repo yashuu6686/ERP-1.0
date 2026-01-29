@@ -1,9 +1,10 @@
 "use client";
 import React, { useState } from "react";
-import { Box } from "@mui/material";
+import { Box, Chip, IconButton } from "@mui/material";
+import { Visibility, Edit } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
-import BatchListTable from "./components/BatchListTable";
+import GlobalTable from "../../components/GlobalTable";
 
 const batchData = [
   {
@@ -36,6 +37,79 @@ export default function Batch() {
       b.requestNo.toLowerCase().includes(search.toLowerCase())
   );
 
+  const columns = [
+    {
+      label: "S. No.",
+      align: "center",
+      render: (row, index) => index + 1,
+    },
+    {
+      label: "Batch No",
+      align: "center",
+      render: (row) => (
+        <span style={{ fontWeight: 600, color: "#1172ba" }}>
+          {row.batchNo}
+        </span>
+      ),
+    },
+    {
+      label: "Material Issue Request No.",
+      align: "center",
+      accessor: "requestNo",
+    },
+    {
+      label: "Check Number",
+      align: "center",
+      accessor: "checkNo",
+    },
+    {
+      label: "Product Sr No",
+      align: "center",
+      accessor: "productSr",
+    },
+    {
+      label: "Accepted Qty",
+      align: "center",
+      accessor: "acceptedQty",
+    },
+    {
+      label: "Batch Status",
+      align: "center",
+      render: (row) => (
+        <Chip label={row.status} color="success" size="small" />
+      ),
+    },
+    {
+      label: "Actions",
+      align: "center",
+      render: (row) => (
+        <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
+          <IconButton
+            size="small"
+            onClick={() => router.push(`/batch/${row.id}`)}
+            sx={{
+              color: "rgb(17, 114, 186)",
+              bgcolor: "#f1f5f9",
+              "&:hover": { bgcolor: "#e2e8f0" },
+            }}
+          >
+            <Visibility fontSize="small" />
+          </IconButton>
+          <IconButton
+            size="small"
+            sx={{
+              color: "#dc2626",
+              bgcolor: "#fef2f2",
+              "&:hover": { bgcolor: "#fee2e2" },
+            }}
+          >
+            <Edit fontSize="small" />
+          </IconButton>
+        </Box>
+      ),
+    },
+  ];
+
   return (
     <Box>
       <CommonCard
@@ -45,10 +119,7 @@ export default function Batch() {
         searchValue={search}
         onSearchChange={(e) => setSearch(e.target.value)}
       >
-        <BatchListTable
-          data={filtered}
-          onView={(id) => router.push(`/batch/${id}`)}
-        />
+        <GlobalTable columns={columns} data={filtered} />
       </CommonCard>
     </Box>
   );

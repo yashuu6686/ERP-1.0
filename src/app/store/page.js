@@ -1,10 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import { Box } from "@mui/material";
+import { Box, Chip, IconButton } from "@mui/material";
+import { Visibility } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
 import StoreTabs from "./components/StoreTabs";
-import MaterialsTable from "./components/MaterialsTable";
+import GlobalTable from "../../components/GlobalTable";
 import AddMaterialDialog from "./components/AddMaterialDialog";
 
 const materialsData = [
@@ -75,6 +76,73 @@ export default function Store() {
     setOpenDialog(false);
   };
 
+  const columns = [
+    {
+      label: "Sr. No.",
+      align: "center",
+      render: (row, index) => (
+        <span style={{ fontWeight: 600 }}>{index + 1}</span>
+      ),
+    },
+    {
+      label: "Material Code",
+      align: "center",
+      render: (row) => (
+        <span style={{ fontWeight: 600, color: "#1172ba" }}>
+          {row.code}
+        </span>
+      ),
+    },
+    {
+      label: "Material Name",
+      align: "center",
+      accessor: "name",
+    },
+    {
+      label: "Category",
+      align: "center",
+      accessor: "category",
+    },
+    {
+      label: "Available Qty",
+      align: "center",
+      render: (row) => (
+        <Chip
+          label={row.available}
+          color={row.available <= row.minimum ? "error" : "success"}
+          size="small"
+        />
+      ),
+    },
+    {
+      label: "Minimum Qty",
+      align: "center",
+      accessor: "minimum",
+    },
+    {
+      label: "Last Updated",
+      align: "center",
+      accessor: "updated",
+    },
+    {
+      label: "Actions",
+      align: "center",
+      render: (row) => (
+        <IconButton
+          size="small"
+          onClick={() => router.push(`/store/${row.code}`)}
+          sx={{
+            color: "rgb(17, 114, 186)",
+            bgcolor: "#f1f5f9",
+            "&:hover": { bgcolor: "#e2e8f0" },
+          }}
+        >
+          <Visibility fontSize="small" />
+        </IconButton>
+      ),
+    },
+  ];
+
   return (
     <Box>
       <CommonCard
@@ -87,10 +155,7 @@ export default function Store() {
       >
         <StoreTabs value={tab} handleChange={handleTabChange} />
 
-        <MaterialsTable
-          data={filtered}
-          onView={(code) => router.push(`/store/${code}`)}
-        />
+        <GlobalTable columns={columns} data={filtered} />
 
         <AddMaterialDialog
           open={openDialog}

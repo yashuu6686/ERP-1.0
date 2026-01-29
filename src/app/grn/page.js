@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import { Box } from "@mui/material";
+import { Box, Typography, Chip } from "@mui/material";
 import CommonCard from "../../components/CommonCard";
-import GRNListTable from "./components/GRNListTable";
+import GlobalTable from "../../components/GlobalTable";
 import CreateGRNDialog from "./components/CreateGRNDialog";
 
 export default function GRNTable() {
@@ -62,6 +62,66 @@ export default function GRNTable() {
     setOpen(false);
   };
 
+  const columns = [
+    {
+      label: "Sr.No.",
+      align: "center",
+      render: (row, index) => index + 1,
+    },
+    {
+      label: "GRN Number",
+      align: "center",
+      render: (row) => (
+        <Typography variant="body2" sx={{ color: "#1172ba", fontWeight: 600 }}>
+          {row.grn}
+        </Typography>
+      ),
+    },
+    {
+      label: "PO Number",
+      align: "center",
+      accessor: "po",
+    },
+    {
+      label: "Invoice Number",
+      align: "center",
+      accessor: "invoice",
+    },
+    {
+      label: "Item Name",
+      align: "center",
+      accessor: "item",
+      sx: { maxWidth: 280 },
+    },
+    {
+      label: "Received Date",
+      align: "center",
+      accessor: "date",
+    },
+    {
+      label: "Received By",
+      align: "center",
+      render: (row) => <Chip label={row.receivedBy} size="small" />,
+    },
+    {
+      label: "Supplier",
+      align: "center",
+      accessor: "supplier",
+    },
+    {
+      label: "Quantity",
+      align: "center",
+      render: (row) => (
+        <Chip
+          label={row.qty}
+          color="success"
+          size="small"
+          sx={{ fontWeight: 600 }}
+        />
+      ),
+    },
+  ];
+
   return (
     <Box>
       <CommonCard
@@ -72,7 +132,7 @@ export default function GRNTable() {
         searchValue={search}
         onSearchChange={(e) => setSearch(e.target.value)}
       >
-        <GRNListTable data={filtered} />
+        <GlobalTable columns={columns} data={filtered} />
 
         <CreateGRNDialog
           open={open}
