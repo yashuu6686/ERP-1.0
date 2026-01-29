@@ -1,0 +1,109 @@
+import React from "react";
+import { Card, Box, Typography, CardContent, Grid, TextField } from "@mui/material";
+import { Verified } from "@mui/icons-material";
+
+const SignaturesApprovalSection = () => {
+    return (
+        <Card
+            elevation={0}
+            sx={{
+                p: 0,
+                mb: 4,
+                borderRadius: 2,
+                border: "1px solid #e2e8f0",
+                overflow: "hidden",
+            }}
+        >
+            <Box
+                sx={{
+                    padding: 2,
+                    background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
+                }}
+            >
+                <Verified sx={{ color: "#fff" }} />
+                <Typography variant="subtitle1" sx={{ color: "#fff", fontWeight: 600 }}>
+                    Signatures & Approval
+                </Typography>
+            </Box>
+            <CardContent sx={{ p: 3, bgcolor: "#f8fafc" }}>
+                <Grid container spacing={4}>
+                    <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+                        <Typography
+                            variant="subtitle2"
+                            fontWeight={700}
+                            mb={2}
+                            color="primary"
+                            sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
+                            Updated By
+                        </Typography>
+                        <Grid container spacing={2}>
+                            <Grid item xs={6} size={{ xs: 6, md: 6 }}>
+                                <TextField
+                                    fullWidth
+                                    label="Signature"
+                                    size="small"
+                                    sx={{
+                                        "& .MuiOutlinedInput-root": { backgroundColor: "white" },
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={6} size={{ xs: 6, md: 6 }}>
+                                <TextField
+                                    fullWidth
+                                    label="Date"
+                                    type="date"
+                                    InputLabelProps={{ shrink: true }}
+                                    size="small"
+                                    sx={{
+                                        "& .MuiOutlinedInput-root": { backgroundColor: "white" },
+                                    }}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+                        <Typography
+                            variant="subtitle2"
+                            fontWeight={700}
+                            mb={2}
+                            color="primary"
+                            sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
+                            Approved By
+                        </Typography>
+                        <Grid container spacing={2}>
+                            <Grid item xs={6} size={{ xs: 6, md: 6 }}>
+                                <TextField
+                                    fullWidth
+                                    label="Signature"
+                                    size="small"
+                                    sx={{
+                                        "& .MuiOutlinedInput-root": { backgroundColor: "white" },
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={6} size={{ xs: 6, md: 6 }}>
+                                <TextField
+                                    fullWidth
+                                    label="Date"
+                                    type="date"
+                                    InputLabelProps={{ shrink: true }}
+                                    size="small"
+                                    sx={{
+                                        "& .MuiOutlinedInput-root": { backgroundColor: "white" },
+                                    }}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </CardContent>
+        </Card>
+    );
+};
+
+export default SignaturesApprovalSection;
