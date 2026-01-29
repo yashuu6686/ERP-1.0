@@ -49,13 +49,13 @@ const CommonCard = ({
                     <Typography
                         variant="subtitle1"
                         sx={{
-                            fontWeight: 800,
+                            fontWeight: 600,
                             color: "#0f172a",
                             display: "flex",
                             alignItems: "center",
                             gap: 2,
                             textTransform: "uppercase",
-                            letterSpacing: "0.1em",
+                            // letterSpacing: "0.1em",
                             fontSize: "0.8rem"
                         }}
                     >
