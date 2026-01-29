@@ -76,7 +76,7 @@ export default function Sidebar({ children }) {
   };
 
   return (
-    <Box style={{ display: "flex", minHeight: "120vh" }}>
+    <Box sx={{ display: "flex", minHeight: "100vh", maxWidth: "100vw", overflowX: "hidden" }}>
       <Drawer
         variant="permanent"
         sx={{
@@ -161,12 +161,10 @@ export default function Sidebar({ children }) {
         sx={{
           flexGrow: 1,
           padding: "16px",
-          // bgcolor: "#f8fafc",
-          height: "100vh",
-          overflow: "hidden",
-          width: "100%",
+          minWidth: 0,
           display: 'flex',
-          flexDirection: 'column'
+          flexDirection: 'column',
+          minHeight: '100vh'
         }}
       >
         {/* Global Breadcrumbs */}

@@ -21,26 +21,24 @@ const GlobalTable = ({ columns, data, onRowClick }) => {
                 border: "1px solid #e2e8f0",
                 borderRadius: 2,
                 overflowX: "auto",
+                width: "100%",
+                maxWidth: "100%",
+                display: "block",
                 // Custom Scrollbar Styles
                 "&::-webkit-scrollbar": {
-                    height: "6px",
-                    width: "6px",
+                    height: "8px",
+                    width: "8px",
                 },
                 "&::-webkit-scrollbar-track": {
-                    background: "transparent",
+                    background: "#f8fafc",
                 },
                 "&::-webkit-scrollbar-thumb": {
-                    backgroundColor: "transparent",
+                    backgroundColor: "#cbd5e1",
                     borderRadius: "10px",
-                    transition: "background-color 0.3s",
+                    border: "2px solid #f8fafc",
                 },
-                "&:hover::-webkit-scrollbar-thumb": {
+                "&::-webkit-scrollbar-thumb:hover": {
                     backgroundColor: "#94a3b8",
-                },
-                scrollbarWidth: "thin",
-                scrollbarColor: "#94a3b8 transparent",
-                "&:hover": {
-                    scrollbarColor: "#94a3b8 transparent",
                 },
             }}
         >
@@ -78,7 +76,7 @@ const GlobalTable = ({ columns, data, onRowClick }) => {
                                 }}
                             >
                                 {columns.map((col, colIndex) => (
-                                    <TableCell sx={{whiteSpace: "nowrap",}} key={colIndex} align={col.align || "left"}>
+                                    <TableCell sx={{ whiteSpace: "nowrap", }} key={colIndex} align={col.align || "left"}>
                                         {col.render
                                             ? col.render(row, rowIndex)
                                             : row[col.accessor] || "-"}
