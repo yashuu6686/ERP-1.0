@@ -1,20 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import {
-  Box,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  IconButton,
-} from "@mui/material";
-import { Breadcrumbs, Link, Typography } from "@mui/material";
-import { NavigateNext } from "@mui/icons-material";
-import { Visibility, Edit, Download } from "@mui/icons-material";
-import NextLink from "next/link";
+import { Box } from "@mui/material";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
+import BOMTable from "./components/BOMTable";
 
 const bomData = [
   {
@@ -30,6 +19,7 @@ const bomData = [
     approvedBy: "Name",
   },
 ];
+
 export default function BOMList() {
   const router = useRouter();
   const [search, setSearch] = useState("");
@@ -38,10 +28,8 @@ export default function BOMList() {
     b.number.toLowerCase().includes(search.toLowerCase())
   );
 
-
   return (
     <Box>
-
       <CommonCard
         title="Bill of Materials (BOM)"
         addText="Create New BOM"
@@ -50,49 +38,11 @@ export default function BOMList() {
         searchValue={search}
         onSearchChange={(e) => setSearch(e.target.value)}
       >
-        <Box sx={{ overflowX: "auto" }}>
-          <Table size="small">
-            <TableHead sx={{ bgcolor: "#f3f4f6" }}>
-              <TableRow>
-                <TableCell align="center" sx={{ fontWeight: 400 }}>Sr. No.</TableCell>
-                <TableCell align="center" sx={{ fontWeight: 400 }}>BOM Number</TableCell>
-                <TableCell align="center" sx={{ fontWeight: 400 }}>Created Date</TableCell>
-                <TableCell align="center" sx={{ fontWeight: 400 }}>Approved By</TableCell>
-                <TableCell align="center" sx={{ fontWeight: 400 }}>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-
-            <TableBody>
-              {filtered.map((row, i) => (
-                <TableRow key={row.id} hover>
-                  <TableCell align="center">{i + 1}</TableCell>
-                  <TableCell align="center" sx={{ fontWeight: 600, color: "#1172ba" }}>
-                    {row.number}
-                  </TableCell>
-                  <TableCell align="center">{row.date}</TableCell>
-                  <TableCell align="center">{row.approvedBy}</TableCell>
-                  <TableCell align="center">
-                    <IconButton
-                      color="primary"
-                      size="small"
-                      onClick={() => router.push(`/bom/${row.id}`)}
-                    >
-                      <Visibility fontSize="small" />
-                    </IconButton>
-                    <IconButton color="warning" size="small">
-                      <Edit fontSize="small" />
-                    </IconButton>
-                    <IconButton color="success" size="small">
-                      <Download fontSize="small" />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Box>
+        <BOMTable
+          data={filtered}
+          onView={(id) => router.push(`/bom/${id}`)}
+        />
       </CommonCard>
     </Box>
   );
-
 }
