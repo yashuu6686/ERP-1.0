@@ -132,14 +132,7 @@ export default function AfterProductionInspection() {
             </IconButton>
           </Tooltip>
           <Tooltip title="Edit">
-            <IconButton
-              size="small"
-              sx={{
-                color: "#dc2626",
-                bgcolor: "#fef2f2",
-                "&:hover": { bgcolor: "#fee2e2" },
-              }}
-            >
+            <IconButton color="warning" size="small">
               <Edit fontSize="small" />
             </IconButton>
           </Tooltip>

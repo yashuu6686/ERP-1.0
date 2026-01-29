@@ -95,14 +95,7 @@ export default function Batch() {
           >
             <Visibility fontSize="small" />
           </IconButton>
-          <IconButton
-            size="small"
-            sx={{
-              color: "#dc2626",
-              bgcolor: "#fef2f2",
-              "&:hover": { bgcolor: "#fee2e2" },
-            }}
-          >
+          <IconButton color="warning" size="small">
             <Edit fontSize="small" />
           </IconButton>
         </Box>
