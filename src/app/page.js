@@ -295,7 +295,7 @@ export default function DashboardPage() {
       {/* Statistics Section */}
       <Grid container spacing={3} sx={{ mb: 6 }}>
         {metrics.map((m, idx) => (
-          <Grid item xs={12} sm={6} lg={3} size={{ xs: 12, sm: 6, lg: 3 }} key={idx}>
+          <Grid item size={{ xs: 12, sm: 6, lg: 3 }} key={idx}>
             <GlassMetric {...m} />
           </Grid>
         ))}
@@ -313,7 +313,7 @@ export default function DashboardPage() {
             </Box>
             <Grid container spacing={2.5}>
               {quickNav.map((item, idx) => (
-                <Grid item xs={6} sm={4} md={3} size={{ xs: 6, sm: 4, md: 3 }}   key={idx}>
+                <Grid item size={{ xs: 6, sm: 4, md: 3 }} key={idx}>
                   <ModuleCard item={item} router={router} />
                 </Grid>
               ))}
@@ -328,6 +328,92 @@ export default function DashboardPage() {
               {activities.map((act, idx) => (
                 <ActivityItem key={idx} act={act} isLast={idx === activities.length - 1} />
               ))}
+            </Paper>
+          </Box>
+        </Grid>
+
+        {/* Right: Risk Management & Performance */}
+        <Grid item xs={12} lg={4}>
+          <Box sx={{ mb: 5 }}>
+            <Typography variant="h5" fontWeight={900} color="#0f172a" sx={{ letterSpacing: '-0.02em', mb: 3 }}>
+              Risk <span style={{ color: '#ef4444' }}>Monitors</span>
+            </Typography>
+            <Card sx={{ borderRadius: 6, border: '1px solid #f1f5f9', p: 1 }}>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
+                  <Avatar sx={{ bgcolor: '#fee2e2', color: '#ef4444' }}><Warning /></Avatar>
+                  <Box>
+                    <Typography variant="subtitle2" fontWeight={800}>Inventory Criticality</Typography>
+                    <Typography variant="caption" color="#94a3b8">2 Material Items Alert</Typography>
+                  </Box>
+                </Box>
+
+                <Box sx={{ mb: 4 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography variant="caption" fontWeight={800} color="#475569">Precision Sensors</Typography>
+                    <Typography variant="caption" fontWeight={900} color="#ef4444">12%</Typography>
+                  </Box>
+                  <LinearProgress variant="determinate" value={12} sx={{ height: 6, borderRadius: 3, bgcolor: '#f1f5f9', '& .MuiLinearProgress-bar': { bgcolor: '#ef4444' } }} />
+                </Box>
+
+                <Box sx={{ mb: 4 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography variant="caption" fontWeight={800} color="#475569">D8 Enclosures</Typography>
+                    <Typography variant="caption" fontWeight={900} color="#f59e0b">24%</Typography>
+                  </Box>
+                  <LinearProgress variant="determinate" value={24} sx={{ height: 6, borderRadius: 3, bgcolor: '#f1f5f9', '& .MuiLinearProgress-bar': { bgcolor: '#f59e0b' } }} />
+                </Box>
+
+                <Button fullWidth variant="contained" sx={{ bgcolor: '#0f172a', color: 'white', borderRadius: 4, py: 1.5, fontWeight: 800, textTransform: 'none', '&:hover': { bgcolor: '#1e293b' } }}>
+                  Automate Procurement
+                </Button>
+              </CardContent>
+            </Card>
+          </Box>
+
+          <Box>
+            <Typography variant="h5" fontWeight={900} color="#0f172a" sx={{ letterSpacing: '-0.02em', mb: 3 }}>
+              Unit <span style={{ color: '#10b981' }}>Health</span>
+            </Typography>
+            <Paper
+              elevation={0}
+              sx={{
+                p: 3,
+                borderRadius: 6,
+                background: 'linear-gradient(to bottom, #ffffff, #f0fdf4)',
+                border: '1px solid #dcfce7',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+            >
+              <Box sx={{ position: 'relative', zIndex: 1 }}>
+                <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+                  <Box
+                    sx={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: 3,
+                      bgcolor: 'white',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)'
+                    }}
+                  >
+                    <Timeline sx={{ color: '#10b981' }} />
+                  </Box>
+                  <Box>
+                    <Typography variant="body2" fontWeight={800} color="#065f46">Production Sync</Typography>
+                    <Typography variant="caption" color="#10b981" fontWeight={700}>Active Phase 4</Typography>
+                  </Box>
+                </Box>
+                <Typography variant="caption" color="#64748b" sx={{ lineHeight: 1.6, display: 'block' }}>
+                  Centralized manufacturing nodes are currently achieving 99.8% precision with synchronized dispatch latencies.
+                </Typography>
+              </Box>
+              <Box sx={{ position: 'absolute', top: -20, right: -20, opacity: 0.2 }}>
+                <Science sx={{ fontSize: 100, color: '#10b981' }} />
+              </Box>
             </Paper>
           </Box>
         </Grid>
