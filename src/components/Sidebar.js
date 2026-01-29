@@ -163,6 +163,8 @@ export default function Sidebar({ children }) {
           padding: "16px",
           // bgcolor: "#f8fafc",
           height: "100vh",
+          overflow: "hidden",
+          width: "100%",
           display: 'flex',
           flexDirection: 'column'
         }}

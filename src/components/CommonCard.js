@@ -27,7 +27,7 @@ const CommonCard = ({
                 sx={{
                     p: 2,
                     borderRadius: "12px",
-                    // border: "1px solid #e0e0e0",
+                    border: "1px solid #e0e0e0",
                     backgroundColor: "#fff",
                     boxShadow: "rgba(0, 0, 0, 0.1) 0px 2px 3px",
                 }}
@@ -54,9 +54,9 @@ const CommonCard = ({
                             display: "flex",
                             alignItems: "center",
                             gap: 2,
-                            textTransform: "uppercase",
+                            // textTransform: "uppercase",
                             // letterSpacing: "0.1em",
-                            fontSize: "0.8rem"
+                            // fontSize: "0.8rem"
                         }}
                     >
                         <Box sx={{ width: 4, height: 20, bgcolor: "#2563eb", borderRadius: 1 }} />
