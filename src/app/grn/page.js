@@ -81,7 +81,7 @@ export default function GRNTable() {
 
   return (
     <Box>
-    
+
       <CommonCard
         title="Goods Receipt Note (GRN)"
         addText="Create GRN"
@@ -111,7 +111,6 @@ export default function GRNTable() {
                 <TableRow
                   key={row.id}
                   sx={{
-                    "&:hover": { bgcolor: "#f8fafc" },
                     transition: "0.2s",
                   }}
                 >

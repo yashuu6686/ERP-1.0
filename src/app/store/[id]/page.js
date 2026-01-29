@@ -74,7 +74,7 @@ export default function StockMovementHistory() {
 
           <TableBody>
             {filtered.map((row, i) => (
-              <TableRow key={i}>
+              <TableRow key={i} sx={{ transition: "0.2s" }}>
                 <TableCell>{i + 1}</TableCell>
                 <TableCell>{row.date}</TableCell>
                 <TableCell>

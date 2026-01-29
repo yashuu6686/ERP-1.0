@@ -89,17 +89,17 @@ const InspectionObservations = ({
                 <Table size="small">
                     <TableHead>
                         <TableRow sx={{ bgcolor: '#f1f5f9' }}>
-                            <TableCell sx={{ fontWeight: 700 }}>Sr.No</TableCell>
-                            <TableCell sx={{ fontWeight: 700 }}>Parameter</TableCell>
-                            <TableCell sx={{ fontWeight: 700 }}>Specification</TableCell>
-                            <TableCell sx={{ fontWeight: 700 }}>Method</TableCell>
+                            <TableCell align="center" sx={{ fontWeight: 500 }}>Sr.No</TableCell>
+                            <TableCell align="center" sx={{ fontWeight: 500 }}>Parameter</TableCell>
+                            <TableCell align="center" sx={{ fontWeight: 500 }}>Specification</TableCell>
+                            <TableCell align="center" sx={{ fontWeight: 500 }}>Method</TableCell>
                             {observationColumns.map((col) => (
-                                <TableCell key={col.id} sx={{ fontWeight: 700 }}>
+                                <TableCell key={col.id} align="center" sx={{ fontWeight: 500 }}>
                                     {col.label}
                                 </TableCell>
                             ))}
-                            <TableCell sx={{ fontWeight: 700 }}>Remarks</TableCell>
-                            <TableCell sx={{ fontWeight: 700 }}>Action</TableCell>
+                            <TableCell align="center" sx={{ fontWeight: 500 }}>Remarks</TableCell>
+                            <TableCell align="center" sx={{ fontWeight: 500 }}>Action</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

@@ -181,10 +181,6 @@ export default function RejectedGoods() {
           boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
           border: "1px solid #e0e0e0",
           transition: "all 0.3s ease",
-          "&:hover": {
-            boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-            transform: "translateY(-2px)",
-          },
         }}
       >
         <CardContent sx={{ p: 2 }}>
@@ -272,7 +268,7 @@ export default function RejectedGoods() {
             </Grid>
             <Grid item xs={6} size={{ xs: 12, md: 6 }}>
               <Typography
-              
+
                 variant="caption"
                 sx={{ color: "#999", display: "block", mb: 0.5 }}
               >
@@ -320,19 +316,20 @@ export default function RejectedGoods() {
                 flex: 1,
                 textTransform: "none",
                 fontSize: "0.8rem",
-                color: "#1172ba",
-                borderColor: "#1172ba",
+                color: "rgb(17, 114, 186)",
+                bgcolor: "#f1f5f9",
+                "&:hover": { bgcolor: "#e2e8f0" }
               }}
-              variant="outlined"
+              variant="contained"
             >
               View
             </Button>
             <IconButton
               size="small"
               sx={{
-                color: "#1172ba",
-                border: "1px solid #1172ba",
-                borderRadius: "8px",
+                color: "#dc2626",
+                bgcolor: "#fef2f2",
+                "&:hover": { bgcolor: "#fee2e2" }
               }}
             >
               <Edit fontSize="small" />
@@ -340,9 +337,9 @@ export default function RejectedGoods() {
             <IconButton
               size="small"
               sx={{
-                color: "#dc3545",
-                border: "1px solid #dc3545",
-                borderRadius: "8px",
+                color: "#dc2626",
+                bgcolor: "#fef2f2",
+                "&:hover": { bgcolor: "#fee2e2" }
               }}
             >
               <Delete fontSize="small" />
@@ -431,9 +428,7 @@ export default function RejectedGoods() {
                   return (
                     <TableRow
                       key={row.id}
-                      hover
                       sx={{
-                        "&:hover": { bgcolor: "#f8f9fa" },
                         transition: "background-color 0.2s",
                       }}
                     >
@@ -497,8 +492,9 @@ export default function RejectedGoods() {
                           <IconButton
                             size="small"
                             sx={{
-                              color: "#1172ba",
-                              "&:hover": { bgcolor: "#e3f2fd" },
+                              color: "rgb(17, 114, 186)",
+                              bgcolor: "#f1f5f9",
+                              "&:hover": { bgcolor: "#e2e8f0" }
                             }}
                           >
                             <Visibility fontSize="small" />
@@ -506,8 +502,9 @@ export default function RejectedGoods() {
                           <IconButton
                             size="small"
                             sx={{
-                              color: "#28a745",
-                              "&:hover": { bgcolor: "#d4edda" },
+                              color: "#dc2626",
+                              bgcolor: "#fef2f2",
+                              "&:hover": { bgcolor: "#fee2e2" }
                             }}
                           >
                             <Edit fontSize="small" />
@@ -515,8 +512,9 @@ export default function RejectedGoods() {
                           <IconButton
                             size="small"
                             sx={{
-                              color: "#dc3545",
-                              "&:hover": { bgcolor: "#f8d7da" },
+                              color: "#dc2626",
+                              bgcolor: "#fef2f2",
+                              "&:hover": { bgcolor: "#fee2e2" }
                             }}
                           >
                             <Delete fontSize="small" />

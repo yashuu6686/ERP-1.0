@@ -134,7 +134,7 @@ export default function FinalInspectionForm() {
                   }}
                 />
               </Grid>
-              <Grid item xs={12} md={4} size={{ xs: 12, md: 4 }}>
+              <Grid item xs={12} md={4} size={{ xs: 12, md: 3 }}>
                 <TextField
                   fullWidth
                   label="Inspection No."
@@ -144,7 +144,7 @@ export default function FinalInspectionForm() {
                   }}
                 />
               </Grid>
-              <Grid item xs={12} md={4} size={{ xs: 12, md: 4 }}>
+              <Grid item xs={12} md={4} size={{ xs: 12, md: 3 }}>
                 <TextField
                   fullWidth
                   label="Serial From"
@@ -154,7 +154,7 @@ export default function FinalInspectionForm() {
                   }}
                 />
               </Grid>
-              <Grid item xs={12} md={4} size={{ xs: 12, md: 4 }}>
+              <Grid item xs={12} md={4} size={{ xs: 12, md: 3 }}>
                 <TextField
                   fullWidth
                   label="Serial To"

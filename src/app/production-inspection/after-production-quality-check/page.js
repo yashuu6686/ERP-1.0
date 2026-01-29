@@ -141,7 +141,7 @@ export default function QualityCheckForm() {
 
             <CardContent sx={{ padding: 3 }}>
               <Grid container spacing={3}>
-                <Grid item xs={12} sm={6} md={3} size={{xs:12,sm:6,md:2.4}}>
+                <Grid item xs={12} sm={6} md={3} size={{ xs: 12, sm: 6, md: 2.4 }}>
                   <TextField
                     fullWidth
                     label="Product Name"
@@ -151,7 +151,7 @@ export default function QualityCheckForm() {
                     onChange={(e) => handleProductDetailsChange('productName', e.target.value)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} md={3} size={{xs:12,sm:6,md:2.4}}>
+                <Grid item xs={12} sm={6} md={3} size={{ xs: 12, sm: 6, md: 2.4 }}>
                   <TextField
                     fullWidth
                     label="Quality Standard No."
@@ -161,7 +161,7 @@ export default function QualityCheckForm() {
                     onChange={(e) => handleProductDetailsChange('qualityStandard', e.target.value)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} md={3} size={{xs:12,sm:6,md:2.4}}>
+                <Grid item xs={12} sm={6} md={3} size={{ xs: 12, sm: 6, md: 2.4 }}>
                   <TextField
                     fullWidth
                     label="Checked Quantity"
@@ -172,7 +172,7 @@ export default function QualityCheckForm() {
                     onChange={(e) => handleProductDetailsChange('checkedQuantity', e.target.value)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} md={3} size={{xs:12,sm:6,md:2.4}}>
+                <Grid item xs={12} sm={6} md={3} size={{ xs: 12, sm: 6, md: 2.4 }}>
                   <TextField
                     fullWidth
                     label="Inspection Date"
@@ -184,7 +184,7 @@ export default function QualityCheckForm() {
                     onChange={(e) => handleProductDetailsChange('inspectionDate', e.target.value)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} md={3} size={{xs:12,sm:6,md:2.4}}>
+                <Grid item xs={12} sm={6} md={3} size={{ xs: 12, sm: 6, md: 2.4 }}>
                   <TextField
                     fullWidth
                     label="Check Number"
@@ -250,7 +250,7 @@ export default function QualityCheckForm() {
                   </TableHead>
                   <TableBody>
                     {checkDetails.map((row, index) => (
-                      <TableRow key={row.id} hover>
+                      <TableRow key={row.id}>
                         <TableCell align='center' sx={{ p: 2 }}>{index + 1}</TableCell>
                         <TableCell align='center' sx={{ p: 1 }}>
                           <TextField
@@ -302,7 +302,11 @@ export default function QualityCheckForm() {
                             size="small"
                             onClick={() => deleteRow(row.id)}
                             disabled={checkDetails.length === 1}
-                            color="error"
+                            sx={{
+                              color: "#dc2626",
+                              bgcolor: "#fef2f2",
+                              "&:hover": { bgcolor: "#fee2e2" }
+                            }}
                           >
                             <Delete fontSize="small" />
                           </IconButton>
@@ -342,7 +346,7 @@ export default function QualityCheckForm() {
 
             <CardContent sx={{ padding: 3 }}>
               <Grid container spacing={3}>
-                <Grid item xs={12} sm={6} md={3} size={{xs:12,sm:6,md:3}}>
+                <Grid item xs={12} sm={6} md={3} size={{ xs: 12, sm: 6, md: 3 }}>
                   <TextField
                     fullWidth
                     label="Accepted Quantity"
@@ -353,7 +357,7 @@ export default function QualityCheckForm() {
                     onChange={(e) => handleInspectionSummaryChange('acceptedQuantity', e.target.value)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} md={3} size={{xs:12,sm:6,md:3}}>
+                <Grid item xs={12} sm={6} md={3} size={{ xs: 12, sm: 6, md: 3 }}>
                   <TextField
                     fullWidth
                     label="Rejected Quantity"
@@ -364,7 +368,7 @@ export default function QualityCheckForm() {
                     onChange={(e) => handleInspectionSummaryChange('rejectedQuantity', e.target.value)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} md={3} size={{xs:12,sm:6,md:3}}>
+                <Grid item xs={12} sm={6} md={3} size={{ xs: 12, sm: 6, md: 3 }}>
                   <TextField
                     fullWidth
                     label="Hold / Scrap Quantity"
@@ -375,7 +379,7 @@ export default function QualityCheckForm() {
                     onChange={(e) => handleInspectionSummaryChange('holdScrapQuantity', e.target.value)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} md={3} size={{xs:12,sm:6,md:3}}>
+                <Grid item xs={12} sm={6} md={3} size={{ xs: 12, sm: 6, md: 3 }}>
                   <TextField
                     fullWidth
                     label="Other"
@@ -385,7 +389,7 @@ export default function QualityCheckForm() {
                     onChange={(e) => handleInspectionSummaryChange('other', e.target.value)}
                   />
                 </Grid>
-                <Grid item xs={12} size={{xs:12}}>
+                <Grid item xs={12} size={{ xs: 12 }}>
                   <TextField
                     fullWidth
                     label="Comments (if any)"
@@ -427,13 +431,13 @@ export default function QualityCheckForm() {
 
             <CardContent sx={{ padding: 3 }}>
               <Grid container spacing={3}>
-                <Grid item xs={12} md={6} size={{xs:12,md:6}}>
+                <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
                   <Box sx={{ p: 2, bgcolor: '#f8fafc', borderRadius: 2, border: '1px solid #e2e8f0' }}>
                     <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 700, color: '#475569' }}>
                       Reviewed By
                     </Typography>
                     <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6} size={{xs:12,sm:6}}>
+                      <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
                         <TextField
                           fullWidth
                           label="Signature"
@@ -443,7 +447,7 @@ export default function QualityCheckForm() {
                           onChange={(e) => handleApprovalChange('reviewedBy', e.target.value)}
                         />
                       </Grid>
-                      <Grid item xs={12} sm={6} size={{xs:12,sm:6}}>
+                      <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
                         <TextField
                           fullWidth
                           label="Date"
@@ -457,13 +461,13 @@ export default function QualityCheckForm() {
                     </Grid>
                   </Box>
                 </Grid>
-                <Grid item xs={12} md={6} size={{xs:12,md:6}}>
+                <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
                   <Box sx={{ p: 2, bgcolor: '#f8fafc', borderRadius: 2, border: '1px solid #e2e8f0' }}>
                     <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 700, color: '#475569' }}>
                       Approved By
                     </Typography>
                     <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6} size={{xs:12,sm:6}}>
+                      <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
                         <TextField
                           fullWidth
                           label="Signature"
@@ -473,7 +477,7 @@ export default function QualityCheckForm() {
                           onChange={(e) => handleApprovalChange('approvedBy', e.target.value)}
                         />
                       </Grid>
-                      <Grid item xs={12} sm={6} size={{xs:12,sm:6}}>
+                      <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
                         <TextField
                           fullWidth
                           label="Date"

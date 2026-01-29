@@ -84,7 +84,7 @@ export default function CustomerOrders() {
 
             <TableBody>
               {filtered.map((row, i) => (
-                <TableRow key={row.id} hover>
+                <TableRow key={row.id}>
                   <TableCell align="center">{i + 1}</TableCell>
                   <TableCell align="center" sx={{ fontWeight: 600, color: "#1172ba" }}>
                     {row.orderNo}
@@ -105,9 +105,13 @@ export default function CustomerOrders() {
                   <TableCell align="center">{row.reference}</TableCell>
                   <TableCell align="center">
                     <IconButton
-                      color="primary"
                       size="small"
                       onClick={() => router.push(`/orders/${row.id}`)}
+                      sx={{
+                        color: "rgb(17, 114, 186)",
+                        bgcolor: "#f1f5f9",
+                        "&:hover": { bgcolor: "#e2e8f0" }
+                      }}
                     >
                       <Visibility fontSize="small" />
                     </IconButton>

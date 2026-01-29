@@ -21,13 +21,15 @@
 
 /* Show scrollbar on hover */
 .sidebar-scroll:hover::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1; /* light gray */
+  background-color: #cbd5e1;
+  /* light gray */
 }
 
 /* Firefox */
 .sidebar-scroll:hover {
   scrollbar-color: #cbd5e1 transparent;
 }
+
 .sidebar-scroll:hover::-webkit-scrollbar-thumb {
   background-color: #94a3b8;
 }

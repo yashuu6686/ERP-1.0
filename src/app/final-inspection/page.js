@@ -10,7 +10,7 @@ import {
   Chip,
   IconButton,
 } from "@mui/material";
-import { Visibility, NavigateNext } from "@mui/icons-material";
+import { Visibility, Edit, Download, NavigateNext } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { Breadcrumbs, Link, Typography } from "@mui/material";
 import NextLink from "next/link";
@@ -54,7 +54,7 @@ export default function FinalQualityCheck() {
 
   return (
     <Box>
-     
+
       <CommonCard
         title="Final Quality Check List"
         addText="Add Final Check"
@@ -83,7 +83,7 @@ export default function FinalQualityCheck() {
 
             <TableBody>
               {filtered.map((row, i) => (
-                <TableRow key={row.id} hover>
+                <TableRow key={row.id}>
                   <TableCell align="center">{i + 1}</TableCell>
                   <TableCell align="center" sx={{ fontWeight: 600, color: "#1172ba" }}>
                     {row.inspectionNo}
@@ -109,13 +109,39 @@ export default function FinalQualityCheck() {
                   <TableCell align="center">{row.approvedBy}</TableCell>
                   <TableCell align="center">{row.approvalDate}</TableCell>
                   <TableCell align="center">
-                    <IconButton
-                      color="primary"
-                      size="small"
-                      onClick={() => router.push(`/final-inspection/${row.id}`)}
-                    >
-                      <Visibility fontSize="small" />
-                    </IconButton>
+                    <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
+                      <IconButton
+                        size="small"
+                        onClick={() => router.push(`/final-inspection/${row.id}`)}
+                        sx={{
+                          color: "rgb(17, 114, 186)",
+                          bgcolor: "#f1f5f9",
+                          "&:hover": { bgcolor: "#e2e8f0" }
+                        }}
+                      >
+                        <Visibility fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        sx={{
+                          color: "#dc2626",
+                          bgcolor: "#fef2f2",
+                          "&:hover": { bgcolor: "#fee2e2" }
+                        }}
+                      >
+                        <Edit fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        sx={{
+                          color: "#0891b2",
+                          bgcolor: "#ecfeff",
+                          "&:hover": { bgcolor: "#cffafe" }
+                        }}
+                      >
+                        <Download fontSize="small" />
+                      </IconButton>
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))}
