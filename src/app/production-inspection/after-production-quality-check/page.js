@@ -171,14 +171,14 @@ export default function QualityCheckForm() {
                 fontWeight: 600,
               },
               "& .MuiStepLabel-label.Mui-completed": {
-                color: "#10b981",
+                color: "#1172ba",
                 fontWeight: 600,
               },
               "& .MuiStepIcon-root.Mui-active": {
                 color: "#1172ba",
               },
               "& .MuiStepIcon-root.Mui-completed": {
-                color: "#10b981",
+                color: "#1172ba",
               },
             }}
           >
