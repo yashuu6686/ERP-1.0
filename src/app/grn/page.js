@@ -1,67 +1,41 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Typography, Chip, IconButton } from "@mui/material";
+import { Download, Edit, Visibility } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
 import GlobalTable from "../../components/GlobalTable";
-import CreateGRNDialog from "./components/CreateGRNDialog";
-import { Download, Edit, Visibility } from "@mui/icons-material";
+import axiosInstance from "@/axios/axiosInstance";
+import Loader from "../../components/Loader";
 
 export default function GRNTable() {
+  const router = useRouter();
   const [search, setSearch] = useState("");
-  const [form, setForm] = useState({
-    grnNumber: "",
-    poNumber: "",
-    invoiceNumber: "",
-    receivedDate: "",
-    itemName: "",
-    quantity: "",
-    receivedBy: "",
-    supplierName: "",
-  });
+  const [grns, setGrns] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    fetchGRNs();
+  }, []);
 
-  const grnData = [
-    {
-      id: 1,
-      grn: "GRN/2025002",
-      po: "SIPL/2025019",
-      invoice: "SIPL/2025019",
-      item: "Tally Prime Silver Single User (Virtual License)",
-      date: "20-03-2025",
-      receivedBy: "aj",
-      supplier: "ABC",
-      qty: 2,
-    },
-    {
-      id: 2,
-      grn: "GRN/2025001",
-      po: "STC/2025018",
-      invoice: "STC/2025018",
-      item: "Tally Prime Silver Single User (Virtual License)",
-      date: "10-02-2025",
-      receivedBy: "vk",
-      supplier: "XYZ",
-      qty: 1,
-    },
-  ];
+  const fetchGRNs = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get("/grn");
+      setGrns(response.data || []);
+    } catch (error) {
+      console.error("Error fetching GRNs:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const filtered = grnData.filter(
+  const filtered = grns.filter(
     (g) =>
-      g.grn.toLowerCase().includes(search.toLowerCase()) ||
-      g.po.toLowerCase().includes(search.toLowerCase()) ||
-      g.supplier.toLowerCase().includes(search.toLowerCase())
+      g.grnNumber?.toLowerCase().includes(search.toLowerCase()) ||
+      g.poNumber?.toLowerCase().includes(search.toLowerCase()) ||
+      g.supplierName?.toLowerCase().includes(search.toLowerCase())
   );
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = () => {
-    console.log("GRN Data:", form);
-    alert("GRN Saved Successfully!");
-    setOpen(false);
-  };
 
   const columns = [
     {
@@ -74,30 +48,30 @@ export default function GRNTable() {
       align: "center",
       render: (row) => (
         <Typography variant="body2" sx={{ color: "#1172ba", fontWeight: 600 }}>
-          {row.grn}
+          {row.grnNumber}
         </Typography>
       ),
     },
     {
       label: "PO Number",
       align: "center",
-      accessor: "po",
+      accessor: "poNumber",
     },
     {
       label: "Invoice Number",
       align: "center",
-      accessor: "invoice",
+      accessor: "invoiceNumber",
     },
     {
-      label: "Item Name",
+      label: "Item",
       align: "center",
-      accessor: "item",
+      render: (row) => row.items?.[0]?.name || "N/A",
       sx: { maxWidth: 280 },
     },
     {
       label: "Received Date",
       align: "center",
-      accessor: "date",
+      render: (row) => new Date(row.receivedDate).toLocaleDateString(),
     },
     {
       label: "Received By",
@@ -107,28 +81,51 @@ export default function GRNTable() {
     {
       label: "Supplier",
       align: "center",
-      accessor: "supplier",
+      accessor: "supplierName",
     },
     {
       label: "Quantity",
       align: "center",
       render: (row) => (
         <Chip
-          label={row.qty}
+          label={row.items?.reduce((sum, item) => sum + (parseFloat(item.receivedQty) || 0), 0)}
           color="success"
           size="small"
           sx={{ fontWeight: 600 }}
         />
       ),
     },
-     {
+    {
+      label: "Inspection",
+      align: "center",
+      render: (row) => (
+        <Chip
+          label={row.inspectionStatus || "Pending"}
+          size="small"
+          sx={{
+            fontWeight: 800,
+            fontSize: "0.65rem",
+            textTransform: "uppercase",
+            letterSpacing: 0.5,
+            borderRadius: 1.5,
+            bgcolor:
+              row.inspectionStatus === "Pending" ? "#fef9c3" :
+                row.inspectionStatus === "Completed" ? "#e0f2fe" : "#f1f5f9",
+            color:
+              row.inspectionStatus === "Pending" ? "#a16207" :
+                row.inspectionStatus === "Completed" ? "#0369a1" : "#475569",
+          }}
+        />
+      ),
+    },
+    {
       label: "Actions",
       align: "center",
       render: (row) => (
-        <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
+        <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
           <IconButton
             size="small"
-            onClick={() => router.push(`/final-inspection/${row.id}`)}
+            onClick={() => router.push(`/grn/view-grn?id=${row.id}`)}
             sx={{
               color: "rgb(17, 114, 186)",
               bgcolor: "#f1f5f9",
@@ -137,43 +134,37 @@ export default function GRNTable() {
           >
             <Visibility fontSize="small" />
           </IconButton>
-          <IconButton color="warning" size="small">
-            <Edit fontSize="small" />
-          </IconButton>
           <IconButton
+            color="warning"
             size="small"
+            onClick={() => router.push(`/grn/create-grn?id=${row.id}`)}
+            disabled={row.inspectionStatus === "Completed"}
             sx={{
-              color: "#0891b2",
-              bgcolor: "#ecfeff",
-              "&:hover": { bgcolor: "#cffafe" },
+              "&.Mui-disabled": {
+                color: "#cbd5e1"
+              }
             }}
           >
-            <Download fontSize="small" />
+            <Edit fontSize="small" />
           </IconButton>
         </Box>
       ),
     },
   ];
 
+  if (loading) return <Loader fullPage message="Loading GRN list..." />;
+
   return (
     <Box>
       <CommonCard
         title="Goods Receipt Note (GRN)"
         addText="Create GRN"
-        onAdd={() => setOpen(true)}
-        searchPlaceholder="Search GRN"
+        onAdd={() => router.push("/grn/create-grn")}
+        searchPlaceholder="Search GRN, PO, Supplier..."
         searchValue={search}
         onSearchChange={(e) => setSearch(e.target.value)}
       >
         <GlobalTable columns={columns} data={filtered} />
-
-        <CreateGRNDialog
-          open={open}
-          handleClose={() => setOpen(false)}
-          form={form}
-          handleChange={handleChange}
-          handleSubmit={handleSubmit}
-        />
       </CommonCard>
     </Box>
   );
