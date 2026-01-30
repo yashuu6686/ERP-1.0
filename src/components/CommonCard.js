@@ -25,7 +25,7 @@ const CommonCard = ({
             <Paper
                 elevation={0}
                 sx={{
-                    p: 2,
+                    p: "8px",
                     borderRadius: "12px",
                     border: "1px solid #e0e0e0",
                     backgroundColor: "#fff",
@@ -40,7 +40,7 @@ const CommonCard = ({
                         alignItems: "center",
                         mb: 3,
                         backgroundColor: "#f8fafc",
-                        p: "16px 24px",
+                        p: "8px 12px",
                         borderRadius: "12px",
                         border: "1px solid #e2e8f0",
                         boxShadow: "0 1px 3px rgba(0,0,0,0.02)"

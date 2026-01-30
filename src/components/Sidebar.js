@@ -142,7 +142,7 @@ export default function Sidebar({ children }) {
         component="main"
         sx={{
           flexGrow: 1,
-          padding: "16px",
+          padding: "6px",
           minWidth: 0,
           display: 'flex',
           flexDirection: 'column',
@@ -150,7 +150,7 @@ export default function Sidebar({ children }) {
         }}
       >
         {/* Global Breadcrumbs */}
-        <TopNavbar />
+        {/* <TopNavbar /> */}
         {pathname !== "/" && (
           <Box sx={{ mb: 2 }}>
             <Breadcrumbs
