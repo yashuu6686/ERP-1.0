@@ -16,6 +16,7 @@ import {
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
 import GlobalTable from "../../components/GlobalTable";
+import Loader from "../../components/Loader";
 import axiosInstance from "@/axios/axiosInstance";
 
 export default function PurchaseOrderTable() {
@@ -248,11 +249,7 @@ export default function PurchaseOrderTable() {
         }
       >
         {loading ? (
-          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", py: 8 }}>
-            <Typography variant="h6" color="textSecondary">
-              Loading Purchase Orders...
-            </Typography>
-          </Box>
+          <Loader message="Loading Purchase Orders..." />
         ) : (
           <GlobalTable
             columns={columns}

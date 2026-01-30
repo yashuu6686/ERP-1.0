@@ -48,7 +48,7 @@ const TopNavbar = ({ onToggleSidebar }) => {
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
 
                 {/* Shopping Cart with circular background */}
-                <IconButton
+                {/* <IconButton
                     size="small"
                     sx={{
                         bgcolor: "#f0f7ff",
@@ -58,7 +58,7 @@ const TopNavbar = ({ onToggleSidebar }) => {
                     }}
                 >
                     <ShoppingCartOutlined fontSize="small" />
-                </IconButton>
+                </IconButton> */}
 
                 {/* Notifications Bell */}
                 <IconButton size="small" sx={{ color: "#1172ba", padding: "10px" }}>
@@ -97,7 +97,7 @@ const TopNavbar = ({ onToggleSidebar }) => {
                             width: 40,
                             height: 40,
                             borderRadius: "10px",
-                            bgcolor: "#f1f5f9"
+                            bgcolor: "#257cd3ff"
                         }}
                     >
                         SP
@@ -122,7 +122,7 @@ const TopNavbar = ({ onToggleSidebar }) => {
                                 fontWeight: 700
                             }}
                         >
-                            Dr. Shivan Patel
+                            Shivan Patel
                         </Typography>
                         <KeyboardArrowDown sx={{ color: "#1e293b", fontSize: "18px", ml: 0.5 }} />
                     </Box>
