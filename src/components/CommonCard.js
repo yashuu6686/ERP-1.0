@@ -26,7 +26,7 @@ const CommonCard = ({
                 elevation={0}
                 sx={{
 
-                    p: "var(--space-md)",
+                    p: "var(--space-sm)",
                     borderRadius: "var(--card-radius)",
                     border: "1px solid var(--border-default)",
                     backgroundColor: "var(--bg-surface)",
@@ -43,7 +43,7 @@ const CommonCard = ({
 
                         mb: "var(--space-lg)",
                         backgroundColor: "var(--bg-page)",
-                        p: "12px 16px",
+                        p: "8px 16px",
                         borderRadius: "12px",
                         border: "1px solid var(--border-default)",
                     }}
