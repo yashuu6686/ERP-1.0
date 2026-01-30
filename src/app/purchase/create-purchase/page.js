@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Box, Button, Grid, Typography, Card } from "@mui/material";
 import { Save, Description, CalendarToday, LocalShipping, Business } from "@mui/icons-material";
 import CommonCard from "../../../components/CommonCard";
@@ -39,6 +40,82 @@ export default function CreatePurchaseOrder() {
       email: "",
     },
   });
+
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+  const isEditMode = !!id;
+
+  useEffect(() => {
+    if (isEditMode) {
+      // Mock data fetching based on ID
+      const mockData = {
+        1: {
+          orderInfo: {
+            orderNumber: "SIPL/2025019",
+            orderDate: "2025-03-20",
+            expectedDelivery: "2025-03-25",
+          },
+          supplier: {
+            companyName: "XYZ Corp",
+            contactPerson: "John Smith",
+            address: "123 Tech Park, Bangalore",
+            email: "sales@xyz.com",
+            phone: "+91 9876543210",
+            pan: "ABCDE1234F",
+            gstin: "29ABCDE1234F1Z5",
+          },
+          delivery: {
+            invoiceTo: "My Company Ltd",
+            deliverTo: "Main Warehouse",
+            deliveryAddress: "456 Ind Area, Mumbai",
+            contactPerson: "Warehouse Manager",
+            phone: "+91 9123456780",
+            email: "warehouse@mycompany.com",
+          },
+          items: [
+            { name: "Tally Prime Silver Single User", qty: "2", price: "12611", total: 25222 }
+          ]
+        },
+        2: {
+          orderInfo: {
+            orderNumber: "STC/2025018",
+            orderDate: "2025-02-10",
+            expectedDelivery: "2025-02-15",
+          },
+          supplier: {
+            companyName: "ABC Solutions",
+            contactPerson: "Jane Doe",
+            address: "789 Biz Towers, Delhi",
+            email: "info@abc.com",
+            phone: "+91 9898989898",
+            pan: "FGHIJ5678K",
+            gstin: "07FGHIJ5678K1Z2",
+          },
+          delivery: {
+            invoiceTo: "My Company Ltd",
+            deliverTo: "Regional Office",
+            deliveryAddress: "321 City Center, Delhi",
+            contactPerson: "Admin Officer",
+            phone: "+91 9000000000",
+            email: "admin@mycompany.com",
+          },
+          items: [
+            { name: "Tally Prime Silver Single User", qty: "1", price: "25222", total: 25222 }
+          ]
+        }
+      };
+
+      const data = mockData[id];
+      if (data) {
+        setFormData({
+          orderInfo: data.orderInfo,
+          supplier: data.supplier,
+          delivery: data.delivery,
+        });
+        setItems(data.items);
+      }
+    }
+  }, [id, isEditMode]);
 
   const orderConfig = [
     {
@@ -121,7 +198,7 @@ export default function CreatePurchaseOrder() {
 
   return (
     <Box>
-      <CommonCard title="Create Purchase Order">
+      <CommonCard title={isEditMode ? "Edit Purchase Order" : "Create Purchase Order"}>
         <Box sx={{ p: 1 }}>
           <Card sx={{ mb: 4, background: "linear-gradient(135deg, #f8fafc, #f1f5f9)", border: "1px solid #e9ecef", borderRadius: 2 }}>
             <Box sx={{ p: 2, display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #e9ecef" }}>
@@ -195,7 +272,7 @@ export default function CreatePurchaseOrder() {
               onClick={() => console.log("Final Data:", { ...formData, items, totals: { subtotal, taxAmount, discountAmount, grandTotal } })}
               sx={{ backgroundColor: "#1172ba", "&:hover": { backgroundColor: "#0d5a94" }, borderRadius: 2, px: 4, py: 1.5, textTransform: "none", fontWeight: 500 }}
             >
-              Create Purchase Order
+              {isEditMode ? "Update Purchase Order" : "Create Purchase Order"}
             </Button>
           </Box>
         </Box>

@@ -80,10 +80,10 @@ export default function Sidebar({ children }) {
       <Drawer
         variant="permanent"
         sx={{
-          width: 290,
+          width: 260,
           flexShrink: 0,
           "& .MuiDrawer-paper": {
-            width: 290,
+            width: 260,
             boxSizing: "border-box",
           },
         }}

@@ -127,7 +127,7 @@ const CommonCard = ({
                 )}
 
                 {/* Content Section */}
-                <Box sx={{ minHeight: "300px" }}>{children}</Box>
+                <Box sx={{ }}>{children}</Box>
 
 
             </Paper>
