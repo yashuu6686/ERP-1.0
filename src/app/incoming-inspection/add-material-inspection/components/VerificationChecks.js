@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { Verified as VerifiedIcon } from "@mui/icons-material";
 
-const VerificationChecks = () => {
+const VerificationChecks = ({ data = {}, onChange }) => {
     return (
         <Card
             elevation={0}
@@ -50,22 +50,14 @@ const VerificationChecks = () => {
                         <FormLabel sx={{ fontWeight: 600, mb: 1, fontSize: "0.9rem" }}>
                             Inspection Tools Used
                         </FormLabel>
-                        <RadioGroup row>
-                            <FormControlLabel
-                                value="yes"
-                                control={<Radio size="small" />}
-                                label="Yes"
-                            />
-                            <FormControlLabel
-                                value="no"
-                                control={<Radio size="small" />}
-                                label="No"
-                            />
-                            <FormControlLabel
-                                value="n/a"
-                                control={<Radio size="small" />}
-                                label="N/A"
-                            />
+                        <RadioGroup
+                            row
+                            value={data.toolsUsed || ""}
+                            onChange={(e) => onChange("toolsUsed", e.target.value)}
+                        >
+                            <FormControlLabel value="yes" control={<Radio size="small" />} label="Yes" />
+                            <FormControlLabel value="no" control={<Radio size="small" />} label="No" />
+                            <FormControlLabel value="n/a" control={<Radio size="small" />} label="N/A" />
                         </RadioGroup>
                     </FormControl>
 
@@ -73,22 +65,14 @@ const VerificationChecks = () => {
                         <FormLabel sx={{ fontWeight: 600, mb: 1, fontSize: "0.9rem" }}>
                             SDS Available
                         </FormLabel>
-                        <RadioGroup row>
-                            <FormControlLabel
-                                value="yes"
-                                control={<Radio size="small" />}
-                                label="Yes"
-                            />
-                            <FormControlLabel
-                                value="no"
-                                control={<Radio size="small" />}
-                                label="No"
-                            />
-                            <FormControlLabel
-                                value="n/a"
-                                control={<Radio size="small" />}
-                                label="N/A"
-                            />
+                        <RadioGroup
+                            row
+                            value={data.sdsAvailable || ""}
+                            onChange={(e) => onChange("sdsAvailable", e.target.value)}
+                        >
+                            <FormControlLabel value="yes" control={<Radio size="small" />} label="Yes" />
+                            <FormControlLabel value="no" control={<Radio size="small" />} label="No" />
+                            <FormControlLabel value="n/a" control={<Radio size="small" />} label="N/A" />
                         </RadioGroup>
                     </FormControl>
 
@@ -96,22 +80,14 @@ const VerificationChecks = () => {
                         <FormLabel sx={{ fontWeight: 600, mb: 1, fontSize: "0.9rem" }}>
                             Quality Certificate
                         </FormLabel>
-                        <RadioGroup row>
-                            <FormControlLabel
-                                value="yes"
-                                control={<Radio size="small" />}
-                                label="Yes"
-                            />
-                            <FormControlLabel
-                                value="no"
-                                control={<Radio size="small" />}
-                                label="No"
-                            />
-                            <FormControlLabel
-                                value="n/a"
-                                control={<Radio size="small" />}
-                                label="N/A"
-                            />
+                        <RadioGroup
+                            row
+                            value={data.qualityCertificate || ""}
+                            onChange={(e) => onChange("qualityCertificate", e.target.value)}
+                        >
+                            <FormControlLabel value="yes" control={<Radio size="small" />} label="Yes" />
+                            <FormControlLabel value="no" control={<Radio size="small" />} label="No" />
+                            <FormControlLabel value="n/a" control={<Radio size="small" />} label="N/A" />
                         </RadioGroup>
                     </FormControl>
                 </Box>

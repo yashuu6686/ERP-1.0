@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Box,
   Button,
@@ -35,9 +36,14 @@ export default function MaterialInspectionForm() {
   const [loading, setLoading] = useState(false);
   const [pendingGRNs, setPendingGRNs] = useState([]);
   const [selectedGRN, setSelectedGRN] = useState(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+  const isEditMode = !!id;
 
   const [materialData, setMaterialData] = useState({
     grnNumber: "",
+    poNumber: "",
     materialName: "",
     receivedDate: "",
     invoiceNumber: "",
@@ -50,6 +56,9 @@ export default function MaterialInspectionForm() {
     inspectionReportNumber: "",
     inspectionDate: new Date().toISOString().split("T")[0],
     inspectionStandard: "",
+    toolsUsed: "",
+    sdsAvailable: "",
+    qualityCertificate: "",
   });
 
   const [observations, setObservations] = useState([
@@ -82,12 +91,61 @@ export default function MaterialInspectionForm() {
 
   useEffect(() => {
     fetchPendingGRNs();
-  }, []);
+    if (isEditMode) {
+      fetchInspectionData();
+    }
+  }, [id]);
 
-  const fetchPendingGRNs = async () => {
+  const fetchInspectionData = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get(`/incoming-inspection/${id}`);
+      const data = response.data;
+      if (data) {
+        setMaterialData(data.materialData);
+        setObservations(data.observations || []);
+        setSummaryData(data.summaryData);
+        setApprovalData(data.approvalData);
+
+        // Update observation columns if dynamic ones exist
+        if (data.observations?.length > 0) {
+          const firstObs = data.observations[0];
+          const dynamicKeys = Object.keys(firstObs).filter(k => k.startsWith("observation_"));
+          if (dynamicKeys.length > 0) {
+            const newCols = dynamicKeys.map(k => ({
+              id: k,
+              label: `Observation ${k.split("_")[1]}`
+            }));
+            const allCols = [{ id: "observation", label: "Observation" }, ...newCols];
+            // Remove duplicates just in case
+            const uniqueCols = Array.from(new Map(allCols.map(c => [c.id, c])).values());
+            setObservationColumns(uniqueCols);
+          }
+        }
+
+        // Find and set the selected GRN object
+        const grnResponse = await axiosInstance.get("/grn");
+        const matchingGRN = (grnResponse.data || []).find(g => g.grnNumber === data.materialData.grnNumber);
+        if (matchingGRN) setSelectedGRN(matchingGRN);
+
+        // Re-fetch pending GRNs with the correct GRN number
+        fetchPendingGRNs(data.materialData.grnNumber);
+      }
+    } catch (error) {
+      console.error("Error fetching inspection data:", error);
+      alert("Failed to load inspection data.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchPendingGRNs = async (currentGrnNumber = null) => {
     try {
       const response = await axiosInstance.get("/grn");
-      const pending = (response.data || []).filter(g => g.inspectionStatus === "Pending");
+      const targetGrn = currentGrnNumber || materialData.grnNumber;
+      const pending = (response.data || []).filter(g =>
+        g.inspectionStatus === "Pending" || (isEditMode && targetGrn === g.grnNumber)
+      );
       setPendingGRNs(pending);
     } catch (error) {
       console.error("Error fetching GRNs:", error);
@@ -97,30 +155,46 @@ export default function MaterialInspectionForm() {
   const handleGRNChange = (event, newValue) => {
     setSelectedGRN(newValue);
     if (newValue) {
+      const year = new Date().getFullYear();
+      const month = String(new Date().getMonth() + 1).padStart(2, '0');
+      const random = String(Math.floor(Math.random() * 1000)).padStart(3, '0');
+      const reportNum = `IRN-${year}${month}-${random}`;
+
       setMaterialData({
         ...materialData,
         grnNumber: newValue.grnNumber || "",
+        poNumber: newValue.orderInfo?.orderNumber || "",
         materialName: newValue.items?.[0]?.name || "",
         receivedDate: newValue.receivedDate ? newValue.receivedDate.split("T")[0] : "",
         invoiceNumber: newValue.invoiceNumber || "",
         supplierName: newValue.supplierName || "",
         lotQuantity: newValue.items?.[0]?.receivedQty || "",
+        inspectionReportNumber: reportNum,
       });
     } else {
       setMaterialData({
         ...materialData,
         grnNumber: "",
+        poNumber: "",
         materialName: "",
         receivedDate: "",
         invoiceNumber: "",
         supplierName: "",
         lotQuantity: "",
+        inspectionReportNumber: "",
       });
     }
   };
 
   const handleMaterialChange = (field, value) => {
     setMaterialData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleVerificationChange = (field, value) => {
+    setMaterialData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   const handleNext = () => {
@@ -194,7 +268,9 @@ export default function MaterialInspectionForm() {
         grnId: selectedGRN?.id,
       };
 
-      const response = await axiosInstance.post("/incoming-inspection", inspectionData);
+      const response = isEditMode
+        ? await axiosInstance.put(`/incoming-inspection/${id}`, inspectionData)
+        : await axiosInstance.post("/incoming-inspection", inspectionData);
 
       if (response.status === 201 || response.status === 200) {
         // Update GRN inspection status to Completed
@@ -209,7 +285,7 @@ export default function MaterialInspectionForm() {
           }
         }
 
-        alert("Inspection Submitted Successfully!");
+        alert(`Inspection ${isEditMode ? "Updated" : "Submitted"} Successfully!`);
         router.push("/incoming-inspection");
       }
     } catch (error) {
@@ -232,7 +308,10 @@ export default function MaterialInspectionForm() {
               selectedGRN={selectedGRN}
               onGRNChange={handleGRNChange}
             />
-            <VerificationChecks />
+            <VerificationChecks
+              data={materialData.verificationChecks}
+              onChange={handleVerificationChange}
+            />
           </>
         );
       case 1:
@@ -267,7 +346,7 @@ export default function MaterialInspectionForm() {
 
   return (
     <Box>
-      <CommonCard title="Material Inspection">
+      <CommonCard title={isEditMode ? "Edit Material Inspection" : "Add Material Inspection"}>
         <Box sx={{ p: 1 }}>
           {/* Stepper */}
           <Stepper
@@ -345,7 +424,7 @@ export default function MaterialInspectionForm() {
                     "&:hover": { backgroundColor: "#0d5a94" },
                   }}
                 >
-                  Submit Inspection
+                  {isEditMode ? "Update Inspection" : "Submit Inspection"}
                 </Button>
               ) : (
                 <Button
