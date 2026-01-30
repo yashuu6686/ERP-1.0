@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Select,
@@ -10,41 +10,46 @@ import {
 } from "@mui/material";
 import {
   Edit,
-  Delete,
-  Download,
-  FilterList,
   Visibility,
+  FilterList,
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
 import GlobalTable from "../../components/GlobalTable";
+import axiosInstance from "@/axios/axiosInstance";
 
 export default function PurchaseOrderTable() {
   const router = useRouter();
-  const [orders, setOrders] = useState([
-    {
-      id: 1,
-      poNumber: "SIPL/2025019",
-      orderDate: "2025-03-20",
-      vendorName: "XYZ",
-      itemDescription: "Tally Prime Silver Single User",
-      quantity: 2,
-      unitPrice: 12611,
-      totalAmount: 25222,
-      status: "Pending",
-    },
-    {
-      id: 2,
-      poNumber: "STC/2025018",
-      orderDate: "2025-02-10",
-      vendorName: "ABC",
-      itemDescription: "Tally Prime Silver Single User",
-      quantity: 1,
-      unitPrice: 25222,
-      totalAmount: 25222,
-      status: "Approved",
-    },
-  ]);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get("/purachase");
+      // Map the backend data to match table format
+      const formattedData = (response.data || []).map((order) => ({
+        id: order.id,
+        poNumber: order.orderInfo?.orderNumber || "N/A",
+        orderDate: order.orderInfo?.orderDate || "",
+        vendorName: order.supplier?.companyName || "N/A",
+        itemDescription: order.items?.[0]?.name || "N/A",
+        quantity: order.items?.reduce((sum, item) => sum + (parseFloat(item.qty) || 0), 0) || 0,
+        unitPrice: order.items?.[0]?.price || 0,
+        totalAmount: order.totals?.grandTotal || 0,
+        status: order.status || "Pending",
+      }));
+      setOrders(formattedData);
+    } catch (error) {
+      console.error("Failed to fetch orders:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
@@ -203,23 +208,14 @@ export default function PurchaseOrderTable() {
           </IconButton>
           <IconButton
             size="small"
-            sx={{
-              color: "rgb(17, 114, 186)",
-              bgcolor: "#f1f5f9",
-              "&:hover": { bgcolor: "#e2e8f0" }
-            }}
-          >
-            <Visibility fontSize="small" />
-          </IconButton>
-          <IconButton
-            size="small"
+            onClick={() => router.push(`/purchase/view-purchase?id=${row.id}`)}
             sx={{
               color: "#0891b2",
               bgcolor: "#ecfeff",
               "&:hover": { bgcolor: "#cffafe" }
             }}
           >
-            <Download sx={{ fontSize: 16 }} />
+            <Visibility sx={{ fontSize: 16 }} />
           </IconButton>
         </Box>
       ),
@@ -251,18 +247,26 @@ export default function PurchaseOrderTable() {
           </Select>
         }
       >
-        <GlobalTable
-          columns={columns}
-          data={paginatedOrders}
-          totalCount={filteredOrders.length}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          onPageChange={setPage}
-          onRowsPerPageChange={(val) => {
-            setRowsPerPage(val);
-            setPage(0);
-          }}
-        />
+        {loading ? (
+          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", py: 8 }}>
+            <Typography variant="h6" color="textSecondary">
+              Loading Purchase Orders...
+            </Typography>
+          </Box>
+        ) : (
+          <GlobalTable
+            columns={columns}
+            data={paginatedOrders}
+            totalCount={filteredOrders.length}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={setPage}
+            onRowsPerPageChange={(val) => {
+              setRowsPerPage(val);
+              setPage(0);
+            }}
+          />
+        )}
       </CommonCard>
     </Box>
   );

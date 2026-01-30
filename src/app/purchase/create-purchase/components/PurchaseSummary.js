@@ -18,10 +18,10 @@ const PurchaseSummary = ({
 }) => {
     return (
         <Grid container spacing={3}>
-            <Grid item size={{ xs: 12, md: 12 }}>
+            <Grid size={{ xs: 12 }}>
                 <Card sx={{ background: "#f8fafc", p: 2 }}>
                     <Grid container spacing={2}>
-                        <Grid item size={{ xs: 6, sm: 3 }}>
+                        <Grid size={{ xs: 6, sm: 3 }}>
                             <TextField
                                 fullWidth
                                 label="Discount (%)"
@@ -32,7 +32,7 @@ const PurchaseSummary = ({
                                 sx={{ bgcolor: "white" }}
                             />
                         </Grid>
-                        <Grid item size={{ xs: 6, sm: 3 }}>
+                        <Grid size={{ xs: 6, sm: 3 }}>
                             <TextField
                                 fullWidth
                                 label="Tax Rate (%)"
@@ -43,7 +43,7 @@ const PurchaseSummary = ({
                                 sx={{ bgcolor: "white" }}
                             />
                         </Grid>
-                        <Grid item size={{ xs: 6, sm: 3 }}>
+                        <Grid size={{ xs: 6, sm: 3 }}>
                             <TextField
                                 fullWidth
                                 label="Enter Shipping Charges"
@@ -54,7 +54,7 @@ const PurchaseSummary = ({
                                 sx={{ bgcolor: "white" }}
                             />
                         </Grid>
-                        <Grid item size={{ xs: 6, sm: 3 }}>
+                        <Grid size={{ xs: 6, sm: 3 }}>
                             <TextField
                                 fullWidth
                                 label="Enter Other Discount (%)"
@@ -67,7 +67,7 @@ const PurchaseSummary = ({
                         </Grid>
                     </Grid>
                 </Card>
-                <Grid item size={{ xs: 12, md: 12 }} sx={{ mt: 4 }}>
+                <Grid size={{ xs: 12 }} sx={{ mt: 4 }}>
                     <Paper sx={{ p: 3, border: "2px solid #1172ba", borderRadius: 2 }}>
                         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
                             <Typography color="textSecondary">Subtotal:</Typography>

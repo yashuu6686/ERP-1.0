@@ -13,7 +13,7 @@ import {
     LocalShipping,
 } from "@mui/icons-material";
 
-const OrderInformation = () => {
+const OrderInformation = ({ data, onChange }) => {
     return (
         <Card
             sx={{
@@ -32,11 +32,13 @@ const OrderInformation = () => {
                     Order Information
                 </Typography>
                 <Grid container spacing={3}>
-                    <Grid item size={{ xs: 12, md: 4 }}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField
                             fullWidth
                             label="PO Number"
                             placeholder="PO-2024-001"
+                            value={data?.orderNumber || ""}
+                            onChange={(e) => onChange("orderNumber", e.target.value)}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -54,11 +56,13 @@ const OrderInformation = () => {
                             }}
                         />
                     </Grid>
-                    <Grid item size={{ xs: 12, md: 4 }}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField
                             fullWidth
                             type="date"
                             label="Order Date"
+                            value={data?.orderDate || ""}
+                            onChange={(e) => onChange("orderDate", e.target.value)}
                             InputLabelProps={{ shrink: true }}
                             InputProps={{
                                 startAdornment: (
@@ -72,11 +76,13 @@ const OrderInformation = () => {
                             }}
                         />
                     </Grid>
-                    <Grid item size={{ xs: 12, md: 4 }}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField
                             fullWidth
                             type="date"
                             label="Expected Delivery"
+                            value={data?.expectedDelivery || ""}
+                            onChange={(e) => onChange("expectedDelivery", e.target.value)}
                             InputLabelProps={{ shrink: true }}
                             InputProps={{
                                 startAdornment: (

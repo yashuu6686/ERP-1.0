@@ -1,14 +1,22 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
-import { Box, Button, Grid, Typography, Card } from "@mui/material";
-import { Save, Description, CalendarToday, LocalShipping, Business } from "@mui/icons-material";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Box, Button, Grid } from "@mui/material";
+import { Save } from "@mui/icons-material";
 import CommonCard from "../../../components/CommonCard";
 import ItemDetailsTable from "./components/ItemDetailsTable";
 import PurchaseSummary from "./components/PurchaseSummary";
-import CommonForm from "../../../components/CommonForm/CommonForm";
+import OrderInformation from "./components/OrderInformation";
+import SupplierInformation from "./components/SupplierInformation";
+import DeliveryInformation from "./components/DeliveryInformation";
+import axiosInstance from "@/axios/axiosInstance";
 
 export default function CreatePurchaseOrder() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+  const isEditMode = !!id;
+
   const [items, setItems] = useState([
     { name: "", qty: "", price: "", total: 0 },
   ]);
@@ -41,122 +49,33 @@ export default function CreatePurchaseOrder() {
     },
   });
 
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id");
-  const isEditMode = !!id;
-
   useEffect(() => {
-    if (isEditMode) {
-      // Mock data fetching based on ID
-      const mockData = {
-        1: {
-          orderInfo: {
-            orderNumber: "SIPL/2025019",
-            orderDate: "2025-03-20",
-            expectedDelivery: "2025-03-25",
-          },
-          supplier: {
-            companyName: "XYZ Corp",
-            contactPerson: "John Smith",
-            address: "123 Tech Park, Bangalore",
-            email: "sales@xyz.com",
-            phone: "+91 9876543210",
-            pan: "ABCDE1234F",
-            gstin: "29ABCDE1234F1Z5",
-          },
-          delivery: {
-            invoiceTo: "My Company Ltd",
-            deliverTo: "Main Warehouse",
-            deliveryAddress: "456 Ind Area, Mumbai",
-            contactPerson: "Warehouse Manager",
-            phone: "+91 9123456780",
-            email: "warehouse@mycompany.com",
-          },
-          items: [
-            { name: "Tally Prime Silver Single User", qty: "2", price: "12611", total: 25222 }
-          ]
-        },
-        2: {
-          orderInfo: {
-            orderNumber: "STC/2025018",
-            orderDate: "2025-02-10",
-            expectedDelivery: "2025-02-15",
-          },
-          supplier: {
-            companyName: "ABC Solutions",
-            contactPerson: "Jane Doe",
-            address: "789 Biz Towers, Delhi",
-            email: "info@abc.com",
-            phone: "+91 9898989898",
-            pan: "FGHIJ5678K",
-            gstin: "07FGHIJ5678K1Z2",
-          },
-          delivery: {
-            invoiceTo: "My Company Ltd",
-            deliverTo: "Regional Office",
-            deliveryAddress: "321 City Center, Delhi",
-            contactPerson: "Admin Officer",
-            phone: "+91 9000000000",
-            email: "admin@mycompany.com",
-          },
-          items: [
-            { name: "Tally Prime Silver Single User", qty: "1", price: "25222", total: 25222 }
-          ]
+    if (isEditMode && id) {
+      const fetchData = async () => {
+        try {
+          const response = await axiosInstance.get(`/purachase/${id}`);
+          const data = response.data;
+          if (data) {
+            setFormData({
+              orderInfo: data.orderInfo,
+              supplier: data.supplier,
+              delivery: data.delivery,
+            });
+            setItems(data.items);
+            // Also set other state variables if they exist in backend
+            if (data.taxRate) setTaxRate(data.taxRate);
+            if (data.discount) setDiscount(data.discount);
+            if (data.shippingCharges) setShippingCharges(data.shippingCharges);
+            if (data.otherDiscount) setOtherDiscount(data.otherDiscount);
+          }
+        } catch (error) {
+          console.error("Fetch Error:", error);
+          alert("Failed to fetch purchase order data.");
         }
       };
-
-      const data = mockData[id];
-      if (data) {
-        setFormData({
-          orderInfo: data.orderInfo,
-          supplier: data.supplier,
-          delivery: data.delivery,
-        });
-        setItems(data.items);
-      }
+      fetchData();
     }
   }, [id, isEditMode]);
-
-  const orderConfig = [
-    {
-      name: "orderInfo.orderNumber",
-      label: "PO Number",
-      type: "text",
-      size: { xs: 12, md: 4 },
-      placeholder: "PO-2024-001",
-    },
-    {
-      name: "orderInfo.orderDate",
-      label: "Order Date",
-      type: "date",
-      size: { xs: 12, md: 4 },
-    },
-    {
-      name: "orderInfo.expectedDelivery",
-      label: "Expected Delivery",
-      type: "date",
-      size: { xs: 12, md: 4 },
-    },
-  ];
-
-  const supplierConfig = [
-    { name: "supplier.companyName", label: "Company Name", type: "text", size: { xs: 12, md: 6 }, placeholder: "ABC Suppliers Pvt Ltd" },
-    { name: "supplier.contactPerson", label: "Contact Person", type: "text", size: { xs: 12, md: 6 }, placeholder: "John Doe" },
-    { name: "supplier.address", label: "Address", type: "text", size: { xs: 12 }, placeholder: "123 Business Street", multiline: true, rows: 1 },
-    { name: "supplier.email", label: "Email", type: "email", size: { xs: 12, md: 6 }, placeholder: "contact@supplier.com" },
-    { name: "supplier.phone", label: "Phone", type: "text", size: { xs: 12, md: 6 }, placeholder: "+91 98765 43210" },
-    { name: "supplier.pan", label: "PAN Number", type: "text", size: { xs: 12, md: 6 }, placeholder: "ABCDE1234F" },
-    { name: "supplier.gstin", label: "GSTIN", type: "text", size: { xs: 12, md: 6 }, placeholder: "22ABCDE1234F1Z5" },
-  ];
-
-  const deliveryConfig = [
-    { name: "delivery.invoiceTo", label: "Invoice To", type: "text", size: { xs: 12, md: 6 }, placeholder: "Company Name" },
-    { name: "delivery.deliverTo", label: "Deliver To", type: "text", size: { xs: 12, md: 6 }, placeholder: "Warehouse/Site" },
-    { name: "delivery.deliveryAddress", label: "Delivery Address", type: "text", size: { xs: 12 }, placeholder: "456 Delivery Lane", multiline: true, rows: 1 },
-    { name: "delivery.contactPerson", label: "Contact Person", type: "text", size: { xs: 12, md: 6 }, placeholder: "Jane Smith" },
-    { name: "delivery.phone", label: "Phone", type: "text", size: { xs: 12, md: 6 }, placeholder: "+91 98765 43210" },
-    { name: "delivery.email", label: "Email", type: "email", size: { xs: 12, md: 6 }, placeholder: "delivery@company.com" },
-  ];
 
   const handleItemChange = (index, field, value) => {
     const updated = [...items];
@@ -177,17 +96,14 @@ export default function CreatePurchaseOrder() {
     }
   };
 
-  const handleFormChange = (newData) => {
-    setFormData(newData);
-  };
-
-  const clearForm = () => {
-    setFormData({
-      orderInfo: { orderNumber: "", orderDate: new Date().toISOString().split("T")[0], expectedDelivery: "" },
-      supplier: { companyName: "", contactPerson: "", address: "", email: "", phone: "", pan: "", gstin: "" },
-      delivery: { invoiceTo: "", deliverTo: "", deliveryAddress: "", contactPerson: "", phone: "", email: "" },
-    });
-    setItems([{ name: "", qty: "", price: "", total: 0 }]);
+  const handleManualChange = (section, field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [section]: {
+        ...prev[section],
+        [field]: value,
+      },
+    }));
   };
 
   const subtotal = items.reduce((sum, i) => sum + i.total, 0);
@@ -196,42 +112,54 @@ export default function CreatePurchaseOrder() {
   const otherDiscountAmount = (subtotal * otherDiscount) / 100;
   const grandTotal = subtotal + taxAmount - discountAmount + shippingCharges - otherDiscountAmount;
 
+  const handleSave = async () => {
+    const finalData = {
+      ...formData,
+      items,
+      totals: { subtotal, taxAmount, discountAmount, grandTotal },
+      status: "Pending", // Add status on backend side as requested
+      isEdited: isEditMode, // Add isEdited on backend side as requested
+    };
+
+    try {
+      const response = isEditMode
+        ? await axiosInstance.put(`/purachase/${id}`, finalData)
+        : await axiosInstance.post(`/purachase`, finalData);
+
+      if (response.status === 200 || response.status === 201) {
+        alert(`Purchase Order ${isEditMode ? "Updated" : "Created"} Successfully!`);
+        router.push("/purchase");
+      } else {
+        alert("Failed to save data. Please try again.");
+      }
+    } catch (error) {
+      console.error("Save Error:", error);
+      alert("Error connecting to the server.");
+    }
+  };
+
   return (
     <Box>
       <CommonCard title={isEditMode ? "Edit Purchase Order" : "Create Purchase Order"}>
         <Box sx={{ p: 1 }}>
-          <Card sx={{ mb: 4, background: "linear-gradient(135deg, #f8fafc, #f1f5f9)", border: "1px solid #e9ecef", borderRadius: 2 }}>
-            <Box sx={{ p: 2, display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #e9ecef" }}>
-              <Description sx={{ color: "#1172ba" }} />
-              <Typography variant="h6" fontWeight={600} sx={{ color: "#2d3748" }}>Order Information</Typography>
-            </Box>
-            <Box sx={{ p: 3 }}>
-              <CommonForm config={orderConfig} initialValues={formData} onChange={handleFormChange} hideSubmit />
-            </Box>
-          </Card>
+          <OrderInformation
+            data={formData.orderInfo}
+            onChange={(field, value) => handleManualChange("orderInfo", field, value)}
+          />
 
           <Grid container spacing={3} sx={{ mb: 4 }}>
-            <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
-              <Card sx={{ height: "100%", borderRadius: 2 }}>
-                <Box sx={{ p: 2, background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)", color: "white", display: "flex", alignItems: "center", gap: 1.5 }}>
-                  <Business />
-                  <Typography variant="h6" fontWeight={600} color="white">Supplier Information</Typography>
-                </Box>
-                <Box sx={{ p: 3 }}>
-                  <CommonForm config={supplierConfig} initialValues={formData} onChange={handleFormChange} hideSubmit />
-                </Box>
-              </Card>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <SupplierInformation
+                data={formData.supplier}
+                onChange={(field, value) => handleManualChange("supplier", field, value)}
+              />
             </Grid>
-            <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
-              <Card sx={{ height: "100%", borderRadius: 2 }}>
-                <Box sx={{ p: 2, background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)", color: "white", display: "flex", alignItems: "center", gap: 1.5 }}>
-                  <LocalShipping />
-                  <Typography variant="h6" fontWeight={600} color="white">Delivery Information</Typography>
-                </Box>
-                <Box sx={{ p: 3 }}>
-                  <CommonForm config={deliveryConfig} initialValues={formData} onChange={handleFormChange} hideSubmit />
-                </Box>
-              </Card>
+
+            <Grid size={{ xs: 12, md: 6 }}>
+              <DeliveryInformation
+                data={formData.delivery}
+                onChange={(field, value) => handleManualChange("delivery", field, value)}
+              />
             </Grid>
           </Grid>
 
@@ -260,23 +188,16 @@ export default function CreatePurchaseOrder() {
 
           <Box sx={{ mt: 4, display: "flex", gap: 2, justifyContent: "end", alignItems: "end" }}>
             <Button
-              variant="outlined"
-              onClick={clearForm}
-              sx={{ borderColor: "#1172ba", color: "#1172ba", borderRadius: 2, px: 4, py: 1.5, textTransform: "none", fontWeight: 500 }}
-            >
-              Clear
-            </Button>
-            <Button
               variant="contained"
               startIcon={<Save />}
-              onClick={() => console.log("Final Data:", { ...formData, items, totals: { subtotal, taxAmount, discountAmount, grandTotal } })}
+              onClick={handleSave}
               sx={{ backgroundColor: "#1172ba", "&:hover": { backgroundColor: "#0d5a94" }, borderRadius: 2, px: 4, py: 1.5, textTransform: "none", fontWeight: 500 }}
             >
               {isEditMode ? "Update Purchase Order" : "Create Purchase Order"}
             </Button>
           </Box>
         </Box>
-      </CommonCard>
-    </Box>
+      </CommonCard >
+    </Box >
   );
 }
