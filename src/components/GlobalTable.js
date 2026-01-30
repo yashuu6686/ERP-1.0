@@ -42,7 +42,7 @@ const GlobalTable = ({ columns, data, onRowClick }) => {
                 },
             }}
         >
-            <Table size="small">
+            <Table size="small" sx={{ minWidth: 650 }}>
                 <TableHead sx={{ bgcolor: "var(--bg-page)" }}>
                     <TableRow>
                         {columns.map((col, index) => (
@@ -53,12 +53,12 @@ const GlobalTable = ({ columns, data, onRowClick }) => {
                                     fontWeight: 700,
                                     color: "var(--text-secondary)",
                                     py: 2,
-                                    whiteSpace: "nowrap",
                                     fontSize: "var(--size-caption)",
                                     textTransform: "uppercase",
                                     letterSpacing: "0.02em",
                                     fontFamily: "var(--font-manrope)",
                                     borderBottom: "1px solid var(--border-default)",
+                                    width: col.width || "auto", // Allow fixed width
                                     ...col.sx,
                                 }}
                             >
@@ -82,20 +82,30 @@ const GlobalTable = ({ columns, data, onRowClick }) => {
                             >
                                 {columns.map((col, colIndex) => (
                                     <TableCell
-                                        sx={{
-                                            whiteSpace: "nowrap",
-                                            fontSize: "var(--size-body)",
-                                            color: "var(--text-primary)",
-                                            fontFamily: "var(--font-manrope)",
-                                            py: 2,
-                                            borderBottom: "1px solid var(--border-default)",
-                                        }}
                                         key={colIndex}
                                         align={col.align || "left"}
+                                        sx={{
+                                            py: 2,
+                                            borderBottom: "1px solid var(--border-default)",
+                                            width: col.width || "auto",
+                                        }}
                                     >
-                                        {col.render
-                                            ? col.render(row, rowIndex)
-                                            : row[col.accessor] || "-"}
+                                        <Box
+                                            sx={{
+                                                fontSize: "var(--size-body)",
+                                                color: "var(--text-primary)",
+                                                fontFamily: "var(--font-manrope)",
+                                                whiteSpace: "nowrap",
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis",
+                                                maxWidth: col.width || "200px", // Truncate if content is long
+                                            }}
+                                            title={typeof (col.render ? col.render(row, rowIndex) : row[col.accessor]) === 'string' ? (col.render ? col.render(row, rowIndex) : row[col.accessor]) : ""}
+                                        >
+                                            {col.render
+                                                ? col.render(row, rowIndex)
+                                                : row[col.accessor] || "-"}
+                                        </Box>
                                     </TableCell>
                                 ))}
                             </TableRow>

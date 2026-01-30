@@ -49,6 +49,7 @@ const CommonCard = ({
                     }}
                 >
                     <Typography
+                        component="div"
                         sx={{
                             fontWeight: 700,
                             color: "var(--text-primary)",
