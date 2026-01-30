@@ -25,12 +25,14 @@ import {
   LocalShipping,
   Cancel,
   NavigateNext,
+  Logout,
 } from "@mui/icons-material";
-import { Breadcrumbs, Link as MuiLink, Typography as MuiTypography } from "@mui/material";
+import { Breadcrumbs, Link as MuiLink, Typography as MuiTypography, IconButton, useMediaQuery, useTheme } from "@mui/material";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import TopNavbar from "./TopNavbar";
 import Footer from "./Footer";
+import Image from "next/image";
 // import '../../styles/globals.css'
 
 const menuItems = [
@@ -67,23 +69,50 @@ const menuItems = [
 export default function Sidebar({ children }) {
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const [currentPath, setCurrentPath] = React.useState("/");
-  //   const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [isSidebarOpen, setIsSidebarOpen] = React.useState(true);
+  const [hasMounted, setHasMounted] = React.useState(false);
+
+  const theme = useTheme();
+  const isLargeScreen = useMediaQuery('(min-width:1200px)');
+
+  React.useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleListItemClick = (index, path) => {
-    setSelectedIndex(index);
-    setCurrentPath(path);
+  const handleDrawerToggle = () => {
+    setIsSidebarOpen(!isSidebarOpen);
   };
+
+  const handleListItemClick = () => {
+    if (hasMounted && !isLargeScreen) {
+      setIsSidebarOpen(false);
+    }
+  };
+
+  // Prevent hydration mismatch/flicker by assuming desktop on first render if that's the default
+  // or just waiting for mount to apply responsive variants.
+  const drawerVariant = hasMounted ? (isLargeScreen ? "persistent" : "temporary") : "persistent";
+  const drawerOpen = hasMounted ? (isLargeScreen ? isSidebarOpen : isSidebarOpen) : true;
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", maxWidth: "100vw", overflowX: "hidden" }}>
       <Drawer
-        variant="permanent"
+        variant={drawerVariant}
+        open={drawerOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: true, // Better open performance on mobile.
+        }}
         sx={{
-          width: 264,
+          width: (hasMounted ? isSidebarOpen : true) ? 264 : 0,
           flexShrink: 0,
+          transition: theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+          }),
           "& .MuiDrawer-paper": {
             width: 264,
             boxSizing: "border-box",
@@ -92,8 +121,7 @@ export default function Sidebar({ children }) {
           },
         }}
       >
-
-        <Divider sx={{ borderColor: "var(--border-default)" }} />
+        {/* Profile Header Section */}
 
         <List
           className="sidebar-scroll"
@@ -102,6 +130,45 @@ export default function Sidebar({ children }) {
             overflowY: "auto",
           }}
         >
+          <Box sx={{ p: "6px" }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+              <Image src="/Scanbo_logo_new.png" alt="Logo" width={60} height={60} />
+              <IconButton
+                size="small"
+                sx={{
+                  color: "var(--brand-primary)",
+                  borderRadius: "8px",
+                  padding: "8px",
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    bgcolor: "rgba(17, 114, 186, 0.08)",
+                    color: "#0d5a94",
+                    transform: "translateY(-2px)"
+                  }
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", flexDirection: "column", gap: "2px" }}>
+                  <Logout sx={{ fontSize: "20px" }} />
+                  <Typography sx={{ fontSize: "10px", color: "inherit", fontWeight: 700, textTransform: "uppercase" }}>Logout</Typography>
+                </Box>
+              </IconButton>
+            </Box>
+
+            <Box>
+              <Typography sx={{ fontWeight: 700, fontSize: "18px", color: "var(--text-primary)", mb: 0.5, fontFamily: "var(--font-manrope)" }}>
+                Shivan Patel
+              </Typography>
+              <Typography sx={{ fontSize: "14px", color: "var(--text-secondary)", mb: 0.2, fontFamily: "var(--font-manrope)" }}>
+                Login ID: <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>******7890</span>
+              </Typography>
+              <Typography sx={{ fontSize: "14px", color: "var(--text-secondary)", fontFamily: "var(--font-manrope)" }}>
+                Current Profile: <span style={{ color: "var(--text-primary)", fontWeight: 700 }}>Admin</span>
+              </Typography>
+            </Box>
+          </Box>
+
+          <Divider sx={{ borderColor: "var(--border-default)", mb: 1, }} />
+
           {menuItems.map((item, index) => {
             const isActive =
               pathname === item.path ||
@@ -111,6 +178,7 @@ export default function Sidebar({ children }) {
               <Link key={index} href={item.path} passHref legacyBehavior>
                 <ListItemButton
                   selected={isActive}
+                  onClick={handleListItemClick}
                   style={{
                     borderRadius: "8px",
                     marginBottom: "4px",
@@ -124,7 +192,7 @@ export default function Sidebar({ children }) {
                       marginRight: "12px",
                       display: "flex",
                       alignItems: "center",
-                      color: isActive ? "var(--brand-primary)" : "var(--text-secondary)",
+                      color: isActive ? "var(--brand-primary)" : "rgb(17, 114, 186)",
                     }}
                   >
                     {React.cloneElement(item.icon, { fontSize: "small" })}
@@ -150,64 +218,71 @@ export default function Sidebar({ children }) {
         component="main"
         sx={{
           flexGrow: 1,
-          padding: "6px",
           minWidth: 0,
           display: 'flex',
           flexDirection: 'column',
-          minHeight: '100vh'
+          height: '100vh',
+          overflowY: 'auto',
+          position: 'relative',
+          transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+          }),
         }}
       >
         {/* Global Breadcrumbs */}
-        {/* <TopNavbar /> */}
-        {pathname !== "/" && (
-          <Box sx={{ mb: 2, mt: 2 }}>
-            <Breadcrumbs
-              separator={<NavigateNext fontSize="small" sx={{ color: '#94a3b8' }} />}
-              aria-label="breadcrumb"
-            >
-              <MuiLink
-                component={Link}
-                underline="hover"
-                color="inherit"
-                href="/"
-                sx={{ display: 'flex', alignItems: 'center', fontSize: '0.875rem', color: '#64748b' }}
+        <TopNavbar onToggleSidebar={handleDrawerToggle} />
+        <Box sx={{ padding: "6px", flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+          {/* {pathname !== "/" && (
+            <Box sx={{ mb: 2, mt: 2 }}>
+              <Breadcrumbs
+                separator={<NavigateNext fontSize="small" sx={{ color: '#94a3b8' }} />}
+                aria-label="breadcrumb"
               >
-                Home
-              </MuiLink>
-              {pathname.split('/').filter(x => x).map((part, index, array) => {
-                const path = `/${array.slice(0, index + 1).join('/')}`;
-                const menuItem = menuItems.find(item => item.path === path);
-                const isLast = index === array.length - 1;
-                const label = menuItem ? menuItem.text : part.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                <MuiLink
+                  component={Link}
+                  underline="hover"
+                  color="inherit"
+                  href="/"
+                  sx={{ display: 'flex', alignItems: 'center', fontSize: '0.875rem', color: '#64748b' }}
+                >
+                  Home
+                </MuiLink>
+                {pathname.split('/').filter(x => x).map((part, index, array) => {
+                  const path = `/${array.slice(0, index + 1).join('/')}`;
+                  const menuItem = menuItems.find(item => item.path === path);
+                  const isLast = index === array.length - 1;
+                  const label = menuItem ? menuItem.text : part.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
-                return isLast ? (
-                  <MuiTypography
-                    key={path}
-                    sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#1e293b' }}
-                  >
-                    {label}
-                  </MuiTypography>
-                ) : (
-                  <MuiLink
-                    key={path}
-                    component={Link}
-                    underline="hover"
-                    color="inherit"
-                    href={path}
-                    sx={{ fontSize: '0.875rem', color: '#64748b' }}
-                  >
-                    {label}
-                  </MuiLink>
-                );
-              })}
-            </Breadcrumbs>
+                  return isLast ? (
+                    <MuiTypography
+                      key={path}
+                      sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#1e293b' }}
+                    >
+                      {label}
+                    </MuiTypography>
+                  ) : (
+                    <MuiLink
+                      key={path}
+                      component={Link}
+                      underline="hover"
+                      color="inherit"
+                      href={path}
+                      sx={{ fontSize: '0.875rem', color: '#64748b' }}
+                    >
+                      {label}
+                    </MuiLink>
+                  );
+                })}
+              </Breadcrumbs>
+            </Box>
+          )} */}
+
+          <Box sx={{ flexGrow: 1 }}>
+            {children}
           </Box>
-        )}
-
-        <Box sx={{ flexGrow: 1 }}>
-          {children}
+          <Footer />
         </Box>
-        <Footer />
       </Box>
     </Box>
   );

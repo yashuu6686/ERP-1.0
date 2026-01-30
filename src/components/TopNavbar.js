@@ -3,22 +3,20 @@ import React from "react";
 import {
     Box,
     IconButton,
-    InputBase,
     Badge,
     Avatar,
     Typography,
-    Tooltip,
-    Paper,
+    Divider,
 } from "@mui/material";
 import {
-    Search,
-    Notifications,
-    Settings,
-    HelpOutline
+    Menu as MenuIcon,
+    ShoppingCartOutlined,
+    NotificationsNoneOutlined,
+    KeyboardArrowDown,
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 
-const TopNavbar = () => {
+const TopNavbar = ({ onToggleSidebar }) => {
     const router = useRouter();
 
     return (
@@ -27,120 +25,107 @@ const TopNavbar = () => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                padding: "16px 24px",
-                bgcolor: "var(--bg-surface)",
-                borderBottom: "1px solid var(--border-default)",
+                padding: "0px 12px",
+                bgcolor: "rgba(246, 248, 251, 0.85)",
+                backdropFilter: "blur(10px)",
                 position: "sticky",
                 top: 0,
                 zIndex: 1100,
-                mb: "var(--space-md)",
+                minHeight: "64px",
+                // borderBottom: "1px solid #e2e8f0"
             }}
         >
-            {/* Search Bar */}
-            <Paper
-                elevation={0}
-                sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    bgcolor: "var(--bg-page)",
-                    padding: "8px 16px",
-                    borderRadius: "var(--input-radius)",
-                    width: "350px",
-                    border: '1px solid var(--border-strong)',
-                    "&:hover": { borderColor: 'var(--brand-primary)' }
-                }}
+            {/* Left Side: Menu Icon */}
+            <IconButton
+                size="medium"
+                sx={{ color: "#94a3b8" }}
+                onClick={onToggleSidebar}
             >
-                <Search sx={{ color: "var(--text-muted)", fontSize: "20px", mr: 1 }} />
-                <InputBase
-                    placeholder="Search ERP modules, batches..."
-                    sx={{
-                        flex: 1,
-                        fontSize: "var(--size-body)",
-                        fontWeight: 500,
-                        fontFamily: "var(--font-manrope)"
-                    }}
-                />
-            </Paper>
+                <MenuIcon />
+            </IconButton>
 
-            {/* Action Icons */}
+            {/* Right Side: Actions and Profile */}
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                <Tooltip title="Help Center">
-                    <IconButton size="small" sx={{ color: "var(--text-secondary)" }}>
-                        <HelpOutline fontSize="small" />
-                    </IconButton>
-                </Tooltip>
 
-                <Tooltip title="Global Settings">
-                    <IconButton size="small" sx={{ color: "var(--text-secondary)" }}>
-                        <Settings fontSize="small" />
-                    </IconButton>
-                </Tooltip>
-
-                <Tooltip title="Notifications">
-                    <IconButton size="small" sx={{ color: "var(--text-secondary)" }}>
-                        <Badge badgeContent={4} color="error" variant="dot">
-                            <Notifications fontSize="small" />
-                        </Badge>
-                    </IconButton>
-                </Tooltip>
-
-                <Box
+                {/* Shopping Cart with circular background */}
+                <IconButton
+                    size="small"
                     sx={{
-                        width: "1px",
-                        height: "24px",
-                        bgcolor: "var(--border-default)",
-                        mx: 1,
+                        bgcolor: "#f0f7ff",
+                        color: "#1172ba",
+                        padding: "10px",
+                        "&:hover": { bgcolor: "#e0efff" }
                     }}
-                />
+                >
+                    <ShoppingCartOutlined fontSize="small" />
+                </IconButton>
 
-                {/* User Profile */}
+                {/* Notifications Bell */}
+                <IconButton size="small" sx={{ color: "#1172ba", padding: "10px" }}>
+                    <Badge
+                        variant="dot"
+                        sx={{
+                            "& .MuiBadge-badge": {
+                                bgcolor: "#1172ba",
+                                width: 8,
+                                height: 8,
+                                borderRadius: "50%",
+                                border: "2px solid #fff"
+                            }
+                        }}
+                    >
+                        <NotificationsNoneOutlined fontSize="small" />
+                    </Badge>
+                </IconButton>
+
+                <Divider orientation="vertical" flexItem sx={{ mx: 1, height: "24px", alignSelf: "center", borderColor: "#e2e8f0" }} />
+
+                {/* User Profile Section */}
                 <Box
                     onClick={() => router.push("/profile")}
                     sx={{
                         display: "flex",
                         alignItems: "center",
                         gap: 1.5,
-                        padding: "4px 8px 4px 12px",
-                        borderRadius: "12px",
                         cursor: "pointer",
-                        transition: "background-color 0.2s",
-                        "&:hover": { bgcolor: "var(--brand-soft)" },
+                        "&:hover": { opacity: 0.8 },
                     }}
                 >
-                    <Box sx={{ textAlign: "right" }}>
-                        <Typography
-                            sx={{
-                                fontWeight: 700,
-                                color: "var(--text-primary)",
-                                fontSize: "var(--size-body)",
-                                lineHeight: 1.2,
-                                fontFamily: "var(--font-manrope)"
-                            }}
-                        >
-                            System Admin
-                        </Typography>
-                        <Typography
-                            sx={{
-                                color: "var(--text-muted)",
-                                fontWeight: 600,
-                                fontSize: "var(--size-caption)",
-                                fontFamily: "var(--font-manrope)"
-                            }}
-                        >
-                            Superuser
-                        </Typography>
-                    </Box>
                     <Avatar
+                        src="/doctor-avatar.png" // Placeholder or actual image path
                         sx={{
-                            width: 36,
-                            height: 36,
-                            bgcolor: "var(--brand-primary)",
-                            fontSize: "var(--size-body)",
-                            fontWeight: 700,
+                            width: 40,
+                            height: 40,
+                            borderRadius: "10px",
+                            bgcolor: "#f1f5f9"
                         }}
                     >
-                        AD
+                        SP
                     </Avatar>
+
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                        <Typography
+                            sx={{
+                                color: "#64748b",
+                                fontSize: "14px",
+                                fontFamily: "var(--font-manrope)",
+                                fontWeight: 500
+                            }}
+                        >
+                            Welcome,
+                        </Typography>
+                        <Typography
+                            sx={{
+                                color: "#1e293b",
+                                fontSize: "14px",
+                                fontFamily: "var(--font-manrope)",
+                                fontWeight: 700
+                            }}
+                        >
+                            Dr. Shivan Patel
+                        </Typography>
+                        <KeyboardArrowDown sx={{ color: "#1e293b", fontSize: "18px", ml: 0.5 }} />
+                    </Box>
                 </Box>
             </Box>
         </Box>
@@ -148,3 +133,4 @@ const TopNavbar = () => {
 };
 
 export default TopNavbar;
+
