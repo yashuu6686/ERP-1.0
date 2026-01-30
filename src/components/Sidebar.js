@@ -29,6 +29,8 @@ import {
 import { Breadcrumbs, Link as MuiLink, Typography as MuiTypography } from "@mui/material";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import TopNavbar from "./TopNavbar";
+import Footer from "./Footer";
 // import '../../styles/globals.css'
 
 const menuItems = [
@@ -89,7 +91,6 @@ export default function Sidebar({ children }) {
         }}
       >
 
-
         <Divider />
 
         <List
@@ -135,25 +136,6 @@ export default function Sidebar({ children }) {
           })}
         </List>
 
-        <Divider />
-
-        <Box
-          style={{
-            padding: "16px",
-            textAlign: "center",
-            backgroundColor: "#f9fafb",
-          }}
-        >
-          <Typography
-            variant="caption"
-            style={{
-              color: "#6b7280",
-              fontSize: "11px",
-            }}
-          >
-            © 2024 ERP System
-          </Typography>
-        </Box>
       </Drawer>
 
       <Box
@@ -168,6 +150,7 @@ export default function Sidebar({ children }) {
         }}
       >
         {/* Global Breadcrumbs */}
+        <TopNavbar />
         {pathname !== "/" && (
           <Box sx={{ mb: 2 }}>
             <Breadcrumbs
@@ -216,6 +199,7 @@ export default function Sidebar({ children }) {
         <Box sx={{ flexGrow: 1 }}>
           {children}
         </Box>
+        <Footer />
       </Box>
     </Box>
   );
