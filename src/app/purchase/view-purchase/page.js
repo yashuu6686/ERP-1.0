@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
     Box,
@@ -14,7 +14,6 @@ import {
     TableHead,
     TableRow,
     Paper,
-    IconButton,
     Chip,
     Stack,
 } from "@mui/material";
@@ -35,7 +34,7 @@ import CommonCard from "../../../components/CommonCard";
 import Loader from "../../../components/Loader";
 import axiosInstance from "@/axios/axiosInstance";
 
-export default function ViewPurchaseOrder() {
+function ViewPurchaseOrderContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const id = searchParams.get("id");
@@ -602,5 +601,13 @@ export default function ViewPurchaseOrder() {
                 </Grid>
             </Paper>
         </Box>
+    );
+}
+
+export default function ViewPurchaseOrder() {
+    return (
+        <Suspense fallback={<Loader fullPage message="Loading..." />}>
+            <ViewPurchaseOrderContent />
+        </Suspense>
     );
 }

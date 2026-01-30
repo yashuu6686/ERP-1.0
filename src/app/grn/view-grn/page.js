@@ -1,5 +1,7 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+export const dynamic = "force-dynamic";
+import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
     Box,
@@ -21,13 +23,12 @@ import {
     Edit,
     Print,
     Business,
-    LocalShipping,
     AssignmentTurnedIn,
 } from "@mui/icons-material";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "../../../components/Loader";
 
-export default function ViewGRN() {
+function ViewGRNContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const id = searchParams.get("id");
@@ -218,5 +219,13 @@ export default function ViewGRN() {
                 </TableContainer>
             </Paper>
         </Box>
+    );
+}
+
+export default function ViewGRN() {
+    return (
+        <Suspense fallback={<Loader fullPage message="Loading..." />}>
+            <ViewGRNContent />
+        </Suspense>
     );
 }

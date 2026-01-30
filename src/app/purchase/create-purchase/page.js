@@ -1,5 +1,7 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+export const dynamic = "force-dynamic";
+import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Box, Button, Grid } from "@mui/material";
 import { Save } from "@mui/icons-material";
@@ -12,7 +14,7 @@ import DeliveryInformation from "./components/DeliveryInformation";
 import Loader from "../../../components/Loader";
 import axiosInstance from "@/axios/axiosInstance";
 
-export default function CreatePurchaseOrder() {
+function CreatePurchaseOrderContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -222,5 +224,13 @@ export default function CreatePurchaseOrder() {
         </Box>
       </CommonCard >
     </Box >
+  );
+}
+
+export default function CreatePurchaseOrder() {
+  return (
+    <Suspense fallback={<Loader fullPage message="Loading..." />}>
+      <CreatePurchaseOrderContent />
+    </Suspense>
   );
 }
