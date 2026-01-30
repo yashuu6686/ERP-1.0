@@ -44,10 +44,178 @@ export default function PurchaseOrderTable() {
       totalAmount: 25222,
       status: "Approved",
     },
+    {
+      id: 2,
+      poNumber: "STC/2025018",
+      orderDate: "2025-02-10",
+      vendorName: "ABC",
+      itemDescription: "Tally Prime Silver Single User",
+      quantity: 1,
+      unitPrice: 25222,
+      totalAmount: 25222,
+      status: "Approved",
+    },{
+      id: 2,
+      poNumber: "STC/2025018",
+      orderDate: "2025-02-10",
+      vendorName: "ABC",
+      itemDescription: "Tally Prime Silver Single User",
+      quantity: 1,
+      unitPrice: 25222,
+      totalAmount: 25222,
+      status: "Approved",
+    },
+    {
+      id: 2,
+      poNumber: "STC/2025018",
+      orderDate: "2025-02-10",
+      vendorName: "ABC",
+      itemDescription: "Tally Prime Silver Single User",
+      quantity: 1,
+      unitPrice: 25222,
+      totalAmount: 25222,
+      status: "Approved",
+    },
+    {
+      id: 2,
+      poNumber: "STC/2025018",
+      orderDate: "2025-02-10",
+      vendorName: "ABC",
+      itemDescription: "Tally Prime Silver Single User",
+      quantity: 1,
+      unitPrice: 25222,
+      totalAmount: 25222,
+      status: "Approved",
+    },
+    {
+      id: 2,
+      poNumber: "STC/2025018",
+      orderDate: "2025-02-10",
+      vendorName: "ABC",
+      itemDescription: "Tally Prime Silver Single User",
+      quantity: 1,
+      unitPrice: 25222,
+      totalAmount: 25222,
+      status: "Approved",
+    },
+    {
+      id: 2,
+      poNumber: "STC/2025018",
+      orderDate: "2025-02-10",
+      vendorName: "ABC",
+      itemDescription: "Tally Prime Silver Single User",
+      quantity: 1,
+      unitPrice: 25222,
+      totalAmount: 25222,
+      status: "Approved",
+    },
+    {
+      id: 2,
+      poNumber: "STC/2025018",
+      orderDate: "2025-02-10",
+      vendorName: "ABC",
+      itemDescription: "Tally Prime Silver Single User",
+      quantity: 1,
+      unitPrice: 25222,
+      totalAmount: 25222,
+      status: "Approved",
+    },
+    {
+      id: 2,
+      poNumber: "STC/2025018",
+      orderDate: "2025-02-10",
+      vendorName: "ABC",
+      itemDescription: "Tally Prime Silver Single User",
+      quantity: 1,
+      unitPrice: 25222,
+      totalAmount: 25222,
+      status: "Approved",
+    },
+    {
+      id: 2,
+      poNumber: "STC/2025018",
+      orderDate: "2025-02-10",
+      vendorName: "ABC",
+      itemDescription: "Tally Prime Silver Single User",
+      quantity: 1,
+      unitPrice: 25222,
+      totalAmount: 25222,
+      status: "Approved",
+    },
+    {
+      id: 2,
+      poNumber: "STC/2025018",
+      orderDate: "2025-02-10",
+      vendorName: "ABC",
+      itemDescription: "Tally Prime Silver Single User",
+      quantity: 1,
+      unitPrice: 25222,
+      totalAmount: 25222,
+      status: "Approved",
+    },
+    {
+      id: 2,
+      poNumber: "STC/2025018",
+      orderDate: "2025-02-10",
+      vendorName: "ABC",
+      itemDescription: "Tally Prime Silver Single User",
+      quantity: 1,
+      unitPrice: 25222,
+      totalAmount: 25222,
+      status: "Approved",
+    },
+    {
+      id: 2,
+      poNumber: "STC/2025018",
+      orderDate: "2025-02-10",
+      vendorName: "ABC",
+      itemDescription: "Tally Prime Silver Single User",
+      quantity: 1,
+      unitPrice: 25222,
+      totalAmount: 25222,
+      status: "Approved",
+    },
+    {
+      id: 2,
+      poNumber: "STC/2025018",
+      orderDate: "2025-02-10",
+      vendorName: "ABC",
+      itemDescription: "Tally Prime Silver Single User",
+      quantity: 1,
+      unitPrice: 25222,
+      totalAmount: 25222,
+      status: "Approved",
+    },
+    {
+      id: 2,
+      poNumber: "STC/2025018",
+      orderDate: "2025-02-10",
+      vendorName: "ABC",
+      itemDescription: "Tally Prime Silver Single User",
+      quantity: 1,
+      unitPrice: 25222,
+      totalAmount: 25222,
+      status: "Approved",
+    },
+    {
+      id: 2,
+      poNumber: "STC/2025018",
+      orderDate: "2025-02-10",
+      vendorName: "ABC",
+      itemDescription: "Tally Prime Silver Single User",
+      quantity: 1,
+      unitPrice: 25222,
+      totalAmount: 25222,
+      status: "Approved",
+    },
   ]);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
+
+  // Pagination State
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const filteredOrders = orders.filter((order) => {
     const matchesSearch =
@@ -60,6 +228,12 @@ export default function PurchaseOrderTable() {
 
     return matchesSearch && matchesFilter;
   });
+
+  // Calculate paginated data
+  const paginatedOrders = filteredOrders.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
 
   const columns = [
     {
@@ -241,7 +415,18 @@ export default function PurchaseOrderTable() {
           </Select>
         }
       >
-        <GlobalTable columns={columns} data={filteredOrders} />
+        <GlobalTable
+          columns={columns}
+          data={paginatedOrders}
+          totalCount={filteredOrders.length}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onPageChange={setPage}
+          onRowsPerPageChange={(val) => {
+            setRowsPerPage(val);
+            setPage(0);
+          }}
+        />
       </CommonCard>
     </Box>
   );
