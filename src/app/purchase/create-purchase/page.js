@@ -9,6 +9,7 @@ import PurchaseSummary from "./components/PurchaseSummary";
 import OrderInformation from "./components/OrderInformation";
 import SupplierInformation from "./components/SupplierInformation";
 import DeliveryInformation from "./components/DeliveryInformation";
+import Loader from "../../../components/Loader";
 import axiosInstance from "@/axios/axiosInstance";
 
 export default function CreatePurchaseOrder() {
@@ -20,6 +21,7 @@ export default function CreatePurchaseOrder() {
   const [items, setItems] = useState([
     { name: "", qty: "", price: "", total: 0 },
   ]);
+  const [loading, setLoading] = useState(false);
   const [taxRate, setTaxRate] = useState(18);
   const [discount, setDiscount] = useState(0);
   const [shippingCharges, setShippingCharges] = useState(0);
@@ -53,6 +55,7 @@ export default function CreatePurchaseOrder() {
     if (isEditMode && id) {
       const fetchData = async () => {
         try {
+          setLoading(true);
           const response = await axiosInstance.get(`/purachase/${id}`);
           const data = response.data;
           if (data) {
@@ -71,6 +74,8 @@ export default function CreatePurchaseOrder() {
         } catch (error) {
           console.error("Fetch Error:", error);
           alert("Failed to fetch purchase order data.");
+        } finally {
+          setLoading(false);
         }
       };
       fetchData();
@@ -137,6 +142,10 @@ export default function CreatePurchaseOrder() {
       alert("Error connecting to the server.");
     }
   };
+
+  if (loading) {
+    return <Loader fullPage message="Loading Purchase Order Details..." />;
+  }
 
   return (
     <Box>

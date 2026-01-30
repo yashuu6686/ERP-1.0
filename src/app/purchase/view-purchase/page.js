@@ -26,6 +26,7 @@ import {
     Description,
 } from "@mui/icons-material";
 import CommonCard from "../../../components/CommonCard";
+import Loader from "../../../components/Loader";
 import axiosInstance from "@/axios/axiosInstance";
 
 export default function ViewPurchaseOrder() {
@@ -56,11 +57,7 @@ export default function ViewPurchaseOrder() {
     };
 
     if (loading) {
-        return (
-            <Box sx={{ p: 4, textAlign: "center" }}>
-                <Typography variant="h6">Loading Order Details...</Typography>
-            </Box>
-        );
+        return <Loader fullPage message="Loading Order Details..." />;
     }
 
     if (!order) {
