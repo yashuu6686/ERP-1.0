@@ -65,7 +65,6 @@ export default function CreatePurchaseOrder() {
               delivery: data.delivery,
             });
             setItems(data.items);
-            // Also set other state variables if they exist in backend
             if (data.taxRate) setTaxRate(data.taxRate);
             if (data.discount) setDiscount(data.discount);
             if (data.shippingCharges) setShippingCharges(data.shippingCharges);
@@ -79,6 +78,21 @@ export default function CreatePurchaseOrder() {
         }
       };
       fetchData();
+    } else {
+      // Auto-generate PO Number for new orders
+      const year = new Date().getFullYear();
+      const month = String(new Date().getMonth() + 1).padStart(2, '0');
+      const day = String(new Date().getDate()).padStart(2, '0');
+      const random = String(Math.floor(Math.random() * 1000)).padStart(3, '0');
+      const poNum = `PO-${year}${month}${day}-${random}`;
+
+      setFormData(prev => ({
+        ...prev,
+        orderInfo: {
+          ...prev.orderInfo,
+          orderNumber: poNum
+        }
+      }));
     }
   }, [id, isEditMode]);
 

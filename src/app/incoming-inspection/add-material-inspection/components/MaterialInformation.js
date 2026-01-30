@@ -65,6 +65,14 @@ const MaterialInformation = ({ data, onChange, pendingGRNs, selectedGRN, onGRNCh
                         onChange={(e) => onChange("materialName", e.target.value)}
                     />
                     <TextField
+                        label="PO Number"
+                        variant="outlined"
+                        fullWidth
+                        size="small"
+                        value={data.poNumber}
+                        onChange={(e) => onChange("poNumber", e.target.value)}
+                    />
+                    <TextField
                         label="Received Date"
                         type="date"
                         variant="outlined"
