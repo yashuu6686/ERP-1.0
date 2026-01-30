@@ -36,23 +36,25 @@ export default function ViewGRN() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        const fetchGRNDetails = async () => {
+            try {
+                setLoading(true);
+                const response = await axiosInstance.get(`/grn/${id}`);
+                setGrn(response.data);
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                alert("Failed to fetch GRN details.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
         if (id) {
             fetchGRNDetails();
         }
     }, [id]);
 
-    const fetchGRNDetails = async () => {
-        try {
-            setLoading(true);
-            const response = await axiosInstance.get(`/grn/${id}`);
-            setGrn(response.data);
-        } catch (error) {
-            console.error("Fetch Error:", error);
-            alert("Failed to fetch GRN details.");
-        } finally {
-            setLoading(false);
-        }
-    };
+
 
     if (loading) return <Loader fullPage message="Loading GRN Details..." />;
 

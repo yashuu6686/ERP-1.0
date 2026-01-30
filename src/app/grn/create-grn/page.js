@@ -8,7 +8,6 @@ import {
     Typography,
     TextField,
     Autocomplete,
-    Divider,
     Table,
     TableBody,
     TableCell,
@@ -16,11 +15,37 @@ import {
     TableHead,
     TableRow,
     Paper,
+    Card,
+    CardContent,
 } from "@mui/material";
-import { Save, ArrowBack, LocalShipping, Description, Inventory } from "@mui/icons-material";
+import { Save, ArrowBack, Description, Inventory, ReceiptLong, AssignmentTurnedIn } from "@mui/icons-material";
 import CommonCard from "../../../components/CommonCard";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "../../../components/Loader";
+
+// Helper component for the internal gradient cards
+const GradientCard = ({ title, icon: Icon, children }) => (
+    <Card sx={{ height: "100%", borderRadius: 2 }}>
+        <Box
+            sx={{
+                p: 2,
+                background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
+                color: "white",
+                display: "flex",
+                alignItems: "center",
+                gap: 1.5,
+            }}
+        >
+            {Icon && <Icon />}
+            <Typography variant="h6" fontWeight={600} color={"white"}>
+                {title}
+            </Typography>
+        </Box>
+        <CardContent sx={{ p: 3 }}>
+            {children}
+        </CardContent>
+    </Card>
+);
 
 export default function CreateGRN() {
     const router = useRouter();
@@ -40,32 +65,33 @@ export default function CreateGRN() {
         receivedBy: "",
         supplierName: "",
         items: [],
-        inspectionStatus: "Pending", // New field for incoming inspection workflow
+        inspectionStatus: "Pending",
     });
 
     useEffect(() => {
+        const fetchGRNDetails = async () => {
+            try {
+                setLoading(true);
+                const response = await axiosInstance.get(`/grn/${id}`);
+                setFormData(response.data);
+            } catch (error) {
+                console.error("Fetch GRN Error:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         fetchPendingPOs();
         if (isEditMode) {
             fetchGRNDetails();
         }
     }, [id, isEditMode]);
 
-    const fetchGRNDetails = async () => {
-        try {
-            setLoading(true);
-            const response = await axiosInstance.get(`/grn/${id}`);
-            setFormData(response.data);
-        } catch (error) {
-            console.error("Fetch GRN Error:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
+
 
     const fetchPendingPOs = async () => {
         try {
             const response = await axiosInstance.get("/purachase");
-            // Filter for Pending orders
             const pending = (response.data || []).filter(po => po.status === "Pending");
             setPendingPOs(pending);
         } catch (error) {
@@ -76,7 +102,6 @@ export default function CreateGRN() {
     const handlePOChange = (event, newValue) => {
         setSelectedPO(newValue);
         if (newValue) {
-            // Auto-populate from PO
             setFormData({
                 ...formData,
                 poNumber: newValue.orderInfo?.orderNumber || "",
@@ -84,12 +109,11 @@ export default function CreateGRN() {
                 items: (newValue.items || []).map(item => ({
                     ...item,
                     orderedQty: item.qty,
-                    receivedQty: item.qty, // Default to ordered qty
+                    receivedQty: item.qty,
                     remark: "",
                 })),
             });
         } else {
-            // Reset if cleared
             setFormData({
                 ...formData,
                 poNumber: "",
@@ -117,7 +141,6 @@ export default function CreateGRN() {
                 : await axiosInstance.post("/grn", formData);
 
             if (response.status === 201 || response.status === 200) {
-                // Update PO status if a PO was selected
                 if (selectedPO) {
                     try {
                         await axiosInstance.put(`/purachase/${selectedPO.id}`, {
@@ -126,10 +149,8 @@ export default function CreateGRN() {
                         });
                     } catch (poError) {
                         console.error("Failed to update PO status:", poError);
-                        // We continue because the GRN was already saved
                     }
                 }
-
                 alert(`GRN ${isEditMode ? "Updated" : "Created"} Successfully!`);
                 router.push("/grn");
             }
@@ -143,180 +164,185 @@ export default function CreateGRN() {
 
     if (loading) return <Loader fullPage message="Processing GRN..." />;
 
+    const inputStyle = { background: "linear-gradient(135deg, #f8fafc, #f1f5f9)", cursor: "pointer" };
+
     return (
-        <Box sx={{ p: 3 }}>
-            <Box sx={{ mb: 3, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <Button startIcon={<ArrowBack />} onClick={() => router.back()} sx={{ color: "#64748b" }}>
-                    Back to List
-                </Button>
-                <Typography variant="h5" fontWeight={700} color="primary">
-                    {isEditMode ? "Edit Goods Receipt Note (GRN)" : "Create Goods Receipt Note (GRN)"}
-                </Typography>
-            </Box>
-
-            <Grid container spacing={3}>
-                {/* GRN & PO Selection */}
-                <Grid item xs={12} md={8}>
-                    <CommonCard title="GRN Details">
-                        <Grid container spacing={2} sx={{ p: 1 }}>
-                            <Grid item xs={12} md={6}>
-                                <TextField
-                                    fullWidth
-                                    label="GRN Number"
-                                    value={formData.grnNumber}
-                                    onChange={(e) => handleInputChange("grnNumber", e.target.value)}
-                                    size="small"
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={6}>
-                                <Autocomplete
-                                    options={pendingPOs}
-                                    getOptionLabel={(option) => option.orderInfo?.orderNumber || ""}
-                                    value={selectedPO}
-                                    onChange={handlePOChange}
-                                    renderInput={(params) => (
+        <Box>
+            <CommonCard title={isEditMode ? "Edit Goods Receipt Note (GRN)" : "Create Goods Receipt Note (GRN)"}>
+                <Box sx={{ p: 1 }}>
+                    <Grid container spacing={3} sx={{ mb: 4 }}>
+                        {/* GRN Details */}
+                        <Grid item xs={12} md={8} size={{ xs: 12, md: 8 }}>
+                            <GradientCard title="GRN Information" icon={ReceiptLong}>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
                                         <TextField
-                                            {...params}
-                                            label="Select PO Number"
-                                            placeholder="Search Pending POs..."
+                                            fullWidth
+                                            label="GRN Number"
+                                            value={formData.grnNumber}
+                                            onChange={(e) => handleInputChange("grnNumber", e.target.value)}
                                             size="small"
+                                            sx={inputStyle}
                                         />
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Invoice Number"
-                                    value={formData.invoiceNumber}
-                                    onChange={(e) => handleInputChange("invoiceNumber", e.target.value)}
-                                    size="small"
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={6}>
-                                <TextField
-                                    fullWidth
-                                    type="date"
-                                    label="Received Date"
-                                    value={formData.receivedDate}
-                                    onChange={(e) => handleInputChange("receivedDate", e.target.value)}
-                                    size="small"
-                                    InputLabelProps={{ shrink: true }}
-                                />
-                            </Grid>
-                        </Grid>
-                    </CommonCard>
-                </Grid>
+                                    </Grid>
+                                    <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+                                        <Autocomplete
+                                            options={pendingPOs}
+                                            getOptionLabel={(option) => option.orderInfo?.orderNumber || ""}
+                                            value={selectedPO}
+                                            onChange={handlePOChange}
+                                            sx={{ cursor: "pointer" }}
+                                            renderInput={(params) => (
+                                                <TextField
 
-                {/* Supplier & Receiver Info */}
-                <Grid item xs={12} md={4}>
-                    <CommonCard title="Information">
-                        <Grid container spacing={2} sx={{ p: 1 }}>
-                            <Grid item xs={12}>
-                                <TextField
-                                    fullWidth
-                                    label="Supplier Name"
-                                    value={formData.supplierName}
-                                    onChange={(e) => handleInputChange("supplierName", e.target.value)}
-                                    size="small"
-                                    InputProps={{
-                                        startAdornment: <Description sx={{ color: "#1172ba", mr: 1, fontSize: 20 }} />
-                                    }}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    fullWidth
-                                    label="Received By"
-                                    value={formData.receivedBy}
-                                    onChange={(e) => handleInputChange("receivedBy", e.target.value)}
-                                    size="small"
-                                    InputProps={{
-                                        startAdornment: <Inventory sx={{ color: "#1172ba", mr: 1, fontSize: 20 }} />
-                                    }}
-                                />
-                            </Grid>
+                                                    {...params}
+                                                    label="Select PO Number"
+                                                    placeholder="Search Pending POs..."
+                                                    size="small"
+                                                    sx={inputStyle}
+                                                />
+                                            )}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+                                        <TextField
+                                            fullWidth
+                                            label="Invoice Number"
+                                            value={formData.invoiceNumber}
+                                            onChange={(e) => handleInputChange("invoiceNumber", e.target.value)}
+                                            size="small"
+                                            sx={inputStyle}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+                                        <TextField
+                                            fullWidth
+                                            type="date"
+                                            label="Received Date"
+                                            value={formData.receivedDate}
+                                            onChange={(e) => handleInputChange("receivedDate", e.target.value)}
+                                            size="small"
+                                            InputLabelProps={{ shrink: true }}
+                                            sx={inputStyle}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </GradientCard>
                         </Grid>
-                    </CommonCard>
-                </Grid>
 
-                {/* Items Table */}
-                <Grid item xs={12}>
-                    <CommonCard title="Materials Received">
-                        <TableContainer component={Paper} elevation={0} sx={{ border: "1px solid #e2e8f0", borderRadius: 2 }}>
-                            <Table>
-                                <TableHead sx={{ bgcolor: "#f8fafc" }}>
-                                    <TableRow>
-                                        <TableCell sx={{ fontWeight: 700 }}>Item Name</TableCell>
-                                        <TableCell align="center" sx={{ fontWeight: 700 }}>Ordered Qty</TableCell>
-                                        <TableCell align="center" sx={{ fontWeight: 700 }}>Received Qty</TableCell>
-                                        <TableCell align="center" sx={{ fontWeight: 700 }}>Unit</TableCell>
-                                        <TableCell sx={{ fontWeight: 700 }}>Remark</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {formData.items.length > 0 ? (
-                                        formData.items.map((item, index) => (
-                                            <TableRow key={index}>
-                                                <TableCell>{item.name}</TableCell>
-                                                <TableCell align="center">{item.orderedQty}</TableCell>
-                                                <TableCell align="center">
-                                                    <TextField
-                                                        size="small"
-                                                        type="number"
-                                                        value={item.receivedQty}
-                                                        onChange={(e) => handleItemChange(index, "receivedQty", e.target.value)}
-                                                        sx={{ width: 100 }}
-                                                    />
-                                                </TableCell>
-                                                <TableCell align="center">{item.unit || "Nos"}</TableCell>
-                                                <TableCell>
-                                                    <TextField
-                                                        size="small"
-                                                        fullWidth
-                                                        value={item.remark}
-                                                        onChange={(e) => handleItemChange(index, "remark", e.target.value)}
-                                                        placeholder="Add note..."
-                                                    />
+                        {/* Supplier & Receiver Info */}
+                        <Grid item xs={12} md={4} size={{ xs: 12, md: 4 }}>
+                            <GradientCard title="Parties Involved" icon={Description}>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12} size={{ xs: 12, md: 12 }}>
+                                        <TextField
+                                            fullWidth
+                                            label="Supplier Name"
+                                            value={formData.supplierName}
+                                            onChange={(e) => handleInputChange("supplierName", e.target.value)}
+                                            size="small"
+                                            sx={inputStyle}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} size={{ xs: 12, md: 12 }}>
+                                        <TextField
+                                            fullWidth
+                                            label="Received By"
+                                            value={formData.receivedBy}
+                                            onChange={(e) => handleInputChange("receivedBy", e.target.value)}
+                                            size="small"
+                                            sx={inputStyle}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </GradientCard>
+                        </Grid>
+                    </Grid>
+
+                    {/* Items Table */}
+                    <Box sx={{ mb: 4 }}>
+                        <GradientCard title="Materials Received" icon={Inventory}>
+                            <TableContainer component={Paper} elevation={0} sx={{ border: "1px solid #e2e8f0", borderRadius: 2 }}>
+                                <Table>
+                                    <TableHead sx={{ bgcolor: "#f8fafc" }}>
+                                        <TableRow>
+                                            <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Item Name</TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 700, color: "#475569" }}>Ordered Qty</TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 700, color: "#475569" }}>Received Qty</TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 700, color: "#475569" }}>Unit</TableCell>
+                                            <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Remark</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {formData.items.length > 0 ? (
+                                            formData.items.map((item, index) => (
+                                                <TableRow key={index} sx={{ "&:hover": { bgcolor: "#f8fafc" } }}>
+                                                    <TableCell sx={{ fontWeight: 600, color: "#0f172a" }}>{item.name}</TableCell>
+                                                    <TableCell align="center">{item.orderedQty}</TableCell>
+                                                    <TableCell align="center">
+                                                        <TextField
+                                                            size="small"
+                                                            type="number"
+                                                            value={item.receivedQty}
+                                                            onChange={(e) => handleItemChange(index, "receivedQty", e.target.value)}
+                                                            sx={{ width: 100, ...inputStyle }}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell align="center">{item.unit || "Nos"}</TableCell>
+                                                    <TableCell>
+                                                        <TextField
+                                                            size="small"
+                                                            fullWidth
+                                                            value={item.remark}
+                                                            onChange={(e) => handleItemChange(index, "remark", e.target.value)}
+                                                            placeholder="Add note..."
+                                                            sx={inputStyle}
+                                                        />
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        ) : (
+                                            <TableRow>
+                                                <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
+                                                    <Typography color="textSecondary">No items found. Please select a PO or add items manually.</Typography>
                                                 </TableCell>
                                             </TableRow>
-                                        ))
-                                    ) : (
-                                        <TableRow>
-                                            <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
-                                                <Typography color="textSecondary">No items found. Please select a PO or add items manually.</Typography>
-                                            </TableCell>
-                                        </TableRow>
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </CommonCard>
-                </Grid>
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </GradientCard>
+                    </Box>
 
-                {/* Action Buttons */}
-                <Grid item xs={12} sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mb: 4 }}>
-                    <Button
-                        variant="outlined"
-                        onClick={() => router.push("/grn")}
-                        sx={{ borderRadius: 2, px: 4 }}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        variant="contained"
-                        startIcon={<Save />}
-                        onClick={handleSave}
-                        sx={{
-                            borderRadius: 2,
-                            px: 4,
-                            background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)"
-                        }}
-                    >
-                        {isEditMode ? "Update GRN" : "Save GRN"}
-                    </Button>
-                </Grid>
-            </Grid>
+                    {/* Action Buttons */}
+                    <Box sx={{ mt: 4, display: "flex", gap: 2, justifyContent: "end", alignItems: "end" }}>
+                        <Button
+                            variant="outlined"
+                            onClick={() => router.push("/grn")}
+                            sx={{ borderRadius: 2, px: 4, textTransform: "none" }}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="contained"
+                            startIcon={<Save />}
+                            onClick={handleSave}
+                            sx={{
+                                backgroundColor: "#1172ba",
+                                "&:hover": { backgroundColor: "#0d5a94" },
+                                borderRadius: 2,
+                                px: 4,
+                                py: 1.5,
+                                textTransform: "none",
+                                fontWeight: 500,
+                                background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)"
+                            }}
+                        >
+                            {isEditMode ? "Update GRN" : "Save GRN"}
+                        </Button>
+                    </Box>
+                </Box>
+            </CommonCard>
         </Box>
     );
 }

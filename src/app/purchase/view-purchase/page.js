@@ -44,23 +44,25 @@ export default function ViewPurchaseOrder() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        const fetchOrderDetails = async () => {
+            try {
+                setLoading(true);
+                const response = await axiosInstance.get(`/purachase/${id}`);
+                setOrder(response.data);
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                alert("Failed to fetch purchase order details.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
         if (id) {
             fetchOrderDetails();
         }
     }, [id]);
 
-    const fetchOrderDetails = async () => {
-        try {
-            setLoading(true);
-            const response = await axiosInstance.get(`/purachase/${id}`);
-            setOrder(response.data);
-        } catch (error) {
-            console.error("Fetch Error:", error);
-            alert("Failed to fetch purchase order details.");
-        } finally {
-            setLoading(false);
-        }
-    };
+
 
     if (loading) {
         return <Loader fullPage message="Loading Order Details..." />;
@@ -103,21 +105,21 @@ export default function ViewPurchaseOrder() {
     const statusConfig = getStatusConfig(status);
 
     return (
-        <Box 
-            sx={{ 
-                maxWidth: 1400, 
-                margin: "0 auto", 
+        <Box
+            sx={{
+                maxWidth: 1400,
+                margin: "0 auto",
                 p: 3,
                 background: "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)",
                 minHeight: "100vh",
             }}
         >
             {/* Header Actions */}
-            <Box 
-                sx={{ 
-                    mb: 3, 
-                    display: "flex", 
-                    justifyContent: "space-between", 
+            <Box
+                sx={{
+                    mb: 3,
+                    display: "flex",
+                    justifyContent: "space-between",
                     alignItems: "center",
                     flexWrap: "wrap",
                     gap: 2,
@@ -126,8 +128,8 @@ export default function ViewPurchaseOrder() {
                 <Button
                     startIcon={<ArrowBack />}
                     onClick={() => router.push("/purchase")}
-                    sx={{ 
-                        color: "#475569", 
+                    sx={{
+                        color: "#475569",
                         textTransform: "none",
                         fontWeight: 600,
                         fontSize: "0.95rem",
@@ -143,8 +145,8 @@ export default function ViewPurchaseOrder() {
                         variant="outlined"
                         startIcon={<Print />}
                         onClick={() => window.print()}
-                        sx={{ 
-                            borderRadius: 2.5, 
+                        sx={{
+                            borderRadius: 2.5,
                             textTransform: "none",
                             fontWeight: 600,
                             borderColor: "#cbd5e1",
@@ -161,8 +163,8 @@ export default function ViewPurchaseOrder() {
                     <Button
                         variant="outlined"
                         startIcon={<Download />}
-                        sx={{ 
-                            borderRadius: 2.5, 
+                        sx={{
+                            borderRadius: 2.5,
                             textTransform: "none",
                             fontWeight: 600,
                             borderColor: "#cbd5e1",
@@ -199,11 +201,11 @@ export default function ViewPurchaseOrder() {
             </Box>
 
             {/* Main Paper Container */}
-            <Paper 
+            <Paper
                 elevation={0}
-                sx={{ 
-                    p: { xs: 3, md: 5 }, 
-                    borderRadius: 4, 
+                sx={{
+                    p: { xs: 3, md: 5 },
+                    borderRadius: 4,
                     boxShadow: "0 20px 60px rgba(0,0,0,0.08)",
                     background: "#ffffff",
                     border: "1px solid #e2e8f0",
@@ -211,7 +213,7 @@ export default function ViewPurchaseOrder() {
             >
                 {/* Header Section */}
                 <Grid container spacing={4} sx={{ mb: 5 }}>
-                    <Grid item xs={12} md={6} size={{xs:12,md:6}}>
+                    <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
                             <Box
                                 sx={{
@@ -228,9 +230,9 @@ export default function ViewPurchaseOrder() {
                                 <Description sx={{ color: "#fff", fontSize: 32 }} />
                             </Box>
                             <Box>
-                                <Typography 
-                                    variant="h4" 
-                                    fontWeight={800} 
+                                <Typography
+                                    variant="h4"
+                                    fontWeight={800}
                                     sx={{
                                         background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
                                         backgroundClip: "text",
@@ -241,9 +243,9 @@ export default function ViewPurchaseOrder() {
                                 >
                                     PURCHASE ORDER
                                 </Typography>
-                                <Typography 
-                                    variant="h6" 
-                                    sx={{ 
+                                <Typography
+                                    variant="h6"
+                                    sx={{
                                         color: "#64748b",
                                         fontWeight: 600,
                                         letterSpacing: 0.5,
@@ -273,9 +275,9 @@ export default function ViewPurchaseOrder() {
                             }}
                         />
                     </Grid>
-                    <Grid item xs={12} md={6} size={{xs:12,md:6}}>
-                        <Box 
-                            sx={{ 
+                    <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+                        <Box
+                            sx={{
                                 textAlign: { md: "right" },
                                 bgcolor: "#f8fafc",
                                 p: 3,
@@ -315,11 +317,11 @@ export default function ViewPurchaseOrder() {
                 {/* Information Cards */}
                 <Grid container spacing={3} sx={{ mb: 5 }}>
                     {/* Supplier Information */}
-                    <Grid item xs={12} md={4} size={{xs:12,md:4}}>
-                        <Paper 
+                    <Grid item xs={12} md={4} size={{ xs: 12, md: 4 }}>
+                        <Paper
                             elevation={0}
-                            sx={{ 
-                                p: 3, 
+                            sx={{
+                                p: 3,
                                 height: "100%",
                                 borderRadius: 3,
                                 border: "2px solid #e2e8f0",
@@ -374,11 +376,11 @@ export default function ViewPurchaseOrder() {
                     </Grid>
 
                     {/* Delivery Information */}
-                    <Grid item xs={12} md={4} size={{xs:12,md:4}}>
-                        <Paper 
+                    <Grid item xs={12} md={4} size={{ xs: 12, md: 4 }}>
+                        <Paper
                             elevation={0}
-                            sx={{ 
-                                p: 3, 
+                            sx={{
+                                p: 3,
                                 height: "100%",
                                 borderRadius: 3,
                                 border: "2px solid #e2e8f0",
@@ -425,11 +427,11 @@ export default function ViewPurchaseOrder() {
                     </Grid>
 
                     {/* Invoice Information */}
-                    <Grid item xs={12} md={4} size={{xs:12,md:4}}>
-                        <Paper 
+                    <Grid item xs={12} md={4} size={{ xs: 12, md: 4 }}>
+                        <Paper
                             elevation={0}
-                            sx={{ 
-                                p: 3, 
+                            sx={{
+                                p: 3,
                                 height: "100%",
                                 borderRadius: 3,
                                 border: "2px solid #e2e8f0",
@@ -473,11 +475,11 @@ export default function ViewPurchaseOrder() {
                     <Typography variant="h6" fontWeight={700} sx={{ mb: 3, color: "#1e293b" }}>
                         Order Items
                     </Typography>
-                    <TableContainer 
-                        component={Paper} 
-                        elevation={0} 
-                        sx={{ 
-                            border: "2px solid #e2e8f0", 
+                    <TableContainer
+                        component={Paper}
+                        elevation={0}
+                        sx={{
+                            border: "2px solid #e2e8f0",
                             borderRadius: 3,
                             overflow: "hidden",
                         }}
@@ -501,7 +503,7 @@ export default function ViewPurchaseOrder() {
                             </TableHead>
                             <TableBody>
                                 {items.map((item, index) => (
-                                    <TableRow 
+                                    <TableRow
                                         key={index}
                                         sx={{
                                             "&:hover": {
@@ -531,12 +533,12 @@ export default function ViewPurchaseOrder() {
 
                 {/* Totals Section */}
                 <Grid container justifyContent="flex-end">
-                    <Grid item xs={12} md={5} size={{xs:12,md:5}}>
+                    <Grid item xs={12} md={5} size={{ xs: 12, md: 5 }}>
                         <Paper
                             elevation={0}
-                            sx={{ 
-                                p: 3, 
-                                bgcolor: "#f8fafc", 
+                            sx={{
+                                p: 3,
+                                bgcolor: "#f8fafc",
                                 borderRadius: 3,
                                 border: "2px solid #e2e8f0",
                             }}
@@ -567,10 +569,10 @@ export default function ViewPurchaseOrder() {
                                     </Typography>
                                 </Box>
                                 <Divider sx={{ my: 1, borderColor: "#cbd5e1" }} />
-                                <Box 
-                                    sx={{ 
-                                        display: "flex", 
-                                        justifyContent: "space-between", 
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
                                         alignItems: "center",
                                         bgcolor: "#ffffff",
                                         p: 2,
@@ -581,8 +583,8 @@ export default function ViewPurchaseOrder() {
                                     <Typography variant="h6" fontWeight={800} color="#1e293b">
                                         Grand Total:
                                     </Typography>
-                                    <Typography 
-                                        variant="h5" 
+                                    <Typography
+                                        variant="h5"
                                         fontWeight={800}
                                         sx={{
                                             background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
