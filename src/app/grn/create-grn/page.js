@@ -1,5 +1,7 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+export const dynamic = "force-dynamic";
+import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
     Box,
@@ -47,7 +49,7 @@ const GradientCard = ({ title, icon: Icon, children }) => (
     </Card>
 );
 
-export default function CreateGRN() {
+function CreateGRNContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const id = searchParams.get("id");
@@ -86,7 +88,6 @@ export default function CreateGRN() {
             fetchGRNDetails();
         }
     }, [id, isEditMode]);
-
 
 
     const fetchPendingPOs = async () => {
@@ -344,5 +345,13 @@ export default function CreateGRN() {
                 </Box>
             </CommonCard>
         </Box>
+    );
+}
+
+export default function CreateGRN() {
+    return (
+        <Suspense fallback={<Loader fullPage message="Loading..." />}>
+            <CreateGRNContent />
+        </Suspense>
     );
 }
