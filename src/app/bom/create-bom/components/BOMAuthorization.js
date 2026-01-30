@@ -32,7 +32,7 @@ const BOMAuthorization = () => {
                 }}
             >
                 <FactCheck />
-                <Typography variant="h6" fontWeight={600}>
+                <Typography variant="h6" fontWeight={600} color="white">
                     BOM Authorization
                 </Typography>
             </Box>

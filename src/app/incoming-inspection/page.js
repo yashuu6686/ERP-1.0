@@ -138,7 +138,7 @@ export default function IncomingInspection() {
           <IconButton color="warning" size="small">
             <Edit fontSize="small" />
           </IconButton>
-          <IconButton
+          {/* <IconButton
             size="small"
             sx={{
               color: "#0891b2",
@@ -147,7 +147,7 @@ export default function IncomingInspection() {
             }}
           >
             <Download fontSize="small" />
-          </IconButton>
+          </IconButton> */}
         </Box>
       ),
     },

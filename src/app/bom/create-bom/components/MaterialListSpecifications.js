@@ -46,7 +46,7 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate }) =>
             >
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                     <Build />
-                    <Typography variant="h6" fontWeight={600}>
+                    <Typography variant="h6" fontWeight={600} color="white">
                         Material List Specifications
                     </Typography>
                 </Box>

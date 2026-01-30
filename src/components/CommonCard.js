@@ -80,7 +80,6 @@ const CommonCard = ({
                                 boxShadow: "none",
                                 transition: "all 0.2s",
                                 fontFamily: "var(--font-manrope)",
-                                "&:hover": { bgcolor: "#2557cc" }
                             }}
                         >
                             {addText || "Add New"}
