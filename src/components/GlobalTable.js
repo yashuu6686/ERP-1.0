@@ -18,8 +18,8 @@ const GlobalTable = ({ columns, data, onRowClick }) => {
             component={Paper}
             elevation={0}
             sx={{
-                border: "1px solid #e2e8f0",
-                borderRadius: 2,
+                border: "1px solid var(--border-default)",
+                borderRadius: "var(--card-radius)",
                 overflowX: "auto",
                 width: "100%",
                 maxWidth: "100%",
@@ -30,30 +30,35 @@ const GlobalTable = ({ columns, data, onRowClick }) => {
                     width: "8px",
                 },
                 "&::-webkit-scrollbar-track": {
-                    background: "#f8fafc",
+                    background: "var(--bg-page)",
                 },
                 "&::-webkit-scrollbar-thumb": {
-                    backgroundColor: "#cbd5e1",
+                    backgroundColor: "var(--border-strong)",
                     borderRadius: "10px",
-                    border: "2px solid #f8fafc",
+                    border: "2px solid var(--bg-page)",
                 },
                 "&::-webkit-scrollbar-thumb:hover": {
-                    backgroundColor: "#94a3b8",
+                    backgroundColor: "var(--text-muted)",
                 },
             }}
         >
             <Table size="small">
-                <TableHead sx={{ bgcolor: "#f1f5f9" }}>
+                <TableHead sx={{ bgcolor: "var(--bg-page)" }}>
                     <TableRow>
                         {columns.map((col, index) => (
                             <TableCell
                                 key={index}
                                 align={col.align || "left"}
                                 sx={{
-                                    fontWeight: 600,
-                                    color: "#475569",
-                                    py: 1.5,
+                                    fontWeight: 700,
+                                    color: "var(--text-secondary)",
+                                    py: 2,
                                     whiteSpace: "nowrap",
+                                    fontSize: "var(--size-caption)",
+                                    textTransform: "uppercase",
+                                    letterSpacing: "0.02em",
+                                    fontFamily: "var(--font-manrope)",
+                                    borderBottom: "1px solid var(--border-default)",
                                     ...col.sx,
                                 }}
                             >
@@ -72,11 +77,22 @@ const GlobalTable = ({ columns, data, onRowClick }) => {
                                 sx={{
                                     cursor: onRowClick ? "pointer" : "default",
                                     transition: "background-color 0.2s",
-                                    "&:hover": { bgcolor: "#f8fafc" },
+                                    "&:hover": { bgcolor: "var(--brand-soft) !important" },
                                 }}
                             >
                                 {columns.map((col, colIndex) => (
-                                    <TableCell sx={{ whiteSpace: "nowrap", }} key={colIndex} align={col.align || "left"}>
+                                    <TableCell
+                                        sx={{
+                                            whiteSpace: "nowrap",
+                                            fontSize: "var(--size-body)",
+                                            color: "var(--text-primary)",
+                                            fontFamily: "var(--font-manrope)",
+                                            py: 2,
+                                            borderBottom: "1px solid var(--border-default)",
+                                        }}
+                                        key={colIndex}
+                                        align={col.align || "left"}
+                                    >
                                         {col.render
                                             ? col.render(row, rowIndex)
                                             : row[col.accessor] || "-"}
@@ -87,8 +103,8 @@ const GlobalTable = ({ columns, data, onRowClick }) => {
                     ) : (
                         <TableRow>
                             <TableCell colSpan={columns.length} align="center" sx={{ py: 4 }}>
-                                <Typography variant="body2" color="text.secondary">
-                                    No data found
+                                <Typography sx={{ fontSize: "var(--size-body)", color: "var(--text-muted)", fontFamily: "var(--font-manrope)" }}>
+                                    No records found in this view.
                                 </Typography>
                             </TableCell>
                         </TableRow>

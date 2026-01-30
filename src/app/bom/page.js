@@ -39,7 +39,7 @@ export default function BOMList() {
       label: "BOM Number",
       align: "center",
       render: (row) => (
-        <span style={{ fontWeight: 600, color: "#1172ba" }}>
+        <span style={{ fontWeight: 600, color: "var(--brand-primary)", fontFamily: "var(--font-manrope)" }}>
           {row.number}
         </span>
       ),
