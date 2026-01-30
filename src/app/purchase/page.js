@@ -13,6 +13,7 @@ import {
   Delete,
   Download,
   FilterList,
+  Visibility,
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
@@ -177,10 +178,11 @@ export default function PurchaseOrderTable() {
     {
       label: "Actions",
       align: "center",
-      render: () => (
+      render: (row) => (
         <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
           <IconButton
             size="small"
+            onClick={() => router.push(`/purchase/create-purchase?id=${row.id}`)}
             sx={{
               color: "rgb(17, 114, 186)",
               bgcolor: "#f1f5f9",
@@ -192,12 +194,12 @@ export default function PurchaseOrderTable() {
           <IconButton
             size="small"
             sx={{
-              color: "#dc2626",
-              bgcolor: "#fef2f2",
-              "&:hover": { bgcolor: "#fee2e2" }
+              color: "rgb(17, 114, 186)",
+              bgcolor: "#f1f5f9",
+              "&:hover": { bgcolor: "#e2e8f0" }
             }}
           >
-            <Delete sx={{ fontSize: 16 }} />
+            <Visibility fontSize="small" />
           </IconButton>
           <IconButton
             size="small"
