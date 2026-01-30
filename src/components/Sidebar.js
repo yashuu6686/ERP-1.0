@@ -82,23 +82,24 @@ export default function Sidebar({ children }) {
       <Drawer
         variant="permanent"
         sx={{
-          width: 260,
+          width: 264,
           flexShrink: 0,
           "& .MuiDrawer-paper": {
-            width: 260,
+            width: 264,
             boxSizing: "border-box",
+            borderRight: "1px solid var(--border-default)",
+            backgroundColor: "var(--bg-surface)",
           },
         }}
       >
 
-        <Divider />
+        <Divider sx={{ borderColor: "var(--border-default)" }} />
 
         <List
           className="sidebar-scroll"
           style={{
-            padding: "12px 8px",
+            padding: "var(--space-md) var(--space-sm)",
             overflowY: "auto",
-            // flex: 1,
           }}
         >
           {menuItems.map((item, index) => {
@@ -113,9 +114,9 @@ export default function Sidebar({ children }) {
                   style={{
                     borderRadius: "8px",
                     marginBottom: "4px",
-                    padding: "10px 10px",
-                    backgroundColor: isActive ? "rgb(198, 228, 251)" : "transparent",
-                    color: "#000000",
+                    padding: "10px 12px",
+                    backgroundColor: isActive ? "var(--brand-soft)" : "transparent",
+                    color: isActive ? "var(--brand-primary)" : "var(--text-primary)",
                   }}
                 >
                   <Box
@@ -123,13 +124,20 @@ export default function Sidebar({ children }) {
                       marginRight: "12px",
                       display: "flex",
                       alignItems: "center",
-                      color: "rgb(17, 114, 186)",
+                      color: isActive ? "var(--brand-primary)" : "var(--text-secondary)",
                     }}
                   >
-                    {item.icon}
+                    {React.cloneElement(item.icon, { fontSize: "small" })}
                   </Box>
 
-                  <ListItemText primary={item.text} />
+                  <ListItemText
+                    primary={item.text}
+                    primaryTypographyProps={{
+                      fontSize: "var(--size-body)",
+                      fontWeight: isActive ? 600 : 500,
+                      fontFamily: "var(--font-manrope)"
+                    }}
+                  />
                 </ListItemButton>
               </Link>
             );

@@ -1,10 +1,121 @@
-/* Hide scrollbar by default */
+:root {
+  /* Layout */
+  --canvas-width: 1440px;
+  --content-max-width: 1412px;
+  --sidebar-width: 264px;
+
+  /* Colors */
+  --bg-page: #F6F8FB;
+  --bg-surface: #FFFFFF;
+
+  --text-primary: #1F2937;
+  --text-secondary: #6B7280;
+  --text-muted: #9CA3AF;
+
+  --brand-primary: #2F6BFF;
+  --brand-soft: #EEF4FF;
+
+  --success: #22C55E;
+  --warning: #F59E0B;
+  --error: #EF4444;
+
+  --border-default: #EEF1F6;
+  --border-strong: #E5E7EB;
+
+  /* Data Viz */
+  --viz-1: #2F6BFF;
+  --viz-2: #22C55E;
+  --viz-3: #F59E0B;
+  --viz-4: #EF4444;
+  --viz-5: #A855F7;
+  --viz-6: #14B8A6;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 20px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+  --space-3xl: 40px;
+  --space-4xl: 48px;
+
+  /* Typography Scale */
+  --size-caption: 12px;
+  --line-height-caption: 1.4;
+
+  --size-body: 14px;
+  --line-height-body: 1.6;
+
+  --size-subtitle: 16px;
+  --line-height-subtitle: 1.5;
+
+  --size-heading-sm: 20px;
+  --line-height-heading-sm: 1.4;
+
+  --size-heading-md: 24px;
+  --line-height-heading-md: 1.3;
+
+  --size-heading-lg: 28px;
+  --line-height-heading-lg: 1.25;
+
+  /* Weights */
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* Components */
+  --card-radius: 16px;
+  --card-padding: 20px;
+  --card-shadow: 0px 4px 16px rgba(0, 0, 0, 0.04);
+
+  --btn-height: 40px;
+  --btn-radius: 10px;
+
+  --input-height: 44px;
+  --input-radius: 12px;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  font-family: var(--font-manrope), Inter, system-ui, -apple-system, sans-serif;
+  font-size: var(--size-body);
+  line-height: var(--line-height-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--text-primary);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.01em;
+}
+
+p {
+  color: var(--text-secondary);
+}
+
+/* Sidebar Scrollbar Styling (Retained and adjusted) */
 .sidebar-scroll {
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
 }
 
-/* Webkit (Chrome, Edge, Brave) */
 .sidebar-scroll::-webkit-scrollbar {
   width: 6px;
 }
@@ -19,13 +130,10 @@
   transition: background-color 0.3s;
 }
 
-/* Show scrollbar on hover */
 .sidebar-scroll:hover::-webkit-scrollbar-thumb {
   background-color: #cbd5e1;
-  /* light gray */
 }
 
-/* Firefox */
 .sidebar-scroll:hover {
   scrollbar-color: #cbd5e1 transparent;
 }
@@ -34,6 +142,62 @@
   background-color: #94a3b8;
 }
 
-.sidebar-scroll::-webkit-scrollbar-button:single-button {
-  display: none;
+/* Utility Classes based on Design System */
+.card {
+  background: var(--bg-surface);
+  border-radius: var(--card-radius);
+  padding: var(--card-padding);
+  border: 1px solid var(--border-default);
+  box-shadow: var(--card-shadow);
+}
+
+.btn-primary {
+  height: var(--btn-height);
+  border-radius: var(--btn-radius);
+  background: var(--brand-primary);
+  color: #FFFFFF;
+  font-weight: var(--weight-semibold);
+  padding: 0 var(--space-md);
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.btn-secondary {
+  height: var(--btn-height);
+  border-radius: var(--btn-radius);
+  background: var(--brand-soft);
+  color: var(--brand-primary);
+  font-weight: var(--weight-semibold);
+  padding: 0 var(--space-md);
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.input-field {
+  height: var(--input-height);
+  border-radius: var(--input-radius);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  padding: 0 var(--space-md);
+  font-family: inherit;
+  font-size: var(--size-body);
+  transition: border-color 0.2s;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+}
+
+.text-muted {
+  color: var(--text-muted);
+  font-size: var(--size-caption);
 }

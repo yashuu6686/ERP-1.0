@@ -70,16 +70,17 @@ const ProfilePage = () => {
     ];
 
     return (
-        <Box sx={{ p: { xs: 1, md: 3 } }}>
+        <Box sx={{ p: "var(--space-lg)", maxWidth: "var(--content-max-width)", mx: "auto" }}>
             {/* 1. Profile Identity Header */}
             <Paper
                 elevation={0}
                 sx={{
-                    p: 4,
-                    mb: 4,
-                    borderRadius: 4,
-                    border: "1px solid #e2e8f0",
-                    background: "linear-gradient(to right, #ffffff, #f8fafc)",
+                    p: "var(--space-2xl)",
+                    mb: "var(--space-xl)",
+                    borderRadius: "var(--card-radius)",
+                    border: "1px solid var(--border-default)",
+                    bgcolor: "var(--bg-surface)",
+                    boxShadow: "var(--card-shadow)",
                     position: "relative",
                     overflow: "hidden",
                 }}
@@ -90,11 +91,11 @@ const ProfilePage = () => {
                             sx={{
                                 width: 120,
                                 height: 120,
-                                bgcolor: "#1172ba",
+                                bgcolor: "var(--brand-primary)",
                                 fontSize: "2.5rem",
                                 fontWeight: 900,
-                                border: "4px solid #fff",
-                                boxShadow: "0 10px 20px -5px rgba(17, 114, 186, 0.3)",
+                                border: "4px solid var(--bg-surface)",
+                                boxShadow: "0 10px 20px -5px rgba(47, 107, 255, 0.2)",
                             }}
                         >
                             JM
@@ -102,7 +103,14 @@ const ProfilePage = () => {
                     </Grid>
                     <Grid item xs={12} sm>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
-                            <Typography variant="h4" fontWeight={900} color="#1e293b">
+                            <Typography
+                                sx={{
+                                    fontSize: "var(--size-heading-md)",
+                                    fontWeight: "var(--weight-bold)",
+                                    color: "var(--text-primary)",
+                                    fontFamily: "var(--font-manrope)"
+                                }}
+                            >
                                 {userDetails.name}
                             </Typography>
                             <Chip
@@ -110,29 +118,38 @@ const ProfilePage = () => {
                                 size="small"
                                 icon={<Verified sx={{ fontSize: "14px !important" }} />}
                                 sx={{
-                                    bgcolor: "#dcfce7",
-                                    color: "#166534",
-                                    fontWeight: 800,
-                                    fontSize: "0.75rem",
-                                    border: "none"
+                                    bgcolor: "var(--brand-soft)",
+                                    color: "var(--brand-primary)",
+                                    fontWeight: 700,
+                                    fontSize: "var(--size-caption)",
+                                    border: "none",
+                                    fontFamily: "var(--font-manrope)"
                                 }}
                             />
                         </Box>
-                        <Typography variant="body1" sx={{ color: "#64748b", fontWeight: 600, mb: 2 }}>
+                        <Typography
+                            sx={{
+                                color: "var(--text-secondary)",
+                                fontWeight: 600,
+                                mb: 2,
+                                fontSize: "var(--size-body)",
+                                fontFamily: "var(--font-manrope)"
+                            }}
+                        >
                             {userDetails.role} • {userDetails.department}
                         </Typography>
                         <Box sx={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
                             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                <Badge sx={{ color: "#94a3b8", fontSize: 18 }} />
-                                <Typography variant="caption" sx={{ color: "#475569", fontWeight: 700 }}>ID: {userDetails.id}</Typography>
+                                <Badge sx={{ color: "var(--text-muted)", fontSize: 18 }} />
+                                <Typography sx={{ color: "var(--text-secondary)", fontWeight: 700, fontSize: "var(--size-caption)", fontFamily: "var(--font-manrope)" }}>ID: {userDetails.id}</Typography>
                             </Box>
                             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                <Business sx={{ color: "#94a3b8", fontSize: 18 }} />
-                                <Typography variant="caption" sx={{ color: "#475569", fontWeight: 700 }}>Rank: {userDetails.rank}</Typography>
+                                <Business sx={{ color: "var(--text-muted)", fontSize: 18 }} />
+                                <Typography sx={{ color: "var(--text-secondary)", fontWeight: 700, fontSize: "var(--size-caption)", fontFamily: "var(--font-manrope)" }}>Rank: {userDetails.rank}</Typography>
                             </Box>
                             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                <Language sx={{ color: "#94a3b8", fontSize: 18 }} />
-                                <Typography variant="caption" sx={{ color: "#475569", fontWeight: 700 }}>Joined: {userDetails.joinedDate}</Typography>
+                                <Language sx={{ color: "var(--text-muted)", fontSize: 18 }} />
+                                <Typography sx={{ color: "var(--text-secondary)", fontWeight: 700, fontSize: "var(--size-caption)", fontFamily: "var(--font-manrope)" }}>Joined: {userDetails.joinedDate}</Typography>
                             </Box>
                         </Box>
                     </Grid>
@@ -141,13 +158,15 @@ const ProfilePage = () => {
                             variant="contained"
                             startIcon={<Edit />}
                             sx={{
-                                bgcolor: "#1172ba",
-                                borderRadius: 2,
+                                bgcolor: "var(--brand-primary)",
+                                borderRadius: "var(--btn-radius)",
                                 px: 3,
                                 py: 1,
                                 textTransform: "none",
                                 fontWeight: 700,
-                                "&:hover": { bgcolor: "#0d5a94" }
+                                fontFamily: "var(--font-manrope)",
+                                boxShadow: "none",
+                                "&:hover": { bgcolor: "#2557cc" }
                             }}
                         >
                             Update Profile
@@ -157,7 +176,7 @@ const ProfilePage = () => {
             </Paper>
 
             {/* 2. Unified Interface Selection */}
-            <Box sx={{ mb: 4, borderBottom: "1px solid #e2e8f0" }}>
+            <Box sx={{ mb: 4, borderBottom: "1px solid var(--border-default)" }}>
                 <Tabs
                     value={activeTab}
                     onChange={handleTabChange}
@@ -165,12 +184,13 @@ const ProfilePage = () => {
                         "& .MuiTab-root": {
                             textTransform: "none",
                             fontWeight: 700,
-                            fontSize: "0.95rem",
+                            fontSize: "var(--size-body)",
                             minWidth: 120,
-                            color: "#94a3b8",
+                            color: "var(--text-muted)",
+                            fontFamily: "var(--font-manrope)"
                         },
-                        "& .Mui-selected": { color: "#1172ba !important" },
-                        "& .MuiTabs-indicator": { height: 3, borderRadius: "3px 3px 0 0", bgcolor: "#1172ba" }
+                        "& .Mui-selected": { color: "var(--brand-primary) !important" },
+                        "& .MuiTabs-indicator": { height: 3, borderRadius: "3px 3px 0 0", bgcolor: "var(--brand-primary)" }
                     }}
                 >
                     <Tab icon={<Person sx={{ fontSize: 20 }} />} iconPosition="start" label="Overview" />
@@ -197,14 +217,14 @@ const ProfilePage = () => {
                                         { label: "Primary Worksite", value: userDetails.location, icon: <LocationOn /> }
                                     ].map((field, i) => (
                                         <Grid item xs={12} sm={6} key={i}>
-                                            <Typography variant="caption" sx={{ color: "#94a3b8", fontWeight: 700, textTransform: "uppercase" }}>
+                                            <Typography sx={{ color: "var(--text-muted)", fontWeight: 700, textTransform: "uppercase", fontSize: "var(--size-caption)", fontFamily: "var(--font-manrope)" }}>
                                                 {field.label}
                                             </Typography>
                                             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mt: 1 }}>
-                                                <Box sx={{ color: "#1172ba", display: "flex" }}>
+                                                <Box sx={{ color: "var(--brand-primary)", display: "flex" }}>
                                                     {React.cloneElement(field.icon, { fontSize: "small" })}
                                                 </Box>
-                                                <Typography variant="body1" sx={{ fontWeight: 700, color: "#1e293b" }}>
+                                                <Typography sx={{ fontWeight: 700, color: "var(--text-primary)", fontSize: "var(--size-body)", fontFamily: "var(--font-manrope)" }}>
                                                     {field.value}
                                                 </Typography>
                                             </Box>
@@ -216,20 +236,20 @@ const ProfilePage = () => {
                             <Box sx={{ mt: 4 }}>
                                 <CommonCard title="Operational Performance Summary">
                                     <Box sx={{ p: 1 }}>
-                                        <Typography variant="body2" color="#64748b" sx={{ mb: 3 }}>
+                                        <Typography sx={{ mb: 3, color: "var(--text-secondary)", fontSize: "var(--size-body)", fontFamily: "var(--font-manrope)" }}>
                                             Summary of system engagements and quality performance metrics for the current fiscal cycle.
                                         </Typography>
                                         <Grid container spacing={3}>
                                             {[
-                                                { label: "QC Clearances", value: "482", color: "#10b981" },
-                                                { label: "Pending Approvals", value: "12", color: "#f59e0b" },
-                                                { label: "SOP Submissions", value: "84", color: "#6366f1" },
-                                                { label: "Critical Incidents", value: "0", color: "#ef4444" },
+                                                { label: "QC Clearances", value: "482", color: "var(--success)" },
+                                                { label: "Pending Approvals", value: "12", color: "var(--warning)" },
+                                                { label: "SOP Submissions", value: "84", color: "var(--brand-primary)" },
+                                                { label: "Critical Incidents", value: "0", color: "var(--error)" },
                                             ].map((stat, i) => (
                                                 <Grid item xs={6} sm={3} key={i}>
-                                                    <Box sx={{ p: 2, bgcolor: "#f8fafc", borderRadius: 3, textAlign: "center", border: "1px solid #f1f5f9" }}>
-                                                        <Typography variant="h5" fontWeight={900} color={stat.color}>{stat.value}</Typography>
-                                                        <Typography variant="caption" fontWeight={700} color="#64748b">{stat.label}</Typography>
+                                                    <Box sx={{ p: 2, bgcolor: "var(--bg-page)", borderRadius: "var(--card-radius)", textAlign: "center", border: "1px solid var(--border-default)" }}>
+                                                        <Typography variant="h5" sx={{ fontWeight: 900, color: stat.color, fontFamily: "var(--font-manrope)" }}>{stat.value}</Typography>
+                                                        <Typography sx={{ fontWeight: 700, color: "var(--text-muted)", fontSize: "var(--size-caption)", fontFamily: "var(--font-manrope)" }}>{stat.label}</Typography>
                                                     </Box>
                                                 </Grid>
                                             ))}
@@ -243,20 +263,20 @@ const ProfilePage = () => {
                         <Grid item xs={12} md={4}>
                             <CommonCard title="Access Status">
                                 <Box sx={{ textAlign: "center", p: 2 }}>
-                                    <Shield sx={{ fontSize: 64, color: "#10b981", mb: 2 }} />
-                                    <Typography variant="h6" fontWeight={800} color="#1e293b">Account Secured</Typography>
-                                    <Typography variant="body2" color="#64748b" sx={{ mb: 4 }}>
+                                    <Shield sx={{ fontSize: 64, color: "var(--success)", mb: 2 }} />
+                                    <Typography sx={{ fontWeight: 800, color: "var(--text-primary)", fontSize: "var(--size-subtitle)", fontFamily: "var(--font-manrope)" }}>Account Secured</Typography>
+                                    <Typography sx={{ mb: 4, color: "var(--text-secondary)", fontSize: "var(--size-body)", fontFamily: "var(--font-manrope)" }}>
                                         Your enterprise identity is protected with Multi-Factor Authentication.
                                     </Typography>
-                                    <Divider sx={{ mb: 4, borderStyle: "dashed" }} />
+                                    <Divider sx={{ mb: 4, bgcolor: "var(--border-default)" }} />
                                     <List sx={{ textAlign: "left" }}>
                                         <ListItem sx={{ px: 0 }}>
-                                            <ListItemIcon sx={{ minWidth: 40, color: "#10b981" }}><Lock fontSize="small" /></ListItemIcon>
-                                            <ListItemText primary={<Typography sx={{ fontSize: "0.875rem", fontWeight: 700 }}>Encryption: AES-256</Typography>} />
+                                            <ListItemIcon sx={{ minWidth: 40, color: "var(--success)" }}><Lock fontSize="small" /></ListItemIcon>
+                                            <ListItemText primary={<Typography sx={{ fontSize: "var(--size-body)", fontWeight: 700, fontFamily: "var(--font-manrope)" }}>Encryption: AES-256</Typography>} />
                                         </ListItem>
                                         <ListItem sx={{ px: 0 }}>
-                                            <ListItemIcon sx={{ minWidth: 40, color: "#10b981" }}><Notifications fontSize="small" /></ListItemIcon>
-                                            <ListItemText primary={<Typography sx={{ fontSize: "0.875rem", fontWeight: 700 }}>Alerts: Real-time Active</Typography>} />
+                                            <ListItemIcon sx={{ minWidth: 40, color: "var(--success)" }}><Notifications fontSize="small" /></ListItemIcon>
+                                            <ListItemText primary={<Typography sx={{ fontSize: "var(--size-body)", fontWeight: 700, fontFamily: "var(--font-manrope)" }}>Alerts: Real-time Active</Typography>} />
                                         </ListItem>
                                     </List>
                                 </Box>
@@ -275,13 +295,13 @@ const ProfilePage = () => {
                                         { title: "Two-Step Verification", desc: "Require a code sent to your primary device", icon: <Shield />, status: "Enabled" },
                                         { title: "Application Password", desc: "Set a dedicated password for API access", icon: <Lock />, status: "Not Set" },
                                     ].map((item, i) => (
-                                        <ListItem key={i} sx={{ py: 3, borderBottom: i === 2 ? "none" : "1px solid #f1f5f9" }}>
-                                            <ListItemIcon sx={{ color: "#1172ba" }}>{item.icon}</ListItemIcon>
+                                        <ListItem key={i} sx={{ py: 3, borderBottom: i === 2 ? "none" : "1px solid var(--border-default)" }}>
+                                            <ListItemIcon sx={{ color: "var(--brand-primary)" }}>{item.icon}</ListItemIcon>
                                             <ListItemText
-                                                primary={<Typography fontWeight={800}>{item.title}</Typography>}
+                                                primary={<Typography sx={{ fontWeight: 800, fontFamily: "var(--font-manrope)" }}>{item.title}</Typography>}
                                                 secondary={item.desc}
                                             />
-                                            <Button size="small" variant="text" sx={{ fontWeight: 800 }}>Manage</Button>
+                                            <Button size="small" variant="text" sx={{ fontWeight: 800, color: "var(--brand-primary)", fontFamily: "var(--font-manrope)" }}>Manage</Button>
                                         </ListItem>
                                     ))}
                                 </List>
@@ -289,18 +309,28 @@ const ProfilePage = () => {
                         </Grid>
                         <Grid item xs={12} md={5}>
                             <CommonCard title="Session Activity">
-                                <Typography variant="caption" color="#64748b" sx={{ px: 1, mb: 2, display: "block" }}>
+                                <Typography sx={{ px: 1, mb: 2, display: "block", color: "var(--text-muted)", fontSize: "var(--size-caption)", fontFamily: "var(--font-manrope)" }}>
                                     Monitor all active terminals where your account is authorized.
                                 </Typography>
                                 <List>
                                     {recentSessions.map((session, i) => (
                                         <ListItem key={i} sx={{ px: 1 }}>
-                                            <ListItemIcon><Devices sx={{ color: session.status === "Active" ? "#10b981" : "#94a3b8" }} /></ListItemIcon>
+                                            <ListItemIcon><Devices sx={{ color: session.status === "Active" ? "var(--success)" : "var(--text-muted)" }} /></ListItemIcon>
                                             <ListItemText
-                                                primary={<Typography variant="body2" fontWeight={800}>{session.device}</Typography>}
+                                                primary={<Typography sx={{ fontWeight: 800, fontSize: "var(--size-body)", fontFamily: "var(--font-manrope)" }}>{session.device}</Typography>}
                                                 secondary={`${session.location} • ${session.time}`}
                                             />
-                                            <Chip label={session.status} size="small" variant="soft" sx={{ fontSize: "0.65rem", fontWeight: 900 }} />
+                                            <Chip
+                                                label={session.status}
+                                                size="small"
+                                                sx={{
+                                                    fontSize: "var(--size-caption)",
+                                                    fontWeight: 900,
+                                                    bgcolor: session.status === "Active" ? "var(--brand-soft)" : "var(--bg-page)",
+                                                    color: session.status === "Active" ? "var(--brand-primary)" : "var(--text-muted)",
+                                                    fontFamily: "var(--font-manrope)"
+                                                }}
+                                            />
                                         </ListItem>
                                     ))}
                                 </List>
@@ -313,13 +343,13 @@ const ProfilePage = () => {
                     <CommonCard title="System-Wide Operation Logs">
                         <TableContainer sx={{ mt: 2 }}>
                             <Table>
-                                <TableHead sx={{ bgcolor: "#F8FAFC" }}>
+                                <TableHead sx={{ bgcolor: "var(--bg-page)" }}>
                                     <TableRow>
-                                        <TableCell sx={{ fontWeight: 800, color: "#475569" }}>Operation Event</TableCell>
-                                        <TableCell sx={{ fontWeight: 800, color: "#475569" }}>Module</TableCell>
-                                        <TableCell sx={{ fontWeight: 800, color: "#475569" }}>Terminal IP</TableCell>
-                                        <TableCell sx={{ fontWeight: 800, color: "#475569" }}>Timestamp</TableCell>
-                                        <TableCell sx={{ fontWeight: 800, color: "#475569" }}>Trace Status</TableCell>
+                                        <TableCell sx={{ fontWeight: 800, color: "var(--text-secondary)", fontFamily: "var(--font-manrope)" }}>Operation Event</TableCell>
+                                        <TableCell sx={{ fontWeight: 800, color: "var(--text-secondary)", fontFamily: "var(--font-manrope)" }}>Module</TableCell>
+                                        <TableCell sx={{ fontWeight: 800, color: "var(--text-secondary)", fontFamily: "var(--font-manrope)" }}>Terminal IP</TableCell>
+                                        <TableCell sx={{ fontWeight: 800, color: "var(--text-secondary)", fontFamily: "var(--font-manrope)" }}>Timestamp</TableCell>
+                                        <TableCell sx={{ fontWeight: 800, color: "var(--text-secondary)", fontFamily: "var(--font-manrope)" }}>Trace Status</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -330,11 +360,11 @@ const ProfilePage = () => {
                                         { event: "System Pref Change", module: "Admin", ip: "10.0.0.42", time: "1d ago", status: "Success" },
                                     ].map((row, i) => (
                                         <TableRow key={i} hover>
-                                            <TableCell sx={{ fontWeight: 700, color: "#1e293b" }}>{row.event}</TableCell>
-                                            <TableCell sx={{ fontWeight: 600, color: "#64748b" }}>{row.module}</TableCell>
-                                            <TableCell sx={{ fontFamily: "monospace", color: "#1172ba" }}>{row.ip}</TableCell>
-                                            <TableCell sx={{ color: "#64748b" }}>{row.time}</TableCell>
-                                            <TableCell><Chip label={row.status} size="small" sx={{ fontWeight: 800, fontSize: "0.7rem", bgcolor: "#f1f5f9" }} /></TableCell>
+                                            <TableCell sx={{ fontWeight: 700, color: "var(--text-primary)", fontFamily: "var(--font-manrope)" }}>{row.event}</TableCell>
+                                            <TableCell sx={{ fontWeight: 600, color: "var(--text-secondary)", fontFamily: "var(--font-manrope)" }}>{row.module}</TableCell>
+                                            <TableCell sx={{ fontFamily: "monospace", color: "var(--brand-primary)" }}>{row.ip}</TableCell>
+                                            <TableCell sx={{ color: "var(--text-secondary)", fontFamily: "var(--font-manrope)" }}>{row.time}</TableCell>
+                                            <TableCell><Chip label={row.status} size="small" sx={{ fontWeight: 800, fontSize: "var(--size-caption)", bgcolor: "var(--bg-page)", color: "var(--text-primary)", fontFamily: "var(--font-manrope)" }} /></TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>

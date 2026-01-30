@@ -21,15 +21,15 @@ const CommonCard = ({
     searchExtra,
 }) => {
     return (
-        <Box sx={{}}>
+        <Box sx={{ mb: "var(--space-lg)" }}>
             <Paper
                 elevation={0}
                 sx={{
-                    p: 2,
-                    borderRadius: "12px",
-                    border: "1px solid #e0e0e0",
-                    backgroundColor: "#fff",
-                    boxShadow: "rgba(0, 0, 0, 0.1) 0px 2px 3px",
+                    p: "var(--space-md)",
+                    borderRadius: "var(--card-radius)",
+                    border: "1px solid var(--border-default)",
+                    backgroundColor: "var(--bg-surface)",
+                    boxShadow: "var(--card-shadow)",
                 }}
             >
                 {/* Header Section */}
@@ -38,28 +38,25 @@ const CommonCard = ({
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
-                        mb: 3,
-                        backgroundColor: "#f8fafc",
-                        p: "16px 24px",
+                        mb: "var(--space-lg)",
+                        backgroundColor: "var(--bg-page)",
+                        p: "12px 16px",
                         borderRadius: "12px",
-                        border: "1px solid #e2e8f0",
-                        boxShadow: "0 1px 3px rgba(0,0,0,0.02)"
+                        border: "1px solid var(--border-default)",
                     }}
                 >
                     <Typography
-                        variant="subtitle1"
                         sx={{
-                            fontWeight: 600,
-                            color: "#0f172a",
+                            fontWeight: 700,
+                            color: "var(--text-primary)",
                             display: "flex",
                             alignItems: "center",
-                            gap: 2,
-                            // textTransform: "uppercase",
-                            // letterSpacing: "0.1em",
-                            // fontSize: "0.8rem"
+                            gap: 1.5,
+                            fontSize: "var(--size-subtitle)",
+                            fontFamily: "var(--font-manrope)"
                         }}
                     >
-                        <Box sx={{ width: 4, height: 20, bgcolor: "#2563eb", borderRadius: 1 }} />
+                        <Box sx={{ width: 4, height: 20, bgcolor: "var(--brand-primary)", borderRadius: 1 }} />
                         {title}
                     </Typography>
                     {onAdd && (
@@ -69,20 +66,17 @@ const CommonCard = ({
                             onClick={onAdd}
                             sx={{
                                 textTransform: "none",
-                                fontWeight: 500,
-                                borderRadius: "8px",
-                                // bgcolor: "#2563eb",
+                                fontWeight: 600,
+                                borderRadius: "var(--btn-radius)",
+                                bgcolor: "var(--brand-primary)",
                                 color: "#ffffff",
                                 px: 3,
                                 py: 1,
-                                fontSize: '0.85rem',
-                                // boxShadow: "0 4px 6px -1px rgba(37, 99, 235, 0.2)",
-                                // "&:hover": {
-                                //     bgcolor: "#1d4ed8",
-                                //     transform: "translateY(-1px)",
-                                //     boxShadow: "0 10px 15px -3px rgba(37, 99, 235, 0.3)"
-                                // },
-                                transition: "all 0.2s"
+                                fontSize: 'var(--size-body)',
+                                boxShadow: "none",
+                                transition: "all 0.2s",
+                                fontFamily: "var(--font-manrope)",
+                                "&:hover": { bgcolor: "#2557cc" }
                             }}
                         >
                             {addText || "Add New"}
@@ -92,7 +86,7 @@ const CommonCard = ({
 
                 {/* Search Section */}
                 {(searchValue !== undefined || onSearchChange) && (
-                    <Box sx={{ mb: 3, display: "flex", gap: 2, alignItems: "center" }}>
+                    <Box sx={{ mb: "var(--space-lg)", display: "flex", gap: 2, alignItems: "center" }}>
                         <TextField
                             fullWidth
                             size="small"
@@ -102,21 +96,24 @@ const CommonCard = ({
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
-                                        <Search sx={{ color: "#9ca3af" }} />
+                                        <Search sx={{ color: "var(--text-muted)" }} />
                                     </InputAdornment>
                                 ),
                                 sx: {
-                                    borderRadius: "50px",
-                                    backgroundColor: "#fff",
+                                    borderRadius: "var(--input-radius)",
+                                    backgroundColor: "var(--bg-surface)",
+                                    height: "var(--btn-height)",
+                                    fontSize: "var(--size-body)",
+                                    fontFamily: "var(--font-manrope)",
                                     "& fieldset": {
-                                        borderColor: "#d1d5db",
+                                        borderColor: "var(--border-strong)",
                                     },
                                     "&:hover fieldset": {
-                                        borderColor: "#1172ba",
+                                        borderColor: "var(--brand-primary)",
                                     },
                                     "&.Mui-focused fieldset": {
-                                        borderColor: "#1172ba",
-                                        borderWidth: "1px",
+                                        borderColor: "var(--brand-primary)",
+                                        borderWidth: "1.5px",
                                     },
                                 },
                             }}
@@ -127,9 +124,7 @@ const CommonCard = ({
                 )}
 
                 {/* Content Section */}
-                <Box sx={{ }}>{children}</Box>
-
-
+                <Box sx={{}}>{children}</Box>
             </Paper>
         </Box>
     );
