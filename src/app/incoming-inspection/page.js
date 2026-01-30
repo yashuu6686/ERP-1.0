@@ -1,51 +1,40 @@
 "use client";
-import React, { useState } from "react";
-import { Box, IconButton, Chip } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Box, IconButton, Chip, Typography } from "@mui/material";
 import { Visibility, Edit, Download } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
 import GlobalTable from "../../components/GlobalTable";
+import axiosInstance from "@/axios/axiosInstance";
+import Loader from "../../components/Loader";
 
 export default function IncomingInspection() {
   const router = useRouter();
   const [search, setSearch] = useState("");
+  const [inspections, setInspections] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const inspections = [
-    {
-      id: 1,
-      inspectionNo: "002",
-      date: "20-03-2025",
-      grn: "SIPL/2025019",
-      supplier: "abc",
-      serial: "220",
-      receivedQty: 220,
-      checkedQty: 220,
-      notes: "description",
-      accepted: 200,
-      rejected: 20,
-      checkedBy: "-",
-    },
-    {
-      id: 2,
-      inspectionNo: "001",
-      date: "10-02-2025",
-      grn: "SIPL/2025018",
-      supplier: "xyz",
-      serial: "330",
-      receivedQty: 330,
-      checkedQty: 330,
-      notes: "description",
-      accepted: 300,
-      rejected: 30,
-      checkedBy: "vk",
-    },
-  ];
+  useEffect(() => {
+    fetchInspections();
+  }, []);
 
-  const filtered = inspections.filter(
+  const fetchInspections = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get("/incoming-inspection");
+      setInspections(response.data || []);
+    } catch (error) {
+      console.error("Error fetching inspections:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filtered = (inspections || []).filter(
     (i) =>
-      i.inspectionNo.includes(search) ||
-      i.grn.toLowerCase().includes(search.toLowerCase()) ||
-      i.supplier.toLowerCase().includes(search.toLowerCase())
+      i.materialData?.grnNumber?.toLowerCase().includes(search.toLowerCase()) ||
+      i.materialData?.materialName?.toLowerCase().includes(search.toLowerCase()) ||
+      i.materialData?.supplierName?.toLowerCase().includes(search.toLowerCase())
   );
 
   const columns = [
@@ -55,78 +44,67 @@ export default function IncomingInspection() {
       render: (row, index) => index + 1,
     },
     {
-      label: "Inspection No",
+      label: "GRN Number",
       align: "center",
       render: (row) => (
-        <span style={{ fontWeight: 600, color: "#1172ba" }}>
-          {row.inspectionNo}
-        </span>
+        <Typography variant="body2" sx={{ fontWeight: 600, color: "#1172ba" }}>
+          {row.materialData?.grnNumber}
+        </Typography>
       ),
     },
     {
-      label: "Received Date",
+      label: "Material Name",
       align: "center",
-      accessor: "date",
-    },
-    {
-      label: "GRN Number",
-      align: "center",
-      accessor: "grn",
+      render: (row) => row.materialData?.materialName,
     },
     {
       label: "Supplier",
       align: "center",
-      accessor: "supplier",
+      render: (row) => row.materialData?.supplierName,
     },
     {
-      label: "Serial No",
+      label: "Lot Qty",
       align: "center",
-      accessor: "serial",
-    },
-    {
-      label: "Received Qty",
-      align: "center",
-      render: (row) => <Chip label={row.receivedQty} size="small" />,
-    },
-    {
-      label: "Checked Qty",
-      align: "center",
-      render: (row) => (
-        <Chip label={row.checkedQty} size="small" color="info" />
-      ),
-    },
-    {
-      label: "Visual Notes",
-      align: "center",
-      accessor: "notes",
-      sx: { maxWidth: 200 },
+      render: (row) => <Chip label={row.materialData?.lotQuantity} size="small" />,
     },
     {
       label: "Accepted",
       align: "center",
       render: (row) => (
-        <Chip label={row.accepted} color="success" size="small" />
+        <Chip label={row.summaryData?.acceptedQuantity || 0} color="success" size="small" />
       ),
     },
     {
       label: "Rejected",
       align: "center",
       render: (row) => (
-        <Chip label={row.rejected} color="error" size="small" />
+        <Chip label={row.summaryData?.rejectedQuantity || 0} color="error" size="small" />
       ),
     },
     {
-      label: "Checked By",
+      label: "Status",
       align: "center",
-      accessor: "checkedBy",
+      render: (row) => (
+        <Chip
+          label={row.inspectionStatus || "Draft"}
+          size="small"
+          color={row.inspectionStatus === "Approved" ? "success" : "warning"}
+        />
+      ),
+    },
+    {
+      label: "Date",
+      align: "center",
+      render: (row) => row.materialData?.inspectionDate,
     },
     {
       label: "Actions",
       align: "center",
       render: (row) => (
-        <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
+        <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
           <IconButton
             size="small"
+            onClick={() => router.push(`/incoming-inspection/view-inspection?id=${row.id}`)}
             sx={{
               color: "rgb(17, 114, 186)",
               bgcolor: "#f1f5f9",
@@ -135,23 +113,19 @@ export default function IncomingInspection() {
           >
             <Visibility fontSize="small" />
           </IconButton>
-          <IconButton color="warning" size="small">
+          <IconButton
+            color="warning"
+            size="small"
+            onClick={() => router.push(`/incoming-inspection/add-material-inspection?id=${row.id}`)}
+          >
             <Edit fontSize="small" />
           </IconButton>
-          {/* <IconButton
-            size="small"
-            sx={{
-              color: "#0891b2",
-              bgcolor: "#ecfeff",
-              "&:hover": { bgcolor: "#cffafe" }
-            }}
-          >
-            <Download fontSize="small" />
-          </IconButton> */}
         </Box>
       ),
     },
   ];
+
+  if (loading) return <Loader fullPage message="Loading Inspections..." />;
 
   return (
     <Box>
@@ -159,7 +133,7 @@ export default function IncomingInspection() {
         title="Incoming Inspection"
         addText="Add Material Inspection"
         onAdd={() => router.push("/incoming-inspection/add-material-inspection")}
-        searchPlaceholder="Search Inspections"
+        searchPlaceholder="Search GRN, Material, Supplier..."
         searchValue={search}
         onSearchChange={(e) => setSearch(e.target.value)}
       >

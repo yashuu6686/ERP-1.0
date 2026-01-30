@@ -182,11 +182,13 @@ export default function PurchaseOrderTable() {
             bgcolor:
               row.status === "Approved" ? "#dcfce7" :
                 row.status === "Pending" ? "#fef9c3" :
-                  row.status === "Rejected" ? "#fee2e2" : "#f1f5f9",
+                  row.status === "Rejected" ? "#fee2e2" :
+                    row.status === "Completed" ? "#e0f2fe" : "#f1f5f9",
             color:
               row.status === "Approved" ? "#15803d" :
                 row.status === "Pending" ? "#a16207" :
-                  row.status === "Rejected" ? "#b91c1c" : "#475569",
+                  row.status === "Rejected" ? "#b91c1c" :
+                    row.status === "Completed" ? "#0369a1" : "#475569",
           }}
         />
       ),
@@ -198,17 +200,6 @@ export default function PurchaseOrderTable() {
         <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
           <IconButton
             size="small"
-            onClick={() => router.push(`/purchase/create-purchase?id=${row.id}`)}
-            sx={{
-              color: "rgb(17, 114, 186)",
-              bgcolor: "#f1f5f9",
-              "&:hover": { bgcolor: "#e2e8f0" }
-            }}
-          >
-            <Edit sx={{ fontSize: 16 }} />
-          </IconButton>
-          <IconButton
-            size="small"
             onClick={() => router.push(`/purchase/view-purchase?id=${row.id}`)}
             sx={{
               color: "#0891b2",
@@ -217,6 +208,19 @@ export default function PurchaseOrderTable() {
             }}
           >
             <Visibility sx={{ fontSize: 16 }} />
+          </IconButton>
+          <IconButton
+            size="small"
+            onClick={() => router.push(`/purchase/create-purchase?id=${row.id}`)}
+            disabled={row.status !== "Pending"}
+            sx={{
+              color: "rgb(17, 114, 186)",
+              bgcolor: "#f1f5f9",
+              "&:hover": { bgcolor: "#e2e8f0" },
+              "&.Mui-disabled": { bgcolor: "#f8fafc", color: "#cbd5e1" }
+            }}
+          >
+            <Edit sx={{ fontSize: 16 }} />
           </IconButton>
         </Box>
       ),

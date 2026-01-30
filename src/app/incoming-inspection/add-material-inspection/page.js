@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -21,6 +21,8 @@ import InspectionSummary from "@/components/inspection/InspectionSummary";
 import InspectionApproval from "@/components/inspection/InspectionApproval";
 import MaterialInformation from "./components/MaterialInformation";
 import VerificationChecks from "./components/VerificationChecks";
+import axiosInstance from "@/axios/axiosInstance";
+import Loader from "@/components/Loader";
 
 const steps = [
   "Material Information & Verification",
@@ -30,6 +32,25 @@ const steps = [
 
 export default function MaterialInspectionForm() {
   const [activeStep, setActiveStep] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [pendingGRNs, setPendingGRNs] = useState([]);
+  const [selectedGRN, setSelectedGRN] = useState(null);
+
+  const [materialData, setMaterialData] = useState({
+    grnNumber: "",
+    materialName: "",
+    receivedDate: "",
+    invoiceNumber: "",
+    lotNumber: "",
+    inspectionStandardNumber: "",
+    supplierName: "",
+    lotQuantity: "",
+    equipmentId: "",
+    sampleSize: "",
+    inspectionReportNumber: "",
+    inspectionDate: new Date().toISOString().split("T")[0],
+    inspectionStandard: "",
+  });
 
   const [observations, setObservations] = useState([
     {
@@ -58,6 +79,49 @@ export default function MaterialInspectionForm() {
     approvedByName: "",
     approvedByDate: "",
   });
+
+  useEffect(() => {
+    fetchPendingGRNs();
+  }, []);
+
+  const fetchPendingGRNs = async () => {
+    try {
+      const response = await axiosInstance.get("/grn");
+      const pending = (response.data || []).filter(g => g.inspectionStatus === "Pending");
+      setPendingGRNs(pending);
+    } catch (error) {
+      console.error("Error fetching GRNs:", error);
+    }
+  };
+
+  const handleGRNChange = (event, newValue) => {
+    setSelectedGRN(newValue);
+    if (newValue) {
+      setMaterialData({
+        ...materialData,
+        grnNumber: newValue.grnNumber || "",
+        materialName: newValue.items?.[0]?.name || "",
+        receivedDate: newValue.receivedDate ? newValue.receivedDate.split("T")[0] : "",
+        invoiceNumber: newValue.invoiceNumber || "",
+        supplierName: newValue.supplierName || "",
+        lotQuantity: newValue.items?.[0]?.receivedQty || "",
+      });
+    } else {
+      setMaterialData({
+        ...materialData,
+        grnNumber: "",
+        materialName: "",
+        receivedDate: "",
+        invoiceNumber: "",
+        supplierName: "",
+        lotQuantity: "",
+      });
+    }
+  };
+
+  const handleMaterialChange = (field, value) => {
+    setMaterialData(prev => ({ ...prev, [field]: value }));
+  };
 
   const handleNext = () => {
     setActiveStep((prevStep) => prevStep + 1);
@@ -118,10 +182,42 @@ export default function MaterialInspectionForm() {
     );
   };
 
-  const handleSubmit = () => {
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
-    alert("Inspection Submitted Successfully!");
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      const inspectionData = {
+        materialData,
+        observations,
+        summaryData,
+        approvalData,
+        inspectionStatus: "Approved", // Assuming submission means approval for now
+        grnId: selectedGRN?.id,
+      };
+
+      const response = await axiosInstance.post("/incoming-inspection", inspectionData);
+
+      if (response.status === 201 || response.status === 200) {
+        // Update GRN inspection status to Completed
+        if (selectedGRN) {
+          try {
+            await axiosInstance.put(`/grn/${selectedGRN.id}`, {
+              ...selectedGRN,
+              inspectionStatus: "Completed",
+            });
+          } catch (grnError) {
+            console.error("Failed to update GRN inspection status:", grnError);
+          }
+        }
+
+        alert("Inspection Submitted Successfully!");
+        router.push("/incoming-inspection");
+      }
+    } catch (error) {
+      console.error("Submission Error:", error);
+      alert("Failed to submit inspection.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const renderStepContent = (step) => {
@@ -129,7 +225,13 @@ export default function MaterialInspectionForm() {
       case 0:
         return (
           <>
-            <MaterialInformation />
+            <MaterialInformation
+              data={materialData}
+              onChange={handleMaterialChange}
+              pendingGRNs={pendingGRNs}
+              selectedGRN={selectedGRN}
+              onGRNChange={handleGRNChange}
+            />
             <VerificationChecks />
           </>
         );

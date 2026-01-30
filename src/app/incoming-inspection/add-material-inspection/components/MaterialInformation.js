@@ -1,8 +1,8 @@
 import React from "react";
-import { Card, Box, Typography, CardContent, TextField } from "@mui/material";
+import { Card, Box, Typography, CardContent, TextField, Autocomplete } from "@mui/material";
 import { Inventory as InventoryIcon } from "@mui/icons-material";
 
-const MaterialInformation = () => {
+const MaterialInformation = ({ data, onChange, pendingGRNs, selectedGRN, onGRNChange }) => {
     return (
         <Card
             elevation={0}
@@ -40,17 +40,29 @@ const MaterialInformation = () => {
                         gap: 3,
                     }}
                 >
-                    <TextField
-                        label="GRN Number"
-                        variant="outlined"
-                        fullWidth
-                        size="small"
+                    <Autocomplete
+                        options={pendingGRNs}
+                        getOptionLabel={(option) => option.grnNumber || ""}
+                        value={selectedGRN}
+                        onChange={onGRNChange}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                label="Select GRN Number"
+                                variant="outlined"
+                                fullWidth
+                                size="small"
+                                placeholder="Search Pending GRNs..."
+                            />
+                        )}
                     />
                     <TextField
                         label="Material Name"
                         variant="outlined"
                         fullWidth
                         size="small"
+                        value={data.materialName}
+                        onChange={(e) => onChange("materialName", e.target.value)}
                     />
                     <TextField
                         label="Received Date"
@@ -59,25 +71,40 @@ const MaterialInformation = () => {
                         fullWidth
                         size="small"
                         InputLabelProps={{ shrink: true }}
+                        value={data.receivedDate}
+                        onChange={(e) => onChange("receivedDate", e.target.value)}
                     />
                     <TextField
                         label="Invoice Number"
                         variant="outlined"
                         fullWidth
                         size="small"
+                        value={data.invoiceNumber}
+                        onChange={(e) => onChange("invoiceNumber", e.target.value)}
                     />
-                    <TextField label="Lot Number" variant="outlined" fullWidth size="small" />
+                    <TextField
+                        label="Lot Number"
+                        variant="outlined"
+                        fullWidth
+                        size="small"
+                        value={data.lotNumber}
+                        onChange={(e) => onChange("lotNumber", e.target.value)}
+                    />
                     <TextField
                         label="Inspection Standard Number"
                         variant="outlined"
                         fullWidth
                         size="small"
+                        value={data.inspectionStandardNumber}
+                        onChange={(e) => onChange("inspectionStandardNumber", e.target.value)}
                     />
                     <TextField
                         label="Supplier Name"
                         variant="outlined"
                         fullWidth
                         size="small"
+                        value={data.supplierName}
+                        onChange={(e) => onChange("supplierName", e.target.value)}
                     />
                     <TextField
                         label="Lot Quantity"
@@ -85,12 +112,16 @@ const MaterialInformation = () => {
                         fullWidth
                         type="number"
                         size="small"
+                        value={data.lotQuantity}
+                        onChange={(e) => onChange("lotQuantity", e.target.value)}
                     />
                     <TextField
                         label="Equipment ID and Description"
                         variant="outlined"
                         fullWidth
                         size="small"
+                        value={data.equipmentId}
+                        onChange={(e) => onChange("equipmentId", e.target.value)}
                     />
                     <TextField
                         label="Sample Size"
@@ -98,12 +129,16 @@ const MaterialInformation = () => {
                         fullWidth
                         type="number"
                         size="small"
+                        value={data.sampleSize}
+                        onChange={(e) => onChange("sampleSize", e.target.value)}
                     />
                     <TextField
                         label="Inspection Report Number"
                         variant="outlined"
                         fullWidth
                         size="small"
+                        value={data.inspectionReportNumber}
+                        onChange={(e) => onChange("inspectionReportNumber", e.target.value)}
                     />
                     <TextField
                         label="Inspection Date"
@@ -112,6 +147,8 @@ const MaterialInformation = () => {
                         fullWidth
                         size="small"
                         InputLabelProps={{ shrink: true }}
+                        value={data.inspectionDate}
+                        onChange={(e) => onChange("inspectionDate", e.target.value)}
                     />
                     <TextField
                         label="Inspection Standard"
@@ -119,6 +156,8 @@ const MaterialInformation = () => {
                         fullWidth
                         size="small"
                         sx={{ gridColumn: { xs: "1", md: "span 2" } }}
+                        value={data.inspectionStandard}
+                        onChange={(e) => onChange("inspectionStandard", e.target.value)}
                     />
                 </Box>
             </CardContent>
