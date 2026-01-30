@@ -215,7 +215,7 @@ export default function CreatePurchaseOrder() {
               <Card sx={{ height: "100%", borderRadius: 2 }}>
                 <Box sx={{ p: 2, background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)", color: "white", display: "flex", alignItems: "center", gap: 1.5 }}>
                   <Business />
-                  <Typography variant="h6" fontWeight={600}>Supplier Information</Typography>
+                  <Typography variant="h6" fontWeight={600} color="white">Supplier Information</Typography>
                 </Box>
                 <Box sx={{ p: 3 }}>
                   <CommonForm config={supplierConfig} initialValues={formData} onChange={handleFormChange} hideSubmit />
@@ -226,7 +226,7 @@ export default function CreatePurchaseOrder() {
               <Card sx={{ height: "100%", borderRadius: 2 }}>
                 <Box sx={{ p: 2, background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)", color: "white", display: "flex", alignItems: "center", gap: 1.5 }}>
                   <LocalShipping />
-                  <Typography variant="h6" fontWeight={600}>Delivery Information</Typography>
+                  <Typography variant="h6" fontWeight={600} color="white">Delivery Information</Typography>
                 </Box>
                 <Box sx={{ p: 3 }}>
                   <CommonForm config={deliveryConfig} initialValues={formData} onChange={handleFormChange} hideSubmit />

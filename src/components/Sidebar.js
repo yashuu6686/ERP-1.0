@@ -160,7 +160,7 @@ export default function Sidebar({ children }) {
         {/* Global Breadcrumbs */}
         {/* <TopNavbar /> */}
         {pathname !== "/" && (
-          <Box sx={{ mb: 2 }}>
+          <Box sx={{ mb: 2, mt: 2 }}>
             <Breadcrumbs
               separator={<NavigateNext fontSize="small" sx={{ color: '#94a3b8' }} />}
               aria-label="breadcrumb"
