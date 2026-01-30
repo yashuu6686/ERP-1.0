@@ -10,13 +10,16 @@ const CommonForm = ({
     onSubmit,
     submitLabel = "Submit",
     hideSubmit = false,
-    permissions = {}, 
+    permissions = {},
 }) => {
     const [formData, setFormData] = useState(initialValues);
 
+    const initialValuesString = JSON.stringify(initialValues);
+
     useEffect(() => {
         setFormData(initialValues);
-    }, [JSON.stringify(initialValues)]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [initialValuesString]);
 
     const handleFieldChange = (name, value) => {
         const newData = setNestedValue(formData, name, value);

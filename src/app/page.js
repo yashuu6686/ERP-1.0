@@ -61,7 +61,7 @@ export default function DashboardPage() {
             fontFamily: "var(--font-manrope)"
           }}
         >
-          We're working hard to bring you a comprehensive overview of your manufacturing and business operations.
+          We&apos;re working hard to bring you a comprehensive overview of your manufacturing and business operations.
           The production analytics, KPI trackers, and reporting modules are currently being finalized.
         </Typography>
 
