@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -28,7 +28,7 @@ const steps = [
   "Summary & Approval",
 ];
 
-export default function MaterialInspectionForm() {
+function MaterialInspectionFormContent() {
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [pendingGRNs, setPendingGRNs] = useState([]);
@@ -539,5 +539,13 @@ export default function MaterialInspectionForm() {
         </Box>
       </CommonCard>
     </Box>
+  );
+}
+
+export default function MaterialInspectionForm() {
+  return (
+    <Suspense fallback={<Loader fullPage message="Loading..." />}>
+      <MaterialInspectionFormContent />
+    </Suspense>
   );
 }

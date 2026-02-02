@@ -13,7 +13,6 @@ import Assignment from "@mui/icons-material/Assignment";
 import Save from "@mui/icons-material/Save";
 import NavigateNext from "@mui/icons-material/NavigateNext";
 import NavigateBefore from "@mui/icons-material/NavigateBefore";
-import CheckCircle from "@mui/icons-material/CheckCircle";
 import CommonCard from "../../../components/CommonCard";
 import InspectionObservations from "../../../components/inspection/InspectionObservations";
 import ProductInformationSection from "./components/ProductInformationSection";
@@ -21,6 +20,10 @@ import ProblemReportAQDSection from "./components/ProblemReportAQDSection";
 import ActionChecklistSection from "./components/ActionChecklistSection";
 import ApprovalCommentsSection from "./components/ApprovalCommentsSection";
 import SignaturesApprovalSection from "./components/SignaturesApprovalSection";
+import { useRouter, useSearchParams } from "next/navigation";
+import axiosInstance from "@/axios/axiosInstance";
+import Loader from "@/components/Loader";
+import { Suspense, useEffect } from "react";
 
 const steps = [
   "General Information",
@@ -29,21 +32,72 @@ const steps = [
   "Final Approval",
 ];
 
-export default function FinalInspectionForm() {
+function FinalInspectionFormContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
   const [activeStep, setActiveStep] = useState(0);
-  const [observations, setObservations] = useState([
-    {
-      id: 1,
-      parameter: "",
-      specification: "",
-      method: "",
-      observation: "",
-      remarks: "",
-    },
-  ]);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    inspectionNo: "",
+    productName: "",
+    inspectionStdNo: "",
+    quantity: "",
+    date: new Date().toISOString().split("T")[0],
+    serialFrom: "",
+    serialTo: "",
+    totalChecked: "",
+    approved: "",
+    rejected: "",
+    result: "Pass",
+    remarks: "",
+    approvedBy: "",
+    approvalDate: new Date().toISOString().split("T")[0],
+    observations: [
+      {
+        id: 1,
+        parameter: "",
+        specification: "",
+        method: "",
+        observation: "",
+        remarks: "",
+      },
+    ],
+  });
 
   const [problemReport, setProblemReport] = useState("no");
   const [aqd, setAqd] = useState("no");
+
+  useEffect(() => {
+    if (id) {
+      fetchInspection();
+    }
+  }, [id]);
+
+  const fetchInspection = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get(`/final-inspections/${id}`);
+      if (response.data) {
+        setFormData(response.data);
+        if (response.data.observations) {
+          setObservations(response.data.observations);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching inspection:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const setObservations = (obs) => {
+    setFormData(prev => ({ ...prev, observations: obs }));
+  };
+
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -55,9 +109,9 @@ export default function FinalInspectionForm() {
 
   const addObservation = () => {
     setObservations([
-      ...observations,
+      ...formData.observations,
       {
-        id: observations.length + 1,
+        id: Date.now(),
         parameter: "",
         specification: "",
         method: "",
@@ -68,27 +122,44 @@ export default function FinalInspectionForm() {
   };
 
   const removeObservation = (id) => {
-    if (observations.length > 1) {
-      setObservations(observations.filter((obs) => obs.id !== id));
+    if (formData.observations.length > 1) {
+      setObservations(formData.observations.filter((obs) => obs.id !== id));
     }
   };
 
   const handleObservationChange = (id, field, value) => {
     setObservations(
-      observations.map((obs) =>
+      formData.observations.map((obs) =>
         obs.id === id ? { ...obs, [field]: value } : obs
       )
     );
   };
 
+  const handleSave = async () => {
+    try {
+      if (id) {
+        await axiosInstance.put(`/final-inspections/${id}`, formData);
+      } else {
+        const payload = {
+          ...formData,
+          inspectionNo: formData.inspectionNo || `FIN-INS-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+        };
+        await axiosInstance.post("/final-inspections", payload);
+      }
+      router.push("/final-inspection");
+    } catch (error) {
+      console.error("Error saving inspection:", error);
+    }
+  };
+
   const getStepContent = (step) => {
     switch (step) {
       case 0:
-        return <ProductInformationSection />;
+        return <ProductInformationSection formData={formData} onChange={handleInputChange} />;
       case 1:
         return (
           <InspectionObservations
-            observations={observations}
+            observations={formData.observations}
             onAdd={addObservation}
             onRemove={removeObservation}
             onChange={handleObservationChange}
@@ -108,19 +179,29 @@ export default function FinalInspectionForm() {
               <ActionChecklistSection />
             </Box>
             <Box sx={{ mt: 3 }}>
-              <ApprovalCommentsSection />
+              <ApprovalCommentsSection
+                value={formData.remarks}
+                onChange={(val) => handleInputChange("remarks", val)}
+              />
             </Box>
           </>
         );
       case 3:
-        return <SignaturesApprovalSection />;
+        return (
+          <SignaturesApprovalSection
+            formData={formData}
+            onChange={handleInputChange}
+          />
+        );
       default:
         return "Unknown step";
     }
   };
 
+  if (loading) return <Loader fullPage message="Fetching Details..." />;
+
   return (
-    <CommonCard title="Final Inspection Verification">
+    <CommonCard title={id ? "Edit Final Inspection" : "Final Inspection Verification"}>
       <Box sx={{ p: 1 }}>
         <Stepper activeStep={activeStep} alternativeLabel sx={{
           mb: 4,
@@ -145,7 +226,7 @@ export default function FinalInspectionForm() {
           {steps.map((label) => (
             <Step key={label}>
               <StepLabel>
-                <Typography >
+                <Typography variant="body2" fontWeight={700}>
                   {label}
                 </Typography>
               </StepLabel>
@@ -153,16 +234,7 @@ export default function FinalInspectionForm() {
           ))}
         </Stepper>
 
-        <Paper
-          elevation={0}
-          sx={{
-            //   p: 3,
-            // minHeight: "400px",
-            bgcolor: "#fff",
-            borderRadius: 3,
-            // border: "1px dashed #e2e8f0",
-          }}
-        >
+        <Paper elevation={0} sx={{ bgcolor: "#fff", borderRadius: 3 }}>
           {getStepContent(activeStep)}
         </Paper>
 
@@ -175,10 +247,12 @@ export default function FinalInspectionForm() {
             startIcon={<NavigateBefore />}
             sx={{
               px: 4,
-              py: 1.5,
-              fontWeight: 600,
+              py: 1.2,
+              fontWeight: 700,
               borderRadius: 2,
               textTransform: "none",
+              color: "#64748b",
+              "&:hover": { bgcolor: "#f1f5f9" }
             }}
           >
             Back
@@ -186,10 +260,11 @@ export default function FinalInspectionForm() {
           <Box sx={{ display: "flex", gap: 2 }}>
             <Button
               variant="outlined"
+              onClick={() => router.push("/final-inspection")}
               sx={{
                 px: 4,
-                py: 1.5,
-                fontWeight: 600,
+                py: 1.2,
+                fontWeight: 700,
                 borderRadius: 2,
                 textTransform: "none",
                 borderColor: "#e2e8f0",
@@ -201,32 +276,30 @@ export default function FinalInspectionForm() {
             {activeStep === steps.length - 1 ? (
               <Button
                 variant="contained"
-                size="large"
-                startIcon={<CheckCircle />}
+                startIcon={<Save />}
                 sx={{
                   px: 6,
-                  py: 1.5,
+                  py: 1.2,
                   fontWeight: 700,
                   borderRadius: 2,
-                  bgcolor: "#22c55e",
-                  "&:hover": { bgcolor: "#16a34a" },
+                  background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
                   textTransform: "none",
-                  boxShadow: "0 4px 12px rgba(34, 197, 94, 0.2)",
+                  boxShadow: "0 4px 12px rgba(17, 114, 186, 0.2)",
                 }}
-                onClick={() => alert("Inspection Submitted Successfully!")}
+                onClick={handleSave}
               >
-                Complete Verification
+                {id ? "Update Inspection" : "Complete Verification"}
               </Button>
             ) : (
               <Button
                 variant="contained"
-                size="large"
                 endIcon={<NavigateNext />}
                 sx={{
                   px: 6,
-                  py: 1.5,
+                  py: 1.2,
+                  fontWeight: 700,
                   borderRadius: 2,
-                  bgcolor: "#1172ba",
+                  background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
                   textTransform: "none",
                 }}
                 onClick={handleNext}
@@ -238,6 +311,14 @@ export default function FinalInspectionForm() {
         </Box>
       </Box>
     </CommonCard>
+  );
+}
+
+export default function FinalInspectionForm() {
+  return (
+    <Suspense fallback={<Loader fullPage message="Loading..." />}>
+      <FinalInspectionFormContent />
+    </Suspense>
   );
 }
 

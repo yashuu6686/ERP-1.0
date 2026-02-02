@@ -174,7 +174,7 @@ function ViewInvoiceContent() {
                 {/* Header Banner */}
                 <Box sx={{ p: { xs: 3, md: 2 }, borderBottom: "1px solid #f1f5f9" }}>
                     <Grid container alignItems="center" spacing={1}>
-                        <Grid item xs={12} md={6} size={{xs:12,md:6}}>
+                        <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
                             <Stack direction="row" spacing={2} alignItems="center">
                                 <Box>
                                     <Typography variant="h4" fontWeight={800} sx={{ color: "#1e293b", letterSpacing: "-0.02em" }}>
@@ -204,7 +204,7 @@ function ViewInvoiceContent() {
                                 </Box>
                             </Stack>
                         </Grid>
-                        <Grid item xs={12} md={6} size={{xs:12,md:6}}>
+                        <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
                             <Stack
                                 direction={{ xs: "column", sm: "row" }}
                                 spacing={{ xs: 2, sm: 4 }}
@@ -236,7 +236,7 @@ function ViewInvoiceContent() {
                     {/* 2-Column Info Grid */}
                     <Grid container spacing={2} sx={{ mb: 2 }}>
                         {/* Customer Card */}
-                        <Grid item xs={12} md={6} size={{xs:12,md:6}}>
+                        <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
                             <Paper
                                 elevation={0}
                                 sx={{
@@ -293,7 +293,7 @@ function ViewInvoiceContent() {
                         </Grid>
 
                         {/* Delivery Card */}
-                        <Grid item xs={12} md={6} size={{xs:12,md:6}}>
+                        <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
                             <Paper
                                 elevation={0}
                                 sx={{
@@ -344,7 +344,7 @@ function ViewInvoiceContent() {
 
                     {/* Order Items Table */}
                     <Grid container spacing={2}>
-                        <Grid item xs={12} lg={8} size={{xs:12,lg:8}}>
+                        <Grid item xs={12} lg={8} size={{ xs: 12, lg: 8 }}>
                             <Paper
                                 elevation={0}
                                 sx={{
@@ -403,7 +403,7 @@ function ViewInvoiceContent() {
                             </Paper>
                         </Grid>
 
-                        <Grid item xs={12} lg={4} size={{xs:12,lg:4}}>
+                        <Grid item xs={12} lg={4} size={{ xs: 12, lg: 4 }}>
                             <Paper
                                 elevation={0}
                                 sx={{

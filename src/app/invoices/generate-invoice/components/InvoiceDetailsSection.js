@@ -29,7 +29,7 @@ const InvoiceDetailsSection = () => {
                 }}
             >
                 <Receipt sx={{ color: "#fff" }} />
-                <Typography variant="subtitle1" sx={{ color: "#fff", fontWeight: 600 }}>
+                <Typography  variant="subtitle1" sx={{ color: "#fff", fontWeight: 600 }}>
                     Invoice Details
                 </Typography>
             </Box>

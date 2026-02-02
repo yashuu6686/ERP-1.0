@@ -30,7 +30,7 @@ const InvoiceNotesSection = () => {
                 }}
             >
                 <LocalOffer sx={{ color: "#fff" }} />
-                <Typography variant="subtitle1" fontWeight={600}>
+                <Typography color="white" variant="subtitle1" fontWeight={600}>
                     Discounts & Notes
                 </Typography>
             </Box>

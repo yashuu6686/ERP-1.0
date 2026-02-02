@@ -49,7 +49,7 @@ export default function TestResultsCard({ testRows, addTestRow, deleteTestRow, h
             >
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                     <Science />
-                    <Typography variant="h6" fontWeight={600}>
+                    <Typography color="white" variant="h6" fontWeight={600}>
                         Test Results / Specifications
                     </Typography>
                 </Box>
@@ -59,9 +59,11 @@ export default function TestResultsCard({ testRows, addTestRow, deleteTestRow, h
                     startIcon={<Add />}
                     onClick={addTestRow}
                     sx={{
-                        backgroundColor: "rgba(255,255,255,0.15)",
-                        "&:hover": { backgroundColor: "rgba(255,255,255,0.25)" },
-                        textTransform: "none",
+                        bgcolor:"white",
+                        color:"#1172ba",
+                        // backgroundColor: "rgba(255,255,255,0.15)",
+                        // "&:hover": { backgroundColor: "rgba(255,255,255,0.25)" },
+                        // textTransform: "none",
                     }}
                 >
                     Add Row

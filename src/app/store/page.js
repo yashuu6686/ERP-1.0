@@ -92,7 +92,7 @@ export default function Store() {
 
   const columns = [
     {
-      label: "Sr. No.",
+      label: "Sr.No.",
       align: "center",
       render: (row, index) => (
         <span style={{ fontWeight: 600 }}>{index + 1}</span>

@@ -40,7 +40,7 @@ export default function CertificateDetailsCard() {
                 }}
             >
                 <Description />
-                <Typography variant="h6" fontWeight={600}>
+                <Typography color="white" variant="h6" fontWeight={600}>
                     Certificate Details
                 </Typography>
             </Box>

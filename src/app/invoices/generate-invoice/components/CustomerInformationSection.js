@@ -30,7 +30,7 @@ const CustomerInformationSection = () => {
                 }}
             >
                 <Person sx={{ color: "#fff" }} />
-                <Typography variant="subtitle1" fontWeight={600}>
+                <Typography color="white" variant="subtitle1" fontWeight={600}>
                     Customer Information
                 </Typography>
             </Box>

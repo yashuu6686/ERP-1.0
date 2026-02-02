@@ -1,170 +1,197 @@
 "use client";
-import React, { useState } from "react";
-import {
-    Box,
-    Button,
-    Stepper,
-    Step,
-    StepLabel,
-    Typography,
-} from "@mui/material";
-import {
-    ArrowForward,
-    Save,
-    ArrowBack,
-    LocalShipping,
-} from "@mui/icons-material";
+export const dynamic = "force-dynamic";
+import React, { useState, useEffect } from "react";
+import Box from "@mui/material/Box";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import Chip from "@mui/material/Chip";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import FilterList from "@mui/icons-material/FilterList";
+import Visibility from "@mui/icons-material/Visibility";
+import Edit from "@mui/icons-material/Edit";
+import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
-import DeviceInfoStep from "./components/DeviceInfoStep";
-import TestingProcessStep from "./components/TestingProcessStep";
-import PackagingDetailsStep from "./components/PackagingDetailsStep";
-import ReviewSummaryStep from "./components/ReviewSummaryStep";
+import GlobalTable from "../../components/GlobalTable";
+import Loader from "../../components/Loader";
+import axiosInstance from "@/axios/axiosInstance";
 
-const steps = ["Device Info", "Testing Process", "Packaging", "Review & Save"];
+export default function SOPTrackingTable() {
+    const router = useRouter();
+    const [sops, setSops] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filterStatus, setFilterStatus] = useState("All");
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
-export default function SOPForm() {
-    const [activeStep, setActiveStep] = useState(0);
-    const [formData, setFormData] = useState({
-        deviceId: "",
-        date: new Date().toISOString().split('T')[0],
-        companyName: "",
-        companyAddress: "",
-        assistedBy: "",
-        doneBy: "",
-        testingBy: "",
-        testingDate: new Date().toISOString().split('T')[0],
-        verifiedBy: "",
-        verifiedDate: new Date().toISOString().split('T')[0],
-        packedBy: "",
-        checkedBy: "",
-        testingResults: {},
-        packagingResults: {},
-    });
+    useEffect(() => {
+        fetchSops();
+    }, []);
 
-    const handleInputChange = (field, value) => {
-        setFormData((prev) => ({ ...prev, [field]: value }));
-    };
-
-    const handleStepResultChange = (section, stepIndex, field, value) => {
-        setFormData(prev => ({
-            ...prev,
-            [section]: {
-                ...prev[section],
-                [stepIndex]: {
-                    ...prev[section][stepIndex],
-                    [field]: value
-                }
-            }
-        }));
-    };
-
-    const handleNext = () => setActiveStep((prev) => prev + 1);
-    const handleBack = () => setActiveStep((prev) => prev - 1);
-
-    const getStepContent = (step) => {
-        switch (step) {
-            case 0:
-                return <DeviceInfoStep formData={formData} handleInputChange={handleInputChange} />;
-            case 1:
-                return <TestingProcessStep formData={formData} handleInputChange={handleInputChange} handleStepResultChange={handleStepResultChange} />;
-            case 2:
-                return <PackagingDetailsStep formData={formData} handleInputChange={handleInputChange} handleStepResultChange={handleStepResultChange} />;
-            case 3:
-                return <ReviewSummaryStep formData={formData} />;
-            default: return "Unknown step";
+    const fetchSops = async () => {
+        try {
+            setLoading(true);
+            const response = await axiosInstance.get("/sops");
+            setSops(response.data || []);
+        } catch (error) {
+            console.error("Failed to fetch SOPs:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
-    return (
-        <Box sx={{ pb: 8 }}>
-            <CommonCard title="Standard Operating Procedures (SOP)">
-                <Box sx={{ px: { xs: 1,  }, py: 3 }}>
-                    {/* Custom Stepper */}
-                    <Box sx={{ mb: 6 }}>
-                        <Stepper activeStep={activeStep} alternativeLabel>
-                            {steps.map((label, index) => (
-                                <Step key={label}>
-                                    <StepLabel
-                                        StepIconProps={{
-                                            sx: {
-                                                '&.Mui-active': { color: '#1172ba' },
-                                                '&.Mui-completed': { color: '#2e7d32' },
-                                            }
-                                        }}
-                                    >
-                                        <Typography variant="body2" fontWeight={activeStep === index ? 700 : 500}>
-                                            {label}
-                                        </Typography>
-                                    </StepLabel>
-                                </Step>
-                            ))}
-                        </Stepper>
-                    </Box>
+    const filteredSops = sops.filter((sop) => {
+        const matchesSearch =
+            (sop.sopNumber || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (sop.deviceId || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (sop.companyName || "").toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesFilter = filterStatus === "All" || sop.status === filterStatus;
+        return matchesSearch && matchesFilter;
+    });
 
-                    {/* Step Content */}
-                    <Box>
-                        {getStepContent(activeStep)}
-                    </Box>
+    const paginatedSops = filteredSops.slice(
+        page * rowsPerPage,
+        page * rowsPerPage + rowsPerPage
+    );
 
-                    {/* Navigation Buttons */}
-                    <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4, pt: 2, borderTop: "1px solid #e0e0e0" }}>
-                        <Button
-                            disabled={activeStep === 0}
-                            onClick={handleBack}
-                            startIcon={<ArrowBack />}
-                            sx={{
-                                borderRadius: 2,
-                                px: 4,
-                                py: 1.2,
-                                textTransform: "none",
-                                fontWeight: 700,
-                                color: "#64748b",
-                                "&:hover": { bgcolor: "#f1f5f9" }
-                            }}
-                        >
-                            Back
-                        </Button>
-
-                        {activeStep === steps.length - 1 ? (
-                            <Button
-                                variant="contained"
-                                startIcon={<Save />}
-                                sx={{
-                                    // backgroundColor: "#2e7d32",
-                                    borderRadius: 2,
-                                    px: 6,
-                                    py: 1.5,
-                                    textTransform: "none",
-                                    // fontWeight: 700,
-                                    // boxShadow: "0 4px 14px 0 rgba(46, 125, 50, 0.39)",
-                                    // "&:hover": { backgroundColor: "#1b5e20", boxShadow: "0 6px 20px rgba(46, 125, 50, 0.23)" },
-                                }}
-                            >
-                                Complete & Save SOP
-                            </Button>
-                        ) : (
-                            <Button
-                                variant="contained"
-                                onClick={handleNext}
-                                endIcon={<ArrowForward />}
-                                sx={{
-                                    backgroundColor: "#1172ba",
-                                    borderRadius: 2,
-                                    px: 6,
-                                    py: 1.5,
-                                    textTransform: "none",
-                                    // fontWeight: 700,
-                                    // boxShadow: "0 4px 14px 0 rgba(17, 114, 186, 0.39)",
-                                    // "&:hover": { backgroundColor: "#0d5a94", boxShadow: "0 6px 20px rgba(17, 114, 186, 0.23)" },
-                                }}
-                            >
-                                Next Step
-                            </Button>
-                        )}
-                    </Box>
+    const columns = [
+        {
+            label: "Sr.No.",
+            align: "center",
+            render: (row, index) => (
+                <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 500 }}>
+                    {index + 1}
+                </Typography>
+            ),
+        },
+        {
+            label: "SOP Number",
+            align: "center",
+            render: (row) => (
+                <Typography variant="body2" sx={{ color: "#1172ba", fontWeight: 700 }}>
+                    {row.sopNumber}
+                </Typography>
+            ),
+        },
+        {
+            label: "Date",
+            align: "center",
+            render: (row) => (
+                <Typography variant="body2" sx={{ color: "#334155", fontWeight: 500 }}>
+                    {row.date}
+                </Typography>
+            ),
+        },
+        {
+            label: "Device ID",
+            align: "center",
+            render: (row) => (
+                <Typography variant="body2" sx={{ color: "#1e293b", fontWeight: 600 }}>
+                    {row.deviceId}
+                </Typography>
+            ),
+        },
+        {
+            label: "Company",
+            align: "center",
+            render: (row) => (
+                <Typography variant="body2" sx={{ color: "#475569" }}>
+                    {row.companyName}
+                </Typography>
+            ),
+        },
+        {
+            label: "Testing By",
+            align: "center",
+            render: (row) => (
+                <Typography variant="body2" sx={{ color: "#475569" }}>
+                    {row.testingBy}
+                </Typography>
+            ),
+        },
+        {
+            label: "Status",
+            align: "center",
+            render: (row) => (
+                <Chip
+                    label={row.status}
+                    size="small"
+                    sx={{
+                        fontWeight: 800,
+                        fontSize: "0.65rem",
+                        textTransform: "uppercase",
+                        borderRadius: 1.5,
+                        bgcolor: row.status === "Completed" ? "#dcfce7" : "#fef9c3",
+                        color: row.status === "Completed" ? "#15803d" : "#a16207",
+                    }}
+                />
+            ),
+        },
+        {
+            label: "Actions",
+            align: "center",
+            render: (row) => (
+                <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
+                    <IconButton
+                        size="small"
+                        onClick={() => router.push(`/sop/view-sop?id=${row.id}`)}
+                        sx={{ color: "#0891b2", bgcolor: "#ecfeff", "&:hover": { bgcolor: "#cffafe" } }}
+                    >
+                        <Visibility sx={{ fontSize: 16 }} />
+                    </IconButton>
+                    <IconButton
+                        size="small"
+                        onClick={() => router.push(`/sop/create-sop?id=${row.id}`)}
+                        sx={{ color: "rgb(17, 114, 186)", bgcolor: "#f1f5f9", "&:hover": { bgcolor: "#e2e8f0" } }}
+                    >
+                        <Edit sx={{ fontSize: 16 }} />
+                    </IconButton>
                 </Box>
-            </CommonCard>
+            ),
+        },
+    ];
 
+    return (
+        <Box>
+            <CommonCard
+                title="SOP Tracking List"
+                addText="Create New SOP"
+                onAdd={() => router.push("/sop/create-sop")}
+                searchPlaceholder="Search SOP, Device, Company..."
+                searchValue={searchTerm}
+                onSearchChange={(e) => setSearchTerm(e.target.value)}
+                searchExtra={
+                    <Select
+                        size="small"
+                        value={filterStatus}
+                        onChange={(e) => setFilterStatus(e.target.value)}
+                        startAdornment={<FilterList sx={{ mr: 1, color: "#6b7280" }} />}
+                        sx={{ borderRadius: "8px", minWidth: "150px" }}
+                    >
+                        <MenuItem value="All">All Status</MenuItem>
+                        <MenuItem value="Completed">Completed</MenuItem>
+                        <MenuItem value="Pending">Pending</MenuItem>
+                    </Select>
+                }
+            >
+                {loading ? (
+                    <Loader message="Loading SOP Tracking Data..." />
+                ) : (
+                    <GlobalTable
+                        columns={columns}
+                        data={paginatedSops}
+                        totalCount={filteredSops.length}
+                        page={page}
+                        rowsPerPage={rowsPerPage}
+                        onPageChange={setPage}
+                        onRowsPerPageChange={(val) => {
+                            setRowsPerPage(val);
+                            setPage(0);
+                        }}
+                    />
+                )}
+            </CommonCard>
         </Box>
     );
 }

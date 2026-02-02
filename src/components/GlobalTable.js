@@ -83,7 +83,7 @@ const GlobalTable = ({
                                     sx={{
                                         fontWeight: 700,
                                         color: "var(--text-primary)",
-                                        py: 2,
+                                        py: 0,
                                         fontSize: "var(--size-caption)",
                                         textTransform: "uppercase",
                                         letterSpacing: "0.02em",

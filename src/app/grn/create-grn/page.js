@@ -177,10 +177,10 @@ function CreateGRNContent() {
                 <Box sx={{ p: 1 }}>
                     <Grid container spacing={3} sx={{ mb: 4 }}>
                         {/* GRN Details */}
-                        <Grid item xs={12} md={8} size={{ xs: 12, md: 8 }}>
+                        <Grid item xs={12} md={8} size={{ xs: 12, md: 12 }}>
                             <GradientCard title="GRN Information" icon={ReceiptLong}>
                                 <Grid container spacing={2}>
-                                    <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+                                    <Grid item xs={12} md={6} size={{ xs: 12, md: 4 }}>
                                         <TextField
                                             fullWidth
                                             label="GRN Number"
@@ -190,7 +190,7 @@ function CreateGRNContent() {
                                             sx={inputStyle}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+                                    <Grid item xs={12} md={6} size={{ xs: 12, md: 4 }}>
                                         <Autocomplete
                                             options={pendingPOs}
                                             getOptionLabel={(option) => option.orderInfo?.orderNumber || ""}
@@ -209,7 +209,7 @@ function CreateGRNContent() {
                                             )}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+                                    <Grid item xs={12} md={6} size={{ xs: 12, md: 4 }}>
                                         <TextField
                                             fullWidth
                                             label="Invoice Number"
@@ -219,7 +219,7 @@ function CreateGRNContent() {
                                             sx={inputStyle}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+                                    <Grid item xs={12} md={6} size={{ xs: 12, md: 4 }}>
                                         <TextField
                                             fullWidth
                                             type="date"
@@ -231,15 +231,7 @@ function CreateGRNContent() {
                                             sx={inputStyle}
                                         />
                                     </Grid>
-                                </Grid>
-                            </GradientCard>
-                        </Grid>
-
-                        {/* Supplier & Receiver Info */}
-                        <Grid item xs={12} md={4} size={{ xs: 12, md: 4 }}>
-                            <GradientCard title="Parties Involved" icon={Description}>
-                                <Grid container spacing={2}>
-                                    <Grid item xs={12} size={{ xs: 12, md: 12 }}>
+                                    <Grid item xs={12} size={{ xs: 12, md: 4 }}>
                                         <TextField
                                             fullWidth
                                             label="Supplier Name"
@@ -249,7 +241,7 @@ function CreateGRNContent() {
                                             sx={inputStyle}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} size={{ xs: 12, md: 12 }}>
+                                    <Grid item xs={12} size={{ xs: 12, md: 4 }}>
                                         <TextField
                                             fullWidth
                                             label="Received By"
@@ -262,6 +254,15 @@ function CreateGRNContent() {
                                 </Grid>
                             </GradientCard>
                         </Grid>
+
+                        {/* Supplier & Receiver Info */}
+                        {/* <Grid item xs={12} md={4} size={{ xs: 12, md: 4 }}>
+                            <GradientCard title="Parties Involved" icon={Description}>
+                                <Grid container spacing={2}>
+                                   
+                                </Grid>
+                            </GradientCard>
+                        </Grid> */}
                     </Grid>
 
                     {/* Items Table */}

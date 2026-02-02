@@ -40,7 +40,7 @@ const InvoiceProductsTable = ({ products, onAddProduct, onRemoveProduct }) => {
             >
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <Inventory sx={{ color: "#fff" }} />
-                    <Typography variant="subtitle1" fontWeight={600}>
+                    <Typography color="white" variant="subtitle1" fontWeight={600}>
                         Products in Order
                     </Typography>
                 </Box>

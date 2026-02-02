@@ -31,7 +31,7 @@ export default function CustomerDeliveryCard({ formData, handleChange, errors })
                         }}
                     >
                         <Business />
-                        <Typography variant="h6" fontWeight={600}>
+                        <Typography color="white" variant="h6" fontWeight={600}>
                             Customer Information
                         </Typography>
                     </Box>

@@ -40,7 +40,7 @@ export default function ProductDetailsCard() {
                 }}
             >
                 <Inventory />
-                <Typography variant="h6" fontWeight={600}>
+                <Typography color="white" variant="h6" fontWeight={600}>
                     Product Details
                 </Typography>
             </Box>

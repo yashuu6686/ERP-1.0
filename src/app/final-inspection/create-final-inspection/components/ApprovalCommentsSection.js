@@ -36,7 +36,7 @@ const ApprovalCommentsSection = () => {
                     >
                         <Verified sx={{ color: "#fff" }} />
                         <Typography
-                            variant="subtitle1"
+                            variant="h6"
                             sx={{ color: "#fff", fontWeight: 600 }}
                         >
                             Approval Status

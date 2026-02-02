@@ -203,7 +203,7 @@ export default function RejectedGoods() {
 
   const columns = [
     {
-      label: "S. No.",
+      label: "Sr.No.",
       align: "center",
       sx: { width: "60px" },
       render: (row, index) => <span style={{ color: "#6c757d" }}>{index + 1}</span>,

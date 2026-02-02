@@ -109,24 +109,6 @@ export default function DeviceInfoStep({ formData, handleInputChange }) {
                                 sx={textFieldStyle}
                             />
                         </Grid>
-                        <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-                            <TextField
-                                fullWidth
-                                label="Assisted By"
-                                value={formData.assistedBy}
-                                onChange={(e) => handleInputChange("assistedBy", e.target.value)}
-                                sx={textFieldStyle}
-                            />
-                        </Grid>
-                        <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-                            <TextField
-                                fullWidth
-                                label="Done By"
-                                value={formData.doneBy}
-                                onChange={(e) => handleInputChange("doneBy", e.target.value)}
-                                sx={textFieldStyle}
-                            />
-                        </Grid>
                     </Grid>
                 </CardContent>
             </Card>

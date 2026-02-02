@@ -174,4 +174,4 @@ export default function PackagingDetailsStep({ formData, handleInputChange, hand
             </Card>
         </Fade>
     );
-}5
+} 5

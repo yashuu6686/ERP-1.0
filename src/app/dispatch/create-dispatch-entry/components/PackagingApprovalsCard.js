@@ -26,7 +26,7 @@ export default function PackagingApprovalsCard({ formData, handleChange, errors,
                 }}
             >
                 <Description />
-                <Typography variant="h6" fontWeight={600}>
+                <Typography variant="h6" color="white" fontWeight={600}>
                     Packaging & Approvals
                 </Typography>
             </Box>
