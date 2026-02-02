@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
@@ -9,46 +9,15 @@ import CommonCard from "../../components/CommonCard";
 import StoreTabs from "./components/StoreTabs";
 import GlobalTable from "../../components/GlobalTable";
 import AddMaterialDialog from "./components/AddMaterialDialog";
-
-const materialsData = [
-  {
-    code: "SIPL.ASY.PBT.001",
-    name: "Upper Case",
-    category: "Raw Material",
-    available: 600,
-    minimum: 100,
-    updated: "-",
-  },
-  {
-    code: "SIPL.ASY.PBT.002",
-    name: "Screws",
-    category: "Raw Material",
-    available: 300,
-    minimum: 100,
-    updated: "-",
-  },
-  {
-    code: "SIPL.ASY.PC.A.001",
-    name: "Mainboard With Components",
-    category: "Raw Material",
-    available: 600,
-    minimum: 100,
-    updated: "-",
-  },
-  {
-    code: "SIPL.ASY.MC.002",
-    name: "Silicon T-shaped tube",
-    category: "Raw Material",
-    available: 300,
-    minimum: 100,
-    updated: "-",
-  },
-];
+import axiosInstance from "../../axios/axiosInstance";
+import Loader from "../../components/Loader";
 
 export default function Store() {
   const [tab, setTab] = useState(0);
   const [search, setSearch] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     name: "",
     code: "",
@@ -61,12 +30,29 @@ export default function Store() {
 
   const router = useRouter();
 
+  useEffect(() => {
+    fetchData();
+  }, [tab]);
+
+  const fetchData = async () => {
+    const endpoints = ["/store", "/it-goods", "/finish-goods", "/other-goods"];
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get(endpoints[tab]);
+      setData(response.data);
+    } catch (error) {
+      console.error("Error fetching store data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleTabChange = (e, newValue) => setTab(newValue);
 
-  const filtered = materialsData.filter(
+  const filtered = data.filter(
     (m) =>
-      m.name.toLowerCase().includes(search.toLowerCase()) ||
-      m.code.toLowerCase().includes(search.toLowerCase())
+      (m.name || m.itemName || "").toLowerCase().includes(search.toLowerCase()) ||
+      (m.code || m.id || "").toLowerCase().includes(search.toLowerCase())
   );
 
   const handleChange = (e) => {
@@ -91,40 +77,44 @@ export default function Store() {
       align: "center",
       render: (row) => (
         <span style={{ fontWeight: 600, color: "#1172ba" }}>
-          {row.code}
+          {row.code || row.id || "-"}
         </span>
       ),
     },
     {
       label: "Material Name",
       align: "center",
-      accessor: "name",
+      render: (row) => row.name || row.itemName || "-",
     },
     {
       label: "Category",
       align: "center",
-      accessor: "category",
+      render: (row) => row.category || "-",
     },
     {
       label: "Available Qty",
       align: "center",
-      render: (row) => (
-        <Chip
-          label={row.available}
-          color={row.available <= row.minimum ? "error" : "success"}
-          size="small"
-        />
-      ),
+      render: (row) => {
+        const qty = row.available ?? row.stock ?? 0;
+        const min = row.minimum ?? 0;
+        return (
+          <Chip
+            label={qty}
+            color={qty <= min ? "error" : "success"}
+            size="small"
+          />
+        );
+      },
     },
     {
       label: "Minimum Qty",
       align: "center",
-      accessor: "minimum",
+      render: (row) => row.minimum ?? "-",
     },
     {
       label: "Last Updated",
       align: "center",
-      accessor: "updated",
+      render: (row) => row.updated || "-",
     },
     {
       label: "Actions",
@@ -132,7 +122,7 @@ export default function Store() {
       render: (row) => (
         <IconButton
           size="small"
-          onClick={() => router.push(`/store/${row.code}`)}
+          onClick={() => router.push(`/store/${row.code || row.id}`)}
           sx={{
             color: "rgb(17, 114, 186)",
             bgcolor: "#f1f5f9",
@@ -157,7 +147,11 @@ export default function Store() {
       >
         <StoreTabs value={tab} handleChange={handleTabChange} />
 
-        <GlobalTable columns={columns} data={filtered} />
+        {loading ? (
+          <Loader message="Loading store data..." />
+        ) : (
+          <GlobalTable columns={columns} data={filtered} />
+        )}
 
         <AddMaterialDialog
           open={openDialog}

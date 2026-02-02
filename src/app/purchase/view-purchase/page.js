@@ -415,7 +415,7 @@ function ViewPurchaseOrderContent() {
                                                     <Typography variant="body2" color="#64748b">Contact Person</Typography>
                                                     <Typography variant="body2" fontWeight={600} color="#334155">{supplier.contactPerson}</Typography>
                                                 </Box>
-                                                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
                                                     <Typography variant="body2" color="#64748b">Phone</Typography>
                                                     <Typography variant="body2" fontWeight={600} color="#334155">{supplier.phone}</Typography>
                                                 </Box>
@@ -423,7 +423,6 @@ function ViewPurchaseOrderContent() {
                                                     <Typography variant="body2" color="#64748b">Email</Typography>
                                                     <Typography variant="body2" fontWeight={600} color="#334155">{supplier.email}</Typography>
                                                 </Box>
-                                               
                                             </Stack>
                                         </Stack>
                                     </Stack>
