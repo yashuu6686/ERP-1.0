@@ -1,14 +1,12 @@
 "use client";
 import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  Paper,
-  Grid,
-  TextField,
-  Button,
-} from "@mui/material";
-import { Save } from "@mui/icons-material";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Save from "@mui/icons-material/Save";
 import { useRouter } from "next/navigation";
 
 export default function CreateMaterialRequest({ onClose }) {

@@ -46,8 +46,8 @@ const GlobalTable = ({
                 component={Paper}
                 elevation={0}
                 sx={{
-                    border: "1px solid var(--border-default)",
-                    borderRadius: "var(--card-radius)",
+                    // border: "1px solid var(--border-default)",
+                    // borderRadius: "var(--card-radius)",
                     overflowX: "auto",
                     width: "100%",
                     maxWidth: "100%",
@@ -72,7 +72,9 @@ const GlobalTable = ({
                 }}
             >
                 <Table size="small" sx={{ minWidth: 650 }}>
-                    <TableHead sx={{ bgcolor: "var(--bg-page)" }}>
+                    <TableHead sx={{
+                        //  bgcolor: "var(--bg-page)"
+                          }}>
                         <TableRow>
                             {columns.map((col, index) => (
                                 <TableCell
@@ -80,7 +82,7 @@ const GlobalTable = ({
                                     align={col.align || "left"}
                                     sx={{
                                         fontWeight: 700,
-                                        color: "var(--text-secondary)",
+                                        color: "var(--text-primary)",
                                         py: 2,
                                         fontSize: "var(--size-caption)",
                                         textTransform: "uppercase",

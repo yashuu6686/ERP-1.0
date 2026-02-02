@@ -1,18 +1,15 @@
 "use client";
 import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  Stepper,
-  Step,
-  StepLabel,
-} from "@mui/material";
-import {
-  CheckCircle,
-  Save,
-  ArrowBack,
-  ArrowForward,
-} from "@mui/icons-material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Stepper from "@mui/material/Stepper";
+import Step from "@mui/material/Step";
+import StepLabel from "@mui/material/StepLabel";
+
+import CheckCircle from "@mui/icons-material/CheckCircle";
+import Save from "@mui/icons-material/Save";
+import ArrowBack from "@mui/icons-material/ArrowBack";
+import ArrowForward from "@mui/icons-material/ArrowForward";
 import CommonCard from "../../../components/CommonCard";
 import ProductDetailsSection from "./components/ProductDetailsSection";
 import QualityCheckDetailsTable from "./components/QualityCheckDetailsTable";

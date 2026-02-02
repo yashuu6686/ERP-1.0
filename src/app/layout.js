@@ -13,11 +13,15 @@ export const metadata = {
   description: "Enterprise SaaS Dashboard",
 };
 
+import { AuthProvider } from "@/context/AuthContext";
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${manrope.variable} font-sans`}>
-        <Sidebar>{children}</Sidebar>
+        <AuthProvider>
+          <Sidebar>{children}</Sidebar>
+        </AuthProvider>
       </body>
     </html>
   );

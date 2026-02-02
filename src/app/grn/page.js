@@ -1,7 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Chip, IconButton } from "@mui/material";
-import { Download, Edit, Visibility } from "@mui/icons-material";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Chip from "@mui/material/Chip";
+import IconButton from "@mui/material/IconButton";
+
+import Download from "@mui/icons-material/Download";
+import Edit from "@mui/icons-material/Edit";
+import Visibility from "@mui/icons-material/Visibility";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
 import GlobalTable from "../../components/GlobalTable";

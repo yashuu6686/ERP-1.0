@@ -1,21 +1,21 @@
 import React from "react";
-import {
-    Box,
-    Typography,
-    Button,
-    Table,
-    TableHead,
-    TableRow,
-    TableCell,
-    TableBody,
-    Chip,
-    TextField,
-    InputAdornment,
-    Tooltip,
-    IconButton,
-    Card,
-} from "@mui/material";
-import { Add, Delete } from "@mui/icons-material";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Table from "@mui/material/Table";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import TableCell from "@mui/material/TableCell";
+import TableBody from "@mui/material/TableBody";
+import Chip from "@mui/material/Chip";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import Tooltip from "@mui/material/Tooltip";
+import IconButton from "@mui/material/IconButton";
+import Card from "@mui/material/Card";
+
+import Add from "@mui/icons-material/Add";
+import Delete from "@mui/icons-material/Delete";
 
 const ItemDetailsTable = ({ items, addItem, removeItem, handleItemChange }) => {
     return (

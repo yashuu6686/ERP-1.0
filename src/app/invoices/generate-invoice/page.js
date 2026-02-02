@@ -1,7 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import { Box, Button, Grid } from "@mui/material";
-import { Save, Close } from "@mui/icons-material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+
+import Save from "@mui/icons-material/Save";
+import Close from "@mui/icons-material/Close";
 import CommonCard from "../../../components/CommonCard";
 import InvoiceDetailsSection from "./components/InvoiceDetailsSection";
 import CustomerInformationSection from "./components/CustomerInformationSection";

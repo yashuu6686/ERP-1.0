@@ -1,22 +1,19 @@
 "use client";
 import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  Stepper,
-  Step,
-  StepLabel,
-  Typography,
-  Paper,
-  Divider,
-} from "@mui/material";
-import {
-  Assignment,
-  Save,
-  NavigateNext,
-  NavigateBefore,
-  CheckCircle,
-} from "@mui/icons-material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Stepper from "@mui/material/Stepper";
+import Step from "@mui/material/Step";
+import StepLabel from "@mui/material/StepLabel";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import Divider from "@mui/material/Divider";
+
+import Assignment from "@mui/icons-material/Assignment";
+import Save from "@mui/icons-material/Save";
+import NavigateNext from "@mui/icons-material/NavigateNext";
+import NavigateBefore from "@mui/icons-material/NavigateBefore";
+import CheckCircle from "@mui/icons-material/CheckCircle";
 import CommonCard from "../../../components/CommonCard";
 import InspectionObservations from "../../../components/inspection/InspectionObservations";
 import ProductInformationSection from "./components/ProductInformationSection";
@@ -124,27 +121,27 @@ export default function FinalInspectionForm() {
 
   return (
     <CommonCard title="Final Inspection Verification">
-      <Box sx={{ p: 2 }}>
-        <Stepper  activeStep={activeStep} alternativeLabel   sx={{
-              mb: 4,
-              "& .MuiStepLabel-label": {
-                fontWeight: 500,
-              },
-              "& .MuiStepLabel-label.Mui-active": {
-                color: "#1172ba",
-                fontWeight: 600,
-              },
-              "& .MuiStepLabel-label.Mui-completed": {
-                color: "#1172ba",
-                fontWeight: 600,
-              },
-              "& .MuiStepIcon-root.Mui-active": {
-                color: "#1172ba",
-              },
-              "& .MuiStepIcon-root.Mui-completed": {
-                color: "#1172ba",
-              },
-            }}>
+      <Box sx={{ p: 1 }}>
+        <Stepper activeStep={activeStep} alternativeLabel sx={{
+          mb: 4,
+          "& .MuiStepLabel-label": {
+            fontWeight: 500,
+          },
+          "& .MuiStepLabel-label.Mui-active": {
+            color: "#1172ba",
+            fontWeight: 600,
+          },
+          "& .MuiStepLabel-label.Mui-completed": {
+            color: "#1172ba",
+            fontWeight: 600,
+          },
+          "& .MuiStepIcon-root.Mui-active": {
+            color: "#1172ba",
+          },
+          "& .MuiStepIcon-root.Mui-completed": {
+            color: "#1172ba",
+          },
+        }}>
           {steps.map((label) => (
             <Step key={label}>
               <StepLabel>
@@ -159,11 +156,11 @@ export default function FinalInspectionForm() {
         <Paper
           elevation={0}
           sx={{
-            p: 3,
-            minHeight: "400px",
+            //   p: 3,
+            // minHeight: "400px",
             bgcolor: "#fff",
             borderRadius: 3,
-            border: "1px dashed #e2e8f0",
+            // border: "1px dashed #e2e8f0",
           }}
         >
           {getStepContent(activeStep)}
@@ -228,12 +225,9 @@ export default function FinalInspectionForm() {
                 sx={{
                   px: 6,
                   py: 1.5,
-                  fontWeight: 700,
                   borderRadius: 2,
                   bgcolor: "#1172ba",
-                  "&:hover": { bgcolor: "#0d5a94" },
                   textTransform: "none",
-                  boxShadow: "0 4px 12px rgba(17, 114, 186, 0.2)",
                 }}
                 onClick={handleNext}
               >
@@ -246,3 +240,7 @@ export default function FinalInspectionForm() {
     </CommonCard>
   );
 }
+
+
+
+" ✓ Compiled /final-inspection/create-final-inspection in 1139ms (2902 modules)"

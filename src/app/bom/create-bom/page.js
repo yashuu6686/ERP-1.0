@@ -1,8 +1,9 @@
 
 "use client";
 import React, { useState } from "react";
-import { Box, Button } from "@mui/material";
-import { Save } from "@mui/icons-material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Save from "@mui/icons-material/Save";
 import CommonCard from "../../../components/CommonCard";
 import MaterialListSpecifications from "./components/MaterialListSpecifications";
 import BOMAuthorization from "./components/BOMAuthorization";

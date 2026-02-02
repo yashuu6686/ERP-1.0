@@ -3,28 +3,25 @@
 export const dynamic = "force-dynamic";
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-    Box,
-    Button,
-    Grid,
-    Typography,
-    Divider,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-} from "@mui/material";
-import {
-    Download,
-    ArrowBack,
-    Edit,
-    Print,
-    Business,
-    AssignmentTurnedIn,
-} from "@mui/icons-material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+
+import Download from "@mui/icons-material/Download";
+import ArrowBack from "@mui/icons-material/ArrowBack";
+import Edit from "@mui/icons-material/Edit";
+import Print from "@mui/icons-material/Print";
+import Business from "@mui/icons-material/Business";
+import AssignmentTurnedIn from "@mui/icons-material/AssignmentTurnedIn";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "../../../components/Loader";
 

@@ -3,8 +3,10 @@
 export const dynamic = "force-dynamic";
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Box, Button, Grid } from "@mui/material";
-import { Save } from "@mui/icons-material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Save from "@mui/icons-material/Save";
 import CommonCard from "../../../components/CommonCard";
 import ItemDetailsTable from "./components/ItemDetailsTable";
 import PurchaseSummary from "./components/PurchaseSummary";
@@ -13,6 +15,8 @@ import SupplierInformation from "./components/SupplierInformation";
 import DeliveryInformation from "./components/DeliveryInformation";
 import Loader from "../../../components/Loader";
 import axiosInstance from "@/axios/axiosInstance";
+import NotificationService from "@/services/NotificationService";
+import { useAuth } from "@/context/AuthContext";
 
 function CreatePurchaseOrderContent() {
   const router = useRouter();
@@ -133,13 +137,21 @@ function CreatePurchaseOrderContent() {
   const otherDiscountAmount = (subtotal * otherDiscount) / 100;
   const grandTotal = subtotal + taxAmount - discountAmount + shippingCharges - otherDiscountAmount;
 
+  const { user } = useAuth();
+
   const handleSave = async () => {
     const finalData = {
       ...formData,
       items,
       totals: { subtotal, taxAmount, discountAmount, grandTotal },
-      status: "Pending", // Add status on backend side as requested
-      isEdited: isEditMode, // Add isEdited on backend side as requested
+      taxRate,
+      discount,
+      shippingCharges,
+      otherDiscount,
+      status: isEditMode ? formData.status : "Pending Approval",
+      isEdited: isEditMode,
+      creatorId: user?.id,
+      creatorName: user?.name,
     };
 
     try {
@@ -148,6 +160,17 @@ function CreatePurchaseOrderContent() {
         : await axiosInstance.post(`/purachase`, finalData);
 
       if (response.status === 200 || response.status === 201) {
+        // Create notification for HR
+        if (!isEditMode) {
+          await NotificationService.createNotification({
+            title: "New PO for Approval",
+            message: `${user?.name} has created PO #${formData.orderInfo.orderNumber}. Needs approval.`,
+            targetRole: "hr",
+            poId: response.data.id,
+            link: `/purchase/view-purchase?id=${response.data.id}`
+          });
+        }
+
         alert(`Purchase Order ${isEditMode ? "Updated" : "Created"} Successfully!`);
         router.push("/purchase");
       } else {

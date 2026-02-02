@@ -1,13 +1,14 @@
 import React from "react";
-import {
-    Card,
-    Box,
-    Typography,
-    CardContent,
-    IconButton,
-    Divider,
-} from "@mui/material";
-import { Remove, Add, ListAlt } from "@mui/icons-material";
+import Card from "@mui/material/Card";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import CardContent from "@mui/material/CardContent";
+import IconButton from "@mui/material/IconButton";
+import Divider from "@mui/material/Divider";
+
+import Remove from "@mui/icons-material/Remove";
+import Add from "@mui/icons-material/Add";
+import ListAlt from "@mui/icons-material/ListAlt";
 
 const FullKitSection = ({ kitQty, setKitQty, additionalProducts }) => {
     return (

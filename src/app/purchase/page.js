@@ -2,19 +2,16 @@
 
 export const dynamic = "force-dynamic";
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Select,
-  MenuItem,
-  Chip,
-  IconButton,
-  Typography,
-} from "@mui/material";
-import {
-  Edit,
-  Visibility,
-  FilterList,
-} from "@mui/icons-material";
+import Box from "@mui/material/Box";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import Chip from "@mui/material/Chip";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+
+import Edit from "@mui/icons-material/Edit";
+import Visibility from "@mui/icons-material/Visibility";
+import FilterList from "@mui/icons-material/FilterList";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
 import GlobalTable from "../../components/GlobalTable";

@@ -46,7 +46,7 @@ export default function DeviceInfoStep({ formData, handleInputChange }) {
         background: "rgba(255, 255, 255, 0.7)",
         backdropFilter: "blur(10px)",
         border: "1px solid rgba(255, 255, 255, 0.3)",
-        boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.07)",
+        // boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.07)",
     };
 
     return (
@@ -55,7 +55,7 @@ export default function DeviceInfoStep({ formData, handleInputChange }) {
                 <Box sx={cardHeaderStyle}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                         <Devices />
-                        <Typography variant="h6" fontWeight={700}>Device Information</Typography>
+                        <Typography variant="h6" color="white" fontWeight={700}>Device Information</Typography>
                     </Box>
                     <Tooltip title="Enter basic device and company details">
                         <IconButton size="small" sx={{ color: "white" }}><HelpOutline /></IconButton>
