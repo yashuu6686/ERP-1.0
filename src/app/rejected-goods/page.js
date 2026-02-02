@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Tabs,
@@ -15,57 +15,8 @@ import CommonCard from "../../components/CommonCard";
 import AddRejectedGoodsDialog from "./components/AddRejectedGoodsDialog";
 import RejectedGoodsMobileCard from "./components/RejectedGoodsMobileCard";
 import GlobalTable from "../../components/GlobalTable";
-
-const rejectedData = [
-  {
-    id: 1,
-    rejectionId: "REJ-001",
-    sourceType: "GRN",
-    sourceRef: "GRN/2025002",
-    goods: "Raw Material A",
-    qty: 20,
-    date: "2025-03-20",
-    reason: "Surface defects",
-    status: "total",
-    severity: "high",
-  },
-  {
-    id: 2,
-    rejectionId: "REJ-002",
-    sourceType: "GRN",
-    sourceRef: "GRN/2025001",
-    goods: "Component XYZ",
-    qty: 50,
-    date: "2025-02-10",
-    reason: "Surface defects",
-    status: "return",
-    severity: "medium",
-  },
-  {
-    id: 3,
-    rejectionId: "REJ-003",
-    sourceType: "GRN",
-    sourceRef: "GRN/2025003",
-    goods: "Part PQR",
-    qty: 10,
-    date: "2025-03-15",
-    reason: "Crack found",
-    status: "scrap",
-    severity: "high",
-  },
-  {
-    id: 4,
-    rejectionId: "REJ-004",
-    sourceType: "Production",
-    sourceRef: "PROD/2025015",
-    goods: "Finished Product B",
-    qty: 5,
-    date: "2025-03-22",
-    reason: "Dimensional mismatch",
-    status: "scrap",
-    severity: "low",
-  },
-];
+import axiosInstance from "@/axios/axiosInstance";
+import Loader from "../../components/Loader";
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -81,18 +32,29 @@ const getStatusColor = (status) => {
 };
 
 const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
+  if (!dateString) return "-";
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  } catch (e) {
+    return dateString;
+  }
 };
 
 export default function RejectedGoods() {
   const [tab, setTab] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
+  const [dialogMode, setDialogMode] = useState("add"); // 'add' | 'edit' | 'view'
+  const [selectedId, setSelectedId] = useState(null);
   const [search, setSearch] = useState("");
+  const [rejectedData, setRejectedData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
@@ -108,16 +70,121 @@ export default function RejectedGoods() {
     rejectedBy: "",
   });
 
+  const fetchRejectedGoods = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get("/rejected-goods");
+      setRejectedData(response.data || []);
+    } catch (error) {
+      console.error("Failed to fetch rejected goods:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRejectedGoods();
+  }, []);
+
   const handleTabChange = (e, newValue) => setTab(newValue);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = () => {
-    console.log("Rejected Item:", form);
-    alert("Rejected Item Saved Successfully!");
-    setOpenDialog(false);
+  const handleAdd = () => {
+    setDialogMode("add");
+    setForm({
+      rejectionId: `REJ-${Date.now().toString().slice(-4)}`,
+      rejectedGoods: "",
+      sourceType: "GRN",
+      date: new Date().toISOString().split("T")[0],
+      sourceReference: "",
+      reason: "",
+      rejectedQty: "",
+      rejectedBy: "",
+    });
+    setOpenDialog(true);
+  };
+
+  const handleView = (item) => {
+    setDialogMode("view");
+    setForm({
+      rejectionId: item.rejectionId,
+      rejectedGoods: item.goods,
+      sourceType: item.sourceType,
+      date: item.date,
+      sourceReference: item.sourceRef,
+      reason: item.reason,
+      rejectedQty: item.qty,
+      rejectedBy: item.rejectedBy || "-",
+    });
+    setOpenDialog(true);
+  };
+
+  const handleEdit = (item) => {
+    setDialogMode("edit");
+    setSelectedId(item.id);
+    setForm({
+      rejectionId: item.rejectionId,
+      rejectedGoods: item.goods,
+      sourceType: item.sourceType,
+      date: item.date,
+      sourceReference: item.sourceRef,
+      reason: item.reason,
+      rejectedQty: item.qty,
+      rejectedBy: item.rejectedBy || "-",
+    });
+    setOpenDialog(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (confirm("Are you sure you want to delete this rejection record?")) {
+      try {
+        setLoading(true);
+        await axiosInstance.delete(`/rejected-goods/${id}`);
+        await fetchRejectedGoods();
+        alert("Record deleted successfully!");
+      } catch (error) {
+        console.error("Delete failed:", error);
+        alert("Failed to delete record.");
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      const payload = {
+        rejectionId: form.rejectionId,
+        sourceType: form.sourceType,
+        sourceRef: form.sourceReference,
+        goods: form.rejectedGoods,
+        qty: parseInt(form.rejectedQty),
+        date: form.date,
+        reason: form.reason,
+        status: tab === 0 ? "total" : tab === 1 ? "return" : "scrap",
+        rejectedBy: form.rejectedBy,
+      };
+
+      if (dialogMode === "add") {
+        await axiosInstance.post("/rejected-goods", payload);
+        alert("Rejected Item Added Successfully!");
+      } else {
+        await axiosInstance.put(`/rejected-goods/${selectedId}`, payload);
+        alert("Rejected Item Updated Successfully!");
+      }
+
+      setOpenDialog(false);
+      await fetchRejectedGoods();
+    } catch (error) {
+      console.error("Submit failed:", error);
+      alert("Failed to save record.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const filteredData = rejectedData
@@ -129,9 +196,9 @@ export default function RejectedGoods() {
     })
     .filter(
       (item) =>
-        item.rejectionId.toLowerCase().includes(search.toLowerCase()) ||
-        item.sourceRef.toLowerCase().includes(search.toLowerCase()) ||
-        item.goods.toLowerCase().includes(search.toLowerCase())
+        (item.rejectionId || "").toLowerCase().includes(search.toLowerCase()) ||
+        (item.sourceRef || "").toLowerCase().includes(search.toLowerCase()) ||
+        (item.goods || "").toLowerCase().includes(search.toLowerCase())
     );
 
   const columns = [
@@ -189,23 +256,6 @@ export default function RejectedGoods() {
       render: (row) => formatDate(row.date),
     },
     {
-      label: "Rejection Reason",
-      align: "center",
-      render: (row) => (
-        <Typography
-          variant="body2"
-          sx={{
-            maxWidth: "200px",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}
-        >
-          {row.reason}
-        </Typography>
-      ),
-    },
-    {
       label: "Status",
       align: "center",
       render: (row) => {
@@ -231,6 +281,7 @@ export default function RejectedGoods() {
         <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
           <IconButton
             size="small"
+            onClick={() => handleView(row)}
             sx={{
               color: "rgb(17, 114, 186)",
               bgcolor: "#f1f5f9",
@@ -239,11 +290,12 @@ export default function RejectedGoods() {
           >
             <Visibility fontSize="small" />
           </IconButton>
-          <IconButton color="warning" size="small">
+          <IconButton color="warning" size="small" onClick={() => handleEdit(row)}>
             <Edit fontSize="small" />
           </IconButton>
           <IconButton
             size="small"
+            onClick={() => handleDelete(row.id)}
             sx={{
               color: "#dc2626",
               bgcolor: "#fef2f2",
@@ -262,7 +314,7 @@ export default function RejectedGoods() {
       <CommonCard
         title="Rejected Goods"
         addText={isSmall ? "Add" : "Add Rejected Items"}
-        onAdd={() => setOpenDialog(true)}
+        onAdd={handleAdd}
         searchPlaceholder="Search Rejection ID, Source, Goods..."
         searchValue={search}
         onSearchChange={(e) => setSearch(e.target.value)}
@@ -299,14 +351,21 @@ export default function RejectedGoods() {
           <Tab label="Scrapped" />
         </Tabs>
 
-        {/* Desktop Table View */}
-        {!isMobile ? (
+        {loading ? (
+          <Loader message="Fetching rejected goods..." />
+        ) : !isMobile ? (
           <GlobalTable columns={columns} data={filteredData} />
         ) : (
           <Box>
             {filteredData.length > 0 ? (
               filteredData.map((item) => (
-                <RejectedGoodsMobileCard key={item.id} item={item} />
+                <RejectedGoodsMobileCard
+                  key={item.id}
+                  item={item}
+                  onView={() => handleView(item)}
+                  onEdit={() => handleEdit(item)}
+                  onDelete={() => handleDelete(item.id)}
+                />
               ))
             ) : (
               <Box
@@ -331,11 +390,11 @@ export default function RejectedGoods() {
           </Box>
         )}
 
-        {/* Add Rejected Items Dialog */}
         <AddRejectedGoodsDialog
           open={openDialog}
           onClose={() => setOpenDialog(false)}
           form={form}
+          mode={dialogMode}
           onChange={handleChange}
           onSubmit={handleSubmit}
         />

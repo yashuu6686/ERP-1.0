@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import {
   Box,
   Button,
@@ -12,12 +12,15 @@ import DispatchInfoCard from "./components/DispatchInfoCard";
 import CustomerDeliveryCard from "./components/CustomerDeliveryCard";
 import ProductDetailsTable from "./components/ProductDetailsTable";
 import PackagingApprovalsCard from "./components/PackagingApprovalsCard";
-import { useRouter } from "next/navigation";
-import NextLink from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import CommonCard from "../../../components/CommonCard";
+import axiosInstance from "@/axios/axiosInstance";
+import Loader from "../../../components/Loader";
 
-export default function CreateDispatchEntry() {
+function CreateDispatchEntryContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
 
   // Form state
   const [formData, setFormData] = useState({
@@ -46,6 +49,53 @@ export default function CreateDispatchEntry() {
   ]);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (id) {
+      const fetchDispatch = async () => {
+        try {
+          setLoading(true);
+          const response = await axiosInstance.get(`/dispatches/${id}`);
+          const data = response.data;
+
+          setFormData({
+            companyName: data.customer?.companyName || "Scanbo Engineering Pvt. Ltd.",
+            officeAddress: data.customer?.address || "Mumbai, Maharashtra, India",
+            email: data.customer?.email || "info@scanbo.com",
+            phone: data.customer?.phone || "+91 98765 43210",
+            orderNumber: data.shipmentInfo?.orderNumber || "",
+            dispatchDate: data.shipmentInfo?.shippingDate || "",
+            trackingNumber: data.shipmentInfo?.trackingNumber || "",
+            customerName: data.customer?.companyName || "",
+            deliveryAddress: data.customer?.address || "",
+            contactPerson: data.customer?.contactPerson || "",
+            contactNo: data.customer?.phone || "",
+            deliveryDate: data.shipmentInfo?.expectedDelivery || "",
+            courierCompany: data.shipmentInfo?.carrier || "",
+            referenceNo: data.id || "",
+            salesPlatform: data.shipmentInfo?.platform || "",
+            packedBy: data.packedBy || "",
+            approvedBy: data.approvedBy || "",
+            accountingBy: data.accountingBy || "",
+          });
+
+          if (data.items && data.items.length > 0) {
+            setProducts(data.items.map(item => ({
+              name: item.name || "",
+              quantity: item.qty || ""
+            })));
+          }
+        } catch (error) {
+          console.error("Failed to fetch dispatch:", error);
+          alert("Failed to load dispatch data.");
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchDispatch();
+    }
+  }, [id]);
 
   const handleChange = (field, value) => {
     setFormData({ ...formData, [field]: value });
@@ -82,7 +132,7 @@ export default function CreateDispatchEntry() {
     setUploadedFiles(uploadedFiles.filter((_, i) => i !== index));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const newErrors = {};
 
     const requiredFields = [
@@ -95,15 +145,11 @@ export default function CreateDispatchEntry() {
       "contactNo",
       "deliveryDate",
       "courierCompany",
-      "referenceNo",
       "salesPlatform",
-      "packedBy",
-      "approvedBy",
-      "accountingBy",
     ];
 
     requiredFields.forEach((field) => {
-      if (!formData[field] || formData[field].trim() === "") {
+      if (!formData[field] || (typeof formData[field] === 'string' && formData[field].trim() === "")) {
         newErrors[field] = true;
       }
     });
@@ -112,7 +158,7 @@ export default function CreateDispatchEntry() {
       if (!product.name || product.name.trim() === "") {
         newErrors[`product_${index}_name`] = true;
       }
-      if (!product.quantity || product.quantity.trim() === "") {
+      if (!product.quantity || String(product.quantity).trim() === "") {
         newErrors[`product_${index}_quantity`] = true;
       }
     });
@@ -122,32 +168,69 @@ export default function CreateDispatchEntry() {
       return;
     }
 
-    alert("Dispatch Entry Saved Successfully!");
-    router.push("/dispatch");
+    try {
+      setLoading(true);
+      const payload = {
+        shipmentInfo: {
+          orderNumber: formData.orderNumber,
+          trackingNumber: formData.trackingNumber,
+          shippingDate: formData.dispatchDate,
+          expectedDelivery: formData.deliveryDate,
+          carrier: formData.courierCompany,
+          platform: formData.salesPlatform,
+        },
+        customer: {
+          companyName: formData.customerName,
+          contactPerson: formData.contactPerson,
+          address: formData.deliveryAddress,
+          phone: formData.contactNo,
+          email: formData.email,
+        },
+        items: products.map(p => ({
+          name: p.name,
+          qty: parseInt(p.quantity),
+          serialNo: "-",
+          weight: "-"
+        })),
+        status: id ? "Updated" : "Shipped",
+        packedBy: formData.packedBy,
+        approvedBy: formData.approvedBy,
+        accountingBy: formData.accountingBy,
+      };
+
+      if (id) {
+        await axiosInstance.put(`/dispatches/${id}`, payload);
+      } else {
+        await axiosInstance.post("/dispatches", payload);
+      }
+
+      alert(`Dispatch Entry ${id ? "Updated" : "Saved"} Successfully!`);
+      router.push("/dispatch");
+    } catch (error) {
+      console.error("Save Error:", error);
+      alert("Failed to save dispatch entry.");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (loading) return <Loader fullPage message={id ? "Updating Dispatch..." : "Saving Dispatch..."} />;
 
   return (
     <Box>
-      <CommonCard title="Create Dispatch Entry">
+      <CommonCard title={id ? "Edit Dispatch Entry" : "Create Dispatch Entry"}>
         <Box sx={{ p: 1 }}>
-          {/* Company Information */}
           <CompanyInfoCard />
-
-          {/* Dispatch Info */}
           <DispatchInfoCard
             formData={formData}
             handleChange={handleChange}
             errors={errors}
           />
-
-          {/* Customer + Delivery */}
           <CustomerDeliveryCard
             formData={formData}
             handleChange={handleChange}
             errors={errors}
           />
-
-          {/* Product Details Table */}
           <ProductDetailsTable
             products={products}
             handleProductChange={handleProductChange}
@@ -155,8 +238,6 @@ export default function CreateDispatchEntry() {
             removeProduct={removeProduct}
             errors={errors}
           />
-
-          {/* Packaging & Approvals */}
           <PackagingApprovalsCard
             formData={formData}
             handleChange={handleChange}
@@ -165,8 +246,6 @@ export default function CreateDispatchEntry() {
             handleFileUpload={handleFileUpload}
             removeFile={removeFile}
           />
-
-          {/* Save Button */}
           <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}>
             <Button
               variant="contained"
@@ -184,11 +263,19 @@ export default function CreateDispatchEntry() {
                 boxShadow: "0 4px 12px rgba(17, 114, 186, 0.3)",
               }}
             >
-              Save Dispatch Entry
+              {id ? "Update Dispatch Entry" : "Save Dispatch Entry"}
             </Button>
           </Box>
         </Box>
       </CommonCard>
     </Box>
+  );
+}
+
+export default function CreateDispatchEntry() {
+  return (
+    <Suspense fallback={<Loader fullPage />}>
+      <CreateDispatchEntryContent />
+    </Suspense>
   );
 }

@@ -47,7 +47,7 @@ const formatDate = (dateString) => {
     });
 };
 
-export default function RejectedGoodsMobileCard({ item }) {
+export default function RejectedGoodsMobileCard({ item, onView, onEdit, onDelete }) {
     const statusInfo = getStatusColor(item.status);
     return (
         <Card
@@ -188,6 +188,7 @@ export default function RejectedGoodsMobileCard({ item }) {
                     <Button
                         size="small"
                         startIcon={<Visibility />}
+                        onClick={onView}
                         sx={{
                             flex: 1,
                             textTransform: "none",
@@ -202,16 +203,18 @@ export default function RejectedGoodsMobileCard({ item }) {
                     </Button>
                     <IconButton
                         size="small"
+                        onClick={onEdit}
                         sx={{
-                            color: "#dc2626",
-                            bgcolor: "#fef2f2",
-                            "&:hover": { bgcolor: "#fee2e2" }
+                            color: "#ed6c02",
+                            bgcolor: "#fff7ed",
+                            "&:hover": { bgcolor: "#ffedd5" }
                         }}
                     >
                         <Edit fontSize="small" />
                     </IconButton>
                     <IconButton
                         size="small"
+                        onClick={onDelete}
                         sx={{
                             color: "#dc2626",
                             bgcolor: "#fef2f2",
