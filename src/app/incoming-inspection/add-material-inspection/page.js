@@ -274,6 +274,43 @@ export default function MaterialInspectionForm() {
         : await axiosInstance.post("/incoming-inspection", inspectionData);
 
       if (response.status === 201 || response.status === 200) {
+        // Automatic Rejection Record Integration
+        const rejQty = parseInt(summaryData.rejectedQuantity) || 0;
+        if (rejQty > 0) {
+          try {
+            // Prepare rejection payload
+            const rejectionPayload = {
+              rejectionId: materialData.inspectionReportNumber,
+              sourceType: "Incoming Inspection",
+              sourceRef: materialData.grnNumber,
+              goods: materialData.materialName,
+              qty: rejQty,
+              date: materialData.inspectionDate,
+              reason: summaryData.comments || "Rejected during incoming inspection",
+              status: "total", // Default to Pending
+              severity: "medium", // Default
+              rejectedBy: approvalData.updatedByName || "Automated",
+            };
+
+            // Check if a rejection record already exists for this inspection report
+            const existingRejResponse = await axiosInstance.get(`/rejected-goods?rejectionId=${materialData.inspectionReportNumber}`);
+            const existingRej = existingRejResponse.data?.[0];
+
+            if (existingRej) {
+              // Update existing rejection
+              await axiosInstance.put(`/rejected-goods/${existingRej.id}`, rejectionPayload);
+              console.log("Rejection record updated.");
+            } else {
+              // Create new rejection
+              await axiosInstance.post("/rejected-goods", rejectionPayload);
+              console.log("Rejection record created.");
+            }
+          } catch (rejError) {
+            console.error("Failed to manage rejection record:", rejError);
+            // We don't alert here to not interrupt the main flow, just log it.
+          }
+        }
+
         // Update GRN inspection status to Completed
         if (selectedGRN) {
           try {

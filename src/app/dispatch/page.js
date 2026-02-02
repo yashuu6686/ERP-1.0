@@ -212,7 +212,11 @@ export default function DispatchDetails() {
           >
             <Visibility fontSize="small" />
           </IconButton>
-          <IconButton color="warning" size="small">
+          <IconButton
+            color="warning"
+            size="small"
+            onClick={() => router.push(`/dispatch/create-dispatch-entry?id=${row.id}`)}
+          >
             <Edit fontSize="small" />
           </IconButton>
           <IconButton

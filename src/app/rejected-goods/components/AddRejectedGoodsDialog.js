@@ -15,18 +15,22 @@ export default function AddRejectedGoodsDialog({
     form,
     onChange,
     onSubmit,
+    mode = "add", // 'add' | 'edit' | 'view'
 }) {
+    const isView = mode === "view";
+
+    const getTitle = () => {
+        if (mode === "add") return "Add Rejected Items";
+        if (mode === "edit") return "Edit Rejected Item";
+        return "View Rejected Item";
+    };
+
     return (
-        <Dialog
-            open={open}
-            onClose={onClose}
-            maxWidth="sm"
-            fullWidth
-        >
-            <DialogTitle sx={{ fontWeight: 700 }}>Add Rejected Items</DialogTitle>
+        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+            <DialogTitle sx={{ fontWeight: 700 }}>{getTitle()}</DialogTitle>
             <DialogContent dividers>
                 <Grid container spacing={2}>
-                    <Grid size={{ xs: 12, sm: 6 }}>
+                    <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             label="Rejection ID"
@@ -34,9 +38,10 @@ export default function AddRejectedGoodsDialog({
                             value={form.rejectionId}
                             onChange={onChange}
                             size="small"
+                            disabled={isView || mode === "edit"} // ID usually fixed
                         />
                     </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
+                    <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             label="Source Type"
@@ -44,9 +49,10 @@ export default function AddRejectedGoodsDialog({
                             value={form.sourceType}
                             onChange={onChange}
                             size="small"
+                            disabled={isView}
                         />
                     </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
+                    <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             label="Source Reference"
@@ -54,9 +60,10 @@ export default function AddRejectedGoodsDialog({
                             value={form.sourceReference}
                             onChange={onChange}
                             size="small"
+                            disabled={isView}
                         />
                     </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
+                    <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             type="date"
@@ -66,9 +73,10 @@ export default function AddRejectedGoodsDialog({
                             value={form.date}
                             onChange={onChange}
                             size="small"
+                            disabled={isView}
                         />
                     </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
+                    <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             label="Rejected Goods"
@@ -76,9 +84,10 @@ export default function AddRejectedGoodsDialog({
                             value={form.rejectedGoods}
                             onChange={onChange}
                             size="small"
+                            disabled={isView}
                         />
                     </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
+                    <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             type="number"
@@ -87,9 +96,10 @@ export default function AddRejectedGoodsDialog({
                             value={form.rejectedQty}
                             onChange={onChange}
                             size="small"
+                            disabled={isView}
                         />
                     </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
+                    <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             label="Rejection Reason"
@@ -97,9 +107,10 @@ export default function AddRejectedGoodsDialog({
                             value={form.reason}
                             onChange={onChange}
                             size="small"
+                            disabled={isView}
                         />
                     </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
+                    <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             label="Rejected By"
@@ -107,27 +118,30 @@ export default function AddRejectedGoodsDialog({
                             value={form.rejectedBy}
                             onChange={onChange}
                             size="small"
+                            disabled={isView}
                         />
                     </Grid>
                 </Grid>
             </DialogContent>
             <DialogActions sx={{ p: 2 }}>
                 <Button onClick={onClose} sx={{ textTransform: "none" }}>
-                    Cancel
+                    {isView ? "Close" : "Cancel"}
                 </Button>
-                <Button
-                    variant="contained"
-                    onClick={onSubmit}
-                    sx={{
-                        backgroundColor: "#1172ba",
-                        fontWeight: 600,
-                        textTransform: "none",
-                        borderRadius: "8px",
-                        "&:hover": { backgroundColor: "#0d5a94" },
-                    }}
-                >
-                    Submit Rejection
-                </Button>
+                {!isView && (
+                    <Button
+                        variant="contained"
+                        onClick={onSubmit}
+                        sx={{
+                            backgroundColor: "#1172ba",
+                            fontWeight: 600,
+                            textTransform: "none",
+                            borderRadius: "8px",
+                            "&:hover": { backgroundColor: "#0d5a94" },
+                        }}
+                    >
+                        {mode === "edit" ? "Update Item" : "Submit Rejection"}
+                    </Button>
+                )}
             </DialogActions>
         </Dialog>
     );
