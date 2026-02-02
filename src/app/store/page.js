@@ -9,15 +9,15 @@ import CommonCard from "../../components/CommonCard";
 import StoreTabs from "./components/StoreTabs";
 import GlobalTable from "../../components/GlobalTable";
 import AddMaterialDialog from "./components/AddMaterialDialog";
-import axiosInstance from "@/axios/axiosInstance";
-import Loader from "@/components/Loader";
+import axiosInstance from "../../axios/axiosInstance";
+import Loader from "../../components/Loader";
 
 export default function Store() {
-  const [materialsData, setMaterialsData] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState(0);
   const [search, setSearch] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     name: "",
     code: "",
@@ -31,59 +31,15 @@ export default function Store() {
   const router = useRouter();
 
   useEffect(() => {
-    fetchInventory();
-  }, []);
+    fetchData();
+  }, [tab]);
 
-  const fetchInventory = async () => {
+  const fetchData = async () => {
+    const endpoints = ["/store", "/it-goods", "/finish-goods", "/other-goods"];
     try {
       setLoading(true);
-      const response = await axiosInstance.get("/store");
-      console.log(response.data);
-      const inspections = response.data || [];
-
-      // Logic to aggregate stock by Material Name
-      const inventoryMap = {};
-
-      inspections.forEach((item) => {
-        // Handle both aggregated inspection format and flat store format
-        const name = item.materialData?.materialName || item.materialName || item.name || "Unknown Material";
-        const code = item.materialData?.grnNumber || item.grnNumber || item.code || item.materialCode || "N/A";
-        const acceptedQty = Number(item.summaryData?.acceptedQuantity || item.acceptedQuantity || item.available || item.quantity || 0);
-        const inspectionDate = item.materialData?.inspectionDate || item.inspectionDate || item.updatedAt || item.date || "-";
-
-        // Category detection
-        let category = item.category || "Other Items";
-        const lowerName = name.toLowerCase();
-
-        // If category is not standard, try to guess it
-        const standardCategories = ["Raw Materials", "IT Items", "Finished Products"];
-        if (!standardCategories.includes(category)) {
-          if (lowerName.includes("case") || lowerName.includes("screw") || lowerName.includes("battery") || lowerName.includes("wire")) {
-            category = "Raw Materials";
-          } else if (lowerName.includes("laptop") || lowerName.includes("monitor") || lowerName.includes("it") || lowerName.includes("pc")) {
-            category = "IT Items";
-          } else if (lowerName.includes("watch") || lowerName.includes("smart") || lowerName.includes("buds") || lowerName.includes("device")) {
-            category = "Finished Products";
-          } else {
-            category = "Other Items";
-          }
-        }
-
-        if (inventoryMap[name]) {
-          inventoryMap[name].available += acceptedQty;
-        } else {
-          inventoryMap[name] = {
-            code: code,
-            name: name,
-            category: category,
-            available: acceptedQty,
-            minimum: item.minimum || item.minStock || 100,
-            updated: inspectionDate,
-          };
-        }
-      });
-
-      setMaterialsData(Object.values(inventoryMap));
+      const response = await axiosInstance.get(endpoints[tab]);
+      setData(response.data);
     } catch (error) {
       console.error("Error fetching store data:", error);
     } finally {
@@ -93,25 +49,11 @@ export default function Store() {
 
   const handleTabChange = (e, newValue) => setTab(newValue);
 
-  const categories = ["Raw Materials", "IT Items", "Finished Products", "Other Items"];
-
-  const filtered = materialsData.filter((m) => {
-    const mainCategories = ["Raw Materials", "IT Items", "Finished Products"];
-    const isOtherTab = categories[tab] === "Other Items";
-
-    // An item matches the tab if:
-    // 1. Its category exactly matches the current tab category
-    // 2. OR its category is not in the main list and we are on the 'Other' tab
-    const matchesTab =
-      m.category === categories[tab] ||
-      (isOtherTab && !mainCategories.includes(m.category));
-
-    const matchesSearch =
-      m.name.toLowerCase().includes(search.toLowerCase()) ||
-      m.code.toLowerCase().includes(search.toLowerCase());
-
-    return matchesTab && matchesSearch;
-  });
+  const filtered = data.filter(
+    (m) =>
+      (m.name || m.itemName || "").toLowerCase().includes(search.toLowerCase()) ||
+      (m.code || m.id || "").toLowerCase().includes(search.toLowerCase())
+  );
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -206,7 +148,7 @@ export default function Store() {
         <StoreTabs value={tab} handleChange={handleTabChange} />
 
         {loading ? (
-          <Loader message="Synchronizing Store Inventory..." />
+          <Loader message="Loading store data..." />
         ) : (
           <GlobalTable columns={columns} data={filtered} />
         )}
