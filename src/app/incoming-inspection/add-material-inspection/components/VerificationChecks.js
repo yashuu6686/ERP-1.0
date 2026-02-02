@@ -1,16 +1,15 @@
 import React from "react";
-import {
-    Card,
-    Box,
-    Typography,
-    CardContent,
-    FormControl,
-    FormLabel,
-    RadioGroup,
-    FormControlLabel,
-    Radio,
-} from "@mui/material";
-import { Verified as VerifiedIcon } from "@mui/icons-material";
+import Card from "@mui/material/Card";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import CardContent from "@mui/material/CardContent";
+import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Radio from "@mui/material/Radio";
+
+import VerifiedIcon from "@mui/icons-material/Verified";
 
 const VerificationChecks = ({ data = {}, onChange }) => {
     return (

@@ -70,7 +70,7 @@ export default function PackagingDetailsStep({ formData, handleInputChange, hand
         background: "rgba(255, 255, 255, 0.7)",
         backdropFilter: "blur(10px)",
         border: "1px solid rgba(255, 255, 255, 0.3)",
-        boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.07)",
+        // boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.07)",
     };
 
     return (
@@ -79,7 +79,7 @@ export default function PackagingDetailsStep({ formData, handleInputChange, hand
                 <Box sx={cardHeaderStyle}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                         <Inventory />
-                        <Typography variant="h6" fontWeight={700}>Packaging Details</Typography>
+                        <Typography variant="h6" color="white" fontWeight={700}>Packaging Details</Typography>
                     </Box>
                     <Chip label={`${packagingSteps.length} Components`} size="small" sx={{ color: "white", borderColor: "rgba(255,255,255,0.5)" }} variant="outlined" />
                 </Box>

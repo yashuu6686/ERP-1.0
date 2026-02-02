@@ -1,20 +1,18 @@
 "use client";
 import React from "react";
-import {
-  Box,
-  Typography,
-  Paper,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Chip,
-  Breadcrumbs,
-  Link,
-} from "@mui/material";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import TableCell from "@mui/material/TableCell";
+import TableBody from "@mui/material/TableBody";
+import Chip from "@mui/material/Chip";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import Link from "@mui/material/Link";
 import { useParams } from "next/navigation";
-import { NavigateNext } from "@mui/icons-material";
+import NavigateNext from "@mui/icons-material/NavigateNext";
 import NextLink from "next/link";
 
 export default function StockMovementHistory() {

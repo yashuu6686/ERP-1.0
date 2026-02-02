@@ -1,19 +1,20 @@
 import React from "react";
-import {
-    Card,
-    Box,
-    Typography,
-    Button,
-    TableContainer,
-    Table,
-    TableHead,
-    TableRow,
-    TableCell,
-    TableBody,
-    TextField,
-    IconButton,
-} from "@mui/material";
-import { Add, Build, Delete } from "@mui/icons-material";
+import Card from "@mui/material/Card";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import TableContainer from "@mui/material/TableContainer";
+import Table from "@mui/material/Table";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import TableCell from "@mui/material/TableCell";
+import TableBody from "@mui/material/TableBody";
+import TextField from "@mui/material/TextField";
+import IconButton from "@mui/material/IconButton";
+
+import Add from "@mui/icons-material/Add";
+import Build from "@mui/icons-material/Build";
+import Delete from "@mui/icons-material/Delete";
 
 const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate }) => {
     const textFieldStyle = {

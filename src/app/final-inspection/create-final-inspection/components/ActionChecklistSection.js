@@ -1,16 +1,16 @@
 import React from "react";
-import {
-    Card,
-    Box,
-    Typography,
-    CardContent,
-    Grid,
-    TextField,
-    Paper,
-    FormControlLabel,
-    Checkbox,
-} from "@mui/material";
-import { Edit, CheckCircle } from "@mui/icons-material";
+import Card from "@mui/material/Card";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import CardContent from "@mui/material/CardContent";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import Paper from "@mui/material/Paper";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+
+import Edit from "@mui/icons-material/Edit";
+import CheckCircle from "@mui/icons-material/CheckCircle";
 
 const ActionChecklistSection = () => {
     return (

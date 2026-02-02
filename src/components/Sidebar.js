@@ -7,29 +7,28 @@ import ListItemText from "@mui/material/ListItemText";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
-import {
-  Home,
-  ShoppingCart,
-  Inventory,
-  Assignment,
-  Store,
-  Build,
-  Send,
-  CheckCircle,
-  Layers,
-  People,
-  Receipt,
-  Verified,
-  Science,
-  Description,
-  LocalShipping,
-  Cancel,
-  NavigateNext,
-  Logout,
-} from "@mui/icons-material";
+import Home from "@mui/icons-material/Home";
+import ShoppingCart from "@mui/icons-material/ShoppingCart";
+import Inventory from "@mui/icons-material/Inventory";
+import Assignment from "@mui/icons-material/Assignment";
+import Store from "@mui/icons-material/Store";
+import Build from "@mui/icons-material/Build";
+import Send from "@mui/icons-material/Send";
+import CheckCircle from "@mui/icons-material/CheckCircle";
+import Layers from "@mui/icons-material/Layers";
+import People from "@mui/icons-material/People";
+import Receipt from "@mui/icons-material/Receipt";
+import Verified from "@mui/icons-material/Verified";
+import Science from "@mui/icons-material/Science";
+import Description from "@mui/icons-material/Description";
+import LocalShipping from "@mui/icons-material/LocalShipping";
+import Cancel from "@mui/icons-material/Cancel";
+import NavigateNext from "@mui/icons-material/NavigateNext";
+import Logout from "@mui/icons-material/Logout";
 import { Breadcrumbs, Link as MuiLink, Typography as MuiTypography, IconButton, useMediaQuery, useTheme } from "@mui/material";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 import TopNavbar from "./TopNavbar";
 import Footer from "./Footer";
 import Image from "next/image";
@@ -67,6 +66,7 @@ const menuItems = [
 ];
 
 export default function Sidebar({ children }) {
+  const { user, logout } = useAuth();
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const [currentPath, setCurrentPath] = React.useState("/");
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(true);
@@ -96,6 +96,10 @@ export default function Sidebar({ children }) {
   // or just waiting for mount to apply responsive variants.
   const drawerVariant = hasMounted ? (isLargeScreen ? "persistent" : "temporary") : "persistent";
   const drawerOpen = hasMounted ? (isLargeScreen ? isSidebarOpen : isSidebarOpen) : true;
+
+  if (pathname === "/login") {
+    return <Box sx={{ minHeight: "100vh" }}>{children}</Box>;
+  }
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", maxWidth: "100vw", overflowX: "hidden" }}>
@@ -135,6 +139,7 @@ export default function Sidebar({ children }) {
               <Image src="/Scanbo_logo_new.png" alt="Logo" width={60} height={60} />
               <IconButton
                 size="small"
+                onClick={logout}
                 sx={{
                   color: "var(--brand-primary)",
                   borderRadius: "8px",
@@ -156,13 +161,13 @@ export default function Sidebar({ children }) {
 
             <Box>
               <Typography sx={{ fontWeight: 700, fontSize: "18px", color: "var(--text-primary)", mb: 0.5, fontFamily: "var(--font-manrope)" }}>
-                Shivan Patel
+                {user?.name || "Member"}
               </Typography>
               <Typography sx={{ fontSize: "14px", color: "var(--text-secondary)", mb: 0.2, fontFamily: "var(--font-manrope)" }}>
-                Login ID: <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>******7890</span>
+                Login ID: <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>{user?.id || "N/A"}</span>
               </Typography>
               <Typography sx={{ fontSize: "14px", color: "var(--text-secondary)", fontFamily: "var(--font-manrope)" }}>
-                Current Profile: <span style={{ color: "var(--text-primary)", fontWeight: 700 }}>Admin</span>
+                Current Profile: <span style={{ color: "var(--text-primary)", fontWeight: 700 }}>{user?.role || "User"}</span>
               </Typography>
             </Box>
           </Box>

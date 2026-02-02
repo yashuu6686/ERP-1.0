@@ -1,5 +1,6 @@
 import React from "react";
-import { Tabs, Tab } from "@mui/material";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
 
 const StoreTabs = ({ value, handleChange }) => {
     return (

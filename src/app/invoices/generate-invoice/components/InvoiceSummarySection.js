@@ -1,6 +1,11 @@
 import React from "react";
-import { Card, Box, Typography, CardContent, Divider } from "@mui/material";
-import { Assessment } from "@mui/icons-material";
+import Card from "@mui/material/Card";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import CardContent from "@mui/material/CardContent";
+import Divider from "@mui/material/Divider";
+
+import Assessment from "@mui/icons-material/Assessment";
 
 const InvoiceSummarySection = () => {
     return (

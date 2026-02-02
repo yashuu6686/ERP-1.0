@@ -1,16 +1,16 @@
 import React from "react";
-import {
-    Card,
-    Box,
-    Typography,
-    CardContent,
-    Grid,
-    RadioGroup,
-    FormControlLabel,
-    Radio,
-    TextField,
-} from "@mui/material";
-import { ReportProblem, Info } from "@mui/icons-material";
+import Card from "@mui/material/Card";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import CardContent from "@mui/material/CardContent";
+import Grid from "@mui/material/Grid";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Radio from "@mui/material/Radio";
+import TextField from "@mui/material/TextField";
+
+import ReportProblem from "@mui/icons-material/ReportProblem";
+import Info from "@mui/icons-material/Info";
 
 const ProblemReportAQDSection = ({
     problemReport,

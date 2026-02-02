@@ -1,17 +1,14 @@
 import React from "react";
-import {
-    Card,
-    CardContent,
-    Typography,
-    Grid,
-    TextField,
-    InputAdornment,
-} from "@mui/material";
-import {
-    Description,
-    CalendarToday,
-    LocalShipping,
-} from "@mui/icons-material";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+
+import Description from "@mui/icons-material/Description";
+import CalendarToday from "@mui/icons-material/CalendarToday";
+import LocalShipping from "@mui/icons-material/LocalShipping";
 
 const OrderInformation = ({ data, onChange }) => {
     return (

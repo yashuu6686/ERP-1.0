@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -14,65 +14,14 @@ import {
   Edit,
   Delete,
   Download,
-  CheckCircle,
-  Schedule,
-  Warning,
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
 import DispatchMobileCard from "./components/DispatchMobileCard";
 import GlobalTable from "../../components/GlobalTable";
+import axiosInstance from "@/axios/axiosInstance";
 
-const dispatchData = [
-  {
-    id: 1,
-    order: "SO-001",
-    product: "D8 Machine",
-    status: "Shipped",
-    orderDate: "2026-01-10",
-    shippingDate: "2026-01-12",
-    platform: "Direct Sales",
-    contact: "Ramesh Kumar",
-    address: "Mumbai, Maharashtra, India",
-    tracking: "TRK-889900",
-  },
-  {
-    id: 2,
-    order: "SO-002",
-    product: "Valve System",
-    status: "Pending",
-    orderDate: "2026-01-11",
-    shippingDate: "-",
-    platform: "Online",
-    contact: "Suresh Patel",
-    address: "Pune, Maharashtra, India",
-    tracking: "-",
-  },
-  {
-    id: 3,
-    order: "SO-003",
-    product: "Hydraulic Pump",
-    status: "Processing",
-    orderDate: "2026-01-15",
-    shippingDate: "-",
-    platform: "Direct Sales",
-    contact: "Amit Sharma",
-    address: "Delhi, India",
-    tracking: "-",
-  },
-  {
-    id: 4,
-    order: "SO-004",
-    product: "Control Panel",
-    status: "Delivered",
-    orderDate: "2026-01-08",
-    shippingDate: "2026-01-10",
-    platform: "Online",
-    contact: "Priya Singh",
-    address: "Bangalore, Karnataka, India",
-    tracking: "TRK-778899",
-  },
-];
+// Static data removed, now fetching from API
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -90,28 +39,53 @@ const getStatusColor = (status) => {
 };
 
 const formatDate = (dateString) => {
-  if (dateString === "-") return "-";
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
+  if (!dateString || dateString === "-") return "-";
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  } catch (e) {
+    return dateString;
+  }
 };
 
 export default function DispatchDetails() {
   const router = useRouter();
+  const [dispatchData, setDispatchData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
+  const fetchDispatches = async () => {
+    try {
+      setLoading(true);
+      console.log("Dispatch: Fetching dispatches from API...");
+      const response = await axiosInstance.get("/dispatches");
+      console.log("Dispatch: API Response:", response.data);
+      setDispatchData(response.data || []);
+    } catch (error) {
+      console.error("Failed to fetch dispatches:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDispatches();
+  }, []);
+
   const filtered = dispatchData.filter(
     (item) =>
-      item.order.toLowerCase().includes(search.toLowerCase()) ||
-      item.product.toLowerCase().includes(search.toLowerCase()) ||
-      item.contact.toLowerCase().includes(search.toLowerCase()) ||
-      item.tracking.toLowerCase().includes(search.toLowerCase())
+      item.shipmentInfo?.orderNumber?.toLowerCase().includes(search.toLowerCase()) ||
+      item.items?.[0]?.name?.toLowerCase().includes(search.toLowerCase()) ||
+      item.customer?.contactPerson?.toLowerCase().includes(search.toLowerCase()) ||
+      item.shipmentInfo?.trackingNumber?.toLowerCase().includes(search.toLowerCase())
   );
 
   const columns = [
@@ -126,14 +100,14 @@ export default function DispatchDetails() {
       align: "center",
       render: (row) => (
         <Typography variant="body2" sx={{ fontWeight: 600, color: "#1172ba" }}>
-          {row.order}
+          {row.shipmentInfo?.orderNumber}
         </Typography>
       ),
     },
     {
       label: "Product",
       align: "center",
-      render: (row) => <span style={{ fontWeight: 500 }}>{row.product}</span>,
+      render: (row) => <span style={{ fontWeight: 500 }}>{row.items?.[0]?.name || "-"}</span>,
     },
     {
       label: "Status",
@@ -157,22 +131,22 @@ export default function DispatchDetails() {
     {
       label: "Order Date",
       align: "center",
-      render: (row) => formatDate(row.orderDate),
+      render: (row) => formatDate(row.shipmentInfo?.shippingDate),
     },
     {
       label: "Shipping Date",
       align: "center",
-      render: (row) => formatDate(row.shippingDate),
+      render: (row) => formatDate(row.shipmentInfo?.shippingDate),
     },
     {
       label: "Sales Platform",
       align: "center",
-      accessor: "platform",
+      render: (row) => row.shipmentInfo?.platform || "-",
     },
     {
       label: "Contact Person",
       align: "center",
-      accessor: "contact",
+      render: (row) => row.customer?.contactPerson || "-",
     },
     {
       label: "Address",
@@ -187,7 +161,7 @@ export default function DispatchDetails() {
             whiteSpace: "nowrap",
           }}
         >
-          {row.address}
+          {row.customer?.address}
         </Typography>
       ),
     },
@@ -199,10 +173,10 @@ export default function DispatchDetails() {
           variant="body2"
           sx={{
             fontWeight: 600,
-            color: row.tracking === "-" ? "#999" : "#1172ba",
+            color: !row.shipmentInfo?.trackingNumber || row.shipmentInfo?.trackingNumber === "-" ? "#999" : "#1172ba",
           }}
         >
-          {row.tracking}
+          {row.shipmentInfo?.trackingNumber || "-"}
         </Typography>
       ),
     },
@@ -229,7 +203,7 @@ export default function DispatchDetails() {
         <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
           <IconButton
             size="small"
-            onClick={() => router.push(`/dispatch/${row.id}`)}
+            onClick={() => router.push(`/dispatch/view-dispatch?id=${row.id}`)}
             sx={{
               color: "rgb(17, 114, 186)",
               bgcolor: "#f1f5f9",
@@ -266,7 +240,11 @@ export default function DispatchDetails() {
         searchValue={search}
         onSearchChange={(e) => setSearch(e.target.value)}
       >
-        {!isMobile ? (
+        {loading ? (
+          <Box sx={{ display: "flex", justifyContent: "center", py: 10 }}>
+            <Typography variant="body1" color="textSecondary">Loading Dispatch Data...</Typography>
+          </Box>
+        ) : !isMobile ? (
           <GlobalTable columns={columns} data={filtered} />
         ) : (
           <Box>

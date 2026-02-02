@@ -75,7 +75,7 @@ export default function TestingProcessStep({ formData, handleInputChange, handle
         background: "rgba(255, 255, 255, 0.7)",
         backdropFilter: "blur(10px)",
         border: "1px solid rgba(255, 255, 255, 0.3)",
-        boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.07)",
+        // boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.07)",
     };
 
     return (
@@ -84,7 +84,7 @@ export default function TestingProcessStep({ formData, handleInputChange, handle
                 <Box sx={cardHeaderStyle}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                         <FactCheck />
-                        <Typography variant="h6" fontWeight={700}>Testing Process</Typography>
+                        <Typography variant="h6" color="white" fontWeight={700}>Testing Process</Typography>
                     </Box>
                     <Chip label={`${deviceTestingSteps.length} Tasks`} size="small" sx={{ color: "white", borderColor: "rgba(255,255,255,0.5)" }} variant="outlined" />
                 </Box>

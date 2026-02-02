@@ -1,50 +1,41 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Chip, IconButton, Tooltip } from "@mui/material";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
 import GlobalTable from "../../components/GlobalTable";
 import { Download, Edit, Visibility } from "@mui/icons-material";
-
-const invoicesData = [
-  {
-    id: 1,
-    invoiceNo: "INV-001",
-    invoiceDate: "10 Jan 2026",
-    dueDate: "20 Jan 2026",
-    customer: "ABC Pvt Ltd",
-    product: "Product A",
-    status: "Generated",
-    total: 25000,
-    paid: 15000,
-    balance: 10000,
-    paymentStatus: "Partial",
-    orderDate: "05 Jan 2026",
-  },
-  {
-    id: 2,
-    invoiceNo: "INV-002",
-    invoiceDate: "12 Jan 2026",
-    dueDate: "22 Jan 2026",
-    customer: "XYZ Industries",
-    product: "Product B",
-    status: "Generated",
-    total: 18000,
-    paid: 18000,
-    balance: 0,
-    paymentStatus: "Paid",
-    orderDate: "08 Jan 2026",
-  },
-];
+import axiosInstance from "@/axios/axiosInstance";
 
 export default function Invoices() {
   const router = useRouter();
+  const [invoices, setInvoices] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
-  const filtered = invoicesData.filter(
+  const fetchInvoices = async () => {
+    try {
+      setLoading(true);
+      console.log("Fetching invoices from API...");
+      const response = await axiosInstance.get("/invoices");
+      console.log("Invoices fetched:", response.data);
+      setInvoices(response.data || []);
+    } catch (error) {
+      console.error("Failed to fetch invoices:", error);
+      alert("Error fetching invoices: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchInvoices();
+  }, []);
+
+  const filtered = invoices.filter(
     (inv) =>
-      inv.invoiceNo.toLowerCase().includes(search.toLowerCase()) ||
-      inv.customer.toLowerCase().includes(search.toLowerCase())
+      inv.invoiceInfo?.invoiceNumber.toLowerCase().includes(search.toLowerCase()) ||
+      inv.customer?.companyName.toLowerCase().includes(search.toLowerCase())
   );
 
   const columns = [
@@ -58,29 +49,24 @@ export default function Invoices() {
       align: "center",
       render: (row) => (
         <span style={{ fontWeight: 600, color: "#1172ba" }}>
-          {row.invoiceNo}
+          {row.invoiceInfo?.invoiceNumber}
         </span>
       ),
     },
     {
       label: "Invoice Date",
       align: "center",
-      accessor: "invoiceDate",
+      render: (row) => row.invoiceInfo?.invoiceDate
     },
     {
       label: "Due Date",
       align: "center",
-      accessor: "dueDate",
+      render: (row) => row.invoiceInfo?.dueDate
     },
     {
       label: "Customer Name",
       align: "center",
-      accessor: "customer",
-    },
-    {
-      label: "Product",
-      align: "center",
-      accessor: "product",
+      render: (row) => row.customer?.companyName
     },
     {
       label: "Status",
@@ -92,17 +78,7 @@ export default function Invoices() {
     {
       label: "Total Amount",
       align: "center",
-      render: (row) => `₹${row.total.toLocaleString()}`,
-    },
-    {
-      label: "Paid",
-      align: "center",
-      render: (row) => `₹${row.paid.toLocaleString()}`,
-    },
-    {
-      label: "Balance",
-      align: "center",
-      render: (row) => `₹${row.balance.toLocaleString()}`,
+      render: (row) => `₹${row.totals?.grandTotal?.toLocaleString() || 0}`,
     },
     {
       label: "Payment Status",
@@ -116,11 +92,6 @@ export default function Invoices() {
       ),
     },
     {
-      label: "Order Date",
-      align: "center",
-      accessor: "orderDate",
-    },
-     {
       label: "Actions",
       align: "center",
       render: (row) => (
@@ -128,7 +99,7 @@ export default function Invoices() {
           <Tooltip title="View Details">
             <IconButton
               size="small"
-              onClick={() => router.push(`/production-inspection/${row.id}`)}
+              onClick={() => router.push(`/invoices/view-invoice?id=${row.id}`)}
               sx={{
                 color: "rgb(17, 114, 186)",
                 bgcolor: "#f1f5f9",

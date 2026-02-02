@@ -78,7 +78,7 @@ export default function SOPForm() {
     return (
         <Box sx={{ pb: 8 }}>
             <CommonCard title="Standard Operating Procedures (SOP)">
-                <Box sx={{ px: { xs: 1, md: 4 }, py: 3 }}>
+                <Box sx={{ px: { xs: 1,  }, py: 3 }}>
                     {/* Custom Stepper */}
                     <Box sx={{ mb: 6 }}>
                         <Stepper activeStep={activeStep} alternativeLabel>
@@ -102,7 +102,7 @@ export default function SOPForm() {
                     </Box>
 
                     {/* Step Content */}
-                    <Box sx={{ minHeight: 400 }}>
+                    <Box>
                         {getStepContent(activeStep)}
                     </Box>
 
@@ -130,14 +130,14 @@ export default function SOPForm() {
                                 variant="contained"
                                 startIcon={<Save />}
                                 sx={{
-                                    backgroundColor: "#2e7d32",
+                                    // backgroundColor: "#2e7d32",
                                     borderRadius: 2,
                                     px: 6,
                                     py: 1.5,
                                     textTransform: "none",
-                                    fontWeight: 700,
-                                    boxShadow: "0 4px 14px 0 rgba(46, 125, 50, 0.39)",
-                                    "&:hover": { backgroundColor: "#1b5e20", boxShadow: "0 6px 20px rgba(46, 125, 50, 0.23)" },
+                                    // fontWeight: 700,
+                                    // boxShadow: "0 4px 14px 0 rgba(46, 125, 50, 0.39)",
+                                    // "&:hover": { backgroundColor: "#1b5e20", boxShadow: "0 6px 20px rgba(46, 125, 50, 0.23)" },
                                 }}
                             >
                                 Complete & Save SOP
@@ -153,9 +153,9 @@ export default function SOPForm() {
                                     px: 6,
                                     py: 1.5,
                                     textTransform: "none",
-                                    fontWeight: 700,
-                                    boxShadow: "0 4px 14px 0 rgba(17, 114, 186, 0.39)",
-                                    "&:hover": { backgroundColor: "#0d5a94", boxShadow: "0 6px 20px rgba(17, 114, 186, 0.23)" },
+                                    // fontWeight: 700,
+                                    // boxShadow: "0 4px 14px 0 rgba(17, 114, 186, 0.39)",
+                                    // "&:hover": { backgroundColor: "#0d5a94", boxShadow: "0 6px 20px rgba(17, 114, 186, 0.23)" },
                                 }}
                             >
                                 Next Step
@@ -165,12 +165,6 @@ export default function SOPForm() {
                 </Box>
             </CommonCard>
 
-            {/* Footer Branding */}
-            <Box sx={{ mt: 4, textAlign: 'center', opacity: 0.6 }}>
-                <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-                    <LocalShipping sx={{ fontSize: 16 }} /> Scanbo Quality Management System • Standard Operating Procedure v2.4
-                </Typography>
-            </Box>
         </Box>
     );
 }

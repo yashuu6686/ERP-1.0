@@ -72,13 +72,13 @@ export default function DispatchMobileCard({ item, router }) {
                                 mb: 0.5,
                             }}
                         >
-                            {item.order}
+                            {item.shipmentInfo?.orderNumber}
                         </Typography>
                         <Typography
                             variant="body2"
                             sx={{ color: "#666", fontSize: "0.875rem" }}
                         >
-                            {item.product}
+                            {item.items?.[0]?.name || "-"}
                         </Typography>
                     </Box>
                     <Chip
@@ -105,7 +105,7 @@ export default function DispatchMobileCard({ item, router }) {
                             Order Date
                         </Typography>
                         <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                            {formatDate(item.orderDate)}
+                            {formatDate(item.shipmentInfo?.shippingDate)}
                         </Typography>
                     </Grid>
                     <Grid item xs={6}>
@@ -116,7 +116,7 @@ export default function DispatchMobileCard({ item, router }) {
                             Shipping Date
                         </Typography>
                         <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                            {formatDate(item.shippingDate)}
+                            {formatDate(item.shipmentInfo?.shippingDate)}
                         </Typography>
                     </Grid>
                     <Grid item xs={6}>
@@ -127,7 +127,7 @@ export default function DispatchMobileCard({ item, router }) {
                             Platform
                         </Typography>
                         <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                            {item.platform}
+                            {item.shipmentInfo?.platform || "-"}
                         </Typography>
                     </Grid>
                     <Grid item xs={6}>
@@ -138,7 +138,7 @@ export default function DispatchMobileCard({ item, router }) {
                             Contact
                         </Typography>
                         <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                            {item.contact}
+                            {item.customer?.contactPerson || "-"}
                         </Typography>
                     </Grid>
                     <Grid item xs={12}>
@@ -158,7 +158,7 @@ export default function DispatchMobileCard({ item, router }) {
                                 borderRadius: "6px",
                             }}
                         >
-                            {item.address}
+                            {item.customer?.address}
                         </Typography>
                     </Grid>
                     <Grid item xs={12}>
@@ -172,10 +172,10 @@ export default function DispatchMobileCard({ item, router }) {
                             variant="body2"
                             sx={{
                                 fontWeight: 600,
-                                color: item.tracking === "-" ? "#999" : "#1172ba",
+                                color: !item.shipmentInfo?.trackingNumber || item.shipmentInfo?.trackingNumber === "-" ? "#999" : "#1172ba",
                             }}
                         >
-                            {item.tracking}
+                            {item.shipmentInfo?.trackingNumber || "-"}
                         </Typography>
                     </Grid>
                 </Grid>
@@ -192,7 +192,7 @@ export default function DispatchMobileCard({ item, router }) {
                     <Button
                         size="small"
                         startIcon={<Visibility />}
-                        onClick={() => router.push(`/dispatch/${item.id}`)}
+                        onClick={() => router.push(`/dispatch/view-dispatch?id=${item.id}`)}
                         sx={{
                             flex: 1,
                             textTransform: "none",

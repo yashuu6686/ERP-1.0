@@ -60,7 +60,7 @@ export default function CertificateOfAnalysis() {
   if (!mounted) return null;
 
   return (
-    <Box>
+    <Box >
       <CommonCard title="Certificate of Analysis">
         {/* Certificate Details Section */}
         <CertificateDetailsCard />

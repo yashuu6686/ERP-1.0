@@ -1,22 +1,25 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-    Box,
-    Typography,
-    Grid,
-    Divider,
-    Chip,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    Button,
-} from "@mui/material";
-import { ArrowBack, CheckCircle, Inventory, Science, Assignment } from "@mui/icons-material";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import Divider from "@mui/material/Divider";
+import Chip from "@mui/material/Chip";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import Button from "@mui/material/Button";
+
+import ArrowBack from "@mui/icons-material/ArrowBack";
+import CheckCircle from "@mui/icons-material/CheckCircle";
+import Inventory from "@mui/icons-material/Inventory";
+import Science from "@mui/icons-material/Science";
+import Assignment from "@mui/icons-material/Assignment";
 import CommonCard from "../../../components/CommonCard";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/Loader";

@@ -1,6 +1,12 @@
 import React from "react";
-import { Card, Box, Typography, CardContent, Grid, TextField } from "@mui/material";
-import { Receipt } from "@mui/icons-material";
+import Card from "@mui/material/Card";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import CardContent from "@mui/material/CardContent";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+
+import Receipt from "@mui/icons-material/Receipt";
 
 const InvoiceDetailsSection = () => {
     return (

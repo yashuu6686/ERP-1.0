@@ -1,21 +1,18 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  Box,
-  Button,
-  Stepper,
-  Step,
-  StepLabel,
-  Typography,
-} from "@mui/material";
-import {
-  CheckCircle as CheckCircleIcon,
-  Save as SaveIcon,
-  Science as ScienceIcon,
-  ArrowBack,
-  ArrowForward,
-} from "@mui/icons-material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Stepper from "@mui/material/Stepper";
+import Step from "@mui/material/Step";
+import StepLabel from "@mui/material/StepLabel";
+import Typography from "@mui/material/Typography";
+
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import SaveIcon from "@mui/icons-material/Save";
+import ScienceIcon from "@mui/icons-material/Science";
+import ArrowBack from "@mui/icons-material/ArrowBack";
+import ArrowForward from "@mui/icons-material/ArrowForward";
 import CommonCard from "../../../components/CommonCard";
 import InspectionObservations from "@/components/inspection/InspectionObservations";
 import InspectionSummary from "@/components/inspection/InspectionSummary";

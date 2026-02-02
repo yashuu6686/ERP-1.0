@@ -3,24 +3,28 @@
 export const dynamic = "force-dynamic";
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-    Box,
-    Button,
-    Grid,
-    Typography,
-    TextField,
-    Autocomplete,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    Card,
-    CardContent,
-} from "@mui/material";
-import { Save, ArrowBack, Description, Inventory, ReceiptLong, AssignmentTurnedIn } from "@mui/icons-material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+
+import Save from "@mui/icons-material/Save";
+import ArrowBack from "@mui/icons-material/ArrowBack";
+import Description from "@mui/icons-material/Description";
+import Inventory from "@mui/icons-material/Inventory";
+import ReceiptLong from "@mui/icons-material/ReceiptLong";
+import AssignmentTurnedIn from "@mui/icons-material/AssignmentTurnedIn";
 import CommonCard from "../../../components/CommonCard";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "../../../components/Loader";
@@ -93,7 +97,7 @@ function CreateGRNContent() {
     const fetchPendingPOs = async () => {
         try {
             const response = await axiosInstance.get("/purachase");
-            const pending = (response.data || []).filter(po => po.status === "Pending");
+            const pending = (response.data || []).filter(po => po.status === "Approved");
             setPendingPOs(pending);
         } catch (error) {
             console.error("Error fetching POs:", error);

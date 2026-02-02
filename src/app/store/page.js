@@ -1,7 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import { Box, Chip, IconButton } from "@mui/material";
-import { Visibility } from "@mui/icons-material";
+import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
+import IconButton from "@mui/material/IconButton";
+import Visibility from "@mui/icons-material/Visibility";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
 import StoreTabs from "./components/StoreTabs";

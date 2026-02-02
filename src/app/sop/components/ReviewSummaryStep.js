@@ -27,7 +27,7 @@ export default function ReviewSummaryStep({ formData }) {
         background: "rgba(255, 255, 255, 0.7)",
         backdropFilter: "blur(10px)",
         border: "1px solid rgba(255, 255, 255, 0.3)",
-        boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.07)",
+        // boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.07)",
     };
 
     return (
@@ -37,9 +37,9 @@ export default function ReviewSummaryStep({ formData }) {
                     <Box sx={cardHeaderStyle}>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                             <AssignmentTurnedIn />
-                            <Typography variant="h6" fontWeight={700}>Review Summary</Typography>
+                            <Typography variant="h6" color="white" fontWeight={700}>Review Summary</Typography>
                         </Box>
-                        <Chip label="Ready to Save" color="success" size="small" />
+                        <Chip label="Ready to Save" sx={{ color: "#1172ba",bgcolor:"white" }} size="small" />
                     </Box>
                     <CardContent sx={{ p: 4 }}>
                         <Grid container spacing={4}>
