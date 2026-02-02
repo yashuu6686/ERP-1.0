@@ -160,6 +160,9 @@ function ViewBOMContent() {
                             <Typography variant="h5" sx={{ fontWeight: 900, color: "#0f172a", letterSpacing: -0.5 }}>
                                 {bom.number}
                             </Typography>
+                            <Typography variant="body2" sx={{ color: "#1172ba", fontWeight: 700, mb: 0.5 }}>
+                                Product: {bom.productName || "N/A"}
+                            </Typography>
                             <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 700, textTransform: "uppercase" }}>
                                 Bill of Materials • Registered on {bom.date}
                             </Typography>

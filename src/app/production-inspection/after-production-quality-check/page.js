@@ -10,11 +10,14 @@ import CheckCircle from "@mui/icons-material/CheckCircle";
 import Save from "@mui/icons-material/Save";
 import ArrowBack from "@mui/icons-material/ArrowBack";
 import ArrowForward from "@mui/icons-material/ArrowForward";
+import { useRouter } from "next/navigation";
 import CommonCard from "../../../components/CommonCard";
 import ProductDetailsSection from "./components/ProductDetailsSection";
 import QualityCheckDetailsTable from "./components/QualityCheckDetailsTable";
 import InspectionSummarySection from "./components/InspectionSummarySection";
 import InspectionApproval from "@/components/inspection/InspectionApproval";
+import axiosInstance from "../../../axios/axiosInstance";
+import { useEffect } from "react";
 
 const steps = [
   "Product Details",
@@ -23,6 +26,7 @@ const steps = [
 ];
 
 export default function QualityCheckForm() {
+  const router = useRouter();
   const [activeStep, setActiveStep] = useState(0);
 
   const [productDetails, setProductDetails] = useState({
@@ -53,11 +57,25 @@ export default function QualityCheckForm() {
   });
 
   const [approval, setApproval] = useState({
-    reviewedBy: "",
-    reviewedDate: "",
-    approvedBy: "",
-    approvedDate: "",
+    updatedByName: "",
+    updatedByDate: "",
+    approvedByName: "",
+    approvedByDate: "",
   });
+
+  const [materialRequests, setMaterialRequests] = useState([]);
+
+  useEffect(() => {
+    const fetchMaterialRequests = async () => {
+      try {
+        const response = await axiosInstance.get("/material-issue");
+        setMaterialRequests(response.data);
+      } catch (error) {
+        console.error("Error fetching material requests:", error);
+      }
+    };
+    fetchMaterialRequests();
+  }, []);
 
   const handleNext = () => {
     setActiveStep((prevStep) => prevStep + 1);
@@ -69,6 +87,21 @@ export default function QualityCheckForm() {
 
   const handleProductDetailsChange = (field, value) => {
     setProductDetails((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleMaterialRequestChange = (requestNo) => {
+    const selected = materialRequests.find(r => r.requestNo === requestNo);
+    if (selected) {
+      setProductDetails(prev => ({
+        ...prev,
+        materialRequestNo: requestNo,
+        productName: selected.productName || selected.product || "",
+        checkedQuantity: selected.requiredQty || selected.qty || "",
+        // Add other fields if mapping exists
+      }));
+    } else {
+      setProductDetails(prev => ({ ...prev, materialRequestNo: requestNo }));
+    }
   };
 
   const handleCheckDetailsChange = (id, field, value) => {
@@ -102,19 +135,56 @@ export default function QualityCheckForm() {
     setInspectionSummary((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleApprovalChange = (field, value) => {
-    setApproval((prev) => ({ ...prev, [field]: value }));
+  const handleApprovalChange = (section, field, value) => {
+    // section is "updatedBy" or "approvedBy"
+    // field is "name" or "date"
+    // key becomes "updatedByName", "approvedByDate", etc.
+    const key = `${section}${field.charAt(0).toUpperCase() + field.slice(1)}`;
+    setApproval((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleSubmit = () => {
-    const formData = {
-      productDetails,
-      checkDetails,
-      inspectionSummary,
-      approval,
-    };
-    console.log("Form Submitted:", formData);
-    alert("Form submitted successfully! Check console for data.");
+  const handleSubmit = async () => {
+    try {
+      const formData = {
+        ...productDetails,
+        checkDetails,
+        ...inspectionSummary,
+        approval,
+        id: `QC-${Math.floor(Math.random() * 10000)}`,
+        status: "Completed",
+        createdAt: new Date().toISOString()
+      };
+
+      console.log("Submitting Quality Check:", formData);
+      await axiosInstance.post("/quality-inspection", formData);
+
+      // Create Batch Entry
+      try {
+        const batchData = {
+          batchNo: `BAT-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000)}`,
+          requestNo: productDetails.materialRequestNo || "N/A",
+          checkNo: productDetails.checkNumber || "-",
+          productSr: "From 001 to " + (inspectionSummary.acceptedQuantity || "000"),
+          acceptedQty: inspectionSummary.acceptedQuantity || 0,
+          status: "Ready",
+          inspectionId: formData.id,
+          date: new Date().toISOString(),
+          qualityCheck: checkDetails,
+          summary: inspectionSummary
+        };
+        await axiosInstance.post("/batches", batchData);
+        console.log("Batch created successfully:", batchData);
+      } catch (batchError) {
+        console.error("Error creating batch:", batchError);
+        // We don't block the main flow if batch creation fails, but good to note
+      }
+
+      alert("Quality Check submitted successfully!");
+      router.push("/production-inspection");
+    } catch (error) {
+      console.error("Error submitting quality check:", error);
+      alert("Failed to save quality check. Make sure '/quality-inspection' endpoint exists in your server.");
+    }
   };
 
   const renderStepContent = (step) => {
@@ -124,6 +194,8 @@ export default function QualityCheckForm() {
           <ProductDetailsSection
             data={productDetails}
             onChange={handleProductDetailsChange}
+            materialRequests={materialRequests}
+            onRequestChange={handleMaterialRequestChange}
           />
         );
       case 1:
@@ -142,7 +214,7 @@ export default function QualityCheckForm() {
               data={inspectionSummary}
               onChange={handleInspectionSummaryChange}
             />
-            <InspectionApproval data={approval} onChange={handleApprovalChange} />
+            <InspectionApproval approvalData={approval} onChange={handleApprovalChange} />
           </>
         );
       default:
@@ -187,7 +259,7 @@ export default function QualityCheckForm() {
           </Stepper>
 
           {/* Step Content */}
-          <Box sx={{ minHeight: 400 }}>{renderStepContent(activeStep)}</Box>
+          <Box >{renderStepContent(activeStep)}</Box>
 
           {/* Navigation Buttons */}
           <Box

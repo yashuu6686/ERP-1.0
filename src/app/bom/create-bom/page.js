@@ -9,6 +9,7 @@ import CommonCard from "../../../components/CommonCard";
 import MaterialListSpecifications from "./components/MaterialListSpecifications";
 import BOMAuthorization from "./components/BOMAuthorization";
 import axiosInstance from "../../../axios/axiosInstance";
+import { TextField, Grid } from "@mui/material";
 
 export default function BOMCreator() {
   const router = useRouter();
@@ -17,6 +18,7 @@ export default function BOMCreator() {
     reviewedBy: "",
     approvedBy: "",
   });
+  const [productName, setProductName] = useState("");
   const [materials, setMaterials] = useState([
     {
       id: 1,
@@ -65,6 +67,7 @@ export default function BOMCreator() {
       setLoading(true);
       const payload = {
         number: `BOM-${new Date().getTime().toString().slice(-6)}`,
+        productName: productName,
         date: new Date().toLocaleDateString("en-GB").replace(/\//g, "-"),
         approvedBy: auth.approvedBy,
         status: "Approved",
@@ -102,6 +105,27 @@ export default function BOMCreator() {
     <Box>
       <CommonCard title="Create BOM">
         <Box sx={{ p: 0.25 }}>
+          <Box sx={{ mb: 3, px: 1 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  label="Product Name"
+                  placeholder="Enter dynamic product name (e.g. D8 Smart Device)"
+                  value={productName}
+                  onChange={(e) => setProductName(e.target.value)}
+                  size="small"
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      bgcolor: "white",
+                      "&:hover > fieldset": { borderColor: "#1172ba" },
+                    },
+                  }}
+                />
+              </Grid>
+            </Grid>
+          </Box>
+
           <MaterialListSpecifications
             materials={materials}
             onAdd={addMaterial}

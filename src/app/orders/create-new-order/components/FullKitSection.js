@@ -47,9 +47,20 @@ const FullKitSection = ({ kitQty, setKitQty, additionalProducts }) => {
                         <Typography variant="body1" fontWeight={600} color="#1e293b">
                             D8 Kit
                         </Typography>
-                        <Typography variant="caption" color="textSecondary">
-                            Standard diagnostic assembly
+                        <Typography variant="caption" color="textSecondary" sx={{ display: 'block', mt: 0.5 }}>
+                            Standard diagnostic assembly includes:
                         </Typography>
+                        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0.5, mt: 1 }}>
+                            {[
+                                "Scanbo D8 Device", "BP Cuffs", "Large BP Cuff",
+                                "Glucose Bottles", "Lancet Pouch", "Lancet Pen",
+                                "USB Cable", "Plastic Shield", "Scanbo Jute Bag"
+                            ].map((comp, idx) => (
+                                <Typography key={idx} variant="caption" color="textSecondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                    • {comp}
+                                </Typography>
+                            ))}
+                        </Box>
                     </Box>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                         <IconButton

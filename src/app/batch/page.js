@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
@@ -9,36 +9,33 @@ import Edit from "@mui/icons-material/Edit";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
 import GlobalTable from "../../components/GlobalTable";
-
-const batchData = [
-  {
-    id: 1,
-    batchNo: "BAT-2026-01-005",
-    requestNo: "Material Issue Request 2026-001",
-    checkNo: "D8",
-    productSr: "From to to",
-    acceptedQty: 18,
-    status: "Ready",
-  },
-  {
-    id: 2,
-    batchNo: "BAT-2026-01-005",
-    requestNo: "Material Issue Request 2026-001",
-    checkNo: "D8",
-    productSr: "From to to",
-    acceptedQty: 18,
-    status: "Ready",
-  },
-];
+import axiosInstance from "../../axios/axiosInstance";
 
 export default function Batch() {
   const router = useRouter();
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
 
-  const filtered = batchData.filter(
+  useEffect(() => {
+    const fetchBatches = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get("/batches");
+        setData(response.data);
+      } catch (error) {
+        console.error("Error fetching batches:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBatches();
+  }, []);
+
+  const filtered = (data || []).filter(
     (b) =>
-      b.batchNo.toLowerCase().includes(search.toLowerCase()) ||
-      b.requestNo.toLowerCase().includes(search.toLowerCase())
+      (b.batchNo || "").toLowerCase().includes(search.toLowerCase()) ||
+      (b.requestNo || "").toLowerCase().includes(search.toLowerCase())
   );
 
   const columns = [
@@ -52,7 +49,7 @@ export default function Batch() {
       align: "center",
       render: (row) => (
         <span style={{ fontWeight: 600, color: "#1172ba" }}>
-          {row.batchNo}
+          {row.batchNo || "-"}
         </span>
       ),
     },
@@ -80,7 +77,7 @@ export default function Batch() {
       label: "Batch Status",
       align: "center",
       render: (row) => (
-        <Chip label={row.status} color="success" size="small" />
+        <Chip label={row.status || "Ready"} color="success" size="small" />
       ),
     },
     {
@@ -99,7 +96,11 @@ export default function Batch() {
           >
             <Visibility fontSize="small" />
           </IconButton>
-          <IconButton color="warning" size="small">
+          <IconButton
+            color="warning"
+            size="small"
+            onClick={() => router.push(`/batch/edit-batch?id=${row.id}`)}
+          >
             <Edit fontSize="small" />
           </IconButton>
         </Box>

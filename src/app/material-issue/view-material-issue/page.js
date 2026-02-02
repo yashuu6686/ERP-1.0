@@ -76,20 +76,20 @@ function ViewMaterialIssueContent() {
 
     useEffect(() => {
         const fetchRequest = async () => {
+            if (!id) return;
             try {
                 setLoading(true);
-                // Implementation for real API if needed
-                // const response = await axiosInstance.get(`/material-issue/${id}`);
-                // setRequest(response.data);
-
-                // For now, using simulation
-                setTimeout(() => {
-                    setRequest(dummyRequest);
-                    setLoading(false);
-                }, 800);
+                const response = await axiosInstance.get(`/material-issue/${id}`);
+                setRequest(response.data);
             } catch (error) {
                 console.error("Error fetching Material Request:", error);
-                setRequest(dummyRequest);
+                // Simulation fallback for specific ids or initial testing
+                if (id === "cf7d" || id === "1" || id === "2") {
+                    setRequest(dummyRequest);
+                } else {
+                    setRequest(null);
+                }
+            } finally {
                 setLoading(false);
             }
         };

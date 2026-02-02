@@ -8,7 +8,7 @@ import TextField from "@mui/material/TextField";
 
 import Assignment from "@mui/icons-material/Assignment";
 
-const OrderInformationSection = () => {
+const OrderInformationSection = ({ formData, handleChange }) => {
     return (
         <Card
             elevation={0}
@@ -36,17 +36,18 @@ const OrderInformationSection = () => {
             <CardContent sx={{ p: 3, bgcolor: "#f8fafc" }}>
                 <Grid container spacing={3}>
                     {[
-                        { label: "Order Number", placeholder: "ORD-2024-001" },
-                        { label: "Customer Name", placeholder: "Enter customer name" },
-                        { label: "Order Date", type: "date" },
-                        { label: "Contact Number", placeholder: "Enter contact number" },
+                        { label: "Order Number", name: "orderNo", placeholder: "ORD-2024-001" },
+                        { label: "Customer Name", name: "customerName", placeholder: "Enter customer name" },
+                        { label: "Order Date", name: "orderDate", type: "date" },
+                        { label: "Contact Number", name: "contact", placeholder: "Enter contact number" },
                         {
                             label: "Customer Address",
+                            name: "address",
                             placeholder: "Enter address",
                             fullWidth: true,
                         },
-                        { label: "Delivery Date", type: "date" },
-                        { label: "Order Status", placeholder: "Pending" },
+                        { label: "Delivery Date", name: "deliveryDate", type: "date" },
+                        { label: "Order Status", name: "status", placeholder: "Pending" },
                     ].map((field, i) => (
                         <Grid
                             item
@@ -59,6 +60,9 @@ const OrderInformationSection = () => {
                             <TextField
                                 fullWidth
                                 label={field.label}
+                                name={field.name}
+                                value={formData[field.name] || ""}
+                                onChange={handleChange}
                                 placeholder={field.placeholder}
                                 type={field.type || "text"}
                                 variant="outlined"
