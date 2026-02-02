@@ -10,7 +10,14 @@ import {
     Paper,
     Button,
     Stack,
-    Avatar,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Dialog,
+    DialogContent
 } from "@mui/material";
 import {
     ArrowBack,
@@ -23,33 +30,56 @@ import {
     Category,
     Layers,
     ProductionQuantityLimits,
-    EventNote
+    EventNote,
+    CheckCircle,
+    Warning,
+    Error as ErrorIcon,
+    ReceiptLong,
+    Share,
+    MoreVert,
+    ReportProblem
 } from "@mui/icons-material";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/Loader";
+import DefectiveMaterialForm from "../components/DefectiveMaterialForm";
 
-const InfoItem = ({ label, value, icon: Icon, color = "#1e293b" }) => (
-    <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5, mb: 1 }}>
-        {Icon && (
-            <Box sx={{
-                p: 0.75,
-                bgcolor: "rgba(17, 114, 186, 0.05)",
-                borderRadius: 1,
-                color: "#1172ba",
-                display: "flex",
-                mt: 0.5
-            }}>
-                <Icon sx={{ fontSize: 18 }} />
-            </Box>
+// Professional Corporate Palette
+const COLORS = {
+    primary: "#0f172a",    // deep slate
+    secondary: "#64748b",  // muted slate
+    accent: "#334155",     // medium slate
+    border: "#e2e8f0",     // light gray border
+    bg: "#f8fafc",         // off-white bg
+    status: {
+        ready: "#059669",  // emerald 600
+        partial: "#d97706",// amber 600
+        out: "#dc2626",    // red 600
+        pending: "#475569" // slate 600
+    }
+};
+
+const SectionHeader = ({ icon: Icon, title }) => (
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
+        <Icon sx={{ fontSize: 20, color: COLORS.accent }} />
+        <Typography variant="subtitle1" sx={{ fontWeight: 700, color: COLORS.primary, letterSpacing: -0.2 }}>
+            {title}
+        </Typography>
+    </Box>
+);
+
+const LabelValue = ({ label, value, subValue }) => (
+    <Box sx={{ mb: 2.5 }}>
+        <Typography variant="caption" sx={{ color: COLORS.secondary, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, display: "block", mb: 0.5 }}>
+            {label}
+        </Typography>
+        <Typography variant="body1" sx={{ fontWeight: 600, color: COLORS.primary }}>
+            {value || "—"}
+        </Typography>
+        {subValue && (
+            <Typography variant="caption" sx={{ color: COLORS.secondary, display: "block" }}>
+                {subValue}
+            </Typography>
         )}
-        <Box>
-            <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.5 }}>
-                {label}
-            </Typography>
-            <Typography variant="body1" sx={{ fontWeight: 600, color: color }}>
-                {value || "-"}
-            </Typography>
-        </Box>
     </Box>
 );
 
@@ -59,240 +89,273 @@ function ViewMaterialIssueContent() {
     const id = searchParams.get("id");
     const [loading, setLoading] = useState(true);
     const [request, setRequest] = useState(null);
-
-    // Simulation data
-    const dummyRequest = {
-        requestNo: `MIR-2026-${String(id || "001").padStart(3, '0')}`,
-        productName: "D8 Smart Device",
-        bomNumber: "BOM-SCAN-2025-01",
-        requiredQty: 25,
-        startDate: "2026-01-01",
-        endDate: "2026-01-25",
-        status: "Pending",
-        requestedBy: "Sanjay Kumar",
-        approvedBy: "John Doe",
-        description: "Materials needed for the upcoming production batch of D8 devices. All items must be verified against current BOM standards."
-    };
+    const [bomItems, setBomItems] = useState([]);
+    const [storeItems, setStoreItems] = useState([]);
+    const [openDefectiveDialog, setOpenDefectiveDialog] = useState(false);
 
     useEffect(() => {
-        const fetchRequest = async () => {
+        const fetchAllData = async () => {
             if (!id) return;
             try {
                 setLoading(true);
                 const response = await axiosInstance.get(`/material-issue/${id}`);
-                setRequest(response.data);
-            } catch (error) {
-                console.error("Error fetching Material Request:", error);
-                // Simulation fallback for specific ids or initial testing
-                if (id === "cf7d" || id === "1" || id === "2") {
-                    setRequest(dummyRequest);
-                } else {
-                    setRequest(null);
+                const requestData = response.data;
+                setRequest(requestData);
+
+                if (requestData.bomId || requestData.bomNumber) {
+                    const bomRes = await axiosInstance.get("/bom");
+                    const targetBom = bomRes.data.find(b =>
+                        b.id === requestData.bomId || b.number === requestData.bomNumber
+                    );
+                    if (targetBom && targetBom.materials) {
+                        setBomItems(targetBom.materials);
+                    }
                 }
+
+                const storeRes = await axiosInstance.get("/store");
+                setStoreItems(storeRes.data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
             } finally {
                 setLoading(false);
             }
         };
-
-        fetchRequest();
+        fetchAllData();
     }, [id]);
 
-    if (loading) return <Loader fullPage message="Loading Professional Material Issue Request..." />;
-    if (!request) return <Box sx={{ p: 4, textAlign: "center" }}>Material Request Not Found.</Box>;
+    const handleDefectiveClose = (refresh = false) => {
+        setOpenDefectiveDialog(false);
+        if (refresh) {
+            // Re-fetch data if needed
+        }
+    };
+
+    if (loading) return <Loader fullPage message="Accessing Secure Records..." />;
+    if (!request) return <Box sx={{ p: 4, textAlign: "center", color: COLORS.secondary }}>Record not found in the material registry.</Box>;
+
+    const calculateStockStatus = (material) => {
+        const partNo = material.scanboPartNo || material.scanboPartNumber;
+        const storeItem = storeItems.find(item => (item.id === partNo || item.code === partNo));
+        const needed = Number(material.qty || 0) * Number(request.requiredQty || 0);
+
+        if (!storeItem) return { status: "unknown", color: COLORS.secondary, text: "Not Listed" };
+        const available = Number(storeItem.available || 0);
+
+        if (available >= needed) return { status: "ready", color: COLORS.status.ready, text: "Sufficient Stock" };
+        if (available > 0) return { status: "partial", color: COLORS.status.partial, text: `${available} Available` };
+        return { status: "out", color: COLORS.status.out, text: "Stock Depleted" };
+    };
 
     return (
-        <Box sx={{ pb: 6, bgcolor: "#f8fafc" }}>
-            {/* Professional Header Section */}
-            <Box sx={{
-                bgcolor: "#fff",
-                borderBottom: "1px solid #e2e8f0",
-                py: 3,
-                px: 4,
-                mb: 4,
-                display: "flex",
-                flexDirection: { xs: "column", md: "row" },
-                justifyContent: "space-between",
-                alignItems: { xs: "flex-start", md: "center" },
-                gap: 2
-            }}>
-                <Stack spacing={0.5}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                        <Avatar sx={{ bgcolor: "#1172ba", width: 44, height: 44 }}>
-                            <Category />
-                        </Avatar>
+        <Box sx={{ minHeight: "100vh", bgcolor: COLORS.bg, pb: 10 }}>
+            {/* Minimal Minimalist Header */}
+            <Box sx={{ bgcolor: "#fff", borderBottom: `1px solid ${COLORS.border}`, py: 1.5, px: 4 }}>
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
+                        <Button
+                            startIcon={<ArrowBack />}
+                            onClick={() => router.push("/material-issue")}
+                            sx={{ color: COLORS.secondary, textTransform: "none", fontWeight: 600 }}
+                        >
+                            Registry
+                        </Button>
+                        <Divider orientation="vertical" flexItem sx={{ height: 24, alignSelf: "center" }} />
                         <Box>
-                            <Typography variant="h5" sx={{ fontWeight: 900, color: "#0f172a", letterSpacing: -0.5 }}>
+                            <Typography variant="h6" sx={{ fontWeight: 800, color: COLORS.primary, lineHeight: 1 }}>
                                 {request.requestNo}
                             </Typography>
-                            <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 700, textTransform: "uppercase" }}>
-                                Material Issue Request • Priority Execution
+                            <Typography variant="caption" sx={{ color: COLORS.secondary, fontWeight: 600 }}>
+                                {request.productName} • ID: {id?.slice(0, 8)}
                             </Typography>
                         </Box>
                     </Box>
-                </Stack>
-
-                <Stack direction="row" spacing={2} sx={{ width: { xs: "100%", md: "auto" } }}>
-                    <Button
-                        variant="outlined"
-                        startIcon={<PrintIcon />}
-                        onClick={() => window.print()}
-                        sx={{ textTransform: "none", fontWeight: 700, borderRadius: 2, borderColor: "#e2e8f0", color: "#475569" }}
-                    >
-                        Export PDF
-                    </Button>
-                    <Button
-                        variant="contained"
-                        startIcon={<EditIcon />}
-                        sx={{
-                            textTransform: "none",
-                            fontWeight: 700,
-                            borderRadius: 2,
-                            bgcolor: "#1172ba",
-                            boxShadow: "0 4px 12px rgba(17, 114, 186, 0.2)"
-                        }}
-                    >
-                        Edit Request
-                    </Button>
-                </Stack>
+                    <Stack direction="row" spacing={1}>
+                        <Button startIcon={<PrintIcon />} sx={{ color: COLORS.secondary, textTransform: "none", fontWeight: 600 }}>Print</Button>
+                        <Button startIcon={<Share />} sx={{ color: COLORS.secondary, textTransform: "none", fontWeight: 600 }}>Share</Button>
+                        <Button
+                            variant="contained"
+                            disableElevation
+                            startIcon={<ReportProblem />}
+                            onClick={() => setOpenDefectiveDialog(true)}
+                            sx={{
+                                bgcolor: COLORS.status.out,
+                                "&:hover": { bgcolor: "#b91c1c" },
+                                textTransform: "none",
+                                fontWeight: 700,
+                                px: 3
+                            }}
+                        >
+                            Defective
+                        </Button>
+                    </Stack>
+                </Box>
             </Box>
 
-            <Box sx={{ px: { xs: 2, md: 4 } }}>
-                <Grid container spacing={3}>
-                    {/* Left Column: Core Request Info */}
+            <Box sx={{ px: 4, mt: 4 }}>
+                <Grid container spacing={4}>
+                    {/* Main Content Areas */}
                     <Grid item xs={12} lg={8}>
-                        <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: "1px solid #e2e8f0", mb: 3 }}>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 4 }}>
-                                <Inventory sx={{ color: "#1172ba" }} />
-                                <Typography variant="h6" sx={{ fontWeight: 800 }}>Issue Specifications</Typography>
-                            </Box>
-
-                            <Grid container spacing={4}>
-                                <Grid item xs={12} sm={6} md={6}><InfoItem label="Product Name" value={request.productName} icon={Layers} /></Grid>
-                                <Grid item xs={12} sm={6} md={6}><InfoItem label="Linked BOM" value={request.bomNumber} icon={Assignment} /></Grid>
-
-                                <Grid item xs={12} sm={6} md={4}>
-                                    <Box sx={{ p: 2, bgcolor: "rgba(17, 114, 186, 0.05)", borderRadius: 2, border: "1px solid rgba(17, 114, 186, 0.1)" }}>
-                                        <InfoItem label="Required Quantity" value={`${request.requiredQty} Units`} icon={ProductionQuantityLimits} color="#1172ba" />
-                                    </Box>
+                        <Stack spacing={4}>
+                            {/* Request Specifications */}
+                            <Paper elevation={0} sx={{ p: 4, borderRadius: 1, border: `1px solid ${COLORS.border}` }}>
+                                <SectionHeader icon={Assignment} title="Issue Specifications" />
+                                <Grid container spacing={3}>
+                                    <Grid item xs={12} sm={6} md={3}><LabelValue label="Production Item" value={request.productName} /></Grid>
+                                    <Grid item xs={12} sm={6} md={3}><LabelValue label="BOM Reference" value={request.bomNumber} /></Grid>
+                                    <Grid item xs={12} sm={6} md={3}><LabelValue label="Issuance Qty" value={`${request.requiredQty} Units`} /></Grid>
+                                    <Grid item xs={12} sm={6} md={3}>
+                                        <Box>
+                                            <Typography variant="caption" sx={{ color: COLORS.secondary, fontWeight: 700, textTransform: "uppercase", display: "block", mb: 0.5 }}>Issue Status</Typography>
+                                            <Chip
+                                                label={request.status || "PENDING"}
+                                                size="small"
+                                                sx={{ borderRadius: 1, fontWeight: 800, fontSize: "0.65rem", bgcolor: COLORS.bg, border: `1px solid ${COLORS.border}`, color: COLORS.primary }}
+                                            />
+                                        </Box>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={3}><LabelValue label="Release Date" value={request.startDate} /></Grid>
+                                    <Grid item xs={12} sm={6} md={3}><LabelValue label="Expected Delivery" value={request.endDate} /></Grid>
                                 </Grid>
+                                <Divider sx={{ my: 3 }} />
+                                <Typography variant="caption" sx={{ color: COLORS.secondary, fontWeight: 700, textTransform: "uppercase", display: "block", mb: 1 }}>Administrative Description</Typography>
+                                <Typography variant="body2" sx={{ color: COLORS.primary, lineHeight: 1.6, fontWeight: 500 }}>
+                                    {request.description || "No categorical descriptions provided."}
+                                </Typography>
+                            </Paper>
 
-                                <Grid item xs={12} sm={6} md={4}><InfoItem label="Production Start" value={request.startDate} icon={EventNote} /></Grid>
-                                <Grid item xs={12} sm={6} md={4}><InfoItem label="Production End" value={request.endDate} icon={EventNote} /></Grid>
-                            </Grid>
-
-                            <Divider sx={{ my: 4, borderStyle: "dashed" }} />
-
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-                                <Assignment sx={{ color: "#64748b" }} />
-                                <Typography variant="h6" sx={{ fontWeight: 800, fontSize: "1rem" }}>Description / Purpose</Typography>
-                            </Box>
-                            <Typography variant="body2" sx={{ lineHeight: 1.8, color: "#475569", bgcolor: "#f8fafc", p: 3, borderRadius: 2, border: "1px solid #e2e8f0" }}>
-                                {request.description}
-                            </Typography>
-                        </Paper>
+                            {/* Inventory Allocation Table */}
+                            <Paper elevation={0} sx={{ borderRadius: 1, border: `1px solid ${COLORS.border}`, overflow: "hidden" }}>
+                                <Box sx={{ p: 2.5, bgcolor: COLORS.bg, borderBottom: `1px solid ${COLORS.border}`, display: "flex", justifyContent: "space-between" }}>
+                                    <SectionHeader icon={Inventory} title="Material Allocation Breakdown" />
+                                    <Typography variant="caption" sx={{ color: COLORS.secondary, fontWeight: 700 }}>{bomItems.length} COMPONENTS</Typography>
+                                </Box>
+                                <TableContainer>
+                                    <Table size="small">
+                                        <TableHead>
+                                            <TableRow sx={{ bgcolor: "#fafafa" }}>
+                                                <TableCell sx={{ fontWeight: 800, color: COLORS.secondary, py: 2, fontSize: "0.7rem", textTransform: "uppercase" }}>Part Information</TableCell>
+                                                <TableCell sx={{ fontWeight: 800, color: COLORS.secondary, fontSize: "0.7rem", textTransform: "uppercase" }}>Requirement</TableCell>
+                                                <TableCell align="right" sx={{ fontWeight: 800, color: COLORS.secondary, fontSize: "0.7rem", textTransform: "uppercase" }}>Stock Verification</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {bomItems.map((item, idx) => {
+                                                const stock = calculateStockStatus(item);
+                                                const totalReq = Number(item.qty || 0) * Number(request.requiredQty || 0);
+                                                return (
+                                                    <TableRow key={idx} sx={{ "&:hover": { bgcolor: "#fcfcfc" } }}>
+                                                        <TableCell sx={{ py: 2 }}>
+                                                            <Typography variant="body2" sx={{ fontWeight: 700, color: COLORS.primary }}>{item.componentName || item.component}</Typography>
+                                                            <Typography variant="caption" sx={{ color: COLORS.secondary }}>PN: {item.scanboPartNo || item.scanboPartNumber}</Typography>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
+                                                                <Box>
+                                                                    <Typography variant="caption" sx={{ color: COLORS.secondary, display: "block" }}>Per Unit</Typography>
+                                                                    <Typography variant="body2" sx={{ fontWeight: 700 }}>{item.qty || 0}</Typography>
+                                                                </Box>
+                                                                <Box>
+                                                                    <Typography variant="caption" sx={{ color: COLORS.secondary, display: "block" }}>Total Issue</Typography>
+                                                                    <Typography variant="body2" sx={{ fontWeight: 800, color: COLORS.primary }}>{totalReq}</Typography>
+                                                                </Box>
+                                                            </Box>
+                                                        </TableCell>
+                                                        <TableCell align="right">
+                                                            <Box sx={{ display: "flex", alignItems: "center", gap: 1, justifyContent: "flex-end" }}>
+                                                                <Typography variant="caption" sx={{ fontWeight: 800, color: stock.color }}>
+                                                                    {stock.text.toUpperCase()}
+                                                                </Typography>
+                                                                <Box sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: stock.color }} />
+                                                            </Box>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            })}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </Paper>
+                        </Stack>
                     </Grid>
 
-                    {/* Right Column: Status & Authorization */}
+                    {/* Sidebar: Control Panel */}
                     <Grid item xs={12} lg={4}>
                         <Stack spacing={3}>
-                            <Paper elevation={0} sx={{
-                                p: 4,
-                                borderRadius: 3,
-                                border: "1px solid",
-                                borderColor: "#1172ba",
-                                bgcolor: "#fff",
-                                position: "relative",
-                                overflow: "hidden"
-                            }}>
-                                <Box sx={{
-                                    position: "absolute",
-                                    top: 0,
-                                    right: 0,
-                                    p: 1.5,
-                                    bgcolor: "#1172ba",
-                                    color: "#fff",
-                                    borderBottomLeftRadius: 12
-                                }}>
-                                    <HistoryEdu fontSize="small" />
-                                </Box>
-
-                                <Typography variant="h6" sx={{ fontWeight: 900, mb: 3 }}>Request Status</Typography>
-
-                                <Stack spacing={3}>
-                                    <Box>
-                                        <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 800, textTransform: "uppercase", display: "block", mb: 1.5 }}>
-                                            Current Phase
-                                        </Typography>
-                                        <Chip
-                                            label={request.status}
-                                            sx={{
-                                                bgcolor: "#fff7ed",
-                                                color: "#c2410c",
-                                                fontWeight: 800,
-                                                fontSize: "0.85rem",
-                                                px: 1,
-                                                border: "1px solid #fdba74"
-                                            }}
-                                        />
+                            <Paper elevation={0} sx={{ p: 4, borderRadius: 1, border: `1px solid ${COLORS.border}` }}>
+                                <SectionHeader icon={HistoryEdu} title="Authorization" />
+                                <Stack spacing={4}>
+                                    <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+                                        <Box sx={{ width: 40, height: 40, borderRadius: 1, bgcolor: COLORS.bg, border: `1px solid ${COLORS.border}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                            <Person sx={{ color: COLORS.secondary }} />
+                                        </Box>
+                                        <Box>
+                                            <Typography variant="caption" sx={{ color: COLORS.secondary, fontWeight: 700 }}>Originator</Typography>
+                                            <Typography variant="body1" sx={{ fontWeight: 700 }}>{request.requestedBy || "Unspecified"}</Typography>
+                                        </Box>
                                     </Box>
-
-                                    <Divider />
-
-                                    <Box>
-                                        <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 800, textTransform: "uppercase", display: "block", mb: 2 }}>
-                                            Authorization Sign-offs
-                                        </Typography>
-
-                                        <Stack spacing={3}>
-                                            <Box sx={{ display: "flex", gap: 2 }}>
-                                                <Avatar sx={{ bgcolor: "#f1f5f9", color: "#64748b", width: 36, height: 36 }}><Person sx={{ fontSize: 20 }} /></Avatar>
-                                                <Box>
-                                                    <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 700 }}>REQUESTED BY</Typography>
-                                                    <Typography variant="body2" sx={{ fontWeight: 700 }}>{request.requestedBy}</Typography>
-                                                </Box>
-                                            </Box>
-
-                                            <Box sx={{ display: "flex", gap: 2 }}>
-                                                <Avatar sx={{ bgcolor: "#f0fdf4", color: "#15803d", width: 36, height: 36 }}><HistoryEdu sx={{ fontSize: 20 }} /></Avatar>
-                                                <Box>
-                                                    <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 700 }}>APPROVED BY</Typography>
-                                                    <Typography variant="body2" sx={{ fontWeight: 700 }}>{request.approvedBy || "Pending Review"}</Typography>
-                                                </Box>
-                                            </Box>
-                                        </Stack>
+                                    <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+                                        <Box sx={{ width: 40, height: 40, borderRadius: 1, bgcolor: COLORS.bg, border: `1px solid ${COLORS.border}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                            <CheckCircle sx={{ color: request.approvedBy ? COLORS.status.ready : COLORS.secondary }} />
+                                        </Box>
+                                        <Box>
+                                            <Typography variant="caption" sx={{ color: COLORS.secondary, fontWeight: 700 }}>Authorized Signatory</Typography>
+                                            <Typography variant="body1" sx={{ fontWeight: 700 }}>{request.approvedBy || "Pending Review"}</Typography>
+                                        </Box>
                                     </Box>
                                 </Stack>
                             </Paper>
 
-                            <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: "1px solid #e2e8f0", bgcolor: "#fff" }}>
-                                <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 800, textTransform: "uppercase", display: "block", mb: 1 }}>
-                                    Administrative Notes
-                                </Typography>
-                                <Typography variant="caption" sx={{ color: "#94a3b8" }}>
-                                    This request is generated automatically based on production planning module. All issues must be logged in the warehouse register upon physical movement of inventory.
-                                </Typography>
+                            <Paper elevation={0} sx={{ p: 3, border: `1px solid ${COLORS.border}`, bgcolor: "#fff", borderRadius: 1 }}>
+                                <Typography variant="caption" sx={{ color: COLORS.secondary, fontWeight: 700, display: "block", mb: 1.5 }}>RECORD METADATA</Typography>
+                                <Stack spacing={1.5}>
+                                    <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                                        <Typography variant="caption" sx={{ color: COLORS.secondary }}>Created On</Typography>
+                                        <Typography variant="caption" sx={{ fontWeight: 700 }}>{request.createdAt ? new Date(request.createdAt).toLocaleString() : "—"}</Typography>
+                                    </Box>
+                                    <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                                        <Typography variant="caption" sx={{ color: COLORS.secondary }}>Registry ID</Typography>
+                                        <Typography variant="caption" sx={{ fontWeight: 700, fontFamily: "monospace" }}>{id}</Typography>
+                                    </Box>
+                                </Stack>
                             </Paper>
+
+                            <Button
+                                fullWidth
+                                variant="outlined"
+                                color="error"
+                                sx={{ textTransform: "none", fontWeight: 700, borderRadius: 1, py: 1.2 }}
+                            >
+                                Void Request
+                            </Button>
                         </Stack>
                     </Grid>
                 </Grid>
-
-                <Box sx={{ mt: 4, textAlign: "center" }}>
-                    <Button
-                        startIcon={<ArrowBack />}
-                        onClick={() => router.push("/material-issue")}
-                        sx={{ color: "#64748b", fontWeight: 700, textTransform: "none" }}
-                    >
-                        Back to Request List
-                    </Button>
-                </Box>
             </Box>
+
+            {/* Defective Dialog */}
+            <Dialog
+                open={openDefectiveDialog}
+                onClose={() => handleDefectiveClose()}
+                maxWidth="md"
+                fullWidth
+                PaperProps={{
+                    sx: { borderRadius: 1 }
+                }}
+            >
+                <DialogContent dividers>
+                    <DefectiveMaterialForm
+                        request={request}
+                        onClose={(refresh) => handleDefectiveClose(refresh)}
+                    />
+                </DialogContent>
+            </Dialog>
         </Box>
     );
 }
 
 export default function ViewMaterialIssue() {
     return (
-        <Suspense fallback={<Loader fullPage message="Initializing Material Request..." />}>
+        <Suspense fallback={<Loader fullPage message="Secure data transmission in progress..." />}>
             <ViewMaterialIssueContent />
         </Suspense>
     );

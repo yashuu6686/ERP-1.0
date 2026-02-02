@@ -25,7 +25,8 @@ import {
     Select,
     FormControl,
     InputLabel,
-    Alert
+    Alert,
+    Stack
 } from "@mui/material";
 import {
     Person,
@@ -50,9 +51,26 @@ import {
     LocalShipping,
     BarChart,
     Warning,
-    CheckCircle
+    CheckCircle,
+    Share,
+    Analytics
 } from "@mui/icons-material";
 import CommonCard from "../../components/CommonCard";
+
+// Professional Corporate Palette - Mapped to Brand Variables
+const COLORS = {
+    primary: "#0f172a",    // deep slate
+    secondary: "#64748b",  // muted slate
+    accent: "#334155",     // medium slate
+    border: "#e2e8f0",     // light gray border
+    bg: "#f8fafc",         // off-white bg
+    status: {
+        success: "#059669",// emerald 600
+        warning: "#d97706",// amber 600
+        error: "#dc2626",  // red 600
+        neutral: "#475569" // slate 600
+    }
+};
 
 // Mock Data Generators based on Role
 const getRoleData = (role) => {
@@ -146,28 +164,40 @@ const ProfilePage = () => {
         <Box sx={{ p: "var(--space-lg)", maxWidth: "var(--content-max-width)", mx: "auto" }}>
 
             {/* DEV TOOL: Role Switcher */}
-            <Alert
-                severity="info"
-                icon={<Settings fontSize="inherit" />}
-                sx={{ mb: 3, bgcolor: "var(--brand-soft)", color: "var(--brand-primary)", border: "1px solid var(--brand-primary)" }}
-            >
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                    <Typography sx={{ fontWeight: 600, fontFamily: "var(--font-manrope)" }}>
-                        Development Mode: Role Simulator
-                    </Typography>
-                    <FormControl size="small" sx={{ minWidth: 200 }}>
-                        <Select
-                            value={selectedRole}
-                            onChange={handleRoleChange}
-                            sx={{ bgcolor: "white", borderRadius: 1 }}
-                        >
-                            <MenuItem value="Admin">Admin</MenuItem>
-                            <MenuItem value="Store Manager">Store Manager</MenuItem>
-                            <MenuItem value="Quality Manager">Quality Manager</MenuItem>
-                        </Select>
-                    </FormControl>
+            {/* Professional Header */}
+            <Box sx={{ bgcolor: "#fff", borderBottom: `1px solid ${COLORS.border}`, py: 1.5, px: 4 }}>
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
+                        <Typography variant="h6" sx={{ fontWeight: 800, color: COLORS.primary, letterSpacing: -0.5 }}>
+                            Employee Profile
+                        </Typography>
+                        <Divider orientation="vertical" flexItem sx={{ height: 24, alignSelf: "center" }} />
+                        <FormControl size="small" sx={{ minWidth: 180 }}>
+                            <Select
+                                value={selectedRole}
+                                onChange={handleRoleChange}
+                                sx={{
+                                    height: 32,
+                                    fontSize: "0.75rem",
+                                    fontWeight: 700,
+                                    bgcolor: COLORS.bg,
+                                    "& .MuiOutlinedInput-notchedOutline": { border: "none" }
+                                }}
+                            >
+                                <MenuItem value="Admin">Admin Simulator</MenuItem>
+                                <MenuItem value="Store Manager">Store Manager Simulator</MenuItem>
+                                <MenuItem value="Quality Manager">Quality Manager Simulator</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Box>
+                    <Stack direction="row" spacing={1}>
+                        <Button startIcon={<Share />} sx={{ color: COLORS.secondary, textTransform: "none", fontWeight: 600 }}>Share</Button>
+                        <Button variant="contained" disableElevation startIcon={<Edit />} sx={{ bgcolor: COLORS.primary, "&:hover": { bgcolor: COLORS.accent }, textTransform: "none", fontWeight: 700, px: 3 }}>
+                            Edit Profile
+                        </Button>
+                    </Stack>
                 </Box>
-            </Alert>
+            </Box>
 
             {/* 1. Profile Identity Header */}
             <Paper
@@ -191,7 +221,7 @@ const ProfilePage = () => {
                         right: 0,
                         width: "300px",
                         height: "100%",
-                        background: `linear-gradient(135deg, transparent 20%, ${userDetails.color}15 100%)`,
+                        background: `linear-gradient(135deg, transparent 20%, ${userDetails.color.includes('var') ? 'rgba(15, 23, 42, 0.08)' : userDetails.color + '15'} 100%)`,
                         pointerEvents: "none"
                     }}
                 />
@@ -229,7 +259,7 @@ const ProfilePage = () => {
                                 size="small"
                                 icon={<Verified sx={{ fontSize: "14px !important" }} />}
                                 sx={{
-                                    bgcolor: `${userDetails.color}15`, // 15 = roughly 10% opacity hex
+                                    bgcolor: userDetails.color.includes('var') ? 'rgba(15, 23, 42, 0.08)' : `${userDetails.color}15`,
                                     color: userDetails.color,
                                     fontWeight: 700,
                                     fontSize: "var(--size-caption)",
