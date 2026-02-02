@@ -99,7 +99,23 @@ export default function MaterialInspectionForm() {
       const response = await axiosInstance.get(`/incoming-inspection/${id}`);
       const data = response.data;
       if (data) {
-        setMaterialData(data.materialData);
+        // 1. Fetch all GRNs to find the matching one
+        const grnResponse = await axiosInstance.get("/grn");
+        const allGRNs = grnResponse.data || [];
+        const matchingGRN = allGRNs.find(g => g.grnNumber === data.materialData.grnNumber);
+
+        if (matchingGRN) setSelectedGRN(matchingGRN);
+
+        // 2. Flatten and merge data, using matchingGRN as a fallback for missing fields
+        const materialDataLoaded = {
+          ...data.materialData,
+          poNumber: data.materialData.poNumber || matchingGRN?.poNumber || "",
+          materialName: data.materialData.materialName || matchingGRN?.items?.[0]?.name || "",
+          supplierName: data.materialData.supplierName || matchingGRN?.supplierName || "",
+          ...(data.materialData.verificationChecks || {})
+        };
+
+        setMaterialData(materialDataLoaded);
         setObservations(data.observations || []);
         setSummaryData(data.summaryData);
         setApprovalData(data.approvalData);
@@ -120,12 +136,7 @@ export default function MaterialInspectionForm() {
           }
         }
 
-        // Find and set the selected GRN object
-        const grnResponse = await axiosInstance.get("/grn");
-        const matchingGRN = (grnResponse.data || []).find(g => g.grnNumber === data.materialData.grnNumber);
-        if (matchingGRN) setSelectedGRN(matchingGRN);
-
-        // Re-fetch pending GRNs with the correct GRN number
+        // Re-fetch pending GRNs lists for the dropdown
         fetchPendingGRNs(data.materialData.grnNumber);
       }
     } catch (error) {
@@ -160,7 +171,7 @@ export default function MaterialInspectionForm() {
       setMaterialData({
         ...materialData,
         grnNumber: newValue.grnNumber || "",
-        poNumber: newValue.orderInfo?.orderNumber || "",
+        poNumber: newValue.poNumber || "",
         materialName: newValue.items?.[0]?.name || "",
         receivedDate: newValue.receivedDate ? newValue.receivedDate.split("T")[0] : "",
         invoiceNumber: newValue.invoiceNumber || "",
@@ -183,15 +194,8 @@ export default function MaterialInspectionForm() {
     }
   };
 
-  const handleMaterialChange = (field, value) => {
+  const handleMaterialDataChange = (field, value) => {
     setMaterialData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleVerificationChange = (field, value) => {
-    setMaterialData(prev => ({
-      ...prev,
-      [field]: value
-    }));
   };
 
   const handleNext = () => {
@@ -299,15 +303,16 @@ export default function MaterialInspectionForm() {
         return (
           <>
             <MaterialInformation
+              isEditMode={isEditMode}
               data={materialData}
-              onChange={handleMaterialChange}
+              onChange={handleMaterialDataChange}
               pendingGRNs={pendingGRNs}
               selectedGRN={selectedGRN}
               onGRNChange={handleGRNChange}
             />
             <VerificationChecks
-              data={materialData.verificationChecks}
-              onChange={handleVerificationChange}
+              data={materialData}
+              onChange={handleMaterialDataChange}
             />
           </>
         );

@@ -35,6 +35,7 @@ const requestsData = [
 ];
 
 export default function MaterialIssueRequests() {
+  const router = useRouter();
   const [openDialog, setOpenDialog] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -91,6 +92,7 @@ export default function MaterialIssueRequests() {
         <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
           <IconButton
             size="small"
+            onClick={() => router.push(`/material-issue/view-material-issue?id=${row.id}`)}
             sx={{
               color: "rgb(17, 114, 186)",
               bgcolor: "#f1f5f9",

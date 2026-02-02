@@ -8,7 +8,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 
 import InventoryIcon from "@mui/icons-material/Inventory";
 
-const MaterialInformation = ({ data, onChange, pendingGRNs, selectedGRN, onGRNChange }) => {
+const MaterialInformation = ({ isEditMode, data, onChange, pendingGRNs, selectedGRN, onGRNChange }) => {
     return (
         <Card
             elevation={0}
@@ -51,14 +51,15 @@ const MaterialInformation = ({ data, onChange, pendingGRNs, selectedGRN, onGRNCh
                         getOptionLabel={(option) => option.grnNumber || ""}
                         value={selectedGRN}
                         onChange={onGRNChange}
+                        disabled={isEditMode}
                         renderInput={(params) => (
                             <TextField
                                 {...params}
-                                label="Select GRN Number"
+                                label="GRN Number"
                                 variant="outlined"
                                 fullWidth
                                 size="small"
-                                placeholder="Search Pending GRNs..."
+                                placeholder={isEditMode ? "" : "Search Pending GRNs..."}
                             />
                         )}
                     />

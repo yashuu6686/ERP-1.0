@@ -66,7 +66,7 @@ export default function BOMList() {
           <IconButton
             color="primary"
             size="small"
-            onClick={() => router.push(`/bom/${row.id}`)}
+            onClick={() => router.push(`/bom/view-bom?id=${row.id}`)}
           >
             <Visibility fontSize="small" />
           </IconButton>

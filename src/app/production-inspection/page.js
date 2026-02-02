@@ -127,7 +127,7 @@ export default function AfterProductionInspection() {
           <Tooltip title="View Details">
             <IconButton
               size="small"
-              onClick={() => router.push(`/production-inspection/${row.id}`)}
+              onClick={() => router.push(`/production-inspection/view-inspection?id=${row.id}`)}
               sx={{
                 color: "rgb(17, 114, 186)",
                 bgcolor: "#f1f5f9",
