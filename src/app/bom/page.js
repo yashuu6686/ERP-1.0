@@ -37,6 +37,7 @@ export default function BOMList() {
     const fetchBOMs = async () => {
       try {
         const response = await axiosInstance.get("/bom");
+        console.log(">>> ALL BOM DATA FROM SERVER:", response.data);
         setBomData(response.data);
       } catch (error) {
         console.error("Error fetching BOMs:", error);
@@ -63,6 +64,15 @@ export default function BOMList() {
       render: (row) => (
         <span style={{ fontWeight: 600, color: "var(--brand-primary)", fontFamily: "var(--font-manrope)" }}>
           {row.number}
+        </span>
+      ),
+    },
+    {
+      label: "Product Name",
+      align: "center",
+      render: (row) => (
+        <span style={{ fontWeight: 600, color: "#475569" }}>
+          {row.productName || "-"}
         </span>
       ),
     },

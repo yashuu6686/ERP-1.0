@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
@@ -11,6 +11,7 @@ import Download from "@mui/icons-material/Download";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
 import GlobalTable from "../../components/GlobalTable";
+import axiosInstance from "../../axios/axiosInstance";
 
 const inspectionData = [
   {
@@ -37,12 +38,29 @@ const inspectionData = [
   },
 ];
 
-export default function AfterProductionInspection() {
+export default function ProductionInspectionPage() {
   const router = useRouter();
   const [search, setSearch] = useState("");
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const filtered = inspectionData.filter((i) =>
-    i.checkNo.toLowerCase().includes(search.toLowerCase())
+  useEffect(() => {
+    const fetchInspections = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get("/quality-inspection");
+        setData(response.data);
+      } catch (error) {
+        console.error("Error fetching inspections:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInspections();
+  }, []);
+
+  const filtered = (data || []).filter((i) =>
+    (i.checkNumber || "").toLowerCase().includes(search.toLowerCase())
   );
 
   const columns = [
@@ -56,21 +74,30 @@ export default function AfterProductionInspection() {
       align: "center",
       render: (row) => (
         <span style={{ fontWeight: 600, color: "#1172ba" }}>
-          {row.checkNo}
+          {row.checkNumber || row.id || "-"}
+        </span>
+      ),
+    },
+    {
+      label: "Product",
+      align: "center",
+      render: (row) => (
+        <span style={{ fontWeight: 600, color: "#475569" }}>
+          {row.productName || "-"}
         </span>
       ),
     },
     {
       label: "Checked Qty",
       align: "center",
-      accessor: "checkedQty",
+      accessor: "checkedQuantity",
     },
     {
       label: "Accepted Qty",
       align: "center",
       render: (row) => (
         <Chip
-          label={row.acceptedQty}
+          label={row.acceptedQuantity || 0}
           size="small"
           sx={{
             bgcolor: "#dcfce7",
@@ -86,7 +113,7 @@ export default function AfterProductionInspection() {
       align: "center",
       render: (row) => (
         <Chip
-          label={row.rejectedQty}
+          label={row.rejectedQuantity || 0}
           size="small"
           sx={{
             bgcolor: "#fee2e2",
@@ -98,26 +125,14 @@ export default function AfterProductionInspection() {
       ),
     },
     {
-      label: "Inspection Result",
-      align: "center",
-      render: (row) => (
-        <Chip
-          label={row.result.split(" / ")[0]}
-          size="small"
-          variant="outlined"
-          sx={{ fontWeight: 600 }}
-        />
-      ),
-    },
-    {
       label: "Inspection Date",
       align: "center",
-      accessor: "date",
+      render: (row) => row.inspectionDate || "-",
     },
     {
       label: "Approved By",
       align: "center",
-      accessor: "approvedBy",
+      render: (row) => row.approval?.approvedByName || "-",
     },
     {
       label: "Actions",
@@ -138,7 +153,11 @@ export default function AfterProductionInspection() {
             </IconButton>
           </Tooltip>
           <Tooltip title="Edit">
-            <IconButton color="warning" size="small">
+            <IconButton
+              color="warning"
+              size="small"
+              onClick={() => router.push(`/production-inspection/edit-inspection?id=${row.id}`)}
+            >
               <Edit fontSize="small" />
             </IconButton>
           </Tooltip>

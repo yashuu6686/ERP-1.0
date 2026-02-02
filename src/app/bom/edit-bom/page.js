@@ -9,6 +9,7 @@ import MaterialListSpecifications from "../create-bom/components/MaterialListSpe
 import BOMAuthorization from "../create-bom/components/BOMAuthorization";
 import axiosInstance from "../../../axios/axiosInstance";
 import Loader from "@/components/Loader";
+import { TextField, Grid } from "@mui/material";
 
 function EditBOMContent() {
     const router = useRouter();
@@ -23,6 +24,7 @@ function EditBOMContent() {
     });
     const [materials, setMaterials] = useState([]);
     const [bomNumber, setBomNumber] = useState("");
+    const [productName, setProductName] = useState("");
 
     useEffect(() => {
         const fetchBOM = async () => {
@@ -33,6 +35,7 @@ function EditBOMContent() {
                 const data = response.data;
 
                 setBomNumber(data.number);
+                setProductName(data.productName || "");
                 setAuth({
                     reviewedBy: data.authorization?.reviewedBy || "",
                     approvedBy: data.authorization?.approvedBy || "",
@@ -106,6 +109,7 @@ function EditBOMContent() {
             setSaving(true);
             const payload = {
                 number: bomNumber,
+                productName: productName,
                 date: new Date().toLocaleDateString("en-GB").replace(/\//g, "-"),
                 approvedBy: auth.approvedBy,
                 status: "Approved",
@@ -145,6 +149,27 @@ function EditBOMContent() {
         <Box>
             <CommonCard title={`Edit BOM: ${bomNumber}`}>
                 <Box sx={{ p: 0.25 }}>
+                    <Box sx={{ mb: 3, px: 1 }}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Product Name"
+                                    placeholder="Enter dynamic product name (e.g. D8 Smart Device)"
+                                    value={productName}
+                                    onChange={(e) => setProductName(e.target.value)}
+                                    size="small"
+                                    sx={{
+                                        "& .MuiOutlinedInput-root": {
+                                            bgcolor: "white",
+                                            "&:hover > fieldset": { borderColor: "#1172ba" },
+                                        },
+                                    }}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Box>
+
                     <MaterialListSpecifications
                         materials={materials}
                         onAdd={addMaterial}

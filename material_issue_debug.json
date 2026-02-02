@@ -1,0 +1,15 @@
+[
+  {
+    "id": "cf7d",
+    "productName": "Scanbo D8",
+    "bomNumber": "BOM-D8",
+    "requiredQty": "2",
+    "startDate": "2026-02-01",
+    "endDate": "2026-02-02",
+    "requestedBy": "ME",
+    "approvedBy": "ME",
+    "requestNo": "MIR-2026-503",
+    "status": "Pending",
+    "createdAt": "2026-02-02T06:43:51.240Z"
+  }
+]

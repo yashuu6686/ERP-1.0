@@ -1,47 +1,40 @@
 "use client";
-import React, { useState } from "react";
-import { Box, Chip, IconButton, Tooltip } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Box, Chip, IconButton, Tooltip, Typography } from "@mui/material";
 import { Download, Edit, Visibility } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
 import GlobalTable from "../../components/GlobalTable";
 import EditIcon from '@mui/icons-material/Edit';
 
-const ordersData = [
-  {
-    id: 1,
-    orderNo: "SO-001",
-    products: 5,
-    customerName: "ABC Pvt Ltd",
-    orderDate: "05 Jan 2026",
-    contact: "9876543210",
-    address: "Mumbai, India",
-    deliveryDate: "15 Jan 2026",
-    status: "Pending",
-    reference: "REF-001",
-  },
-  {
-    id: 2,
-    orderNo: "SO-002",
-    products: 3,
-    customerName: "XYZ Industries",
-    orderDate: "08 Jan 2026",
-    contact: "9123456789",
-    address: "Pune, India",
-    deliveryDate: "18 Jan 2026",
-    status: "Completed",
-    reference: "REF-002",
-  },
-];
+import axiosInstance from "../../axios/axiosInstance";
+import Loader from "../../components/Loader";
 
 export default function CustomerOrders() {
   const router = useRouter();
   const [search, setSearch] = useState("");
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const filtered = ordersData.filter(
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get("/orders");
+        setOrders(Array.isArray(response.data) ? response.data : []);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOrders();
+  }, []);
+
+  const filtered = orders.filter(
     (o) =>
-      o.orderNo.toLowerCase().includes(search.toLowerCase()) ||
-      o.customerName.toLowerCase().includes(search.toLowerCase())
+      o.orderNo?.toLowerCase().includes(search.toLowerCase()) ||
+      o.customerName?.toLowerCase().includes(search.toLowerCase())
   );
 
   const columns = [
@@ -113,7 +106,7 @@ export default function CustomerOrders() {
           <Tooltip title="View Details">
             <IconButton
               size="small"
-              onClick={() => router.push(`/production-inspection/${row.id}`)}
+              onClick={() => router.push(`/orders/${row.id}`)}
               sx={{
                 color: "rgb(17, 114, 186)",
                 bgcolor: "#f1f5f9",
@@ -155,7 +148,16 @@ export default function CustomerOrders() {
         searchValue={search}
         onSearchChange={(e) => setSearch(e.target.value)}
       >
-        <GlobalTable columns={columns} data={filtered} />
+        {loading ? (
+          <Loader message="Loading orders from server..." />
+        ) : filtered.length > 0 ? (
+          <GlobalTable columns={columns} data={filtered} />
+        ) : (
+          <Box sx={{ p: 4, textAlign: 'center', color: '#64748b' }}>
+            <Typography variant="body1">No orders found.</Typography>
+            <Typography variant="caption">Try adding a new order or check your connection.</Typography>
+          </Box>
+        )}
       </CommonCard>
     </Box>
   );

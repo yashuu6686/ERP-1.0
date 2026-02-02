@@ -8,7 +8,12 @@ import TextField from "@mui/material/TextField";
 
 import Assignment from "@mui/icons-material/Assignment";
 
-const ProductDetailsSection = ({ data, onChange }) => {
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+
+const ProductDetailsSection = ({ data, onChange, materialRequests = [], onRequestChange, isEdit = false }) => {
     return (
         <Card
             elevation={0}
@@ -37,6 +42,23 @@ const ProductDetailsSection = ({ data, onChange }) => {
             <CardContent sx={{ padding: 3 }}>
                 <Grid container spacing={3}>
                     <Grid item size={{ xs: 12, sm: 6, md: 2.4 }}>
+                        <FormControl fullWidth size="small">
+                            <InputLabel>Material Request No.</InputLabel>
+                            <Select
+                                value={data.materialRequestNo || ""}
+                                label="Material Request No."
+                                onChange={(e) => onRequestChange(e.target.value)}
+                                disabled={isEdit}
+                            >
+                                {materialRequests.map((req) => (
+                                    <MenuItem key={req.id} value={req.requestNo}>
+                                        {req.requestNo}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    <Grid item size={{ xs: 12, sm: 6, md: 2.4 }}>
                         <TextField
                             fullWidth
                             label="Product Name"
@@ -44,6 +66,7 @@ const ProductDetailsSection = ({ data, onChange }) => {
                             size="small"
                             value={data.productName}
                             onChange={(e) => onChange("productName", e.target.value)}
+                            disabled={!!data.materialRequestNo}
                         />
                     </Grid>
                     <Grid item size={{ xs: 12, sm: 6, md: 2.4 }}>
@@ -65,6 +88,7 @@ const ProductDetailsSection = ({ data, onChange }) => {
                             type="number"
                             value={data.checkedQuantity}
                             onChange={(e) => onChange("checkedQuantity", e.target.value)}
+                            disabled={!!data.materialRequestNo}
                         />
                     </Grid>
                     <Grid item size={{ xs: 12, sm: 6, md: 2.4 }}>
