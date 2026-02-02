@@ -286,6 +286,58 @@ export default function MaterialInspectionForm() {
           }
         }
 
+        // --- NEW: Update Store Inventory Logic ---
+        try {
+          const acceptedQty = Number(summaryData.acceptedQuantity) || 0;
+          if (acceptedQty > 0) {
+            const storeEndpoints = ["/store", "/it-goods", "/finish-goods", "/other-goods"];
+            let isMaterialFoundAcrossTabs = false;
+
+            for (const endpoint of storeEndpoints) {
+              const storeRes = await axiosInstance.get(endpoint);
+              const storeItems = storeRes.data || [];
+
+              // Find matching material by name (case insensitive)
+              const existingItem = storeItems.find(item =>
+                (item.name || item.itemName || "").toLowerCase() === materialData.materialName.toLowerCase() ||
+                (item.code || item.id || "").toLowerCase() === materialData.grnNumber.toLowerCase()
+              );
+
+              if (existingItem) {
+                // Found existing material, update its quantity
+                const currentQty = Number(existingItem.available || existingItem.stock || 0);
+                const updatedItem = {
+                  ...existingItem,
+                  available: currentQty + acceptedQty,
+                  updated: new Date().toISOString().split("T")[0]
+                };
+
+                await axiosInstance.put(`${endpoint}/${existingItem.id}`, updatedItem);
+                isMaterialFoundAcrossTabs = true;
+                console.log(`Updated stock for ${materialData.materialName} in ${endpoint}`);
+                break;
+              }
+            }
+
+            // If material was not found in any existing tab, add it to 'Other Goods'
+            if (!isMaterialFoundAcrossTabs) {
+              const newOtherItem = {
+                name: materialData.materialName,
+                code: materialData.grnNumber || `MAT-${Math.floor(Math.random() * 1000)}`,
+                category: "Other Goods",
+                available: acceptedQty,
+                minimum: 10,
+                updated: new Date().toISOString().split("T")[0]
+              };
+              await axiosInstance.post("/other-goods", newOtherItem);
+              console.log(`Added new material ${materialData.materialName} to Other Goods`);
+            }
+          }
+        } catch (storeError) {
+          console.error("Failed to sync with store inventory:", storeError);
+        }
+        // ------------------------------------------
+
         alert(`Inspection ${isEditMode ? "Updated" : "Submitted"} Successfully!`);
         router.push("/incoming-inspection");
       }

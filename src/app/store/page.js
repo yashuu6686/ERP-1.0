@@ -59,9 +59,35 @@ export default function Store() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSave = () => {
-    console.log("Material Saved:", form);
-    setOpenDialog(false);
+  const handleSave = async () => {
+    try {
+      const endpoint = form.category || "/store";
+      const payload = {
+        ...form,
+        available: Number(form.available) || 0,
+        minimum: Number(form.minimum) || 0,
+        updated: new Date().toISOString().split("T")[0]
+      };
+
+      const response = await axiosInstance.post(endpoint, payload);
+      if (response.status === 201 || response.status === 200) {
+        alert("Material added successfully!");
+        setOpenDialog(false);
+        setForm({
+          name: "",
+          code: "",
+          category: "",
+          available: "",
+          minimum: "",
+          unit: "",
+          location: "",
+        });
+        fetchData();
+      }
+    } catch (error) {
+      console.error("Error saving material:", error);
+      alert("Failed to save material.");
+    }
   };
 
   const columns = [
@@ -110,6 +136,16 @@ export default function Store() {
       label: "Minimum Qty",
       align: "center",
       render: (row) => row.minimum ?? "-",
+    },
+    {
+      label: "Unit",
+      align: "center",
+      render: (row) => row.unit || "Pcs",
+    },
+    {
+      label: "Location",
+      align: "center",
+      render: (row) => row.location || "-",
     },
     {
       label: "Last Updated",

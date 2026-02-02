@@ -5,6 +5,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
+import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
 import Save from "@mui/icons-material/Save";
 
@@ -14,6 +15,22 @@ const AddMaterialDialog = ({ open, handleClose, form, handleChange, handleSave }
             <DialogTitle sx={{ fontWeight: 700 }}>Add Raw Material</DialogTitle>
             <DialogContent dividers>
                 <Grid container spacing={2}>
+                    <Grid item size={{ xs: 12, sm: 6 }}>
+                        <TextField
+                            select
+                            fullWidth
+                            label="Category"
+                            name="category"
+                            value={form.category}
+                            onChange={handleChange}
+                            size="small"
+                        >
+                            <MenuItem value="/store">Raw Materials</MenuItem>
+                            <MenuItem value="/it-goods">IT Items</MenuItem>
+                            <MenuItem value="/finish-goods">Finished Products</MenuItem>
+                            <MenuItem value="/other-goods">Other Goods</MenuItem>
+                        </TextField>
+                    </Grid>
                     <Grid item size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
@@ -30,16 +47,6 @@ const AddMaterialDialog = ({ open, handleClose, form, handleChange, handleSave }
                             label="Material Code"
                             name="code"
                             value={form.code}
-                            onChange={handleChange}
-                            size="small"
-                        />
-                    </Grid>
-                    <Grid item size={{ xs: 12, sm: 6 }}>
-                        <TextField
-                            fullWidth
-                            label="Category"
-                            name="category"
-                            value={form.category}
                             onChange={handleChange}
                             size="small"
                         />
