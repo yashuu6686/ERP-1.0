@@ -55,7 +55,7 @@ const menuItems = [
   { text: "Customer Orders", icon: <People />, path: "/orders" },
   { text: "Invoices", icon: <Receipt />, path: "/invoices" },
   { text: "Final Inspection", icon: <Verified />, path: "/final-inspection" },
-  { text: "Certificate Of Analysis", icon: <Science />, path: "/coa" },
+  // { text: "Certificate Of Analysis", icon: <Science />, path: "/coa" },
   {
     text: "Standard Operating Procedures",
     icon: <Description />,

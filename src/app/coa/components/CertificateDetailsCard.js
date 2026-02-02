@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { Description } from "@mui/icons-material";
 
-export default function CertificateDetailsCard() {
+export default function CertificateDetailsCard({ formData = {}, onChange }) {
     const textFieldStyle = {
         "& .MuiOutlinedInput-root": {
             bgcolor: "white",
@@ -47,17 +47,13 @@ export default function CertificateDetailsCard() {
             <CardContent sx={{ background: "linear-gradient(135deg, #f8fafc, #f1f5f9)", p: 3 }}>
                 <Grid container spacing={3}>
                     {[
-                        { label: "Certificate No.", name: "certNo" },
-                        { label: "Customer Name", name: "customer" },
-                        { label: "Order Date", name: "date", type: "date" },
-                        { label: "Delivery Address", name: "address" },
-                        { label: "Scanbo's Address", name: "scanboAddress" },
-                        { label: "Order No.", name: "orderNo" },
-                        { label: "Scanbo's Email", name: "email", type: "email" },
-                        { label: "Model No.", name: "model" },
-                        { label: "Device Serial No.", name: "serial" },
-                        { label: "Quantity", name: "qty", type: "number" },
-                        { label: "Batch/Lot No.", name: "batch" },
+                        { label: "Certificate No.", name: "coaNumber" },
+                        { label: "Product Name", name: "productName" },
+                        { label: "Issue Date", name: "issueDate", type: "date" },
+                        { label: "Expiry Date", name: "expiryDate", type: "date" },
+                        { label: "Batch/Lot No.", name: "batchNo" },
+                        { label: "Manufacturing Date", name: "manufacturingDate", type: "date" },
+                        { label: "Quantity", name: "quantity", type: "number" },
                     ].map((field) => (
                         <Grid size={{ xs: 12, sm: 6, md: 4 }} key={field.name}>
                             <TextField
@@ -65,6 +61,8 @@ export default function CertificateDetailsCard() {
                                 size="small"
                                 label={field.label}
                                 type={field.type || "text"}
+                                value={formData[field.name] || ""}
+                                onChange={(e) => onChange?.(field.name, e.target.value)}
                                 InputLabelProps={field.type === "date" ? { shrink: true } : {}}
                                 variant="outlined"
                                 sx={textFieldStyle}

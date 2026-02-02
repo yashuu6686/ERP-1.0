@@ -8,7 +8,7 @@ import TextField from "@mui/material/TextField";
 
 import Receipt from "@mui/icons-material/Receipt";
 
-const InvoiceDetailsSection = () => {
+const InvoiceDetailsSection = ({ formData = {}, onChange }) => {
     return (
         <Card
             elevation={0}
@@ -29,7 +29,7 @@ const InvoiceDetailsSection = () => {
                 }}
             >
                 <Receipt sx={{ color: "#fff" }} />
-                <Typography  variant="subtitle1" sx={{ color: "#fff", fontWeight: 600 }}>
+                <Typography variant="subtitle1" sx={{ color: "#fff", fontWeight: 600 }}>
                     Invoice Details
                 </Typography>
             </Box>
@@ -41,6 +41,8 @@ const InvoiceDetailsSection = () => {
                             label="Invoice No."
                             variant="outlined"
                             size="small"
+                            value={formData.invoiceNumber || ""}
+                            onChange={(e) => onChange?.("invoiceNumber", e.target.value)}
                             sx={{
                                 "& .MuiOutlinedInput-root": {
                                     bgcolor: "white",
@@ -55,6 +57,8 @@ const InvoiceDetailsSection = () => {
                             type="date"
                             variant="outlined"
                             size="small"
+                            value={formData.invoiceDate || ""}
+                            onChange={(e) => onChange?.("invoiceDate", e.target.value)}
                             InputLabelProps={{ shrink: true }}
                             sx={{
                                 "& .MuiOutlinedInput-root": { bgcolor: "white" },
@@ -68,6 +72,8 @@ const InvoiceDetailsSection = () => {
                             type="date"
                             variant="outlined"
                             size="small"
+                            value={formData.dueDate || ""}
+                            onChange={(e) => onChange?.("dueDate", e.target.value)}
                             InputLabelProps={{ shrink: true }}
                             sx={{
                                 "& .MuiOutlinedInput-root": { bgcolor: "white" },

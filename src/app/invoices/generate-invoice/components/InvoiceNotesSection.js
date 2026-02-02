@@ -8,7 +8,7 @@ import TextField from "@mui/material/TextField";
 
 import LocalOffer from "@mui/icons-material/LocalOffer";
 
-const InvoiceNotesSection = () => {
+const InvoiceNotesSection = ({ formData = {}, onChange }) => {
     return (
         <Card
             elevation={0}
@@ -39,36 +39,24 @@ const InvoiceNotesSection = () => {
                     <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
-                            label="Discount"
+                            label="Terms & Conditions"
                             size="small"
+                            value={formData.termsAndConditions || ""}
+                            onChange={(e) => onChange?.("termsAndConditions", e.target.value)}
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
                         />
                     </Grid>
                     <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
-                            label="Other Discount"
+                            label="Additional Notes"
                             size="small"
+                            value={formData.additionalNotes || ""}
+                            onChange={(e) => onChange?.("additionalNotes", e.target.value)}
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
                         />
                     </Grid>
-                    <Grid item xs={12} size={{ xs: 12 }}>
-                        <TextField
-                            fullWidth
-                            label="Paid Amount"
-                            size="small"
-                            sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
-                        />
-                    </Grid>
-                    <Grid item xs={12} size={{ xs: 12 }}>
-                        <TextField
-                            fullWidth
-                            label="Note"
-                            multiline
-                            rows={3}
-                            sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
-                        />
-                    </Grid>
+
                 </Grid>
             </CardContent>
         </Card>

@@ -17,7 +17,7 @@ import Add from "@mui/icons-material/Add";
 import Delete from "@mui/icons-material/Delete";
 import Inventory from "@mui/icons-material/Inventory";
 
-const InvoiceProductsTable = ({ products, onAddProduct, onRemoveProduct }) => {
+const InvoiceProductsTable = ({ products, onAddProduct, onRemoveProduct, onProductChange }) => {
     return (
         <Card
             elevation={0}
@@ -105,6 +105,8 @@ const InvoiceProductsTable = ({ products, onAddProduct, onRemoveProduct }) => {
                                         size="small"
                                         placeholder="Item Name"
                                         fullWidth
+                                        value={product.itemName || ""}
+                                        onChange={(e) => onProductChange?.(product.id, "itemName", e.target.value)}
                                         sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
                                     />
                                 </TableCell>
@@ -113,6 +115,8 @@ const InvoiceProductsTable = ({ products, onAddProduct, onRemoveProduct }) => {
                                         size="small"
                                         placeholder="HSN/SAC"
                                         fullWidth
+                                        value={product.hsnSac || ""}
+                                        onChange={(e) => onProductChange?.(product.id, "hsnSac", e.target.value)}
                                         sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
                                     />
                                 </TableCell>
@@ -120,6 +124,9 @@ const InvoiceProductsTable = ({ products, onAddProduct, onRemoveProduct }) => {
                                     <TextField
                                         size="small"
                                         placeholder="Qty"
+                                        type="number"
+                                        value={product.quantity || ""}
+                                        onChange={(e) => onProductChange?.(product.id, "quantity", e.target.value)}
                                         sx={{
                                             width: 80,
                                             "& .MuiOutlinedInput-root": { bgcolor: "white" },
@@ -130,6 +137,9 @@ const InvoiceProductsTable = ({ products, onAddProduct, onRemoveProduct }) => {
                                     <TextField
                                         size="small"
                                         placeholder="Price"
+                                        type="number"
+                                        value={product.price || ""}
+                                        onChange={(e) => onProductChange?.(product.id, "price", e.target.value)}
                                         sx={{
                                             width: 100,
                                             "& .MuiOutlinedInput-root": { bgcolor: "white" },
@@ -140,6 +150,9 @@ const InvoiceProductsTable = ({ products, onAddProduct, onRemoveProduct }) => {
                                     <TextField
                                         size="small"
                                         placeholder="Tax %"
+                                        type="number"
+                                        value={product.taxPercent || ""}
+                                        onChange={(e) => onProductChange?.(product.id, "taxPercent", e.target.value)}
                                         sx={{
                                             width: 80,
                                             "& .MuiOutlinedInput-root": { bgcolor: "white" },

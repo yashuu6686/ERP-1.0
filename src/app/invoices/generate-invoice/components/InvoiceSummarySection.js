@@ -7,7 +7,11 @@ import Divider from "@mui/material/Divider";
 
 import Assessment from "@mui/icons-material/Assessment";
 
-const InvoiceSummarySection = () => {
+const InvoiceSummarySection = ({ formData = {}, products = [] }) => {
+    const subtotal = products.reduce((sum, p) => sum + ((parseFloat(p.quantity) || 0) * (parseFloat(p.price) || 0)), 0);
+    const tax = products.reduce((sum, p) => sum + (parseFloat(p.taxAmount) || 0), 0);
+    const discount = parseFloat(formData.discount) || 0;
+    const total = subtotal + tax - discount;
     return (
         <Card
             elevation={0}
@@ -43,10 +47,9 @@ const InvoiceSummarySection = () => {
                     }}
                 >
                     {[
-                        { label: "Subtotal", value: "₹1,125" },
-                        { label: "Discount", value: "-₹21,335" },
-                        { label: "Other Discount", value: "-₹3,847" },
-                        { label: "GST", value: "₹0" },
+                        { label: "Subtotal", value: `₹${subtotal.toFixed(2)}` },
+                        { label: "Tax (GST)", value: `₹${tax.toFixed(2)}` },
+                        { label: "Discount", value: `-₹${discount.toFixed(2)}` },
                     ].map((item, idx) => (
                         <Box
                             key={idx}
@@ -64,7 +67,7 @@ const InvoiceSummarySection = () => {
                             Grand Total
                         </Typography>
                         <Typography variant="h6" fontWeight={700} color="primary">
-                            ₹25,222.50
+                            ₹{total.toFixed(2)}
                         </Typography>
                     </Box>
                 </Box>

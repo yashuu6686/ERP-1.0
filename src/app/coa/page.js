@@ -1,121 +1,156 @@
 "use client";
-import React from "react";
-import {
-  Box,
-  Button,
-} from "@mui/material";
-import {
-  Save,
-} from "@mui/icons-material";
+import React, { useState, useEffect } from "react";
+import { Box, Chip, IconButton, Typography } from "@mui/material";
+import { Visibility, Edit, Add, Download } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
-import CertificateDetailsCard from "./components/CertificateDetailsCard";
-import ProductDetailsCard from "./components/ProductDetailsCard";
-import TestResultsCard from "./components/TestResultsCard";
-import AuthorizationCard from "./components/AuthorizationCard";
+import GlobalTable from "../../components/GlobalTable";
+import axiosInstance from "@/axios/axiosInstance";
+import Loader from "@/components/Loader";
 
-export default function CertificateOfAnalysis() {
-  const [mounted, setMounted] = React.useState(false);
-  const [testRows, setTestRows] = React.useState([
-    {
-      id: 1,
-      parameters: "",
-      specification: "",
-      method: "",
-      result: "",
-      status: "",
-    },
-  ]);
+export default function COAListPage() {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
-  React.useEffect(() => {
-    setMounted(true);
+  useEffect(() => {
+    fetchData();
   }, []);
 
-  const addTestRow = () => {
-    const newId = testRows.length > 0 ? Math.max(...testRows.map(row => row.id)) + 1 : 1;
-    setTestRows([
-      ...testRows,
-      {
-        id: newId,
-        parameters: "",
-        specification: "",
-        method: "",
-        result: "",
-        status: "",
-      },
-    ]);
-  };
-
-  const deleteTestRow = (id) => {
-    if (testRows.length > 1) {
-      setTestRows(testRows.filter((row) => row.id !== id));
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get("/coa");
+      setData(response.data || []);
+    } catch (error) {
+      console.error("Error fetching COA data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleTestRowChange = (id, field, value) => {
-    setTestRows(
-      testRows.map((row) => (row.id === id ? { ...row, [field]: value } : row))
-    );
-  };
+  const columns = [
+    {
+      label: "Sr. No.",
+      align: "center",
+      render: (row, index) => (
+        <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 500 }}>
+          {index + 1}
+        </Typography>
+      ),
+    },
+    {
+      label: "COA Number",
+      align: "center",
+      render: (row) => (
+        <Typography variant="body2" sx={{ fontWeight: 700, color: "#1172ba" }}>
+          {row.coaNumber}
+        </Typography>
+      ),
+    },
+    {
+      label: "Product Name",
+      accessor: "productName",
+      align: "center",
+    },
+    {
+      label: "Batch No.",
+      accessor: "batchNo",
+      align: "center",
+    },
+    {
+      label: "Issue Date",
+      accessor: "issueDate",
+      align: "center",
+    },
+    {
+      label: "Expiry Date",
+      accessor: "expiryDate",
+      align: "center",
+    },
+    {
+      label: "Status",
+      align: "center",
+      render: (row) => (
+        <Chip
+          label={row.status}
+          size="small"
+          sx={{
+            fontWeight: 700,
+            bgcolor:
+              row.status === "Approved"
+                ? "#dcfce7"
+                : row.status === "Pending"
+                  ? "#fef9c3"
+                  : "#fee2e2",
+            color:
+              row.status === "Approved"
+                ? "#15803d"
+                : row.status === "Pending"
+                  ? "#a16207"
+                  : "#b91c1c",
+          }}
+        />
+      ),
+    },
+    {
+      label: "Actions",
+      align: "center",
+      render: (row) => (
+        <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
+          <IconButton
+            size="small"
+            onClick={() => router.push(`/coa/view-coa?id=${row.id}`)}
+            sx={{
+              color: "#0891b2",
+              bgcolor: "#ecfeff",
+              "&:hover": { bgcolor: "#cffafe" },
+            }}
+          >
+            <Visibility fontSize="small" />
+          </IconButton>
+          <IconButton
+            size="small"
+            onClick={() => router.push(`/coa/create-coa?id=${row.id}`)}
+            sx={{
+              color: "rgb(17, 114, 186)",
+              bgcolor: "#f1f5f9",
+              "&:hover": { bgcolor: "#e2e8f0" },
+            }}
+          >
+            <Edit fontSize="small" />
+          </IconButton>
+          <IconButton
+            size="small"
+            onClick={() => window.print()}
+            sx={{
+              color: "#059669",
+              bgcolor: "#ecfdf5",
+              "&:hover": { bgcolor: "#d1fae5" },
+            }}
+          >
+            <Download fontSize="small" />
+          </IconButton>
+        </Box>
+      ),
+    },
+  ];
 
-  if (!mounted) return null;
+  if (loading) return <Loader fullPage message="Loading COA Records..." />;
 
   return (
-    <Box >
-      <CommonCard title="Certificate of Analysis">
-        {/* Certificate Details Section */}
-        <CertificateDetailsCard />
-
-        {/* Product Details Section */}
-        <ProductDetailsCard />
-
-        {/* Test Results Section */}
-        <TestResultsCard
-          testRows={testRows}
-          addTestRow={addTestRow}
-          deleteTestRow={deleteTestRow}
-          handleTestRowChange={handleTestRowChange}
-        />
-
-        {/* Authorization Section */}
-        <AuthorizationCard />
-
-        {/* Action Buttons */}
-        <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-          <Button
-            variant="outlined"
-            sx={{
-              borderColor: "#1172ba",
-              color: "#1172ba",
-              borderRadius: 2,
-              px: 4,
-              py: 1.5,
-              textTransform: "none",
-              fontWeight: 600,
-              "&:hover": {
-                borderColor: "#0d5a94",
-                bgcolor: "#f0f7ff",
-              },
-            }}
-          >
-            Reset
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={<Save />}
-            sx={{
-              backgroundColor: "#1172ba",
-              borderRadius: 2,
-              px: 4,
-              py: 1.5,
-              textTransform: "none",
-              fontWeight: 600,
-              "&:hover": { backgroundColor: "#0d5a94" },
-            }}
-          >
-            Save Certificate
-          </Button>
-        </Box>
-      </CommonCard>
-    </Box>
+    <CommonCard
+      title="Certificate of Analysis - Tracking"
+      actions={[
+        {
+          label: "Create COA",
+          icon: Add,
+          onClick: () => router.push("/coa/create-coa"),
+          variant: "contained",
+        },
+      ]}
+    >
+      <GlobalTable data={data} columns={columns} />
+    </CommonCard>
   );
 }

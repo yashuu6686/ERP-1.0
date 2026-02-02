@@ -8,7 +8,7 @@ import TextField from "@mui/material/TextField";
 
 import LocalShipping from "@mui/icons-material/LocalShipping";
 
-const DeliveryInformationSection = () => {
+const DeliveryInformationSection = ({ formData = {}, onChange }) => {
     return (
         <Card
             elevation={0}
@@ -39,24 +39,30 @@ const DeliveryInformationSection = () => {
                     <Grid item xs={12} size={{ xs: 12 }}>
                         <TextField
                             fullWidth
-                            label="Organization"
+                            label="Delivery Address"
                             size="small"
+                            value={formData.deliveryAddress || ""}
+                            onChange={(e) => onChange?.("deliveryAddress", e.target.value)}
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
                         />
                     </Grid>
                     <Grid item xs={12} size={{ xs: 12 }}>
                         <TextField
                             fullWidth
-                            label="Address"
+                            label="Contact Person"
                             size="small"
+                            value={formData.contactPerson || ""}
+                            onChange={(e) => onChange?.("contactPerson", e.target.value)}
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
                         />
                     </Grid>
                     <Grid item xs={12} size={{ xs: 12 }}>
                         <TextField
                             fullWidth
-                            label="Contact No."
+                            label="Phone"
                             size="small"
+                            value={formData.phone || ""}
+                            onChange={(e) => onChange?.("phone", e.target.value)}
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
                         />
                     </Grid>
