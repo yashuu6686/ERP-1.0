@@ -109,20 +109,23 @@ function ViewBOMContent() {
 
     useEffect(() => {
         const fetchBOM = async () => {
+            if (!id) return;
             try {
                 setLoading(true);
-                // Implementation for real API if needed
-                // const response = await axiosInstance.get(`/bom/${id}`);
-                // setBom(response.data);
-
-                // For now, using simulation
-                setTimeout(() => {
-                    setBom(dummyBOM);
-                    setLoading(false);
-                }, 800);
+                const response = await axiosInstance.get(`/bom/${id}`);
+                setBom(response.data);
             } catch (error) {
                 console.error("Error fetching BOM:", error);
-                setBom(dummyBOM); // Fallback to dummy
+                // Simulation fallback for d8 if server fails
+                if (id === "d8") {
+                    setBom(d8BOM);
+                } else if (id === "fe82") {
+                    // D8 from server might have this ID
+                    setBom(d8BOM);
+                } else {
+                    setBom(dummyBOM);
+                }
+            } finally {
                 setLoading(false);
             }
         };
@@ -176,6 +179,7 @@ function ViewBOMContent() {
                     <Button
                         variant="contained"
                         startIcon={<EditIcon />}
+                        onClick={() => router.push(`/bom/edit-bom?id=${id}`)}
                         sx={{
                             textTransform: "none",
                             fontWeight: 700,
@@ -212,13 +216,19 @@ function ViewBOMContent() {
                                     </TableHead>
                                     <TableBody>
                                         {bom.materials.map((item, index) => (
-                                            <TableRow key={item.id} hover sx={{ "&:hover": { bgcolor: "#f1f5f9" } }}>
+                                            <TableRow key={index} hover sx={{ "&:hover": { bgcolor: "#f1f5f9" } }}>
                                                 <TableCell sx={{ fontWeight: 700, color: "#94a3b8" }}>{index + 1}</TableCell>
                                                 <TableCell>
-                                                    <Typography variant="body2" sx={{ fontWeight: 800, color: "#1172ba" }}>{item.scanboPartNumber}</Typography>
-                                                    <Typography variant="caption" sx={{ color: "text.secondary" }}>Supp: {item.supplierPartNumber}</Typography>
+                                                    <Typography variant="body2" sx={{ fontWeight: 800, color: "#1172ba" }}>
+                                                        {item.scanboPartNumber || item.scanboPartNo}
+                                                    </Typography>
+                                                    <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                                                        Supp: {item.supplierPartNumber || item.oemPartNo || "-"}
+                                                    </Typography>
                                                 </TableCell>
-                                                <TableCell sx={{ fontWeight: 700 }}>{item.materialName}</TableCell>
+                                                <TableCell sx={{ fontWeight: 700 }}>
+                                                    {item.materialName || item.description}
+                                                </TableCell>
                                                 <TableCell sx={{ textAlign: "center" }}>
                                                     <Box sx={{
                                                         display: "inline-block",
@@ -229,12 +239,14 @@ function ViewBOMContent() {
                                                         borderRadius: 1,
                                                         fontWeight: 800
                                                     }}>
-                                                        {item.quantity}
+                                                        {item.quantity || item.qty}
                                                     </Box>
                                                 </TableCell>
-                                                <TableCell sx={{ fontWeight: 600, color: "#475569" }}>{item.manufacturerName}</TableCell>
+                                                <TableCell sx={{ fontWeight: 600, color: "#475569" }}>
+                                                    {item.manufacturerName || item.manufacturer || item.oemSupplier}
+                                                </TableCell>
                                                 <TableCell sx={{ color: "#64748b", fontSize: "0.85rem", maxWidth: 300 }}>
-                                                    {item.technicalDetails}
+                                                    {item.technicalDetails || item.specs}
                                                 </TableCell>
                                             </TableRow>
                                         ))}

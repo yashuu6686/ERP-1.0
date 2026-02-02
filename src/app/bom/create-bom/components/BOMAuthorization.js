@@ -8,7 +8,7 @@ import TextField from "@mui/material/TextField";
 
 import FactCheck from "@mui/icons-material/FactCheck";
 
-const BOMAuthorization = () => {
+const BOMAuthorization = ({ reviewedBy, approvedBy, onUpdate }) => {
     const textFieldStyle = {
         "& .MuiOutlinedInput-root": {
             bgcolor: "white",
@@ -53,6 +53,8 @@ const BOMAuthorization = () => {
                             label="Reviewed By"
                             placeholder="Enter reviewer name"
                             sx={textFieldStyle}
+                            value={reviewedBy}
+                            onChange={(e) => onUpdate("reviewedBy", e.target.value)}
                         />
                     </Grid>
                     <Grid item size={{ xs: 12, sm: 6, md: 6 }}>
@@ -62,6 +64,8 @@ const BOMAuthorization = () => {
                             label="Approved By"
                             placeholder="Enter approver name"
                             sx={textFieldStyle}
+                            value={approvedBy}
+                            onChange={(e) => onUpdate("approvedBy", e.target.value)}
                         />
                     </Grid>
                 </Grid>

@@ -9,6 +9,8 @@ import Download from "@mui/icons-material/Download";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
 import GlobalTable from "../../components/GlobalTable";
+import axiosInstance from "../../axios/axiosInstance";
+import { useEffect } from "react";
 
 const bomData = [
   {
@@ -28,9 +30,25 @@ const bomData = [
 export default function BOMList() {
   const router = useRouter();
   const [search, setSearch] = useState("");
+  const [bomData, setBomData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const filtered = bomData.filter((b) =>
-    b.number.toLowerCase().includes(search.toLowerCase())
+  useEffect(() => {
+    const fetchBOMs = async () => {
+      try {
+        const response = await axiosInstance.get("/bom");
+        setBomData(response.data);
+      } catch (error) {
+        console.error("Error fetching BOMs:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBOMs();
+  }, []);
+
+  const filtered = (bomData || []).filter((b) =>
+    b.number?.toLowerCase().includes(search.toLowerCase())
   );
 
   const columns = [
@@ -70,7 +88,11 @@ export default function BOMList() {
           >
             <Visibility fontSize="small" />
           </IconButton>
-          <IconButton color="warning" size="small">
+          <IconButton
+            color="warning"
+            size="small"
+            onClick={() => router.push(`/bom/edit-bom?id=${row.id}`)}
+          >
             <Edit fontSize="small" />
           </IconButton>
           <IconButton color="success" size="small">
@@ -91,7 +113,7 @@ export default function BOMList() {
         searchValue={search}
         onSearchChange={(e) => setSearch(e.target.value)}
       >
-        <GlobalTable columns={columns} data={filtered} />
+        <GlobalTable columns={columns} data={filtered} loading={loading} />
       </CommonCard>
     </Box>
   );

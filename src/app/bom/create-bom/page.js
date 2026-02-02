@@ -4,23 +4,22 @@ import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Save from "@mui/icons-material/Save";
+import { useRouter } from "next/navigation";
 import CommonCard from "../../../components/CommonCard";
 import MaterialListSpecifications from "./components/MaterialListSpecifications";
 import BOMAuthorization from "./components/BOMAuthorization";
+import axiosInstance from "../../../axios/axiosInstance";
 
 export default function BOMCreator() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [auth, setAuth] = useState({
+    reviewedBy: "",
+    approvedBy: "",
+  });
   const [materials, setMaterials] = useState([
     {
       id: 1,
-      scanboPartNumber: "SIPL.ASY.PBT.ool",
-      supplierPartNumber: "lktp.20240501-0011",
-      quantity: "1",
-      materialName: "upper case",
-      manufacturerName: "xiamen Linktop Technology co., Ltd",
-      technicalDetails: "main pcb board with sensors",
-    },
-    {
-      id: 2,
       scanboPartNumber: "",
       supplierPartNumber: "",
       quantity: "",
@@ -57,6 +56,48 @@ export default function BOMCreator() {
     );
   };
 
+  const updateAuth = (field, value) => {
+    setAuth({ ...auth, [field]: value });
+  };
+
+  const handleSave = async () => {
+    try {
+      setLoading(true);
+      const payload = {
+        number: `BOM-${new Date().getTime().toString().slice(-6)}`,
+        date: new Date().toLocaleDateString("en-GB").replace(/\//g, "-"),
+        approvedBy: auth.approvedBy,
+        status: "Approved",
+        materials: materials.map((m, idx) => ({
+          sNo: idx + 1,
+          oemSupplier: m.manufacturerName,
+          oemPartNo: m.supplierPartNumber,
+          qty: m.quantity,
+          description: m.materialName,
+          bubbleNo: "-",
+          manufacturer: m.manufacturerName,
+          scanboPartNo: m.scanboPartNumber,
+          specs: m.technicalDetails,
+        })),
+        authorization: {
+          reviewedBy: auth.reviewedBy,
+          reviewedDate: new Date().toLocaleDateString("en-GB").replace(/\//g, "-"),
+          approvedBy: auth.approvedBy,
+          approvedDate: new Date().toLocaleDateString("en-GB").replace(/\//g, "-"),
+        },
+      };
+
+      await axiosInstance.post("/bom", payload);
+      alert("BOM saved successfully to server!");
+      router.push("/bom");
+    } catch (error) {
+      console.error("Error saving BOM:", error);
+      alert("Failed to save BOM to server.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Box>
       <CommonCard title="Create BOM">
@@ -68,12 +109,18 @@ export default function BOMCreator() {
             onUpdate={updateMaterial}
           />
 
-          <BOMAuthorization />
+          <BOMAuthorization
+            reviewedBy={auth.reviewedBy}
+            approvedBy={auth.approvedBy}
+            onUpdate={updateAuth}
+          />
 
           {/* Action Buttons */}
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mt: 2 }}>
             <Button
               variant="outlined"
+              disabled={loading}
+              onClick={() => router.push("/bom")}
               sx={{
                 borderColor: "#1172ba",
                 color: "#1172ba",
@@ -88,11 +135,13 @@ export default function BOMCreator() {
                 },
               }}
             >
-              Reset
+              Cancel
             </Button>
             <Button
               variant="contained"
               startIcon={<Save />}
+              onClick={handleSave}
+              disabled={loading}
               sx={{
                 backgroundColor: "#1172ba",
                 borderRadius: 2,
@@ -103,7 +152,7 @@ export default function BOMCreator() {
                 "&:hover": { backgroundColor: "#0d5a94" },
               }}
             >
-              Save BOM
+              {loading ? "Saving..." : "Save BOM"}
             </Button>
           </Box>
         </Box>

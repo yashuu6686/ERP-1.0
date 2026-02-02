@@ -12,6 +12,7 @@ import Download from "@mui/icons-material/Download";
 import CreateMaterialRequest from "./components/CreateMaterialRequest";
 import CommonCard from "../../components/CommonCard";
 import GlobalTable from "../../components/GlobalTable";
+import { useRouter } from "next/navigation";
 
 const requestsData = [
   {
