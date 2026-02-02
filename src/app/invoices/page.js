@@ -110,7 +110,11 @@ export default function Invoices() {
             </IconButton>
           </Tooltip>
           <Tooltip title="Edit">
-            <IconButton color="warning" size="small">
+            <IconButton
+              color="warning"
+              size="small"
+              onClick={() => router.push(`/invoices/generate-invoice?id=${row.id}`)}
+            >
               <Edit fontSize="small" />
             </IconButton>
           </Tooltip>

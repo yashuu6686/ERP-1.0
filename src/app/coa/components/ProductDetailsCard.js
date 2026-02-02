@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { Inventory } from "@mui/icons-material";
 
-export default function ProductDetailsCard() {
+export default function ProductDetailsCard({ formData = {}, onChange }) {
     const textFieldStyle = {
         "& .MuiOutlinedInput-root": {
             bgcolor: "white",

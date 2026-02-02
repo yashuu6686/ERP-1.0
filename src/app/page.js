@@ -49,7 +49,7 @@ export default function DashboardPage() {
             fontFamily: "var(--font-manrope)"
           }}
         >
-          Enterprise Dashboard Under Construction
+          Technology Platform Under Development
         </Typography>
 
         <Typography
@@ -61,8 +61,7 @@ export default function DashboardPage() {
             fontFamily: "var(--font-manrope)"
           }}
         >
-          We&apos;re working hard to bring you a comprehensive overview of your manufacturing and business operations.
-          The production analytics, KPI trackers, and reporting modules are currently being finalized.
+          We're engineering an advanced technology infrastructure to power your smart manufacturing operations. Our IoT integration, real-time monitoring systems, and automation frameworks are being optimized for peak performance.
         </Typography>
 
         <Box

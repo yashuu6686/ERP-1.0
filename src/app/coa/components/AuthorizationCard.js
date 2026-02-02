@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { FactCheck, Person, CalendarToday } from "@mui/icons-material";
 
-export default function AuthorizationCard() {
+export default function AuthorizationCard({ formData = {}, onChange }) {
     const textFieldStyle = {
         "& .MuiOutlinedInput-root": {
             bgcolor: "white",
@@ -53,6 +53,8 @@ export default function AuthorizationCard() {
                             size="small"
                             label="Analysed By"
                             placeholder="Enter Name"
+                            value={formData.analysedBy || ""}
+                            onChange={(e) => onChange?.("analysedBy", e.target.value)}
                             sx={textFieldStyle}
                             InputProps={{
                                 startAdornment: (
@@ -69,6 +71,8 @@ export default function AuthorizationCard() {
                             size="small"
                             label="Approved By"
                             placeholder="Enter Name"
+                            value={formData.approvedBy || ""}
+                            onChange={(e) => onChange?.("approvedBy", e.target.value)}
                             sx={textFieldStyle}
                             InputProps={{
                                 startAdornment: (
@@ -85,6 +89,8 @@ export default function AuthorizationCard() {
                             size="small"
                             label="Analysed Date"
                             type="date"
+                            value={formData.analysedDate || ""}
+                            onChange={(e) => onChange?.("analysedDate", e.target.value)}
                             InputLabelProps={{ shrink: true }}
                             sx={textFieldStyle}
                             InputProps={{
@@ -102,6 +108,8 @@ export default function AuthorizationCard() {
                             size="small"
                             label="Approved Date"
                             type="date"
+                            value={formData.approvedDate || ""}
+                            onChange={(e) => onChange?.("approvedDate", e.target.value)}
                             InputLabelProps={{ shrink: true }}
                             sx={textFieldStyle}
                             InputProps={{

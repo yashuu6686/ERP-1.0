@@ -8,7 +8,7 @@ import TextField from "@mui/material/TextField";
 
 import Person from "@mui/icons-material/Person";
 
-const CustomerInformationSection = () => {
+const CustomerInformationSection = ({ formData = {}, onChange }) => {
     return (
         <Card
             elevation={0}
@@ -41,6 +41,8 @@ const CustomerInformationSection = () => {
                             fullWidth
                             label="Customer Name"
                             size="small"
+                            value={formData.companyName || ""}
+                            onChange={(e) => onChange?.("companyName", e.target.value)}
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
                         />
                     </Grid>
@@ -49,6 +51,8 @@ const CustomerInformationSection = () => {
                             fullWidth
                             label="Organization"
                             size="small"
+                            value={formData.organization || ""}
+                            onChange={(e) => onChange?.("organization", e.target.value)}
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
                         />
                     </Grid>
@@ -57,6 +61,8 @@ const CustomerInformationSection = () => {
                             fullWidth
                             label="Address"
                             size="small"
+                            value={formData.address || ""}
+                            onChange={(e) => onChange?.("address", e.target.value)}
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
                         />
                     </Grid>
@@ -65,6 +71,8 @@ const CustomerInformationSection = () => {
                             fullWidth
                             label="Contact No."
                             size="small"
+                            value={formData.contact || ""}
+                            onChange={(e) => onChange?.("contact", e.target.value)}
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
                         />
                     </Grid>
@@ -73,6 +81,8 @@ const CustomerInformationSection = () => {
                             fullWidth
                             label="Drug Licence"
                             size="small"
+                            value={formData.drugLicence || ""}
+                            onChange={(e) => onChange?.("drugLicence", e.target.value)}
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
                         />
                     </Grid>
