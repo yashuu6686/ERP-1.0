@@ -29,7 +29,7 @@ export default function CompanyInfoCard() {
                 }}
             >
                 <Business />
-                <Typography variant="h6" fontWeight={600}>
+                <Typography color="white" variant="h6" fontWeight={600}>
                     Company Information
                 </Typography>
             </Box>

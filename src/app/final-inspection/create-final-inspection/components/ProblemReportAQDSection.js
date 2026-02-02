@@ -43,7 +43,7 @@ const ProblemReportAQDSection = ({
                         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                             <ReportProblem sx={{ color: "#fff" }} />
                             <Typography
-                                variant="subtitle1"
+                                 variant="h6"
                                 sx={{ color: "#fff", fontWeight: 600 }}
                             >
                                 Problem Report

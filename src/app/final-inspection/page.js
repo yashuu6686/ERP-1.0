@@ -1,65 +1,62 @@
 "use client";
-import React, { useState } from "react";
-import { Box, Chip, IconButton } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Box, Chip, IconButton, Typography } from "@mui/material";
 import { Visibility, Edit, Download } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/CommonCard";
 import GlobalTable from "../../components/GlobalTable";
-
-const finalQualityData = [
-  {
-    id: 1,
-    inspectionNo: "FIN-INS-0001",
-    total: 20,
-    approved: 18,
-    rejected: 2,
-    result: "Pass",
-    date: "01 Jan 2026",
-    remarks: "description",
-    approvedBy: "QC Head",
-    approvalDate: "20",
-  },
-  {
-    id: 2,
-    inspectionNo: "FIN-INS-0002",
-    total: 20,
-    approved: 18,
-    rejected: 2,
-    result: "Conditional",
-    date: "01 Jan 2026",
-    remarks: "description",
-    approvedBy: "QC Head",
-    approvalDate: "30",
-  },
-];
+import axiosInstance from "@/axios/axiosInstance";
+import Loader from "../../components/Loader";
 
 export default function FinalQualityCheck() {
   const router = useRouter();
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
-  const filtered = finalQualityData.filter((item) =>
-    item.inspectionNo.toLowerCase().includes(search.toLowerCase())
+  useEffect(() => {
+    fetchInspections();
+  }, []);
+
+  const fetchInspections = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get("/final-inspections");
+      setData(response.data || []);
+    } catch (error) {
+      console.error("Error fetching inspections:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filtered = data.filter((item) =>
+    (item.inspectionNo || "").toLowerCase().includes(search.toLowerCase())
   );
 
   const columns = [
     {
       label: "Sr. No.",
       align: "center",
-      render: (row, index) => index + 1,
+      render: (row, index) => (
+        <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 500 }}>
+          {index + 1}
+        </Typography>
+      ),
     },
     {
       label: "Final Inspection No",
       align: "center",
       render: (row) => (
-        <span style={{ fontWeight: 600, color: "#1172ba" }}>
+        <Typography variant="body2" sx={{ fontWeight: 700, color: "#1172ba" }}>
           {row.inspectionNo}
-        </span>
+        </Typography>
       ),
     },
     {
       label: "Total Checked",
       align: "center",
-      accessor: "total",
+      accessor: "totalChecked",
     },
     {
       label: "Approved",
@@ -77,14 +74,15 @@ export default function FinalQualityCheck() {
       render: (row) => (
         <Chip
           label={row.result}
-          color={
-            row.result === "Pass"
-              ? "success"
-              : row.result === "Fail"
-                ? "error"
-                : "warning"
-          }
           size="small"
+          sx={{
+            fontWeight: 800,
+            fontSize: "0.65rem",
+            textTransform: "uppercase",
+            borderRadius: 1.5,
+            bgcolor: row.result === "Pass" ? "#dcfce7" : row.result === "Fail" ? "#fee2e2" : "#fef9c3",
+            color: row.result === "Pass" ? "#15803d" : row.result === "Fail" ? "#b91c1c" : "#a16207",
+          }}
         />
       ),
     },
@@ -94,19 +92,9 @@ export default function FinalQualityCheck() {
       accessor: "date",
     },
     {
-      label: "Remarks",
-      align: "center",
-      accessor: "remarks",
-    },
-    {
       label: "Approved By",
       align: "center",
       accessor: "approvedBy",
-    },
-    {
-      label: "Approval Date",
-      align: "center",
-      accessor: "approvalDate",
     },
     {
       label: "Actions",
@@ -115,27 +103,25 @@ export default function FinalQualityCheck() {
         <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
           <IconButton
             size="small"
-            onClick={() => router.push(`/final-inspection/${row.id}`)}
-            sx={{
-              color: "rgb(17, 114, 186)",
-              bgcolor: "#f1f5f9",
-              "&:hover": { bgcolor: "#e2e8f0" },
-            }}
-          >
-            <Visibility fontSize="small" />
-          </IconButton>
-          <IconButton color="warning" size="small">
-            <Edit fontSize="small" />
-          </IconButton>
-          <IconButton
-            size="small"
+            onClick={() => router.push(`/final-inspection/view-final-inspection?id=${row.id}`)}
             sx={{
               color: "#0891b2",
               bgcolor: "#ecfeff",
               "&:hover": { bgcolor: "#cffafe" },
             }}
           >
-            <Download fontSize="small" />
+            <Visibility fontSize="small" />
+          </IconButton>
+          <IconButton
+            size="small"
+            onClick={() => router.push(`/final-inspection/create-final-inspection?id=${row.id}`)}
+            sx={{
+              color: "rgb(17, 114, 186)",
+              bgcolor: "#f1f5f9",
+              "&:hover": { bgcolor: "#e2e8f0" },
+            }}
+          >
+            <Edit fontSize="small" />
           </IconButton>
         </Box>
       ),
@@ -152,7 +138,11 @@ export default function FinalQualityCheck() {
         searchValue={search}
         onSearchChange={(e) => setSearch(e.target.value)}
       >
-        <GlobalTable columns={columns} data={filtered} />
+        {loading ? (
+          <Loader message="Loading Inspections..." />
+        ) : (
+          <GlobalTable columns={columns} data={filtered} />
+        )}
       </CommonCard>
     </Box>
   );

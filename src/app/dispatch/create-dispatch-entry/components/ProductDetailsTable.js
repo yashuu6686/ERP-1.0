@@ -38,7 +38,7 @@ export default function ProductDetailsTable({ products, handleProductChange, add
             >
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                     <Description />
-                    <Typography variant="h6" fontWeight={600}>
+                    <Typography variant="h6" color="white" fontWeight={600}>
                         Product Details
                     </Typography>
                 </Box>

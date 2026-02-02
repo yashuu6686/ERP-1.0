@@ -8,7 +8,7 @@ import TextField from "@mui/material/TextField";
 
 import Inventory from "@mui/icons-material/Inventory";
 
-const ProductInformationSection = () => {
+const ProductInformationSection = ({ formData = {}, onChange }) => {
     return (
         <Card
             elevation={0}
@@ -29,81 +29,95 @@ const ProductInformationSection = () => {
                 }}
             >
                 <Inventory sx={{ color: "#fff" }} />
-                <Typography variant="subtitle1" sx={{ color: "#fff", fontWeight: 600 }}>
+                <Typography variant="h6" sx={{ color: "#fff", fontWeight: 600 }}>
                     Product Information
                 </Typography>
             </Box>
 
             <CardContent sx={{ padding: 3, backgroundColor: "#f8fafc" }}>
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={3} size={{ xs: 12, md: 3 }}>
+                    <Grid item xs={12} md={3}>
                         <TextField
                             fullWidth
                             label="Product Name"
                             size="small"
+                            value={formData.productName || ""}
+                            onChange={(e) => onChange("productName", e.target.value)}
                             sx={{
                                 "& .MuiOutlinedInput-root": { backgroundColor: "white" },
                             }}
                         />
                     </Grid>
-                    <Grid item xs={12} md={3} size={{ xs: 12, md: 3 }}>
+                    <Grid item xs={12} md={3}>
                         <TextField
                             fullWidth
                             label="Inspection Std No."
                             size="small"
+                            value={formData.inspectionStdNo || ""}
+                            onChange={(e) => onChange("inspectionStdNo", e.target.value)}
                             sx={{
                                 "& .MuiOutlinedInput-root": { backgroundColor: "white" },
                             }}
                         />
                     </Grid>
-                    <Grid item xs={12} md={3} size={{ xs: 12, md: 3 }}>
+                    <Grid item xs={12} md={3}>
                         <TextField
                             fullWidth
                             label="Quantity"
                             type="number"
                             size="small"
+                            value={formData.quantity || ""}
+                            onChange={(e) => onChange("quantity", e.target.value)}
                             sx={{
                                 "& .MuiOutlinedInput-root": { backgroundColor: "white" },
                             }}
                         />
                     </Grid>
-                    <Grid item xs={12} md={3} size={{ xs: 12, md: 3 }}>
+                    <Grid item xs={12} md={3}>
                         <TextField
                             fullWidth
                             label="Check Date"
                             type="date"
                             InputLabelProps={{ shrink: true }}
                             size="small"
+                            value={formData.date || ""}
+                            onChange={(e) => onChange("date", e.target.value)}
                             sx={{
                                 "& .MuiOutlinedInput-root": { backgroundColor: "white" },
                             }}
                         />
                     </Grid>
-                    <Grid item xs={12} md={4} size={{ xs: 12, md: 3 }}>
+                    <Grid item xs={12} md={4}>
                         <TextField
                             fullWidth
                             label="Inspection No."
                             size="small"
+                            value={formData.inspectionNo || ""}
+                            onChange={(e) => onChange("inspectionNo", e.target.value)}
                             sx={{
                                 "& .MuiOutlinedInput-root": { backgroundColor: "white" },
                             }}
                         />
                     </Grid>
-                    <Grid item xs={12} md={4} size={{ xs: 12, md: 3 }}>
+                    <Grid item xs={12} md={4}>
                         <TextField
                             fullWidth
                             label="Serial From"
                             size="small"
+                            value={formData.serialFrom || ""}
+                            onChange={(e) => onChange("serialFrom", e.target.value)}
                             sx={{
                                 "& .MuiOutlinedInput-root": { backgroundColor: "white" },
                             }}
                         />
                     </Grid>
-                    <Grid item xs={12} md={4} size={{ xs: 12, md: 3 }}>
+                    <Grid item xs={12} md={4}>
                         <TextField
                             fullWidth
                             label="Serial To"
                             size="small"
+                            value={formData.serialTo || ""}
+                            onChange={(e) => onChange("serialTo", e.target.value)}
                             sx={{
                                 "& .MuiOutlinedInput-root": { backgroundColor: "white" },
                             }}

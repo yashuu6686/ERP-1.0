@@ -30,7 +30,7 @@ const DeliveryInformationSection = () => {
                 }}
             >
                 <LocalShipping sx={{ color: "#fff" }} />
-                <Typography variant="subtitle1" fontWeight={600}>
+                <Typography color="white" variant="subtitle1" fontWeight={600}>
                     Delivery Information
                 </Typography>
             </Box>

@@ -35,10 +35,7 @@ const ActionChecklistSection = () => {
                         }}
                     >
                         <Edit sx={{ color: "#fff" }} />
-                        <Typography
-                            variant="subtitle1"
-                            sx={{ color: "#fff", fontWeight: 600 }}
-                        >
+                        <Typography variant="h6" sx={{ color: "#fff", fontWeight: 600 }}>
                             Action Items
                         </Typography>
                     </Box>

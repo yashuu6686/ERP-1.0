@@ -41,7 +41,7 @@ export default function AuthorizationCard() {
                 }}
             >
                 <FactCheck />
-                <Typography variant="h6" fontWeight={600}>
+                <Typography color="white" variant="h6" fontWeight={600}>
                     Authorization
                 </Typography>
             </Box>

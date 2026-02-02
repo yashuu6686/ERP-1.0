@@ -30,7 +30,7 @@ export default function DispatchInfoCard({ formData, handleChange, errors }) {
                 }}
             >
                 <Description />
-                <Typography variant="h6" fontWeight={600}>
+                <Typography variant="h6" color="white" fontWeight={600}>
                     Dispatch Information
                 </Typography>
             </Box>
