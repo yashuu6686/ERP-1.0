@@ -262,7 +262,7 @@ function ViewRejectedGoodsContent() {
 
                                     {/* Source and Inspector Info */}
                                     <Grid container spacing={6} sx={{ mb: 6 }}>
-                                        <Grid item xs={12} md={6}>
+                                        <Grid size={{ xs: 12, md: 6 }}>
                                             <Box sx={{ p: 3, borderRadius: 3, border: '1px solid #e2e8f0', bgcolor: '#f8fafc', height: '100%' }}>
                                                 {/* Blue Header */}
                                                 <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1.5, color: '#1172ba' }}>
@@ -274,7 +274,7 @@ function ViewRejectedGoodsContent() {
                                                 </Stack>
                                             </Box>
                                         </Grid>
-                                        <Grid item xs={12} md={6}>
+                                        <Grid size={{ xs: 12, md: 6 }}>
                                             <Box sx={{ p: 3, borderRadius: 3, border: '1px solid #e2e8f0', bgcolor: '#fff', height: '100%' }}>
                                                 {/* Blue Header */}
                                                 <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1.5, color: '#1172ba' }}>
