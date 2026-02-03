@@ -196,7 +196,7 @@ function ViewDispatchContent() {
     return (
         <Fade in={!loading}>
             <Box>
-                <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 3 } }}>
+                <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 1 } }}>
                     {/* Header Actions */}
                     <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }} className="no-print">
                         <Button
@@ -302,9 +302,9 @@ function ViewDispatchContent() {
                         </Stack>
                     </Stack>
 
-                    <Grid container spacing={4}>
+                    <Grid container spacing={2}>
                         {/* Main Content */}
-                        <Grid item xs={12} lg={9}>
+                        <Grid size={{ xs: 12, lg: 9 }}>
                             <Paper
                                 elevation={0}
                                 sx={{
@@ -318,11 +318,11 @@ function ViewDispatchContent() {
                                 {/* Decorative Header Gradient */}
                                 <Box sx={{ height: 6, background: "linear-gradient(90deg, #1172ba 0%, #60a5fa 100%)" }} />
 
-                                <Box sx={{ p: { xs: 3, md: 5 } }}>
+                                <Box sx={{ p: { xs: 3, md: 2 } }}>
                                     {/* Document Header */}
-                                    <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between" alignItems="flex-start" spacing={4} sx={{ mb: 6 }}>
+                                    <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between" alignItems="flex-start" spacing={2} sx={{ mb: 3 }}>
                                         <Box>
-                                            <Typography variant="h3" fontWeight={900} sx={{ color: "#0f172a", letterSpacing: "-0.04em", mb: 1 }}>
+                                            <Typography variant="h4" fontWeight={800} sx={{ color: "#0f172a", letterSpacing: "-0.04em", mb: 1 }}>
                                                 DISPATCH MANIFEST
                                             </Typography>
                                             <Typography variant="h6" fontWeight={600} sx={{ color: "#64748b", mb: 2.5 }}>
@@ -358,12 +358,12 @@ function ViewDispatchContent() {
                                         </Stack>
                                     </Stack>
 
-                                    <Divider sx={{ mb: 5, opacity: 0.6 }} />
+                                    <Divider sx={{ mb: 3, opacity: 0.6 }} />
 
                                     {/* Logistics & Destination */}
-                                    <Grid container spacing={6} sx={{ mb: 6 }}>
-                                        <Grid item xs={12} md={6}>
-                                            <Box sx={{ p: 3, borderRadius: 3, border: '1px solid #e2e8f0', bgcolor: '#f8fafc', height: '100%' }}>
+                                    <Grid container spacing={2} sx={{ mb: 5 }}>
+                                        <Grid size={{ xs: 12, md: 6 }}>
+                                            <Box sx={{ p: 3, borderRadius: 3, border: '1px solid #e2e8f0', bgcolor: '#fff', height: '100%' }}>
                                                 <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1.5, color: '#0f172a' }}>
                                                     <Explore sx={{ color: '#1172ba' }} /> LOGISTICS INFO
                                                 </Typography>
@@ -378,7 +378,7 @@ function ViewDispatchContent() {
                                                 </Stack>
                                             </Box>
                                         </Grid>
-                                        <Grid item xs={12} md={6}>
+                                        <Grid size={{ xs: 12, md: 6 }}>
                                             <Box sx={{ p: 3, borderRadius: 3, border: '1px solid #e2e8f0', bgcolor: '#fff', height: '100%' }}>
                                                 <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1.5, color: '#0f172a' }}>
                                                     <Map sx={{ color: '#1172ba' }} /> DESTINATION
@@ -414,11 +414,11 @@ function ViewDispatchContent() {
                                             <Table>
                                                 <TableHead>
                                                     <TableRow sx={{ bgcolor: "#f1f5f9" }}>
-                                                        <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>SR</TableCell>
+                                                        <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>SR.NO</TableCell>
                                                         <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>ITEM DESCRIPTION</TableCell>
                                                         <TableCell align="center" sx={{ fontWeight: 800, color: "#475569", py: 2 }}>SERIAL NO</TableCell>
                                                         <TableCell align="center" sx={{ fontWeight: 800, color: "#475569", py: 2 }}>QTY</TableCell>
-                                                        <TableCell align="right" sx={{ fontWeight: 800, color: "#475569", py: 2 }}>WEIGHT</TableCell>
+                                                        {/* <TableCell align="right" sx={{ fontWeight: 800, color: "#475569", py: 2 }}>WEIGHT</TableCell> */}
                                                     </TableRow>
                                                 </TableHead>
                                                 <TableBody>
@@ -434,9 +434,9 @@ function ViewDispatchContent() {
                                                             <TableCell align="center">
                                                                 <Chip label={item.qty} size="small" sx={{ fontWeight: 800, bgcolor: "#eff6ff", color: "#1172ba", borderRadius: '6px' }} />
                                                             </TableCell>
-                                                            <TableCell align="right" sx={{ fontWeight: 700, color: "#0f172a" }}>
+                                                            {/* <TableCell align="right" sx={{ fontWeight: 700, color: "#0f172a" }}>
                                                                 {item.weight}
-                                                            </TableCell>
+                                                            </TableCell> */}
                                                         </TableRow>
                                                     ))}
                                                     {(!items || items.length === 0) && (
@@ -451,10 +451,10 @@ function ViewDispatchContent() {
                         </Grid>
 
                         {/* Sidebar */}
-                        <Grid item xs={12} lg={3}>
-                            <Stack spacing={3}>
+                        <Grid size={{ xs: 12, lg: 3 }}>
+                            <Stack spacing={2}>
                                 {/* Order Summary */}
-                                <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+                                <Paper elevation={0} sx={{ p: 2, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                                     <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1 }}>
                                         <Inventory sx={{ color: '#1172ba', fontSize: 20 }} /> Summary
                                     </Typography>
@@ -483,7 +483,7 @@ function ViewDispatchContent() {
                                 </Paper>
 
                                 {/* System Info */}
-                                <Paper sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#f8fafc' }}>
+                                <Paper elevation={0} sx={{ p: 2, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                                     <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
                                         <Explore sx={{ color: '#1172ba', fontSize: 20 }} /> System Data
                                     </Typography>

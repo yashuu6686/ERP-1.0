@@ -40,7 +40,7 @@ export default function Batch() {
 
   const columns = [
     {
-      label: "S. No.",
+      label: "SR.No.",
       align: "center",
       render: (row, index) => index + 1,
     },

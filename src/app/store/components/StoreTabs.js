@@ -15,9 +15,9 @@ const StoreTabs = ({ value, handleChange }) => {
                 minHeight: "45px",
                 borderBottom: "1px solid #e2e8f0",
                 "& .MuiTab-root": {
-                    fontWeight: 500,
+                    fontWeight: 400,
                     textTransform: "none",
-                    fontSize: "15px",
+                    fontSize: isSmall ? "0.85rem" : "0.95rem",
                     minHeight: "45px",
                     px: 3,
                     color: "#64748b",

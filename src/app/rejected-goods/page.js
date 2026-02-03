@@ -50,7 +50,7 @@ const formatDate = (dateString) => {
 export default function RejectedGoods() {
   const [tab, setTab] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
-  const [dialogMode, setDialogMode] = useState("add"); 
+  const [dialogMode, setDialogMode] = useState("add");
   const [selectedId, setSelectedId] = useState(null);
   const [search, setSearch] = useState("");
   const [rejectedData, setRejectedData] = useState([]);
@@ -201,7 +201,7 @@ export default function RejectedGoods() {
       render: (row, index) => <span style={{ color: "#6c757d" }}>{index + 1}</span>,
     },
     {
-      label: "Rejection ID",
+      label: "Rejection No.",
       align: "center",
       render: (row) => (
         <Typography variant="body2" sx={{ fontWeight: 600, color: "#1172ba" }}>
@@ -217,13 +217,11 @@ export default function RejectedGoods() {
     {
       label: "Source Reference",
       align: "center",
-      sx: { color: "#495057" },
       accessor: "sourceRef",
     },
     {
       label: "Rejected Goods",
       align: "center",
-      sx: { fontWeight: 500 },
       accessor: "goods",
     },
     {
@@ -318,24 +316,30 @@ export default function RejectedGoods() {
           variant={isSmall ? "scrollable" : "standard"}
           scrollButtons={isSmall ? "auto" : false}
           allowScrollButtonsMobile
+          TabIndicatorProps={{
+            style: { display: "none" },
+          }}
           sx={{
             mb: 3,
             minHeight: isSmall ? "40px" : "48px",
+            borderBottom: "1px solid #e2e8f0",
             "& .MuiTab-root": {
-              fontWeight: 600,
+              fontWeight: 400,
               textTransform: "none",
               fontSize: isSmall ? "0.85rem" : "0.95rem",
               minHeight: isSmall ? "40px" : "48px",
               px: isSmall ? 2 : 3,
-              color: "#666",
-              "&.Mui-selected": {
+              color: "#64748b",
+              borderRadius: "10px 10px 0 0",
+              transition: "all 0.2s",
+              "&:hover": {
                 color: "#1172ba",
+                backgroundColor: "rgba(17, 114, 186, 0.04)",
               },
-            },
-            "& .MuiTabs-indicator": {
-              backgroundColor: "#1172ba",
-              height: "3px",
-              borderRadius: "3px 3px 0 0",
+              "&.Mui-selected": {
+                color: "#fff",
+                backgroundColor: "#1172ba",
+              },
             },
           }}
         >
