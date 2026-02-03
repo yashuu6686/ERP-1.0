@@ -117,7 +117,7 @@ export default function Sidebar({ children }) {
         sx={{
           width: isLargeScreen ? (isSidebarOpen ? DRAWER_WIDTH : MINI_DRAWER_WIDTH) : (isSidebarOpen ? DRAWER_WIDTH : 0),
           flexShrink: 0,
-          whiteSpace: 'nowrap',
+          whiteSpace: isSidebarOpen ? 'normal' : 'nowrap',
           boxSizing: 'border-box',
           transition: theme.transitions.create('width', {
             easing: theme.transitions.easing.sharp,
@@ -252,7 +252,12 @@ export default function Sidebar({ children }) {
                         fontSize: "var(--size-body)",
                         fontWeight: isActive ? 600 : 500,
                         fontFamily: "var(--font-manrope)",
-                        noWrap: false
+                        noWrap: false,
+                        style: {
+                          lineHeight: 1.2,
+                          whiteSpace: 'normal',
+                          wordBreak: 'break-word'
+                        }
                       }}
                     />
                   )}

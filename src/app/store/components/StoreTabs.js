@@ -1,8 +1,10 @@
 import React from "react";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
+import { Tabs, Tab, useMediaQuery, useTheme } from "@mui/material";
 
 const StoreTabs = ({ value, handleChange }) => {
+    const theme = useTheme();
+    const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
+
     return (
         <Tabs
             value={value}
