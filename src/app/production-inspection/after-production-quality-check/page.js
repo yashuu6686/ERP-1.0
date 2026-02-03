@@ -20,6 +20,7 @@ import axiosInstance from "../../../axios/axiosInstance";
 import { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import NotificationService from "@/services/NotificationService";
+import { Grid } from "@mui/material";
 
 const steps = [
   "Product Details",
@@ -227,11 +228,19 @@ export default function QualityCheckForm() {
       case 2:
         return (
           <>
-            <InspectionSummarySection
-              data={inspectionSummary}
-              onChange={handleInspectionSummaryChange}
-            />
-            <InspectionApproval approvalData={approval} onChange={handleApprovalChange} />
+            <Grid container spacing={1}>
+              <Grid size={{ xs: 12, md: 8 }}>
+
+                <InspectionSummarySection
+                  data={inspectionSummary}
+                  onChange={handleInspectionSummaryChange}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 4 }}>
+                <InspectionApproval approvalData={approval} onChange={handleApprovalChange} />
+              </Grid>
+
+            </Grid>
           </>
         );
       default:

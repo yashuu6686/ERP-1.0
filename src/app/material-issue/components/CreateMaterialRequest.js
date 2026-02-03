@@ -15,8 +15,10 @@ import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useAuth } from "@/context/AuthContext";
 
 export default function CreateMaterialRequest({ onClose }) {
+  const { user } = useAuth();
   const router = useRouter();
   const [loadingBoms, setLoadingBoms] = useState(true);
   const [boms, setBoms] = useState([]);
@@ -273,21 +275,23 @@ export default function CreateMaterialRequest({ onClose }) {
           />
         </Grid>
 
-        <Grid size={{ xs: 12, md: 6 }}>
-          <TextField
-            fullWidth
-            size="small"
-            label="Approved By"
-            name="approvedBy"
-            value={form.approvedBy}
-            onChange={handleChange}
-            sx={{
-              bgcolor: "#fff",
-              transition: "all 0.2s",
-              "&:hover": { transform: "translateY(-1px)" }
-            }}
-          />
-        </Grid>
+        {user?.role === 'admin' && (
+          <Grid size={{ xs: 12, md: 6 }}>
+            <TextField
+              fullWidth
+              size="small"
+              label="Approved By"
+              name="approvedBy"
+              value={form.approvedBy}
+              onChange={handleChange}
+              sx={{
+                bgcolor: "#fff",
+                transition: "all 0.2s",
+                "&:hover": { transform: "translateY(-1px)" }
+              }}
+            />
+          </Grid>
+        )}
       </Grid>
 
       {/* Actions */}

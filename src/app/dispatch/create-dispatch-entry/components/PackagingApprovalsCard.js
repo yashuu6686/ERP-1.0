@@ -11,8 +11,10 @@ import {
     Chip,
 } from "@mui/material";
 import { Description, CloudUpload } from "@mui/icons-material";
+import { useAuth } from "@/context/AuthContext";
 
 export default function PackagingApprovalsCard({ formData, handleChange, errors, uploadedFiles, handleFileUpload, removeFile }) {
+    const { user } = useAuth();
     return (
         <Card sx={{ mb: 4, borderRadius: 2 }}>
             <Box
@@ -46,34 +48,38 @@ export default function PackagingApprovalsCard({ formData, handleChange, errors,
                             sx={{ bgcolor: "white" }}
                         />
                     </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                        <TextField
-                            fullWidth
-                            label="Approved By"
-                            multiline
-                            rows={2}
-                            placeholder="Name, Sign & Date"
-                            value={formData.approvedBy}
-                            onChange={(e) => handleChange("approvedBy", e.target.value)}
-                            required
-                            error={errors.approvedBy}
-                            sx={{ bgcolor: "white" }}
-                        />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                        <TextField
-                            fullWidth
-                            label="Accounting By"
-                            multiline
-                            rows={2}
-                            placeholder="Name, Sign & Date"
-                            value={formData.accountingBy}
-                            onChange={(e) => handleChange("accountingBy", e.target.value)}
-                            required
-                            error={errors.accountingBy}
-                            sx={{ bgcolor: "white" }}
-                        />
-                    </Grid>
+                    {user?.role === 'admin' && (
+                        <>
+                            <Grid size={{ xs: 12, md: 4 }}>
+                                <TextField
+                                    fullWidth
+                                    label="Approved By"
+                                    multiline
+                                    rows={2}
+                                    placeholder="Name, Sign & Date"
+                                    value={formData.approvedBy}
+                                    onChange={(e) => handleChange("approvedBy", e.target.value)}
+                                    required
+                                    error={errors.approvedBy}
+                                    sx={{ bgcolor: "white" }}
+                                />
+                            </Grid>
+                            <Grid size={{ xs: 12, md: 4 }}>
+                                <TextField
+                                    fullWidth
+                                    label="Accounting By"
+                                    multiline
+                                    rows={2}
+                                    placeholder="Name, Sign & Date"
+                                    value={formData.accountingBy}
+                                    onChange={(e) => handleChange("accountingBy", e.target.value)}
+                                    required
+                                    error={errors.accountingBy}
+                                    sx={{ bgcolor: "white" }}
+                                />
+                            </Grid>
+                        </>
+                    )}
                 </Grid>
 
                 <Box sx={{ mt: 3 }}>

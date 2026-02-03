@@ -8,8 +8,10 @@ import {
     CardContent,
 } from '@mui/material';
 import { FactCheck } from '@mui/icons-material';
+import { useAuth } from '@/context/AuthContext';
 
 const InspectionApproval = ({ approvalData, onChange }) => {
+    const { user } = useAuth();
     const handleChange = (section, field) => (event) => {
         onChange?.(section, field, event.target.value);
     };
@@ -41,7 +43,7 @@ const InspectionApproval = ({ approvalData, onChange }) => {
 
             <CardContent sx={{ padding: 3 }}>
                 <Grid container spacing={4}>
-                    <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+                    <Grid item xs={12} md={12} size={{ xs: 12, md: 12 }}>
                         <Box sx={{ p: 2, border: '1px solid #e2e8f0', borderRadius: 2 }}>
                             <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
                                 Updated By
@@ -75,40 +77,42 @@ const InspectionApproval = ({ approvalData, onChange }) => {
                             </Grid>
                         </Box>
                     </Grid>
-                    <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
-                        <Box sx={{ p: 2, border: '1px solid #e2e8f0', borderRadius: 2 }}>
-                            <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-                                Approved By
-                            </Typography>
-                            <Grid container spacing={2}>
-                                <Grid item xs={6} size={{ xs: 6 }}>
-                                    <Typography variant="caption" sx={{ display: 'block', mb: 0.5 }}>
-                                        name
-                                    </Typography>
-                                    <TextField
-                                        fullWidth
-                                        size="small"
-                                        placeholder="signature images"
-                                        value={approvalData?.approvedByName || ''}
-                                        onChange={handleChange('approvedBy', 'name')}
-                                    />
+                    {user?.role === 'admin' && (
+                        <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+                            <Box sx={{ p: 2, border: '1px solid #e2e8f0', borderRadius: 2 }}>
+                                <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+                                    Approved By
+                                </Typography>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={6} size={{ xs: 6 }}>
+                                        <Typography variant="caption" sx={{ display: 'block', mb: 0.5 }}>
+                                            name
+                                        </Typography>
+                                        <TextField
+                                            fullWidth
+                                            size="small"
+                                            placeholder="signature images"
+                                            value={approvalData?.approvedByName || ''}
+                                            onChange={handleChange('approvedBy', 'name')}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={6} size={{ xs: 6 }}>
+                                        <Typography variant="caption" sx={{ display: 'block', mb: 0.5 }}>
+                                            date
+                                        </Typography>
+                                        <TextField
+                                            fullWidth
+                                            size="small"
+                                            type="date"
+                                            InputLabelProps={{ shrink: true }}
+                                            value={approvalData?.approvedByDate || ''}
+                                            onChange={handleChange('approvedBy', 'date')}
+                                        />
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={6} size={{ xs: 6 }}>
-                                    <Typography variant="caption" sx={{ display: 'block', mb: 0.5 }}>
-                                        date
-                                    </Typography>
-                                    <TextField
-                                        fullWidth
-                                        size="small"
-                                        type="date"
-                                        InputLabelProps={{ shrink: true }}
-                                        value={approvalData?.approvedByDate || ''}
-                                        onChange={handleChange('approvedBy', 'date')}
-                                    />
-                                </Grid>
-                            </Grid>
-                        </Box>
-                    </Grid>
+                            </Box>
+                        </Grid>
+                    )}
                 </Grid>
             </CardContent>
         </Card>

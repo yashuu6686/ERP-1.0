@@ -161,9 +161,9 @@ function ViewInspectionContent() {
 
     const getStatusConfig = (status) => {
         const configs = {
-            Approved: { color: "#166534", bg: "#dcfce7", border: "#bbedc2", icon: <CheckCircle /> },
-            Rejected: { color: "#991b1b", bg: "#fee2e2", border: "#fecaca", icon: <Cancel /> },
-            Pending: { color: "#92400e", bg: "#fef3c7", border: "#fde68a", icon: <Schedule /> },
+            Approved: { color: "#15803d", bg: "#dcfce7", border: "#bbf7d0", icon: <CheckCircle /> },
+            Rejected: { color: "#b91c1c", bg: "#fee2e2", border: "#fecaca", icon: <Cancel /> },
+            Pending: { color: "#a16207", bg: "#fef9c3", border: "#fde68a", icon: <Schedule /> },
         };
         return configs[status] || configs.Pending;
     };
@@ -444,12 +444,12 @@ function ViewInspectionContent() {
                                             Lot Composition
                                         </Typography>
                                         <Stack direction="row" spacing={1.5} sx={{ mb: 1.5 }}>
-                                            <MetricBox label="Accepted" value={summaryData.acceptedQuantity} color="#16a34a" bg="#f0fdf4" border="#bbf7d0" />
-                                            <MetricBox label="Rejected" value={summaryData.rejectedQuantity} color="#dc2626" bg="#fef2f2" border="#fecaca" />
+                                            <MetricBox label="Accepted" value={summaryData.acceptedQuantity} color="#15803d" bg="#dcfce7" border="#bbf7d0" />
+                                            <MetricBox label="Rejected" value={summaryData.rejectedQuantity} color="#b91c1c" bg="#fee2e2" border="#fecaca" />
                                         </Stack>
                                         <Stack direction="row" spacing={1.5}>
-                                            <MetricBox label="Hold/Scrap" value={summaryData.holdScrapQuantity} color="#b45309" bg="#fffbeb" border="#fde68a" />
-                                            <MetricBox label="Other" value={summaryData.other || 0} color="#475569" bg="#f8fafc" border="#e2e8f0" />
+                                            <MetricBox label="Hold/Scrap" value={summaryData.holdScrapQuantity} color="#a16207" bg="#fef9c3" border="#fde68a" />
+                                            <MetricBox label="Other" value={summaryData.other || 0} color="#475569" bg="#f1f5f9" border="#e2e8f0" />
                                         </Stack>
                                     </Box>
                                 </Stack>

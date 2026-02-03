@@ -216,7 +216,7 @@ function ViewPurchaseOrderContent() {
                             </Button>
                         </Tooltip>
 
-                        {user?.role === "hr" && status === "Pending Approval" ? (
+                        {user?.role === "admin" && status === "Pending Approval" ? (
                             <>
                                 <Button
                                     variant="contained"
