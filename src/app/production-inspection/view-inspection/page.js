@@ -281,7 +281,7 @@ function ViewInspectionContent() {
                                         <Box sx={{ mt: 3 }}>
                                             <Typography variant="caption" sx={{ color: COLORS.secondary, fontWeight: 700, display: "block", mb: 1 }}>QC SUMMARY</Typography>
                                             <Typography variant="body2" sx={{ color: COLORS.primary, lineHeight: 1.6, fontWeight: 500, fontStyle: "italic" }}>
-                                                "{inspectionSummary.comments}"
+                                                &quot;{inspectionSummary.comments}&quot;
                                             </Typography>
                                         </Box>
                                     </Paper>

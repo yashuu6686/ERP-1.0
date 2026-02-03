@@ -69,27 +69,27 @@ function FinalInspectionFormContent() {
   const [aqd, setAqd] = useState("no");
 
   useEffect(() => {
+    const fetchInspection = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get(`/final-inspections/${id}`);
+        if (response.data) {
+          setFormData(response.data);
+          if (response.data.observations) {
+            setObservations(response.data.observations);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching inspection:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (id) {
       fetchInspection();
     }
   }, [id]);
-
-  const fetchInspection = async () => {
-    try {
-      setLoading(true);
-      const response = await axiosInstance.get(`/final-inspections/${id}`);
-      if (response.data) {
-        setFormData(response.data);
-        if (response.data.observations) {
-          setObservations(response.data.observations);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching inspection:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const setObservations = (obs) => {
     setFormData(prev => ({ ...prev, observations: obs }));

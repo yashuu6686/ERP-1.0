@@ -273,7 +273,7 @@ export default function OrderDetails() {
                                             <Box>
                                                 <Typography variant="caption" sx={{ color: COLORS.secondary, fontWeight: 700, display: "block", mb: 1 }}>NOTICE</Typography>
                                                 <Typography variant="caption" sx={{ color: COLORS.primary, lineHeight: 1.5, fontWeight: 500, fontStyle: "italic", display: "block", bgcolor: COLORS.bg, p: 1.5, borderRadius: 1 }}>
-                                                    "Finalized registry. Verified."
+                                                    &quot;Finalized registry. Verified.&quot;
                                                 </Typography>
                                             </Box>
 

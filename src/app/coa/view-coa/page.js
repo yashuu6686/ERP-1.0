@@ -59,22 +59,22 @@ function ViewCOAContent() {
     const [data, setData] = useState(null);
 
     useEffect(() => {
+        const fetchCOA = async () => {
+            try {
+                setLoading(true);
+                const response = await axiosInstance.get(`/coa/${id}`);
+                setData(response.data);
+            } catch (error) {
+                console.error("Error fetching COA:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         if (id) {
             fetchCOA();
         }
     }, [id]);
-
-    const fetchCOA = async () => {
-        try {
-            setLoading(true);
-            const response = await axiosInstance.get(`/coa/${id}`);
-            setData(response.data);
-        } catch (error) {
-            console.error("Error fetching COA:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     if (loading) return <Loader fullPage message="Fetching COA Details..." />;
     if (!data) return <Box sx={{ p: 4 }}>Certificate Not Found</Box>;

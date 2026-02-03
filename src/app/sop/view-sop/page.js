@@ -58,22 +58,22 @@ function ViewSOPContent() {
     const [data, setData] = useState(null);
 
     useEffect(() => {
+        const fetchSOP = async () => {
+            try {
+                setLoading(true);
+                const response = await axiosInstance.get(`/sops/${id}`);
+                setData(response.data);
+            } catch (error) {
+                console.error("Error fetching SOP:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         if (id) {
             fetchSOP();
         }
     }, [id]);
-
-    const fetchSOP = async () => {
-        try {
-            setLoading(true);
-            const response = await axiosInstance.get(`/sops/${id}`);
-            setData(response.data);
-        } catch (error) {
-            console.error("Error fetching SOP:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     if (loading) return <Loader fullPage message="Fetching SOP Details..." />;
     if (!data) return <Box sx={{ p: 4 }}>SOP Not Found</Box>;

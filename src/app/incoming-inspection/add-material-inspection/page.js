@@ -87,78 +87,78 @@ function MaterialInspectionFormContent() {
   });
 
   useEffect(() => {
+    const fetchPendingGRNs = async (currentGrnNumber = null) => {
+      try {
+        const response = await axiosInstance.get("/grn");
+        const targetGrn = currentGrnNumber || materialData.grnNumber;
+        const pending = (response.data || []).filter(g =>
+          g.inspectionStatus === "Pending" || (isEditMode && targetGrn === g.grnNumber)
+        );
+        setPendingGRNs(pending);
+      } catch (error) {
+        console.error("Error fetching GRNs:", error);
+      }
+    };
+
+    const fetchInspectionData = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get(`/incoming-inspection/${id}`);
+        const data = response.data;
+        if (data) {
+          // 1. Fetch all GRNs to find the matching one
+          const grnResponse = await axiosInstance.get("/grn");
+          const allGRNs = grnResponse.data || [];
+          const matchingGRN = allGRNs.find(g => g.grnNumber === data.materialData.grnNumber);
+
+          if (matchingGRN) setSelectedGRN(matchingGRN);
+
+          // 2. Flatten and merge data, using matchingGRN as a fallback for missing fields
+          const materialDataLoaded = {
+            ...data.materialData,
+            poNumber: data.materialData.poNumber || matchingGRN?.poNumber || "",
+            materialName: data.materialData.materialName || matchingGRN?.items?.[0]?.name || "",
+            supplierName: data.materialData.supplierName || matchingGRN?.supplierName || "",
+            ...(data.materialData.verificationChecks || {})
+          };
+
+          setMaterialData(materialDataLoaded);
+          setObservations(data.observations || []);
+          setSummaryData(data.summaryData);
+          setApprovalData(data.approvalData);
+
+          // Update observation columns if dynamic ones exist
+          if (data.observations?.length > 0) {
+            const firstObs = data.observations[0];
+            const dynamicKeys = Object.keys(firstObs).filter(k => k.startsWith("observation_"));
+            if (dynamicKeys.length > 0) {
+              const newCols = dynamicKeys.map(k => ({
+                id: k,
+                label: `Observation ${k.split("_")[1]}`
+              }));
+              const allCols = [{ id: "observation", label: "Observation" }, ...newCols];
+              // Remove duplicates just in case
+              const uniqueCols = Array.from(new Map(allCols.map(c => [c.id, c])).values());
+              setObservationColumns(uniqueCols);
+            }
+          }
+
+          // Re-fetch pending GRNs lists for the dropdown
+          fetchPendingGRNs(data.materialData.grnNumber);
+        }
+      } catch (error) {
+        console.error("Error fetching inspection data:", error);
+        alert("Failed to load inspection data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchPendingGRNs();
     if (isEditMode) {
       fetchInspectionData();
     }
-  }, [id]);
-
-  const fetchInspectionData = async () => {
-    try {
-      setLoading(true);
-      const response = await axiosInstance.get(`/incoming-inspection/${id}`);
-      const data = response.data;
-      if (data) {
-        // 1. Fetch all GRNs to find the matching one
-        const grnResponse = await axiosInstance.get("/grn");
-        const allGRNs = grnResponse.data || [];
-        const matchingGRN = allGRNs.find(g => g.grnNumber === data.materialData.grnNumber);
-
-        if (matchingGRN) setSelectedGRN(matchingGRN);
-
-        // 2. Flatten and merge data, using matchingGRN as a fallback for missing fields
-        const materialDataLoaded = {
-          ...data.materialData,
-          poNumber: data.materialData.poNumber || matchingGRN?.poNumber || "",
-          materialName: data.materialData.materialName || matchingGRN?.items?.[0]?.name || "",
-          supplierName: data.materialData.supplierName || matchingGRN?.supplierName || "",
-          ...(data.materialData.verificationChecks || {})
-        };
-
-        setMaterialData(materialDataLoaded);
-        setObservations(data.observations || []);
-        setSummaryData(data.summaryData);
-        setApprovalData(data.approvalData);
-
-        // Update observation columns if dynamic ones exist
-        if (data.observations?.length > 0) {
-          const firstObs = data.observations[0];
-          const dynamicKeys = Object.keys(firstObs).filter(k => k.startsWith("observation_"));
-          if (dynamicKeys.length > 0) {
-            const newCols = dynamicKeys.map(k => ({
-              id: k,
-              label: `Observation ${k.split("_")[1]}`
-            }));
-            const allCols = [{ id: "observation", label: "Observation" }, ...newCols];
-            // Remove duplicates just in case
-            const uniqueCols = Array.from(new Map(allCols.map(c => [c.id, c])).values());
-            setObservationColumns(uniqueCols);
-          }
-        }
-
-        // Re-fetch pending GRNs lists for the dropdown
-        fetchPendingGRNs(data.materialData.grnNumber);
-      }
-    } catch (error) {
-      console.error("Error fetching inspection data:", error);
-      alert("Failed to load inspection data.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchPendingGRNs = async (currentGrnNumber = null) => {
-    try {
-      const response = await axiosInstance.get("/grn");
-      const targetGrn = currentGrnNumber || materialData.grnNumber;
-      const pending = (response.data || []).filter(g =>
-        g.inspectionStatus === "Pending" || (isEditMode && targetGrn === g.grnNumber)
-      );
-      setPendingGRNs(pending);
-    } catch (error) {
-      console.error("Error fetching GRNs:", error);
-    }
-  };
+  }, [id, isEditMode]);
 
   const handleGRNChange = (event, newValue) => {
     setSelectedGRN(newValue);
