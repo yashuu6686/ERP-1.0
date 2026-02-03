@@ -34,6 +34,7 @@ export default function CreateMaterialRequest({ onClose }) {
     endDate: "",
     requestedBy: "",
     approvedBy: "",
+    description: "",
   });
 
   useEffect(() => {
@@ -292,6 +293,24 @@ export default function CreateMaterialRequest({ onClose }) {
             />
           </Grid>
         )}
+
+        {/* Notes/Description */}
+        <Grid size={{ xs: 12 }}>
+          <TextField
+            fullWidth
+            multiline
+            rows={3}
+            label="Additional Instructions / Notes"
+            name="description"
+            value={form.description}
+            onChange={handleChange}
+            placeholder="Enter any specific handling requirements or project notes..."
+            sx={{
+              bgcolor: "#fff",
+              "&:hover": { transform: "translateY(-1px)" }
+            }}
+          />
+        </Grid>
       </Grid>
 
       {/* Actions */}

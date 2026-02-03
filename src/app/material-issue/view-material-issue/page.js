@@ -88,11 +88,15 @@ function ViewMaterialIssueContent() {
                 const requestData = response.data;
                 setRequest(requestData);
 
-                if (requestData.bomId || requestData.bomNumber) {
+                // Prioritize materials directly on the request if they exist (data created with request)
+                if (requestData.materials && Array.isArray(requestData.materials)) {
+                    setBomItems(requestData.materials);
+                } else if (requestData.bomId || requestData.bomNumber || requestData.bom) {
                     const bomRes = await axiosInstance.get("/bom");
                     if (bomRes.data && Array.isArray(bomRes.data)) {
                         const targetBom = bomRes.data.find(b =>
-                            b.id === requestData.bomId || b.number === requestData.bomNumber
+                            b.id === requestData.bomId ||
+                            b.number === (requestData.bomNumber || requestData.bom)
                         );
                         if (targetBom && targetBom.materials) {
                             setBomItems(targetBom.materials);
@@ -129,12 +133,12 @@ function ViewMaterialIssueContent() {
     }
 
     const calculateStockStatus = (material) => {
-        const partNo = material.scanboPartNo || material.scanboPartNumber;
+        const partNo = material.scanboPartNo || material.scanboPartNumber || material.partNo;
         const storeItem = storeItems.find(item => (item.id === partNo || item.code === partNo));
-        const needed = Number(material.qty || 0) * Number(request.requiredQty || 0);
+        const needed = Number(material.qty || material.quantity || 0) * Number(request.requiredQty || request.qty || 0);
 
         if (!storeItem) return { status: "unknown", color: "#64748b", text: "NOT LISTED" };
-        const available = Number(storeItem.available || 0);
+        const available = Number(storeItem.available || storeItem.stock || 0);
 
         if (available >= needed) return { status: "ready", color: "#059669", text: "SUFFICIENT" };
         if (available > 0) return { status: "partial", color: "#d97706", text: `PARTIAL (${available})` };
@@ -144,7 +148,7 @@ function ViewMaterialIssueContent() {
     return (
         <Fade in={!loading}>
             <Box>
-                <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 3 } }}>
+                <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 1 } }}>
                     {/* Header Actions */}
                     <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }} className="no-print">
                         <Button
@@ -205,9 +209,9 @@ function ViewMaterialIssueContent() {
                         </Stack>
                     </Stack>
 
-                    <Grid container spacing={4}>
+                    <Grid container spacing={2}>
                         {/* Main Document Area */}
-                        <Grid item xs={12} lg={9}>
+                        <Grid size={{ xs: 12, lg: 9 }}>
                             <Paper
                                 elevation={0}
                                 sx={{
@@ -259,12 +263,12 @@ function ViewMaterialIssueContent() {
                                             <InfoItem
                                                 icon={Assignment}
                                                 label="Production For"
-                                                value={request.productName}
+                                                value={request.productName || request.product}
                                             />
                                             <InfoItem
                                                 icon={CalendarMonth}
-                                                label="Requirement Date"
-                                                value={request.startDate}
+                                                label="Start Date"
+                                                value={request.startDate || request.start}
                                             />
                                         </Stack>
                                     </Stack>
@@ -272,15 +276,15 @@ function ViewMaterialIssueContent() {
                                     <Divider sx={{ mb: 5, opacity: 0.6 }} />
 
                                     {/* Issue Metadata Grid */}
-                                    <Grid container spacing={3} sx={{ mb: 6 }}>
-                                        <Grid item xs={12} sm={4}>
-                                            <InfoItem icon={Receipt} label="BOM Reference" value={request.bomNumber} />
+                                    <Grid container spacing={2} sx={{ mb: 6 }}>
+                                        <Grid size={{ xs: 12, sm: 4 }}>
+                                            <InfoItem icon={Receipt} label="BOM Reference" value={request.bomNumber || request.bom} />
                                         </Grid>
-                                        <Grid item xs={12} sm={4}>
-                                            <InfoItem icon={ProductionQuantityLimits} label="Issuance Quantity" value={`${request.requiredQty} Units`} />
+                                        <Grid size={{ xs: 12, sm: 4 }}>
+                                            <InfoItem icon={ProductionQuantityLimits} label="Required Quantity" value={`${request.requiredQty || request.qty} Units`} />
                                         </Grid>
-                                        <Grid item xs={12} sm={4}>
-                                            <InfoItem icon={Description} label="Target Completion" value={request.endDate} />
+                                        <Grid size={{ xs: 12, sm: 4 }}>
+                                            <InfoItem icon={Description} label="End Date" value={request.endDate || request.end} />
                                         </Grid>
                                     </Grid>
 
@@ -349,19 +353,19 @@ function ViewMaterialIssueContent() {
                         </Grid>
 
                         {/* Sidebar / Control Area */}
-                        <Grid item xs={12} lg={3}>
-                            <Stack spacing={3}>
+                        <Grid size={{ xs: 12, lg: 3 }}>
+                            <Stack spacing={2}>
                                 {/* Authorization Card */}
                                 <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                                     <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1 }}>
                                         <VerifiedUser sx={{ color: '#1172ba', fontSize: 20 }} /> Authorization
                                     </Typography>
 
-                                    <Stack spacing={4}>
+                                    <Stack spacing={2}>
                                         <Stack direction="row" spacing={2}>
                                             <Avatar sx={{ bgcolor: "#f1f5f9", color: "#64748b" }}><Person /></Avatar>
                                             <Box>
-                                                <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 700, textTransform: "uppercase" }}>Originator</Typography>
+                                                <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 700, textTransform: "uppercase" }}>Requested By</Typography>
                                                 <Typography variant="body2" sx={{ fontWeight: 800, color: "#0f172a" }}>{request.requestedBy || "Unspecified"}</Typography>
                                             </Box>
                                         </Stack>
@@ -373,7 +377,7 @@ function ViewMaterialIssueContent() {
                                                 {request.approvedBy ? <CheckCircle /> : <Warning />}
                                             </Avatar>
                                             <Box>
-                                                <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 700, textTransform: "uppercase" }}>Signatory</Typography>
+                                                <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 700, textTransform: "uppercase" }}>Approved By</Typography>
                                                 <Typography variant="body2" sx={{ fontWeight: 800, color: "#0f172a" }}>{request.approvedBy || "Pending Review"}</Typography>
                                             </Box>
                                         </Stack>
@@ -387,8 +391,16 @@ function ViewMaterialIssueContent() {
                                     </Typography>
                                     <Stack spacing={2}>
                                         <Stack direction="row" justifyContent="space-between">
+                                            <Typography variant="caption" fontWeight={700} color="#64748b">Request No.</Typography>
+                                            <Typography variant="caption" fontWeight={900} color="#1172ba">{request.requestNo || "-"}</Typography>
+                                        </Stack>
+                                        <Stack direction="row" justifyContent="space-between">
                                             <Typography variant="caption" fontWeight={700} color="#64748b">Created On</Typography>
                                             <Typography variant="caption" fontWeight={900} color="#0f172a">{request.createdAt ? new Date(request.createdAt).toLocaleDateString() : "—"}</Typography>
+                                        </Stack>
+                                        <Stack direction="row" justifyContent="space-between">
+                                            <Typography variant="caption" fontWeight={700} color="#64748b">Current Status</Typography>
+                                            <Typography variant="caption" fontWeight={900} color={request.status === "APPROVED" ? "#166534" : "#1172ba"}>{request.status || "PENDING"}</Typography>
                                         </Stack>
                                         <Stack direction="row" justifyContent="space-between">
                                             <Typography variant="caption" fontWeight={700} color="#64748b">System UID</Typography>
