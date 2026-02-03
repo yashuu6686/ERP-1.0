@@ -22,25 +22,25 @@ import {
 import { FactCheck } from "@mui/icons-material";
 
 const deviceTestingSteps = [
-    { step: 1, task: "Preparation / Physical status" },
-    { step: 2, task: "Temperature" },
-    { step: 3, task: "Oxygen Saturation" },
-    { step: 4, task: "Glucose" },
-    { step: 5, task: "Blood Pressure" },
-    { step: 6, task: "ECG Functionality" },
-    { step: 7, task: "BP Cuffs" },
-    { step: 8, task: "Large BP Cuff" },
-    { step: 9, task: "Glucose Bottles" },
-    { step: 10, task: "Lancet Pouch" },
-    { step: 11, task: "USB cables" },
-    { step: 12, task: "User Manual" },
-    { step: 13, task: "Lancet pen" },
-    { step: 14, task: "Plastic shield" },
-    { step: 15, task: "Hologram stickers" },
-    { step: 16, task: "Validity Stickers" },
-    { step: 17, task: "Scanbo Jute bag" },
-    { step: 18, task: "Finalize / Report" },
-    { step: 19, task: "Final Check" },
+    { step: 1, task: "Preparation / Physical status", parameter: "N/A", methodology: "Charge the device, check the software version, and its physical appearance" },
+    { step: 2, task: "Temperature", parameter: "Temperature measurement", methodology: "Compared with a calibrated thermometer" },
+    { step: 3, task: "Oxygen Saturation", parameter: "SpO2 measurement", methodology: "Compared with a pulse oximeter" },
+    { step: 4, task: "Glucose", parameter: "Glucose measurement", methodology: "Working good" },
+    { step: 5, task: "Blood Pressure", parameter: "BP count", methodology: "SR, DR" },
+    { step: 6, task: "ECG Functionality", parameter: "ECG recording", methodology: "RR Min, RR Max, HR, BR, HRV" },
+    { step: 7, task: "BP Cuffs", parameter: "Both working good", methodology: "Check functionality & quality" },
+    { step: 8, task: "Large BP Cuff", parameter: "Both working good", methodology: "Check functionality & quality" },
+    { step: 9, task: "Glucose Bottles", parameter: "Yes", methodology: "Check expiry date and stickers" },
+    { step: 10, task: "Lancet Pouch", parameter: "Yes (25 Set)", methodology: "pack of 25 needles" },
+    { step: 11, task: "USB cables", parameter: "Yes", methodology: "properly wrapped" },
+    { step: 12, task: "User Manual", parameter: "No", methodology: "Put it above the BP cuff" },
+    { step: 13, task: "Lancet pen", parameter: "Yes", methodology: "Make sure it works properly and is clean after testing" },
+    { step: 14, task: "Plastic shield", parameter: "Yes", methodology: "Put it above the device" },
+    { step: 15, task: "Hologram stickers", parameter: "Yes", methodology: "Stick properly at both ends." },
+    { step: 16, task: "Validity Stickers", parameter: "Yes", methodology: "New Sticker" },
+    { step: 17, task: "Scanbo Jute bag", parameter: "Yes", methodology: "Add the device to the Jute bag" },
+    { step: 18, task: "Finalize / Report", parameter: "F2F29D.pdf", methodology: "Have you checked all the above points?" },
+    { step: 19, task: "Final Check", parameter: "Review checklist", methodology: "All components included" },
 ];
 
 export default function TestingProcessStep({ formData, handleInputChange, handleStepResultChange }) {
@@ -95,7 +95,7 @@ export default function TestingProcessStep({ formData, handleInputChange, handle
                                 <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500, width: 60 }}>Sr.No</TableCell>
                                 <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500 }}>Task</TableCell>
                                 <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500, width: 140 }}>Parameter</TableCell>
-                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500, width: 140 }}>method</TableCell>
+                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500, width: 140 }}>Test Methodology</TableCell>
                                 <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500, width: 140 }}>Expected Result</TableCell>
                                 <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500, width: 100 }}>Check</TableCell>
                                 <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 700 }}>Remarks</TableCell>

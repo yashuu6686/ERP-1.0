@@ -205,8 +205,8 @@ const ProfilePage = () => {
                 sx={{
                     p: "var(--space-2xl)",
                     mb: "var(--space-xl)",
-                    // borderRadius: "var(--card-radius)",
-                    border: "1px solid var(--border-default)",
+                    borderRadius: "0px",
+                    // border: "1px solid var(--border-default)",
                     bgcolor: "var(--bg-surface)",
                     boxShadow: "var(--card-shadow)",
                     position: "relative",
@@ -222,13 +222,13 @@ const ProfilePage = () => {
                         right: 0,
                         width: "300px",
                         height: "100%",
-                        background: `linear-gradient(135deg, transparent 20%, ${userDetails.color.includes('var') ? 'rgba(15, 23, 42, 0.08)' : userDetails.color + '15'} 100%)`,
+                        // background: `linear-gradient(135deg, transparent 20%, ${userDetails.color.includes('var') ? 'rgba(15, 23, 42, 0.08)' : userDetails.color + '15'} 100%)`,
                         pointerEvents: "none"
                     }}
                 />
 
                 <Grid container spacing={4} alignItems="center" position="relative">
-                    <Grid item size={{ xs: 12, sm: 6, md: 4 }}>
+                    <Grid item size={{ xs: 12, sm: 6, md: 2 }}>
                         <Avatar
                             sx={{
                                 width: 120,
@@ -295,7 +295,7 @@ const ProfilePage = () => {
                             </Box>
                         </Box>
                     </Grid>
-                    <Grid item size={{ xs: 12, sm: 6, md: 4 }}>
+                    {/* <Grid item size={{ xs: 12, sm: 6, md: 4 }}>
                         <Button
                             variant="contained"
                             startIcon={<Edit />}
@@ -313,7 +313,7 @@ const ProfilePage = () => {
                         >
                             Edit Profile
                         </Button>
-                    </Grid>
+                    </Grid> */}
                 </Grid>
             </Paper>
 
