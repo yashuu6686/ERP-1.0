@@ -81,7 +81,9 @@ function InvoiceGeneratorContent() {
     const fetchOrders = async () => {
       try {
         const response = await axiosInstance.get("/orders");
-        setOrders(Array.isArray(response.data) ? response.data : []);
+        const allOrders = Array.isArray(response.data) ? response.data : [];
+        // Only show pending orders for invoice generation
+        setOrders(allOrders.filter(order => order.status === "Pending"));
       } catch (error) {
         console.error("Error fetching orders:", error);
       }
