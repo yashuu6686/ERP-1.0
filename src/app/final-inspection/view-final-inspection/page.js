@@ -22,9 +22,13 @@ import Inventory from "@mui/icons-material/Inventory";
 import Assignment from "@mui/icons-material/Assignment";
 import VerifiedUser from "@mui/icons-material/VerifiedUser";
 import Print from "@mui/icons-material/Print";
+import CheckCircle from "@mui/icons-material/CheckCircle";
+import Cancel from "@mui/icons-material/Cancel";
+import Schedule from "@mui/icons-material/Schedule";
 
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/Loader";
+import { useAuth } from "@/context/AuthContext";
 
 const DetailRow = ({ label, value }) => (
     <Box sx={{ mb: 2 }}>
@@ -57,6 +61,7 @@ function ViewFinalInspectionContent() {
     const id = searchParams.get("id");
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState(null);
+    const { user } = useAuth();
 
     useEffect(() => {
         const fetchInspection = async () => {
@@ -76,6 +81,40 @@ function ViewFinalInspectionContent() {
         }
     }, [id]);
 
+    const handleApprove = async () => {
+        try {
+            setLoading(true);
+            await axiosInstance.put(`/final-inspections/${id}`, {
+                ...data,
+                inspectionStatus: 'Approved'
+            });
+            setData(prev => ({ ...prev, inspectionStatus: 'Approved' }));
+            alert("Inspection report has been approved.");
+        } catch (error) {
+            console.error("Error approving inspection:", error);
+            alert("Failed to approve inspection.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleReject = async () => {
+        try {
+            setLoading(true);
+            await axiosInstance.put(`/final-inspections/${id}`, {
+                ...data,
+                inspectionStatus: 'Rejected'
+            });
+            setData(prev => ({ ...prev, inspectionStatus: 'Rejected' }));
+            alert("Inspection report has been rejected.");
+        } catch (error) {
+            console.error("Error rejecting inspection:", error);
+            alert("Failed to reject inspection.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     if (loading) return <Loader fullPage message="Fetching Inspection Details..." />;
     if (!data) return <Box sx={{ p: 4 }}>Inspection Not Found</Box>;
 
@@ -92,6 +131,34 @@ function ViewFinalInspectionContent() {
                 </Button>
 
                 <Stack direction="row" spacing={1.5}>
+                    {user?.role === 'admin' && data.inspectionStatus === 'Pending Approval' && (
+                        <>
+                            <Button
+                                variant="contained"
+                                color="error"
+                                startIcon={<Cancel />}
+                                onClick={handleReject}
+                                sx={{ borderRadius: "10px", textTransform: "none", fontWeight: 700 }}
+                            >
+                                Reject
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="success"
+                                startIcon={<CheckCircle />}
+                                onClick={handleApprove}
+                                sx={{
+                                    borderRadius: "10px",
+                                    textTransform: "none",
+                                    fontWeight: 700,
+                                    bgcolor: "#16a34a",
+                                    "&:hover": { bgcolor: "#15803d" }
+                                }}
+                            >
+                                Approve Report
+                            </Button>
+                        </>
+                    )}
                     <Button
                         variant="outlined"
                         startIcon={<Print />}
@@ -140,13 +207,14 @@ function ViewFinalInspectionContent() {
                                         Final Quality Verification
                                     </Typography>
                                     <Chip
-                                        label={data.result}
+                                        icon={data.inspectionStatus === "Pending Approval" ? <Schedule sx={{ fontSize: '16px !important' }} /> : data.inspectionStatus === "Approved" ? <CheckCircle sx={{ fontSize: '16px !important' }} /> : data.inspectionStatus === "Rejected" ? <Cancel sx={{ fontSize: '16px !important' }} /> : undefined}
+                                        label={data.inspectionStatus || data.result}
                                         size="small"
                                         sx={{
                                             fontWeight: 800,
                                             textTransform: "uppercase",
-                                            bgcolor: data.result === "Pass" ? "#dcfce7" : data.result === "Fail" ? "#fee2e2" : "#fef9c3",
-                                            color: data.result === "Pass" ? "#15803d" : data.result === "Fail" ? "#b91c1c" : "#a16207",
+                                            bgcolor: data.inspectionStatus === "Approved" ? "#dcfce7" : data.inspectionStatus === "Rejected" ? "#fee2e2" : data.inspectionStatus === "Pending Approval" ? "#fef3c7" : "#f1f5f9",
+                                            color: data.inspectionStatus === "Approved" ? "#15803d" : data.inspectionStatus === "Rejected" ? "#b91c1c" : data.inspectionStatus === "Pending Approval" ? "#92400e" : "#475569",
                                         }}
                                     />
                                 </Stack>

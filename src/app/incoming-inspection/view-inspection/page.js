@@ -19,6 +19,7 @@ import Stack from "@mui/material/Stack";
 import Container from "@mui/material/Container";
 import Fade from "@mui/material/Fade";
 import Tooltip from "@mui/material/Tooltip";
+import { useAuth } from "@/context/AuthContext";
 
 import ArrowBack from "@mui/icons-material/ArrowBack";
 import CheckCircle from "@mui/icons-material/CheckCircle";
@@ -109,6 +110,42 @@ function ViewInspectionContent() {
         }
     }, [id]);
 
+    const handleApprove = async () => {
+        try {
+            setLoading(true);
+            await axiosInstance.put(`/incoming-inspection/${id}`, {
+                ...data,
+                inspectionStatus: 'Approved'
+            });
+            setData(prev => ({ ...prev, inspectionStatus: 'Approved' }));
+            alert("Inspection report has been approved.");
+        } catch (error) {
+            console.error("Error approving inspection:", error);
+            alert("Failed to approve inspection.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleReject = async () => {
+        try {
+            setLoading(true);
+            await axiosInstance.put(`/incoming-inspection/${id}`, {
+                ...data,
+                inspectionStatus: 'Rejected'
+            });
+            setData(prev => ({ ...prev, inspectionStatus: 'Rejected' }));
+            alert("Inspection report has been rejected.");
+        } catch (error) {
+            console.error("Error rejecting inspection:", error);
+            alert("Failed to reject inspection.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const { user } = useAuth();
+
     if (loading) return <Loader fullPage message="Loading Inspection Details..." />;
 
     if (!data) return (
@@ -182,6 +219,36 @@ function ViewInspectionContent() {
                                 Print
                             </Button>
                         </Tooltip>
+
+                        {user?.role === 'admin' && inspectionStatus === 'Pending Approval' && (
+                            <>
+                                <Button
+                                    variant="contained"
+                                    color="error"
+                                    startIcon={<Cancel />}
+                                    onClick={handleReject}
+                                    sx={{ borderRadius: "12px", textTransform: "none", fontWeight: 600 }}
+                                >
+                                    Reject
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    color="success"
+                                    startIcon={<CheckCircle />}
+                                    onClick={handleApprove}
+                                    sx={{
+                                        borderRadius: "12px",
+                                        textTransform: "none",
+                                        fontWeight: 600,
+                                        bgcolor: "#16a34a",
+                                        "&:hover": { bgcolor: "#15803d" }
+                                    }}
+                                >
+                                    Approve Report
+                                </Button>
+                            </>
+                        )}
+
                         <Button
                             variant="contained"
                             startIcon={<Edit />}
@@ -401,7 +468,7 @@ function ViewInspectionContent() {
                             </Paper>
 
                             {/* Approval Workflow */}
-                            <Paper  sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+                            <Paper sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                                 <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
                                     <CheckCircle sx={{ color: '#1172ba', fontSize: 20 }} /> Verification
                                 </Typography>

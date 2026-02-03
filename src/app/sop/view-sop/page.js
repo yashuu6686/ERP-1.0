@@ -21,9 +21,14 @@ import Devices from "@mui/icons-material/Devices";
 import FactCheck from "@mui/icons-material/FactCheck";
 import Inventory2 from "@mui/icons-material/Inventory2";
 import Print from "@mui/icons-material/Print";
+import CheckCircle from "@mui/icons-material/CheckCircle";
+import Cancel from "@mui/icons-material/Cancel";
+import Schedule from "@mui/icons-material/Schedule";
+import Chip from "@mui/material/Chip";
 
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/Loader";
+import { useAuth } from "@/context/AuthContext";
 
 const DetailRow = ({ label, value }) => (
     <Box sx={{ mb: 2 }}>
@@ -56,6 +61,7 @@ function ViewSOPContent() {
     const id = searchParams.get("id");
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState(null);
+    const { user } = useAuth();
 
     useEffect(() => {
         const fetchSOP = async () => {
@@ -75,6 +81,40 @@ function ViewSOPContent() {
         }
     }, [id]);
 
+    const handleApprove = async () => {
+        try {
+            setLoading(true);
+            await axiosInstance.put(`/sops/${id}`, {
+                ...data,
+                status: 'Approved'
+            });
+            setData(prev => ({ ...prev, status: 'Approved' }));
+            alert("SOP has been approved.");
+        } catch (error) {
+            console.error("Error approving SOP:", error);
+            alert("Failed to approve SOP.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleReject = async () => {
+        try {
+            setLoading(true);
+            await axiosInstance.put(`/sops/${id}`, {
+                ...data,
+                status: 'Rejected'
+            });
+            setData(prev => ({ ...prev, status: 'Rejected' }));
+            alert("SOP has been rejected.");
+        } catch (error) {
+            console.error("Error rejecting SOP:", error);
+            alert("Failed to reject SOP.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     if (loading) return <Loader fullPage message="Fetching SOP Details..." />;
     if (!data) return <Box sx={{ p: 4 }}>SOP Not Found</Box>;
 
@@ -91,6 +131,34 @@ function ViewSOPContent() {
                 </Button>
 
                 <Stack direction="row" spacing={1.5}>
+                    {user?.role === 'admin' && data.status === 'Pending Approval' && (
+                        <>
+                            <Button
+                                variant="contained"
+                                color="error"
+                                startIcon={<Cancel />}
+                                onClick={handleReject}
+                                sx={{ borderRadius: "10px", textTransform: "none", fontWeight: 700 }}
+                            >
+                                Reject
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="success"
+                                startIcon={<CheckCircle />}
+                                onClick={handleApprove}
+                                sx={{
+                                    borderRadius: "10px",
+                                    textTransform: "none",
+                                    fontWeight: 700,
+                                    bgcolor: "#16a34a",
+                                    "&:hover": { bgcolor: "#15803d" }
+                                }}
+                            >
+                                Approve Report
+                            </Button>
+                        </>
+                    )}
                     <Button
                         variant="outlined"
                         startIcon={<Print />}
@@ -134,9 +202,22 @@ function ViewSOPContent() {
                                 <Typography variant="h4" fontWeight={900} sx={{ color: "#1e293b", letterSpacing: "-0.02em" }}>
                                     SOP: {data.sopNumber}
                                 </Typography>
-                                <Typography variant="body1" fontWeight={700} sx={{ color: "#64748b", mt: 0.5 }}>
-                                    Standard Operating Procedure Details
-                                </Typography>
+                                <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 0.5 }}>
+                                    <Typography variant="body1" fontWeight={700} sx={{ color: "#64748b" }}>
+                                        Standard Operating Procedure Details
+                                    </Typography>
+                                    <Chip
+                                        icon={data.status === "Pending Approval" ? <Schedule sx={{ fontSize: '16px !important' }} /> : data.status === "Approved" ? <CheckCircle sx={{ fontSize: '16px !important' }} /> : data.status === "Rejected" ? <Cancel sx={{ fontSize: '16px !important' }} /> : undefined}
+                                        label={data.status || "Completed"}
+                                        size="small"
+                                        sx={{
+                                            fontWeight: 800,
+                                            textTransform: "uppercase",
+                                            bgcolor: data.status === "Approved" ? "#dcfce7" : data.status === "Rejected" ? "#fee2e2" : data.status === "Pending Approval" ? "#fef3c7" : "#f1f5f9",
+                                            color: data.status === "Approved" ? "#15803d" : data.status === "Rejected" ? "#b91c1c" : data.status === "Pending Approval" ? "#92400e" : "#475569",
+                                        }}
+                                    />
+                                </Stack>
                             </Box>
                         </Grid>
                         <Grid item size={{ xs: 12, md: 4 }}>

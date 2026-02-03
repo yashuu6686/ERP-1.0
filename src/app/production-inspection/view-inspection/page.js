@@ -43,6 +43,8 @@ import {
 } from "@mui/icons-material";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/Loader";
+import { useAuth } from "@/context/AuthContext";
+import Schedule from "@mui/icons-material/Schedule";
 
 // Professional Corporate Palette
 const COLORS = {
@@ -104,6 +106,7 @@ function ViewInspectionContent() {
     const id = searchParams.get("id");
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState(null);
+    const { user } = useAuth();
 
     useEffect(() => {
         const fetchInspection = async () => {
@@ -160,6 +163,40 @@ function ViewInspectionContent() {
         fetchInspection();
     }, [id]);
 
+    const handleApprove = async () => {
+        try {
+            setLoading(true);
+            await axiosInstance.put(`/quality-inspection/${id}`, {
+                ...data,
+                status: 'Approved'
+            });
+            setData(prev => ({ ...prev, status: 'Approved' }));
+            alert("Inspection report has been approved.");
+        } catch (error) {
+            console.error("Error approving inspection:", error);
+            alert("Failed to approve inspection.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleReject = async () => {
+        try {
+            setLoading(true);
+            await axiosInstance.put(`/quality-inspection/${id}`, {
+                ...data,
+                status: 'Rejected'
+            });
+            setData(prev => ({ ...prev, status: 'Rejected' }));
+            alert("Inspection report has been rejected.");
+        } catch (error) {
+            console.error("Error rejecting inspection:", error);
+            alert("Failed to reject inspection.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     if (loading) return <Loader fullPage message="Accessing Quality Control Records..." />;
     if (!data) return <Box sx={{ p: 4, textAlign: "center", color: COLORS.secondary }}>Secure Record Not Found.</Box>;
 
@@ -181,14 +218,59 @@ function ViewInspectionContent() {
                         <Divider orientation="vertical" flexItem sx={{ height: 24, alignSelf: "center" }} />
                         <Box>
                             <Typography variant="h6" sx={{ fontWeight: 800, color: COLORS.primary, lineHeight: 1 }}>
-                                {productDetails.checkNumber}
+                                {productDetails.checkNumber || data.id}
                             </Typography>
-                            <Typography variant="caption" sx={{ color: COLORS.secondary, fontWeight: 600 }}>
-                                QC Report • {productDetails.productName}
-                            </Typography>
+                            <Stack direction="row" spacing={1} alignItems="center">
+                                <Typography variant="caption" sx={{ color: COLORS.secondary, fontWeight: 600 }}>
+                                    QC Report • {productDetails.productName}
+                                </Typography>
+                                {data.status && (
+                                    <Chip
+                                        icon={data.status === "Pending Approval" ? <Schedule sx={{ fontSize: '14px !important' }} /> : data.status === "Approved" ? <CheckCircle sx={{ fontSize: '14px !important' }} /> : data.status === "Rejected" ? <Cancel sx={{ fontSize: '14px !important' }} /> : undefined}
+                                        label={data.status}
+                                        size="small"
+                                        sx={{
+                                            height: 20,
+                                            fontSize: "0.65rem",
+                                            fontWeight: 800,
+                                            textTransform: "uppercase",
+                                            bgcolor: data.status === "Approved" ? "#dcfce7" : data.status === "Rejected" ? "#fee2e2" : data.status === "Pending Approval" ? "#fef3c7" : "#f1f5f9",
+                                            color: data.status === "Approved" ? "#059669" : data.status === "Rejected" ? "#dc2626" : data.status === "Pending Approval" ? "#92400e" : "#475569",
+                                        }}
+                                    />
+                                )}
+                            </Stack>
                         </Box>
                     </Box>
                     <Stack direction="row" spacing={1}>
+                        {user?.role === 'admin' && data.status === 'Pending Approval' && (
+                            <>
+                                <Button
+                                    variant="contained"
+                                    color="error"
+                                    startIcon={<Cancel />}
+                                    onClick={handleReject}
+                                    sx={{ borderRadius: 1, textTransform: "none", fontWeight: 700 }}
+                                >
+                                    Reject
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    color="success"
+                                    startIcon={<CheckCircle />}
+                                    onClick={handleApprove}
+                                    sx={{
+                                        borderRadius: 1,
+                                        textTransform: "none",
+                                        fontWeight: 700,
+                                        bgcolor: "#16a34a",
+                                        "&:hover": { bgcolor: "#15803d" }
+                                    }}
+                                >
+                                    Approve
+                                </Button>
+                            </>
+                        )}
                         <Button startIcon={<PrintIcon />} sx={{ color: COLORS.secondary, textTransform: "none", fontWeight: 600 }}>Export</Button>
                         <Button startIcon={<Share />} sx={{ color: COLORS.secondary, textTransform: "none", fontWeight: 600 }}>Share</Button>
                         <Button

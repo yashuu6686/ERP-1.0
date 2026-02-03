@@ -26,9 +26,11 @@ import Description from "@mui/icons-material/Description";
 import CheckCircle from "@mui/icons-material/CheckCircle";
 import Schedule from "@mui/icons-material/Schedule";
 import Explore from "@mui/icons-material/Explore";
+import Cancel from "@mui/icons-material/Cancel";
 
 import Loader from "../../../components/Loader";
 import axiosInstance from "@/axios/axiosInstance";
+import { useAuth } from "@/context/AuthContext";
 
 function ViewDispatchContent() {
     const router = useRouter();
@@ -37,6 +39,7 @@ function ViewDispatchContent() {
 
     const [dispatch, setDispatch] = useState(null);
     const [loading, setLoading] = useState(true);
+    const { user } = useAuth();
 
     useEffect(() => {
         const fetchDispatchDetails = async () => {
@@ -56,6 +59,40 @@ function ViewDispatchContent() {
             fetchDispatchDetails();
         }
     }, [id]);
+
+    const handleApprove = async () => {
+        try {
+            setLoading(true);
+            await axiosInstance.put(`/dispatches/${id}`, {
+                ...dispatch,
+                status: 'Shipped'
+            });
+            setDispatch(prev => ({ ...prev, status: 'Shipped' }));
+            alert("Dispatch entry has been approved.");
+        } catch (error) {
+            console.error("Error approving dispatch:", error);
+            alert("Failed to approve dispatch.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleReject = async () => {
+        try {
+            setLoading(true);
+            await axiosInstance.put(`/dispatches/${id}`, {
+                ...dispatch,
+                status: 'Rejected'
+            });
+            setDispatch(prev => ({ ...prev, status: 'Rejected' }));
+            alert("Dispatch entry has been rejected.");
+        } catch (error) {
+            console.error("Error rejecting dispatch:", error);
+            alert("Failed to reject dispatch.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     if (loading) {
         return <Loader fullPage message="Loading Dispatch Details..." />;
@@ -81,6 +118,8 @@ function ViewDispatchContent() {
             Delivered: { color: "#155724", bg: "#d4edda", border: "#c3e6cb", label: "Delivered", icon: <CheckCircle sx={{ fontSize: 16 }} /> },
             Pending: { color: "#856404", bg: "#fff3cd", border: "#ffeeba", label: "Pending", icon: <Schedule sx={{ fontSize: 16 }} /> },
             Processing: { color: "#383d41", bg: "#e2e3e5", border: "#d6d8db", label: "Processing", icon: <Schedule sx={{ fontSize: 16 }} /> },
+            "Pending Approval": { color: "#92400e", bg: "#fef3c7", border: "#fde68a", label: "Pending Approval", icon: <Schedule sx={{ fontSize: 16 }} /> },
+            Rejected: { color: "#b91c1c", bg: "#fee2e2", border: "#fecaca", label: "Rejected", icon: <Cancel sx={{ fontSize: 16 }} /> },
         };
         return configs[currentStatus] || configs.Pending;
     };
@@ -106,6 +145,34 @@ function ViewDispatchContent() {
                 </Button>
 
                 <Stack direction="row" spacing={2}>
+                    {user?.role === 'admin' && dispatch.status === 'Pending Approval' && (
+                        <>
+                            <Button
+                                variant="contained"
+                                color="error"
+                                startIcon={<Cancel />}
+                                onClick={handleReject}
+                                sx={{ borderRadius: "10px", textTransform: "none", fontWeight: 600 }}
+                            >
+                                Reject
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="success"
+                                startIcon={<CheckCircle />}
+                                onClick={handleApprove}
+                                sx={{
+                                    borderRadius: "10px",
+                                    textTransform: "none",
+                                    fontWeight: 600,
+                                    bgcolor: "#16a34a",
+                                    "&:hover": { bgcolor: "#15803d" }
+                                }}
+                            >
+                                Approve Entry
+                            </Button>
+                        </>
+                    )}
                     <Button
                         variant="outlined"
                         startIcon={<Print />}
