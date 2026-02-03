@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   Box,
   Tabs,
@@ -107,19 +108,10 @@ export default function RejectedGoods() {
     setOpenDialog(true);
   };
 
+  const router = useRouter();
+
   const handleView = (item) => {
-    setDialogMode("view");
-    setForm({
-      rejectionId: item.rejectionId,
-      rejectedGoods: item.goods,
-      sourceType: item.sourceType,
-      date: item.date,
-      sourceReference: item.sourceRef,
-      reason: item.reason,
-      rejectedQty: item.qty,
-      rejectedBy: item.rejectedBy || "-",
-    });
-    setOpenDialog(true);
+    router.push(`/rejected-goods/view-rejected-goods?id=${item.id || 'rej_1'}`);
   };
 
   const handleEdit = (item) => {

@@ -22,17 +22,18 @@ import Avatar from "@mui/material/Avatar";
 
 import ArrowBack from "@mui/icons-material/ArrowBack";
 import Edit from "@mui/icons-material/Edit";
-import LocalShipping from "@mui/icons-material/LocalShipping";
 import Print from "@mui/icons-material/Print";
-import Business from "@mui/icons-material/Business";
-import Download from "@mui/icons-material/Download";
-import CheckCircle from "@mui/icons-material/CheckCircle";
-import Schedule from "@mui/icons-material/Schedule";
-import Explore from "@mui/icons-material/Explore";
-import Person from "@mui/icons-material/Person"; // Fallback icon
+import Delete from "@mui/icons-material/DeleteForever";
+import ReportProblem from "@mui/icons-material/ReportProblem";
+import Engineering from "@mui/icons-material/Engineering";
 import Inventory from "@mui/icons-material/Inventory";
-import Map from "@mui/icons-material/Map";
-import Phone from "@mui/icons-material/Phone";
+import Person from "@mui/icons-material/Person";
+import CalendarMonth from "@mui/icons-material/CalendarMonth";
+import Description from "@mui/icons-material/Description";
+import VerifiedUser from "@mui/icons-material/VerifiedUser";
+import CheckCircle from "@mui/icons-material/CheckCircle";
+import Warning from "@mui/icons-material/Warning";
+import Calculate from "@mui/icons-material/Calculate";
 
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/Loader";
@@ -42,7 +43,7 @@ const InfoItem = ({ icon: Icon, label, value, color = "#1e293b", fullWidth = fal
         <Box sx={{
             width: 32,
             height: 32,
-            borderRadius: "10px",
+            borderRadius: "10px", // Standard blue theme background
             bgcolor: "rgba(17, 114, 186, 0.08)",
             display: "flex",
             alignItems: "center",
@@ -50,6 +51,7 @@ const InfoItem = ({ icon: Icon, label, value, color = "#1e293b", fullWidth = fal
             flexShrink: 0,
             mt: 0.5
         }}>
+            {/* Standard blue theme icon */}
             <Icon sx={{ color: "#1172ba", fontSize: 18 }} />
         </Box>
         <Box sx={{ flex: 1 }}>
@@ -63,96 +65,68 @@ const InfoItem = ({ icon: Icon, label, value, color = "#1e293b", fullWidth = fal
     </Stack>
 );
 
-function ViewDispatchContent() {
+function ViewRejectedGoodsContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const id = searchParams.get("id");
-
-    const [dispatch, setDispatch] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [data, setData] = useState(null);
 
     useEffect(() => {
-        const fetchDispatchDetails = async () => {
-            try {
-                setLoading(true);
-                const response = await axiosInstance.get(`/dispatches/${id}`);
-                setDispatch(response.data);
-            } catch (error) {
-                console.error("Fetch Error:", error);
-
-                // Demo Fallback Data
-                setDispatch({
-                    id: "dsp_1",
-                    status: "Shipped",
-                    shipmentInfo: {
-                        orderNumber: "ORD-2026-885",
-                        shippingDate: "2026-02-03",
-                        carrier: "FedEx Express",
-                        trackingNumber: "7854-1254-9985",
-                        platform: "Direct Sales",
-                        expectedDelivery: "2026-02-06",
-                    },
-                    customer: {
-                        companyName: "Apollo Hospitals Group",
-                        address: "No. 21, Greams Lane, Off Greams Road, Chennai, TN 600006",
-                        contactPerson: "Dr. Rajesh Gupta",
-                        phone: "+91 98765 43210"
-                    },
-                    items: [
-                        { name: "Scanbo D8 Pro Unit", serialNo: "SN-80001", qty: 50, weight: "25kg" },
-                        { name: "Glucose Test Strips (Pack of 50)", serialNo: "BATCH-992", qty: 200, weight: "12kg" }
-                    ]
-                });
-            } finally {
-                setLoading(false);
-            }
-        };
-
         if (id) {
-            fetchDispatchDetails();
+            fetchRejectedGoods();
         }
     }, [id]);
 
-    if (loading) return <Loader fullPage message="Tracking Shipment..." />;
+    const fetchRejectedGoods = async () => {
+        try {
+            setLoading(true);
+            const response = await axiosInstance.get(`/rejectedGoods/${id}`);
+            setData(response.data);
+        } catch (error) {
+            console.error("Error fetching rejected goods:", error);
+            // Fallback for demo
+            setData({
+                rejectionNo: "REJ-2026-003",
+                date: "2026-02-03",
+                vendor: "Apex Electronics Supply",
+                invoiceNo: "INV-99852",
+                inspectedBy: "Alex Chen",
+                department: "Quality Control",
+                status: "Pending Disposal",
+                totalRejectionCost: "12,500.00",
+                items: [
+                    { name: "Capacitor 10uF", batchNo: "B-101", qty: 50, reason: "Leaking electrolyte", action: "Scrap" },
+                    { name: "PCB Board v2.1", batchNo: "B-105", qty: 10, reason: "Traces broken", action: "Return to Vendor" }
+                ],
+                remarks: "Batch shows signs of moisture damage. Immediate quarantine required."
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    if (!dispatch) {
-        return (
-            <Box sx={{ p: 4, textAlign: "center", minHeight: "80vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-                <Typography variant="h5" color="error" fontWeight={600}>Dispatch Record Not Found</Typography>
-                <Button variant="contained" startIcon={<ArrowBack />} onClick={() => router.push("/dispatch")} sx={{ mt: 3, borderRadius: '12px', textTransform: 'none' }}>
-                    Back to Dispatch List
-                </Button>
-            </Box>
-        );
+    if (loading) return <Loader fullPage message="Loading Rejection Report..." />;
+
+    if (!data) return (
+        <Box sx={{ p: 4, textAlign: "center", minHeight: "80vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+            <Typography variant="h5" color="error" fontWeight={600}>Report Not Found</Typography>
+            <Button variant="contained" startIcon={<ArrowBack />} onClick={() => router.push("/rejected-goods")} sx={{ mt: 3, borderRadius: '12px', textTransform: 'none' }}>
+                Back to List
+            </Button>
+        </Box>
+    );
+
+    const getStatusParams = (status) => {
+        switch (status) {
+            case 'Pending Disposal': return { color: "#b45309", bg: "#fffbeb", label: "PENDING DISPOSAL", icon: <Warning sx={{ fontSize: 16 }} /> };
+            case 'Scrapped': return { color: "#b91c1c", bg: "#fee2e2", label: "SCRAPPED", icon: <Delete sx={{ fontSize: 16 }} /> };
+            case 'Returned': return { color: "#1d4ed8", bg: "#dbeafe", label: "RETURNED", icon: <Inventory sx={{ fontSize: 16 }} /> };
+            default: return { color: "#374151", bg: "#f3f4f6", label: status, icon: <Description sx={{ fontSize: 16 }} /> };
+        }
     }
 
-    const { shipmentInfo, customer, items, status } = dispatch;
-
-    const getStatusChip = (currentStatus) => {
-        const configs = {
-            Shipped: { color: "#0c5460", bg: "#d1ecf1", label: "SHIPPED", icon: <LocalShipping sx={{ fontSize: '16px !important' }} /> },
-            Delivered: { color: "#155724", bg: "#d4edda", label: "DELIVERED", icon: <CheckCircle sx={{ fontSize: '16px !important' }} /> },
-            Pending: { color: "#856404", bg: "#fff3cd", label: "PENDING", icon: <Schedule sx={{ fontSize: '16px !important' }} /> },
-            Processing: { color: "#383d41", bg: "#e2e3e5", label: "PROCESSING", icon: <Schedule sx={{ fontSize: '16px !important' }} /> },
-        };
-        const config = configs[currentStatus] || configs.Pending;
-
-        return (
-            <Chip
-                icon={config.icon}
-                label={config.label}
-                sx={{
-                    fontWeight: 700,
-                    bgcolor: config.bg,
-                    color: config.color,
-                    borderRadius: '8px',
-                    fontSize: '0.85rem',
-                    height: 28,
-                    '& .MuiChip-icon': { color: 'inherit' }
-                }}
-            />
-        );
-    };
+    const statusParams = getStatusParams(data.status);
 
     return (
         <Fade in={!loading}>
@@ -162,7 +136,7 @@ function ViewDispatchContent() {
                     <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }} className="no-print">
                         <Button
                             startIcon={<ArrowBack />}
-                            onClick={() => router.push("/dispatch")}
+                            onClick={() => router.push("/rejected-goods")}
                             sx={{
                                 color: "#64748b",
                                 fontWeight: 600,
@@ -175,28 +149,11 @@ function ViewDispatchContent() {
                                 "&:hover": { bgcolor: "#f1f5f9", borderColor: "#cbd5e1" },
                             }}
                         >
-                            Back to Dispatch
+                            Back to List
                         </Button>
 
                         <Stack direction="row" spacing={1.5}>
-                            <Tooltip title="Download Waybill">
-                                <Button
-                                    variant="outlined"
-                                    startIcon={<Download />}
-                                    sx={{
-                                        borderRadius: "12px",
-                                        textTransform: "none",
-                                        fontWeight: 600,
-                                        color: "#475569",
-                                        borderColor: "#e2e8f0",
-                                        bgcolor: "white",
-                                        "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" },
-                                    }}
-                                >
-                                    Waybill
-                                </Button>
-                            </Tooltip>
-                            <Tooltip title="Print Manifest">
+                            <Tooltip title="Print Report">
                                 <Button
                                     variant="outlined"
                                     startIcon={<Print />}
@@ -222,7 +179,7 @@ function ViewDispatchContent() {
                                     borderRadius: "12px",
                                     textTransform: "none",
                                     fontWeight: 600,
-                                    background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
+                                    background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)", // Converted to Theme Blue
                                     boxShadow: "0 4px 12px rgba(17, 114, 186, 0.25)",
                                     "&:hover": {
                                         background: "linear-gradient(135deg, #0d5a94 0%, #0a4571 100%)",
@@ -230,14 +187,14 @@ function ViewDispatchContent() {
                                     },
                                 }}
                             >
-                                Edit Tracking
+                                Edit Report
                             </Button>
                         </Stack>
                     </Stack>
 
                     <Grid container spacing={4}>
-                        {/* Main Content */}
-                        <Grid item xs={12} lg={9}>
+                        {/* Main Document Area */}
+                        <Grid size={{ xs: 12, md: 9 }}>
                             <Paper
                                 elevation={0}
                                 sx={{
@@ -248,7 +205,7 @@ function ViewDispatchContent() {
                                     position: 'relative'
                                 }}
                             >
-                                {/* Decorative Header Gradient */}
+                                {/* Standard Blue Header Gradient */}
                                 <Box sx={{ height: 6, background: "linear-gradient(90deg, #1172ba 0%, #60a5fa 100%)" }} />
 
                                 <Box sx={{ p: { xs: 3, md: 5 } }}>
@@ -256,90 +213,87 @@ function ViewDispatchContent() {
                                     <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between" alignItems="flex-start" spacing={4} sx={{ mb: 6 }}>
                                         <Box>
                                             <Typography variant="h3" fontWeight={900} sx={{ color: "#0f172a", letterSpacing: "-0.04em", mb: 1 }}>
-                                                DISPATCH MANIFEST
+                                                REJECTION REPORT
                                             </Typography>
                                             <Typography variant="h6" fontWeight={600} sx={{ color: "#64748b", mb: 2.5 }}>
-                                                Logistics & Shipment Details
+                                                Non-Conformance Material Log
                                             </Typography>
                                             <Stack direction="row" spacing={1} alignItems="center">
                                                 <Chip
-                                                    label={shipmentInfo.trackingNumber}
+                                                    label={data.rejectionNo}
                                                     sx={{
                                                         fontWeight: 700,
                                                         bgcolor: "#f1f5f9",
                                                         color: "#0f172a",
                                                         borderRadius: '8px',
-                                                        fontSize: '0.95rem',
-                                                        fontFamily: 'monospace'
+                                                        fontSize: '0.95rem'
                                                     }}
                                                 />
-                                                {getStatusChip(status)}
+                                                <Chip
+                                                    icon={statusParams.icon}
+                                                    label={statusParams.label}
+                                                    sx={{
+                                                        fontWeight: 700,
+                                                        bgcolor: statusParams.bg,
+                                                        color: statusParams.color,
+                                                        borderRadius: '8px',
+                                                        fontSize: '0.85rem',
+                                                        '& .MuiChip-icon': { color: 'inherit' }
+                                                    }}
+                                                />
                                             </Stack>
                                         </Box>
 
                                         <Stack spacing={2} sx={{ minWidth: 260 }}>
                                             <InfoItem
-                                                icon={LocalShipping}
-                                                label="Carrier"
-                                                value={shipmentInfo.carrier}
+                                                icon={CalendarMonth}
+                                                label="Date of Rejection"
+                                                value={data.date}
                                             />
                                             <InfoItem
-                                                icon={Schedule}
-                                                label="Expected Delivery"
-                                                value={new Date(shipmentInfo.expectedDelivery).toLocaleDateString()}
+                                                icon={Description}
+                                                label="Ref Invoice"
+                                                value={data.invoiceNo}
                                             />
                                         </Stack>
                                     </Stack>
 
                                     <Divider sx={{ mb: 5, opacity: 0.6 }} />
 
-                                    {/* Logistics & Destination */}
+                                    {/* Source and Inspector Info */}
                                     <Grid container spacing={6} sx={{ mb: 6 }}>
                                         <Grid item xs={12} md={6}>
                                             <Box sx={{ p: 3, borderRadius: 3, border: '1px solid #e2e8f0', bgcolor: '#f8fafc', height: '100%' }}>
-                                                <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1.5, color: '#0f172a' }}>
-                                                    <Explore sx={{ color: '#1172ba' }} /> LOGISTICS INFO
+                                                {/* Blue Header */}
+                                                <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1.5, color: '#1172ba' }}>
+                                                    <Inventory sx={{ color: '#1172ba' }} /> VENDOR DETAILS
                                                 </Typography>
                                                 <Stack spacing={2}>
-                                                    <InfoItem icon={Business} label="Sales Platform" value={shipmentInfo.platform} />
-                                                    <InfoItem icon={Schedule} label="Ship Date" value={new Date(shipmentInfo.shippingDate).toLocaleDateString()} />
-                                                    <Divider sx={{ borderStyle: 'dashed' }} />
-                                                    <Typography variant="caption" color="#64748b" fontWeight={700}>TRACKING ID</Typography>
-                                                    <Typography variant="h6" fontWeight={700} color="#1e293b" sx={{ fontFamily: 'monospace' }}>
-                                                        {shipmentInfo.trackingNumber}
-                                                    </Typography>
+                                                    <InfoItem icon={Inventory} label="Vendor Name" value={data.vendor} />
+                                                    <InfoItem icon={Description} label="Invoice No" value={data.invoiceNo} />
                                                 </Stack>
                                             </Box>
                                         </Grid>
                                         <Grid item xs={12} md={6}>
                                             <Box sx={{ p: 3, borderRadius: 3, border: '1px solid #e2e8f0', bgcolor: '#fff', height: '100%' }}>
-                                                <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1.5, color: '#0f172a' }}>
-                                                    <Map sx={{ color: '#1172ba' }} /> DESTINATION
+                                                {/* Blue Header */}
+                                                <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1.5, color: '#1172ba' }}>
+                                                    <VerifiedUser sx={{ color: '#1172ba' }} /> INSPECTION INFO
                                                 </Typography>
                                                 <Stack spacing={2}>
-                                                    <Typography variant="body1" fontWeight={700} color="#1e293b">{customer.companyName}</Typography>
-                                                    <Typography variant="body2" color="#64748b" sx={{ lineHeight: 1.6 }}>{customer.address}</Typography>
-                                                    <Divider sx={{ borderStyle: 'dashed' }} />
-                                                    <Box>
-                                                        <Stack direction="row" alignItems="center" spacing={1}>
-                                                            <Person sx={{ fontSize: 16, color: '#64748b' }} />
-                                                            <Typography variant="body2" fontWeight={600}>{customer.contactPerson}</Typography>
-                                                        </Stack>
-                                                        <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 0.5 }}>
-                                                            <Phone sx={{ fontSize: 16, color: '#64748b' }} />
-                                                            <Typography variant="body2" fontWeight={600}>{customer.phone}</Typography>
-                                                        </Stack>
-                                                    </Box>
+                                                    <InfoItem icon={Person} label="Inspected By" value={data.inspectedBy} />
+                                                    <InfoItem icon={Engineering} label="Department" value={data.department} />
                                                 </Stack>
                                             </Box>
                                         </Grid>
                                     </Grid>
 
-                                    {/* Items Table */}
-                                    <Box>
+                                    {/* Rejection Items Table */}
+                                    <Box sx={{ mb: 4 }}>
                                         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
                                             <Typography variant="h6" fontWeight={800} color="#0f172a" sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                                <Inventory sx={{ color: '#1172ba' }} /> Shipment Contents
+                                                {/* Blue Icon */}
+                                                <ReportProblem sx={{ color: '#1172ba' }} /> Rejected Items
                                             </Typography>
                                         </Stack>
 
@@ -348,86 +302,99 @@ function ViewDispatchContent() {
                                                 <TableHead>
                                                     <TableRow sx={{ bgcolor: "#f1f5f9" }}>
                                                         <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>SR</TableCell>
-                                                        <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>ITEM DESCRIPTION</TableCell>
-                                                        <TableCell align="center" sx={{ fontWeight: 800, color: "#475569", py: 2 }}>SERIAL NO</TableCell>
+                                                        <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>MATERIAL NAME</TableCell>
+                                                        <TableCell align="center" sx={{ fontWeight: 800, color: "#475569", py: 2 }}>BATCH</TableCell>
                                                         <TableCell align="center" sx={{ fontWeight: 800, color: "#475569", py: 2 }}>QTY</TableCell>
-                                                        <TableCell align="right" sx={{ fontWeight: 800, color: "#475569", py: 2 }}>WEIGHT</TableCell>
+                                                        <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>REASON FOR REJECTION</TableCell>
+                                                        <TableCell align="right" sx={{ fontWeight: 800, color: "#475569", py: 2 }}>ACTION</TableCell>
                                                     </TableRow>
                                                 </TableHead>
                                                 <TableBody>
-                                                    {items.map((item, idx) => (
+                                                    {data.items && data.items.map((item, idx) => (
                                                         <TableRow key={idx} sx={{ "&:hover": { bgcolor: "#f8fafc" } }}>
                                                             <TableCell sx={{ color: "#94a3b8", fontWeight: 700 }}>{String(idx + 1).padStart(2, '0')}</TableCell>
                                                             <TableCell>
                                                                 <Typography variant="subtitle2" fontWeight={700} color="#1e293b">{item.name}</Typography>
                                                             </TableCell>
                                                             <TableCell align="center" sx={{ fontFamily: 'monospace', color: "#64748b", fontWeight: 600 }}>
-                                                                {item.serialNo || "-"}
+                                                                {item.batchNo || "-"}
                                                             </TableCell>
                                                             <TableCell align="center">
-                                                                <Chip label={item.qty} size="small" sx={{ fontWeight: 800, bgcolor: "#eff6ff", color: "#1172ba", borderRadius: '6px' }} />
+                                                                {/* Quantity Chip - kept light red for context, but softer */}
+                                                                <Chip label={item.qty} size="small" sx={{ fontWeight: 800, bgcolor: "#fee2e2", color: "#b91c1c", borderRadius: '6px' }} />
                                                             </TableCell>
-                                                            <TableCell align="right" sx={{ fontWeight: 700, color: "#0f172a" }}>
-                                                                {item.weight}
+                                                            <TableCell sx={{ color: "#334155", fontWeight: 500 }}>
+                                                                {item.reason}
+                                                            </TableCell>
+                                                            <TableCell align="right">
+                                                                <Typography variant="caption" fontWeight={700} color="#0f172a" sx={{ bgcolor: "#f1f5f9", px: 1, py: 0.5, borderRadius: 1 }}>
+                                                                    {item.action}
+                                                                </Typography>
                                                             </TableCell>
                                                         </TableRow>
                                                     ))}
-                                                    {(!items || items.length === 0) && (
-                                                        <TableRow><TableCell colSpan={5} align="center" sx={{ py: 4, color: "#94a3b8", fontStyle: "italic" }}>No items in shipment.</TableCell></TableRow>
+                                                    {(!data.items || data.items.length === 0) && (
+                                                        <TableRow><TableCell colSpan={6} align="center" sx={{ py: 4, color: "#94a3b8", fontStyle: "italic" }}>No rejected items recorded.</TableCell></TableRow>
                                                     )}
                                                 </TableBody>
                                             </Table>
                                         </TableContainer>
                                     </Box>
+
+                                    {/* Remarks Section */}
+                                    <Box sx={{ p: 2, bgcolor: "#f8fafc", borderRadius: 3, border: "1px solid #e2e8f0" }}>
+                                        <Typography variant="caption" fontWeight={700} color="#64748b" textTransform="uppercase">Additional Remarks</Typography>
+                                        <Typography variant="body2" color="#334155" sx={{ mt: 0.5, fontStyle: data.remarks ? 'normal' : 'italic' }}>
+                                            {data.remarks || "No additional remarks provided."}
+                                        </Typography>
+                                    </Box>
+
                                 </Box>
                             </Paper>
                         </Grid>
 
                         {/* Sidebar */}
-                        <Grid item xs={12} lg={3}>
+                        <Grid size={{ xs: 12, md: 3 }}>
                             <Stack spacing={3}>
-                                {/* Order Summary */}
+                                {/* Cost Impact Summary */}
                                 <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+
                                     <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        <Inventory sx={{ color: '#1172ba', fontSize: 20 }} /> Summary
+                                        <Calculate sx={{ color: '#1172ba', fontSize: 20 }} /> Impact Analysis
                                     </Typography>
 
                                     <Stack spacing={2}>
                                         <Stack direction="row" justifyContent="space-between">
-                                            <Typography variant="body2" color="#64748b" fontWeight={600}>Total Items</Typography>
-                                            <Typography variant="h6" color="#0f172a" fontWeight={800}>{items.length}</Typography>
+                                            <Typography variant="body2" color="#64748b" fontWeight={600}>Rejection Count</Typography>
+                                            <Typography variant="h6" color="#0f172a" fontWeight={800}>{data.items ? data.items.length : 0}</Typography>
                                         </Stack>
                                         <Stack direction="row" justifyContent="space-between">
                                             <Typography variant="body2" color="#64748b" fontWeight={600}>Total Qty</Typography>
                                             <Typography variant="h6" color="#0f172a" fontWeight={800}>
-                                                {items.reduce((acc, curr) => acc + (Number(curr.qty) || 0), 0)}
+                                                {data.items ? data.items.reduce((acc, curr) => acc + (Number(curr.qty) || 0), 0) : 0}
+                                            </Typography>
+                                        </Stack>
+                                        <Divider borderStyle="dashed" />
+                                        <Stack direction="row" justifyContent="space-between" alignItems="baseline">
+                                            <Typography variant="body2" color="#64748b" fontWeight={600}>Est. Value Loss</Typography>
+                                            <Typography variant="h6" color="#b91c1c" fontWeight={800}>
+                                                ₹ {data.totalRejectionCost || "0.00"}
                                             </Typography>
                                         </Stack>
                                     </Stack>
-
-                                    <Button
-                                        fullWidth
-                                        variant="outlined"
-                                        color="primary"
-                                        sx={{ mt: 3, borderRadius: '10px', textTransform: 'none', fontWeight: 700 }}
-                                    >
-                                        Track on {shipmentInfo.carrier}
-                                    </Button>
                                 </Paper>
 
                                 {/* System Info */}
                                 <Paper sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#f8fafc' }}>
-                                    <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        <Explore sx={{ color: '#1172ba', fontSize: 20 }} /> System Data
+                                    <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, color: '#1172ba', display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <Warning sx={{ color: '#1172ba', fontSize: 20 }} /> Action Required
                                     </Typography>
-                                    <Stack direction="row" justifyContent="space-between">
-                                        <Typography variant="caption" fontWeight={700} color="#64748b">Order Ref</Typography>
-                                        <Typography variant="caption" fontWeight={900} color="#0f172a" sx={{ fontFamily: 'monospace' }}>{shipmentInfo.orderNumber}</Typography>
-                                    </Stack>
-                                    <Divider sx={{ my: 1.5, borderStyle: 'dashed' }} />
-                                    <Typography variant="caption" color="#64748b" sx={{ fontStyle: 'italic', display: 'block', textAlign: 'center' }}>
-                                        "Verify condition upon receipt."
+                                    <Typography variant="body2" color="#334155" sx={{ mb: 2 }}>
+                                        Items marked for "Return to Vendor" must be dispatched within 48 hours. Items for "Scrap" require manager approval.
                                     </Typography>
+                                    <Button fullWidth variant="outlined" sx={{ borderRadius: 2, textTransform: "none", fontWeight: 700, bgcolor: "white", borderColor: "#e2e8f0", color: "#475569" }}>
+                                        Notify Vendor
+                                    </Button>
                                 </Paper>
                             </Stack>
                         </Grid>
@@ -451,10 +418,10 @@ function ViewDispatchContent() {
     );
 }
 
-export default function ViewDispatchPage() {
+export default function ViewRejectedGoods() {
     return (
-        <Suspense fallback={<Loader fullPage message="Tracking Shipment..." />}>
-            <ViewDispatchContent />
+        <Suspense fallback={<Loader fullPage message="Loading..." />}>
+            <ViewRejectedGoodsContent />
         </Suspense>
     );
 }
