@@ -303,6 +303,20 @@ function InvoiceGeneratorContent() {
         payload.invoiceInfo.invoiceNumber = `INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
         await axiosInstance.post("/invoices", payload);
       }
+
+      // If an order is linked, update its status to 'Confirmed'
+      if (selectedOrderId) {
+        try {
+          await axiosInstance.patch(`/orders/${selectedOrderId}`, {
+            status: "Confirmed"
+          });
+        } catch (orderError) {
+          console.error("Error updating order status:", orderError);
+          // We don't block the invoice flow if order status update fails, 
+          // but we log it for debugging.
+        }
+      }
+
       router.push("/invoices");
     } catch (error) {
       console.error("Error saving invoice:", error);

@@ -95,8 +95,8 @@ export default function TestingProcessStep({ formData, handleInputChange, handle
                                 <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500, width: 60 }}>Sr.No</TableCell>
                                 <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500 }}>Task</TableCell>
                                 <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500, width: 140 }}>Parameter</TableCell>
-                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500, width: 140 }}>Methodology</TableCell>
-                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500, width: 140 }}>Expected</TableCell>
+                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500, width: 140 }}>method</TableCell>
+                                <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500, width: 140 }}>Expected Result</TableCell>
                                 <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 500, width: 100 }}>Check</TableCell>
                                 <TableCell sx={{ bgcolor: "#f1f5f9", fontWeight: 700 }}>Remarks</TableCell>
                             </TableRow>

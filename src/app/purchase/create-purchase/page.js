@@ -165,7 +165,7 @@ function CreatePurchaseOrderContent() {
           await NotificationService.createNotification({
             title: "New PO for Approval",
             message: `${user?.name} has created PO #${formData.orderInfo.orderNumber}. Needs approval.`,
-            targetRole: "hr",
+            targetRole: "admin",
             poId: response.data.id,
             link: `/purchase/view-purchase?id=${response.data.id}`
           });
