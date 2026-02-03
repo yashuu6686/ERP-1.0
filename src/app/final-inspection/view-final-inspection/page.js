@@ -236,9 +236,9 @@ function ViewFinalInspectionContent() {
                     >
 
                         {/* Header Banner */}
-                        < Box sx={{ p: { xs: 3, md: 4 }, borderBottom: "1px solid #f1f5f9" }}>
+                        <Box sx={{ p: { xs: 3, md: 4 }, borderBottom: "1px solid #f1f5f9" }}>
                             <Grid container spacing={3} alignItems="center">
-                                <Grid item size={{ xs: 12, md: 8 }}>
+                                <Grid item sx={{ flexGrow: 1 }}>
                                     <Box>
                                         <Typography variant="h4" fontWeight={900} sx={{ color: "#1e293b", letterSpacing: "-0.02em" }}>
                                             {data.inspectionNo}
@@ -261,17 +261,17 @@ function ViewFinalInspectionContent() {
                                         </Stack>
                                     </Box>
                                 </Grid>
-                                <Grid item size={{ xs: 12, md: 4 }}>
-                                    <Box sx={{ bgcolor: "#f1f5f9", p: 2, borderRadius: 3, border: "1px solid #e2e8f0", textAlign: "right" }}>
+                                <Grid item>
+                                    <Box sx={{ bgcolor: "#f1f5f9", p: 2, borderRadius: 3, border: "1px solid #e2e8f0", textAlign: "right", minWidth: 160 }}>
                                         <Typography variant="caption" display="block" color="#64748b" fontWeight={800} textTransform="uppercase">Inspection Date</Typography>
                                         <Typography variant="h6" fontWeight={800} color="#1172ba">{data.date}</Typography>
                                     </Box>
                                 </Grid>
                             </Grid>
-                        </Box >
+                        </Box>
 
                         {/* Information Sections */}
-                        < Box sx={{ p: { xs: 2, md: 4 } }}>
+                        <Box sx={{ p: { xs: 2, md: 4 } }}>
                             <Grid container spacing={4}>
                                 {/* Main Document Area */}
                                 <Grid item xs={12} lg={9}>
@@ -476,7 +476,7 @@ function ViewFinalInspectionContent() {
                         }
                     `}} />
             </Box>
-        </Fade >
+        </Fade>
     );
 }
 
