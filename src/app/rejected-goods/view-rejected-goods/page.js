@@ -141,7 +141,7 @@ function ViewRejectedGoodsContent() {
     return (
         <Fade in={!loading}>
             <Box>
-                <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 3 } }}>
+                <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 1 } }}>
                     {/* Header Actions */}
                     <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }} className="no-print">
                         <Button
@@ -202,7 +202,7 @@ function ViewRejectedGoodsContent() {
                         </Stack>
                     </Stack>
 
-                    <Grid container spacing={4}>
+                    <Grid container spacing={2}>
                         {/* Main Document Area */}
                         <Grid size={{ xs: 12, md: 9 }}>
                             <Paper
