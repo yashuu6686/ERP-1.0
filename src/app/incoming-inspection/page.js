@@ -71,32 +71,73 @@ export default function IncomingInspection() {
     {
       label: "Lot Qty",
       align: "center",
-      render: (row) => <Chip label={row.materialData?.lotQuantity} size="small" />,
+      render: (row) => (
+        <Chip
+          label={row.materialData?.lotQuantity}
+          size="small"
+          sx={{
+            bgcolor: "#f1f5f9",
+            color: "#475569",
+            fontWeight: 700,
+            borderRadius: 1.5
+          }}
+        />
+      ),
     },
     {
       label: "Accepted",
       align: "center",
       render: (row) => (
-        <Chip label={row.summaryData?.acceptedQuantity || 0} color="success" size="small" />
+        <Chip
+          label={row.summaryData?.acceptedQuantity || 0}
+          size="small"
+          sx={{
+            bgcolor: "#dcfce7",
+            color: "#15803d",
+            fontWeight: 700,
+            borderRadius: 1.5,
+            minWidth: 40
+          }}
+        />
       ),
     },
     {
       label: "Rejected",
       align: "center",
       render: (row) => (
-        <Chip label={row.summaryData?.rejectedQuantity || 0} color="error" size="small" />
+        <Chip
+          label={row.summaryData?.rejectedQuantity || 0}
+          size="small"
+          sx={{
+            bgcolor: "#fee2e2",
+            color: "#b91c1c",
+            fontWeight: 700,
+            borderRadius: 1.5,
+            minWidth: 40
+          }}
+        />
       ),
     },
     {
       label: "Status",
       align: "center",
-      render: (row) => (
-        <Chip
-          label={row.inspectionStatus || "Draft"}
-          size="small"
-          color={row.inspectionStatus === "Approved" ? "success" : "warning"}
-        />
-      ),
+      render: (row) => {
+        const isApproved = row.inspectionStatus === "Approved";
+        return (
+          <Chip
+            label={row.inspectionStatus || "Draft"}
+            size="small"
+            sx={{
+              fontWeight: 800,
+              fontSize: "0.65rem",
+              textTransform: "uppercase",
+              borderRadius: 1.5,
+              bgcolor: isApproved ? "#dcfce7" : "#fef9c3",
+              color: isApproved ? "#15803d" : "#a16207",
+            }}
+          />
+        );
+      },
     },
     {
       label: "Date",

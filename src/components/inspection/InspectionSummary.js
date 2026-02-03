@@ -81,7 +81,7 @@ const InspectionSummary = ({ summaryData, onChange }) => {
                     <Grid item xs={12} sm={6} md={2} size={{ xs: 12, sm: 6, md: 2 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                other :
+                                other:
                             </Typography>
                             <TextField
                                 size="small"
@@ -98,7 +98,7 @@ const InspectionSummary = ({ summaryData, onChange }) => {
                 <TextField
                     fullWidth
                     multiline
-                    rows={2}
+                    rows={1}
                     variant="outlined"
                     value={summaryData?.comments || ''}
                     onChange={handleChange('comments')}

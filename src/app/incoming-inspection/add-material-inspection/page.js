@@ -23,6 +23,7 @@ import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/Loader";
 import { useAuth } from "@/context/AuthContext";
 import NotificationService from "@/services/NotificationService";
+import { Grid } from "@mui/material";
 
 const steps = [
   "Material Information & Verification",
@@ -31,12 +32,12 @@ const steps = [
 ];
 
 function MaterialInspectionFormContent() {
+  const { user } = useAuth();
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [pendingGRNs, setPendingGRNs] = useState([]);
   const [selectedGRN, setSelectedGRN] = useState(null);
   const router = useRouter();
-  const { user } = useAuth();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const isEditMode = !!id;
@@ -315,11 +316,11 @@ function MaterialInspectionFormContent() {
             if (existingRej) {
               // Update existing rejection
               await axiosInstance.put(`/rejected-goods/${existingRej.id}`, rejectionPayload);
-              console.log("Rejection record updated.");
+              // console.log("Rejection record updated.");
             } else {
               // Create new rejection
               await axiosInstance.post("/rejected-goods", rejectionPayload);
-              console.log("Rejection record created.");
+              // console.log("Rejection record created.");
             }
           } catch (rejError) {
             console.error("Failed to manage rejection record:", rejError);
@@ -436,14 +437,20 @@ function MaterialInspectionFormContent() {
       case 2:
         return (
           <>
-            <InspectionSummary
+          <Grid container spacing={2}>
+            <Grid size={{xs:12, md:8}}>
+              <InspectionSummary
               summaryData={summaryData}
               onChange={handleSummaryChange}
             />
+            </Grid>
+            <Grid size={{xs:12, md:4}}>
             <InspectionApproval
               approvalData={approvalData}
               onChange={handleApprovalChange}
             />
+            </Grid>
+          </Grid>
           </>
         );
       default:
@@ -488,7 +495,7 @@ function MaterialInspectionFormContent() {
           </Stepper>
 
           {/* Step Content */}
-          <Box sx={{ minHeight: 400 }}>{renderStepContent(activeStep)}</Box>
+          <Box>{renderStepContent(activeStep)}</Box>
 
           {/* Navigation Buttons */}
           <Box

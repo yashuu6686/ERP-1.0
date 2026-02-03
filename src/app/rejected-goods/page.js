@@ -22,13 +22,13 @@ import Loader from "../../components/Loader";
 const getStatusColor = (status) => {
   switch (status) {
     case "total":
-      return { bg: "#fff3cd", color: "#856404", label: "Pending" };
+      return { bg: "#fef9c3", color: "#a16207", label: "Pending" };
     case "return":
-      return { bg: "#d1ecf1", color: "#0c5460", label: "Return to Vendor" };
+      return { bg: "#ecfeff", color: "#0891b2", label: "Return to Vendor" };
     case "scrap":
-      return { bg: "#f8d7da", color: "#721c24", label: "Scrapped" };
+      return { bg: "#fee2e2", color: "#b91c1c", label: "Scrapped" };
     default:
-      return { bg: "#e2e3e5", color: "#383d41", label: status };
+      return { bg: "#f1f5f9", color: "#475569", label: status };
   }
 };
 
@@ -50,7 +50,7 @@ const formatDate = (dateString) => {
 export default function RejectedGoods() {
   const [tab, setTab] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
-  const [dialogMode, setDialogMode] = useState("add"); // 'add' | 'edit' | 'view'
+  const [dialogMode, setDialogMode] = useState("add"); 
   const [selectedId, setSelectedId] = useState(null);
   const [search, setSearch] = useState("");
   const [rejectedData, setRejectedData] = useState([]);
@@ -234,9 +234,10 @@ export default function RejectedGoods() {
           label={row.qty}
           size="small"
           sx={{
-            bgcolor: "#fee",
-            color: "#dc3545",
-            fontWeight: 600,
+            bgcolor: "#fee2e2",
+            color: "#b91c1c",
+            fontWeight: 700,
+            borderRadius: 1.5,
             minWidth: "50px",
           }}
         />

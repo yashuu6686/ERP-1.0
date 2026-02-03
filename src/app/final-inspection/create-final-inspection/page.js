@@ -25,6 +25,7 @@ import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/Loader";
 import { useAuth } from "@/context/AuthContext";
 import NotificationService from "@/services/NotificationService";
+import { ArrowBack } from "@mui/icons-material";
 
 const steps = [
   "General Information",
@@ -201,12 +202,14 @@ function FinalInspectionFormContent() {
             <Box sx={{ mt: 3 }}>
               <ActionChecklistSection />
             </Box>
-            <Box sx={{ mt: 3 }}>
-              <ApprovalCommentsSection
-                value={formData.remarks}
-                onChange={(val) => handleInputChange("remarks", val)}
-              />
-            </Box>
+            {user?.role === 'admin' && (
+              <Box sx={{ mt: 3 }}>
+                <ApprovalCommentsSection
+                  value={formData.remarks}
+                  onChange={(val) => handleInputChange("remarks", val)}
+                />
+              </Box>
+            )}
           </>
         );
       case 3:
@@ -264,22 +267,20 @@ function FinalInspectionFormContent() {
         <Divider sx={{ my: 4 }} />
 
         <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
-          <Button
-            disabled={activeStep === 0}
-            onClick={handleBack}
-            startIcon={<NavigateBefore />}
-            sx={{
-              px: 4,
-              py: 1.2,
-              fontWeight: 700,
-              borderRadius: 2,
-              textTransform: "none",
-              color: "#64748b",
-              "&:hover": { bgcolor: "#f1f5f9" }
-            }}
-          >
-            Back
-          </Button>
+           <Button
+              variant="outlined"
+              startIcon={<ArrowBack />}
+              onClick={handleBack}
+              disabled={activeStep === 0}
+              sx={{
+                borderRadius: 2,
+                textTransform: "none",
+                fontWeight: 600,
+                visibility: activeStep === 0 ? "hidden" : "visible",
+              }}
+            >
+              Previous
+            </Button>
           <Box sx={{ display: "flex", gap: 2 }}>
             <Button
               variant="outlined"
