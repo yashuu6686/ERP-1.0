@@ -76,33 +76,12 @@ function ViewDispatchContent() {
             try {
                 setLoading(true);
                 const response = await axiosInstance.get(`/dispatches/${id}`);
+                console.log("Dispatch Server Data:", response.data);
                 setDispatch(response.data);
             } catch (error) {
                 console.error("Fetch Error:", error);
-
-                // Demo Fallback Data
-                setDispatch({
-                    id: "dsp_1",
-                    status: "Shipped",
-                    shipmentInfo: {
-                        orderNumber: "ORD-2026-885",
-                        shippingDate: "2026-02-03",
-                        carrier: "FedEx Express",
-                        trackingNumber: "7854-1254-9985",
-                        platform: "Direct Sales",
-                        expectedDelivery: "2026-02-06",
-                    },
-                    customer: {
-                        companyName: "Apollo Hospitals Group",
-                        address: "No. 21, Greams Lane, Off Greams Road, Chennai, TN 600006",
-                        contactPerson: "Dr. Rajesh Gupta",
-                        phone: "+91 98765 43210"
-                    },
-                    items: [
-                        { name: "Scanbo D8 Pro Unit", serialNo: "SN-80001", qty: 50, weight: "25kg" },
-                        { name: "Glucose Test Strips (Pack of 50)", serialNo: "BATCH-992", qty: 200, weight: "12kg" }
-                    ]
-                });
+                // No fallback - only show server data
+                setDispatch(null);
             } finally {
                 setLoading(false);
             }
@@ -295,7 +274,7 @@ function ViewDispatchContent() {
 
                                     {/* Logistics & Destination */}
                                     <Grid container spacing={6} sx={{ mb: 6 }}>
-                                        <Grid item xs={12} md={6}>
+                                        <Grid size={{ xs: 12, md: 6 }}>
                                             <Box sx={{ p: 3, borderRadius: 3, border: '1px solid #e2e8f0', bgcolor: '#f8fafc', height: '100%' }}>
                                                 <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1.5, color: '#0f172a' }}>
                                                     <Explore sx={{ color: '#1172ba' }} /> LOGISTICS INFO
@@ -311,7 +290,7 @@ function ViewDispatchContent() {
                                                 </Stack>
                                             </Box>
                                         </Grid>
-                                        <Grid item xs={12} md={6}>
+                                        <Grid size={{ xs: 12, md: 6 }}>
                                             <Box sx={{ p: 3, borderRadius: 3, border: '1px solid #e2e8f0', bgcolor: '#fff', height: '100%' }}>
                                                 <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1.5, color: '#0f172a' }}>
                                                     <Map sx={{ color: '#1172ba' }} /> DESTINATION
@@ -387,7 +366,7 @@ function ViewDispatchContent() {
                         <Grid item xs={12} lg={3}>
                             <Stack spacing={3}>
                                 {/* Order Summary */}
-                                <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+                                <Paper sx={{ p: 4, px: 6, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                                     <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1 }}>
                                         <Inventory sx={{ color: '#1172ba', fontSize: 20 }} /> Summary
                                     </Typography>
