@@ -105,9 +105,9 @@ export default function FinalQualityCheck() {
             size="small"
             onClick={() => router.push(`/final-inspection/view-final-inspection?id=${row.id}`)}
             sx={{
-              color: "#0891b2",
-              bgcolor: "#ecfeff",
-              "&:hover": { bgcolor: "#cffafe" },
+              color: "rgb(17, 114, 186)",
+              bgcolor: "#f1f5f9",
+              "&:hover": { bgcolor: "#e2e8f0" },
             }}
           >
             <Visibility fontSize="small" />
