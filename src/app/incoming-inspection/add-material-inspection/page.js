@@ -161,6 +161,7 @@ function MaterialInspectionFormContent() {
     if (isEditMode) {
       fetchInspectionData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, isEditMode]);
 
   const handleGRNChange = (event, newValue) => {

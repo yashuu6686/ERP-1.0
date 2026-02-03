@@ -73,38 +73,38 @@ function ViewRejectedGoodsContent() {
     const [data, setData] = useState(null);
 
     useEffect(() => {
+        const fetchRejectedGoods = async () => {
+            try {
+                setLoading(true);
+                const response = await axiosInstance.get(`/rejectedGoods/${id}`);
+                setData(response.data);
+            } catch (error) {
+                console.error("Error fetching rejected goods:", error);
+                // Fallback for demo
+                setData({
+                    rejectionNo: "REJ-2026-003",
+                    date: "2026-02-03",
+                    vendor: "Apex Electronics Supply",
+                    invoiceNo: "INV-99852",
+                    inspectedBy: "Alex Chen",
+                    department: "Quality Control",
+                    status: "Pending Disposal",
+                    totalRejectionCost: "12,500.00",
+                    items: [
+                        { name: "Capacitor 10uF", batchNo: "B-101", qty: 50, reason: "Leaking electrolyte", action: "Scrap" },
+                        { name: "PCB Board v2.1", batchNo: "B-105", qty: 10, reason: "Traces broken", action: "Return to Vendor" }
+                    ],
+                    remarks: "Batch shows signs of moisture damage. Immediate quarantine required."
+                });
+            } finally {
+                setLoading(false);
+            }
+        };
+
         if (id) {
             fetchRejectedGoods();
         }
     }, [id]);
-
-    const fetchRejectedGoods = async () => {
-        try {
-            setLoading(true);
-            const response = await axiosInstance.get(`/rejectedGoods/${id}`);
-            setData(response.data);
-        } catch (error) {
-            console.error("Error fetching rejected goods:", error);
-            // Fallback for demo
-            setData({
-                rejectionNo: "REJ-2026-003",
-                date: "2026-02-03",
-                vendor: "Apex Electronics Supply",
-                invoiceNo: "INV-99852",
-                inspectedBy: "Alex Chen",
-                department: "Quality Control",
-                status: "Pending Disposal",
-                totalRejectionCost: "12,500.00",
-                items: [
-                    { name: "Capacitor 10uF", batchNo: "B-101", qty: 50, reason: "Leaking electrolyte", action: "Scrap" },
-                    { name: "PCB Board v2.1", batchNo: "B-105", qty: 10, reason: "Traces broken", action: "Return to Vendor" }
-                ],
-                remarks: "Batch shows signs of moisture damage. Immediate quarantine required."
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
 
     if (loading) return <Loader fullPage message="Loading Rejection Report..." />;
 
@@ -390,7 +390,7 @@ function ViewRejectedGoodsContent() {
                                         <Warning sx={{ color: '#1172ba', fontSize: 20 }} /> Action Required
                                     </Typography>
                                     <Typography variant="body2" color="#334155" sx={{ mb: 2 }}>
-                                        Items marked for "Return to Vendor" must be dispatched within 48 hours. Items for "Scrap" require manager approval.
+                                        Items marked for &quot;Return to Vendor&quot; must be dispatched within 48 hours. Items for &quot;Scrap&quot; require manager approval.
                                     </Typography>
                                     <Button fullWidth variant="outlined" sx={{ borderRadius: 2, textTransform: "none", fontWeight: 700, bgcolor: "white", borderColor: "#e2e8f0", color: "#475569" }}>
                                         Notify Vendor
