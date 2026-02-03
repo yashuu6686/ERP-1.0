@@ -1,101 +1,72 @@
 "use client";
+
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-    Box,
-    Typography,
-    Grid,
-    Divider,
-    Chip,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    Button,
-    Stack,
-    Avatar,
-} from "@mui/material";
-import {
-    ArrowBack,
-    Inventory,
-    Science,
-    Assignment,
-    VerifiedUser,
-    Edit as EditIcon,
-    Print as PrintIcon,
-    CheckCircle,
-    Cancel,
-    ErrorOutline,
-    People,
-    Receipt,
-    PrecisionManufacturing,
-    Person,
-    Share,
-    Analytics,
-    Gite,
-    SettingsSuggest,
-    EventNote as EventNoteIcon,
-    Layers as LayersIcon,
-    HistoryEdu
-} from "@mui/icons-material";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import Divider from "@mui/material/Divider";
+import Chip from "@mui/material/Chip";
+import Paper from "@mui/material/Paper";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Container from "@mui/material/Container";
+import Fade from "@mui/material/Fade";
+import Tooltip from "@mui/material/Tooltip";
+import Avatar from "@mui/material/Avatar";
+
+import ArrowBack from "@mui/icons-material/ArrowBack";
+import Inventory from "@mui/icons-material/Inventory";
+import Assignment from "@mui/icons-material/Assignment";
+import Print from "@mui/icons-material/Print";
+import Edit from "@mui/icons-material/Edit";
+import Person from "@mui/icons-material/Person";
+import HistoryEdu from "@mui/icons-material/HistoryEdu";
+import VerifiedUser from "@mui/icons-material/VerifiedUser";
+import Description from "@mui/icons-material/Description";
+import CalendarMonth from "@mui/icons-material/CalendarMonth";
+import Receipt from "@mui/icons-material/Receipt";
+import CheckCircle from "@mui/icons-material/CheckCircle";
+import Warning from "@mui/icons-material/Warning";
+import ProductionQuantityLimits from "@mui/icons-material/ProductionQuantityLimits";
+import Layers from "@mui/icons-material/Layers";
+import Science from "@mui/icons-material/Science";
+import Rule from "@mui/icons-material/Rule";
+import FactCheck from "@mui/icons-material/FactCheck";
+
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/Loader";
 
-// Professional Corporate Palette
-const COLORS = {
-    primary: "#0f172a",    // deep slate
-    secondary: "#64748b",  // muted slate
-    accent: "#334155",     // medium slate
-    border: "#e2e8f0",     // light gray border
-    bg: "#f8fafc",         // off-white bg
-    status: {
-        success: "#059669",// emerald 600
-        warning: "#d97706",// amber 600
-        error: "#dc2626",  // red 600
-        neutral: "#475569" // slate 600
-    }
-};
-
-const SectionHeader = ({ icon: Icon, title }) => (
-    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
-        <Icon sx={{ fontSize: 20, color: COLORS.accent }} />
-        <Typography variant="subtitle1" sx={{ fontWeight: 700, color: COLORS.primary, letterSpacing: -0.2 }}>
-            {title}
-        </Typography>
-    </Box>
-);
-
-const LabelValue = ({ label, value, subValue, icon: Icon }) => (
-    <Box sx={{ mb: 2.5, display: "flex", gap: 1.5, alignItems: "flex-start" }}>
-        {Icon && (
-            <Box sx={{
-                p: 0.75,
-                bgcolor: COLORS.bg,
-                border: `1px solid ${COLORS.border}`,
-                borderRadius: 1,
-                display: "flex",
-                mt: 0.5
-            }}>
-                <Icon sx={{ fontSize: 16, color: COLORS.secondary }} />
-            </Box>
-        )}
+const InfoItem = ({ icon: Icon, label, value, color = "#1e293b" }) => (
+    <Stack direction="row" spacing={2} alignItems="flex-start">
+        <Box sx={{
+            width: 32,
+            height: 32,
+            borderRadius: "10px",
+            bgcolor: "rgba(17, 114, 186, 0.08)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            mt: 0.5
+        }}>
+            <Icon sx={{ color: "#1172ba", fontSize: 18 }} />
+        </Box>
         <Box>
-            <Typography variant="caption" sx={{ color: COLORS.secondary, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, display: "block", mb: 0.5 }}>
+            <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", display: "block", mb: 0.5 }}>
                 {label}
             </Typography>
-            <Typography variant="body1" sx={{ fontWeight: 600, color: COLORS.primary }}>
-                {value || "—"}
+            <Typography variant="body1" sx={{ color, fontWeight: 700, fontSize: "0.95rem" }}>
+                {value || "-"}
             </Typography>
-            {subValue && (
-                <Typography variant="caption" sx={{ color: COLORS.secondary, display: "block" }}>
-                    {subValue}
-                </Typography>
-            )}
         </Box>
-    </Box>
+    </Stack>
 );
 
 function ViewInspectionContent() {
@@ -149,6 +120,7 @@ function ViewInspectionContent() {
                             approvedDate: "2026-02-02 11:15 AM",
                         }
                     };
+                    // Simulate delay
                     setTimeout(() => {
                         setData(dummyData);
                         setLoading(false);
@@ -160,176 +132,325 @@ function ViewInspectionContent() {
         fetchInspection();
     }, [id]);
 
-    if (loading) return <Loader fullPage message="Accessing Quality Control Records..." />;
-    if (!data) return <Box sx={{ p: 4, textAlign: "center", color: COLORS.secondary }}>Secure Record Not Found.</Box>;
+    if (loading) return <Loader fullPage message="Accessing Quality Governance Records..." />;
+
+    if (!data) {
+        return (
+            <Box sx={{ p: 4, textAlign: "center", minHeight: "80vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+                <Typography variant="h5" color="error" fontWeight={600}>Inspection Record Not Found</Typography>
+                <Button variant="contained" startIcon={<ArrowBack />} onClick={() => router.push("/production-inspection")} sx={{ mt: 3, borderRadius: '12px', textTransform: 'none' }}>
+                    Back to Registry
+                </Button>
+            </Box>
+        );
+    }
 
     const { productDetails, checkDetails, inspectionSummary, approval } = data;
 
     return (
-        <Box sx={{ minHeight: "100vh", bgcolor: COLORS.bg, pb: 10 }}>
-            {/* Minimalist Corporate Header */}
-            <Box sx={{ bgcolor: "#fff", borderBottom: `1px solid ${COLORS.border}`, py: 1.5, px: 4 }}>
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
+        <Fade in={!loading}>
+            <Box>
+                <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 3 } }}>
+                    {/* Header Actions */}
+                    <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }} className="no-print">
                         <Button
                             startIcon={<ArrowBack />}
                             onClick={() => router.push("/production-inspection")}
-                            sx={{ color: COLORS.secondary, textTransform: "none", fontWeight: 600 }}
+                            sx={{
+                                color: "#64748b",
+                                fontWeight: 600,
+                                textTransform: "none",
+                                bgcolor: "rgba(255,255,255,0.8)",
+                                px: 2,
+                                borderRadius: '12px',
+                                backdropFilter: "blur(4px)",
+                                border: '1px solid #e2e8f0',
+                                "&:hover": { bgcolor: "#f1f5f9", borderColor: "#cbd5e1" },
+                            }}
                         >
-                            Inspection Registry
+                            Back to Registry
                         </Button>
-                        <Divider orientation="vertical" flexItem sx={{ height: 24, alignSelf: "center" }} />
-                        <Box>
-                            <Typography variant="h6" sx={{ fontWeight: 800, color: COLORS.primary, lineHeight: 1 }}>
-                                {productDetails.checkNumber}
-                            </Typography>
-                            <Typography variant="caption" sx={{ color: COLORS.secondary, fontWeight: 600 }}>
-                                QC Report • {productDetails.productName}
-                            </Typography>
-                        </Box>
-                    </Box>
-                    <Stack direction="row" spacing={1}>
-                        <Button startIcon={<PrintIcon />} sx={{ color: COLORS.secondary, textTransform: "none", fontWeight: 600 }}>Export</Button>
-                        <Button startIcon={<Share />} sx={{ color: COLORS.secondary, textTransform: "none", fontWeight: 600 }}>Share</Button>
-                        <Button
-                            variant="contained"
-                            disableElevation
-                            startIcon={<EditIcon />}
-                            onClick={() => router.push(`/production-inspection/edit-inspection?id=${id}`)}
-                            sx={{ bgcolor: COLORS.primary, "&:hover": { bgcolor: COLORS.accent }, textTransform: "none", fontWeight: 700, px: 3 }}
-                        >
-                            Edit Record
-                        </Button>
-                    </Stack>
-                </Box>
-            </Box>
 
-            <Box sx={{ px: 4, mt: 4 }}>
-                <Grid container spacing={4}>
-                    {/* Main Content Area */}
-                    <Grid item xs={12} lg={8}>
-                        <Stack spacing={4}>
-                            {/* Product & Process Metadata */}
-                            <Paper elevation={0} sx={{ p: 4, borderRadius: 1, border: `1px solid ${COLORS.border}` }}>
-                                <SectionHeader icon={Analytics} title="Process Metadata" />
-                                <Grid container spacing={3}>
-                                    <Grid item xs={12} sm={6} md={4}><LabelValue label="Inspected Product" value={productDetails.productName} icon={LayersIcon} /></Grid>
-                                    <Grid item xs={12} sm={6} md={4}><LabelValue label="Compliance Standard" value={productDetails.qualityStandard} icon={VerifiedUser} /></Grid>
-                                    <Grid item xs={12} sm={6} md={4}><LabelValue label="Batch Reference" value="BATCH-2026-EXP-A" icon={Receipt} /></Grid>
-                                    <Grid item xs={12} sm={6} md={4}><LabelValue label="Registry Date" value={productDetails.inspectionDate} icon={EventNoteIcon} /></Grid>
-                                    <Grid item xs={12} sm={6} md={4}><LabelValue label="Sample Load" value={`${productDetails.checkedQuantity} Units`} icon={PrecisionManufacturing} /></Grid>
-                                </Grid>
-                            </Paper>
-
-                            {/* Verification Ledger */}
-                            <Paper elevation={0} sx={{ borderRadius: 1, border: `1px solid ${COLORS.border}`, overflow: "hidden" }}>
-                                <Box sx={{ p: 2.5, bgcolor: COLORS.bg, borderBottom: `1px solid ${COLORS.border}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                    <SectionHeader icon={SettingsSuggest} title="Parameter Verification Ledger" />
-                                    <Typography variant="caption" sx={{ color: COLORS.secondary, fontWeight: 700 }}>{checkDetails.length} VERIFICATION POINTS</Typography>
-                                </Box>
-                                <TableContainer>
-                                    <Table size="small">
-                                        <TableHead>
-                                            <TableRow sx={{ bgcolor: "#fafafa" }}>
-                                                <TableCell sx={{ fontWeight: 800, color: COLORS.secondary, py: 2, fontSize: "0.7rem", textTransform: "uppercase" }}>Parameter & Specification</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, color: COLORS.secondary, fontSize: "0.7rem", textTransform: "uppercase" }}>Method</TableCell>
-                                                <TableCell sx={{ fontWeight: 800, color: COLORS.secondary, fontSize: "0.7rem", textTransform: "uppercase" }}>Observation</TableCell>
-                                                <TableCell align="right" sx={{ fontWeight: 800, color: COLORS.secondary, fontSize: "0.7rem", textTransform: "uppercase" }}>Verdict</TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {checkDetails.map((row, idx) => (
-                                                <TableRow key={idx} sx={{ "&:hover": { bgcolor: "#fcfcfc" } }}>
-                                                    <TableCell sx={{ py: 2.5 }}>
-                                                        <Typography variant="body2" sx={{ fontWeight: 700, color: COLORS.primary }}>{row.parameters}</Typography>
-                                                        <Typography variant="caption" sx={{ color: COLORS.secondary }}>{row.specification}</Typography>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Chip label={row.method} size="small" variant="outlined" sx={{ borderRadius: 1, fontWeight: 600, fontSize: "0.7rem", color: COLORS.secondary }} />
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Typography variant="body2" sx={{ fontWeight: 600, color: COLORS.primary }}>{row.observation}</Typography>
-                                                    </TableCell>
-                                                    <TableCell align="right">
-                                                        <Box sx={{ display: "flex", alignItems: "center", gap: 1, justifyContent: "flex-end" }}>
-                                                            <Typography variant="caption" sx={{ fontWeight: 800, color: COLORS.status.success }}>PASS</Typography>
-                                                            <Box sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: COLORS.status.success }} />
-                                                        </Box>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                            </Paper>
-
-                            {/* Section: Verdict & Signing Side-by-Side */}
-                            <Grid container spacing={3}>
-                                <Grid item xs={12} md={6}>
-                                    <Paper elevation={0} sx={{ p: 4, borderRadius: 1, border: `1px solid ${COLORS.border}`, height: "100%" }}>
-                                        <SectionHeader icon={VerifiedUser} title="Quality Verdict" />
-                                        <Stack spacing={2}>
-                                            <Box sx={{ p: 2.5, bgcolor: COLORS.bg, borderLeft: `4px solid ${COLORS.status.success}`, borderRadius: 1 }}>
-                                                <Typography variant="caption" sx={{ color: COLORS.secondary, fontWeight: 700, display: "block", mb: 0.5 }}>ACCEPTED YIELD</Typography>
-                                                <Typography variant="h4" sx={{ fontWeight: 800, color: COLORS.primary }}>{inspectionSummary.acceptedQuantity}</Typography>
-                                            </Box>
-                                            <Box sx={{ p: 2.5, bgcolor: COLORS.bg, borderLeft: `4px solid ${COLORS.status.error}`, borderRadius: 1 }}>
-                                                <Typography variant="caption" sx={{ color: COLORS.secondary, fontWeight: 700, display: "block", mb: 0.5 }}>REJECTED UNITS</Typography>
-                                                <Typography variant="h4" sx={{ fontWeight: 800, color: COLORS.primary }}>{inspectionSummary.rejectedQuantity}</Typography>
-                                            </Box>
-                                        </Stack>
-                                        <Box sx={{ mt: 3 }}>
-                                            <Typography variant="caption" sx={{ color: COLORS.secondary, fontWeight: 700, display: "block", mb: 1 }}>QC SUMMARY</Typography>
-                                            <Typography variant="body2" sx={{ color: COLORS.primary, lineHeight: 1.6, fontWeight: 500, fontStyle: "italic" }}>
-                                                &quot;{inspectionSummary.comments}&quot;
-                                            </Typography>
-                                        </Box>
-                                    </Paper>
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <Paper elevation={0} sx={{ p: 4, borderRadius: 1, border: `1px solid ${COLORS.border}`, height: "100%" }}>
-                                        <SectionHeader icon={HistoryEdu} title="Official Attestation" />
-                                        <Stack spacing={4}>
-                                            <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-                                                <Avatar sx={{ width: 40, height: 40, borderRadius: 1, bgcolor: COLORS.bg, border: `1px solid ${COLORS.border}`, color: COLORS.secondary }}>
-                                                    <Person sx={{ fontSize: 20 }} />
-                                                </Avatar>
-                                                <Box>
-                                                    <Typography variant="caption" sx={{ color: COLORS.secondary, fontWeight: 700 }}>QC Officer</Typography>
-                                                    <Typography variant="body1" sx={{ fontWeight: 700 }}>{approval.reviewedBy}</Typography>
-                                                    <Typography variant="caption" sx={{ color: COLORS.secondary }}>{approval.reviewedDate}</Typography>
-                                                </Box>
-                                            </Box>
-                                            <Divider />
-                                            <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-                                                <Avatar sx={{ width: 40, height: 40, borderRadius: 1, bgcolor: COLORS.bg, border: `1px solid ${COLORS.border}`, color: COLORS.status.success }}>
-                                                    <CheckCircle sx={{ fontSize: 20 }} />
-                                                </Avatar>
-                                                <Box>
-                                                    <Typography variant="caption" sx={{ color: COLORS.secondary, fontWeight: 700 }}>Quality Manager</Typography>
-                                                    <Typography variant="body1" sx={{ fontWeight: 700 }}>{approval.approvedBy}</Typography>
-                                                    <Typography variant="caption" sx={{ color: COLORS.status.success, fontWeight: 700 }}>Counter-Signed {approval.approvedDate}</Typography>
-                                                </Box>
-                                            </Box>
-                                        </Stack>
-                                    </Paper>
-                                </Grid>
-                            </Grid>
-
-                            <Box sx={{ pt: 2, display: "flex", justifyContent: "flex-end" }}>
+                        <Stack direction="row" spacing={1.5}>
+                            <Tooltip title="Print Report">
                                 <Button
                                     variant="outlined"
-                                    color="error"
-                                    sx={{ textTransform: "none", fontWeight: 700, borderRadius: 1, py: 1, px: 4 }}
+                                    startIcon={<Print />}
+                                    onClick={() => window.print()}
+                                    sx={{
+                                        borderRadius: "12px",
+                                        textTransform: "none",
+                                        fontWeight: 600,
+                                        color: "#475569",
+                                        borderColor: "#e2e8f0",
+                                        bgcolor: "white",
+                                        "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" },
+                                    }}
                                 >
-                                    Invalidate Report
+                                    Print
                                 </Button>
-                            </Box>
+                            </Tooltip>
+                            <Button
+                                variant="contained"
+                                startIcon={<Edit />}
+                                onClick={() => router.push(`/production-inspection/edit-inspection?id=${id}`)}
+                                sx={{
+                                    borderRadius: "12px",
+                                    textTransform: "none",
+                                    fontWeight: 600,
+                                    background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
+                                    boxShadow: "0 4px 12px rgba(17, 114, 186, 0.25)",
+                                    "&:hover": {
+                                        background: "linear-gradient(135deg, #0d5a94 0%, #0a4571 100%)",
+                                        boxShadow: "0 6px 16px rgba(17, 114, 186, 0.35)",
+                                    },
+                                }}
+                            >
+                                Edit Record
+                            </Button>
                         </Stack>
+                    </Stack>
+
+                    <Grid container spacing={4}>
+                        {/* Main Document Area */}
+                        <Grid item xs={12} lg={9}>
+                            <Paper
+                                elevation={0}
+                                sx={{
+                                    borderRadius: 4,
+                                    border: "1px solid #e2e8f0",
+                                    overflow: "hidden",
+                                    bgcolor: "#fff",
+                                    position: 'relative'
+                                }}
+                            >
+                                {/* Decorative Header Gradient */}
+                                <Box sx={{ height: 6, background: "linear-gradient(90deg, #1172ba 0%, #60a5fa 100%)" }} />
+
+                                <Box sx={{ p: { xs: 3, md: 5 } }}>
+                                    {/* Document Header */}
+                                    <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between" alignItems="flex-start" spacing={4} sx={{ mb: 6 }}>
+                                        <Box>
+                                            <Typography variant="h3" fontWeight={900} sx={{ color: "#0f172a", letterSpacing: "-0.04em", mb: 1 }}>
+                                                QUALITY INSPECTION
+                                            </Typography>
+                                            <Typography variant="h6" fontWeight={600} sx={{ color: "#64748b", mb: 2.5 }}>
+                                                Production Assurance & Verification
+                                            </Typography>
+                                            <Stack direction="row" spacing={1} alignItems="center">
+                                                <Chip
+                                                    label={productDetails.checkNumber}
+                                                    sx={{
+                                                        fontWeight: 700,
+                                                        bgcolor: "#f1f5f9",
+                                                        color: "#0f172a",
+                                                        borderRadius: '8px',
+                                                        fontSize: '0.95rem'
+                                                    }}
+                                                />
+                                                <Chip
+                                                    label="COMPLETED"
+                                                    sx={{
+                                                        fontWeight: 700,
+                                                        bgcolor: "#dcfce7",
+                                                        color: "#166534",
+                                                        borderRadius: '8px',
+                                                        fontSize: '0.85rem'
+                                                    }}
+                                                />
+                                            </Stack>
+                                        </Box>
+
+                                        <Stack spacing={2} sx={{ minWidth: 280 }}>
+                                            <InfoItem
+                                                icon={Assignment}
+                                                label="Inspected Product"
+                                                value={productDetails.productName}
+                                            />
+                                            <InfoItem
+                                                icon={CalendarMonth}
+                                                label="Inspection Date"
+                                                value={productDetails.inspectionDate}
+                                            />
+                                        </Stack>
+                                    </Stack>
+
+                                    <Divider sx={{ mb: 5, opacity: 0.6 }} />
+
+                                    {/* Issue Metadata Grid */}
+                                    <Grid container spacing={3} sx={{ mb: 6 }}>
+                                        <Grid item xs={12} sm={4}>
+                                            <InfoItem icon={VerifiedUser} label="Quality Standard" value={productDetails.qualityStandard} />
+                                        </Grid>
+                                        <Grid item xs={12} sm={4}>
+                                            <InfoItem icon={ProductionQuantityLimits} label="Total Sample Size" value={`${productDetails.checkedQuantity} Units`} />
+                                        </Grid>
+                                        <Grid item xs={12} sm={4}>
+                                            <InfoItem icon={Layers} label="Batch Reference" value="BATCH-2026-EXP-A" />
+                                        </Grid>
+                                    </Grid>
+
+                                    {/* Inspection Summary / Comments Section */}
+                                    <Box sx={{ mb: 6, p: 3, bgcolor: '#f8fafc', borderRadius: 3, border: '1px solid #f1f5f9' }}>
+                                        <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1.5 }}>
+                                            <FactCheck sx={{ color: '#1172ba', fontSize: 20 }} />
+                                            <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 700, textTransform: "uppercase" }}>Executive Summary</Typography>
+                                        </Stack>
+                                        <Typography variant="body2" sx={{ color: "#1e293b", lineHeight: 1.6, fontWeight: 500 }}>
+                                            {inspectionSummary.comments || "No specific comments recorded."}
+                                        </Typography>
+                                    </Box>
+
+                                    {/* Verification Ledger Table */}
+                                    <Box>
+                                        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+                                            <Typography variant="h6" fontWeight={800} color="#0f172a" sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                                <Rule sx={{ color: '#1172ba' }} /> Parameter Verification Header
+                                            </Typography>
+                                            <Typography variant="body2" color="#64748b" fontWeight={600}>
+                                                {checkDetails.length} Control Points Checked
+                                            </Typography>
+                                        </Stack>
+
+                                        <TableContainer sx={{ borderRadius: 3, border: '1px solid #f1f5f9' }}>
+                                            <Table>
+                                                <TableHead>
+                                                    <TableRow sx={{ bgcolor: "#f1f5f9" }}>
+                                                        <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>PARAMETER</TableCell>
+                                                        <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>SPECIFICATION</TableCell>
+                                                        <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>METHOD</TableCell>
+                                                        <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>OBSERVATION</TableCell>
+                                                        <TableCell align="right" sx={{ fontWeight: 800, color: "#475569", py: 2 }}>STATUS</TableCell>
+                                                    </TableRow>
+                                                </TableHead>
+                                                <TableBody>
+                                                    {checkDetails.map((item, idx) => (
+                                                        <TableRow key={idx} sx={{ "&:hover": { bgcolor: "#f8fafc" } }}>
+                                                            <TableCell sx={{ fontWeight: 700, color: "#1e293b" }}>{item.parameters}</TableCell>
+                                                            <TableCell sx={{ color: "#64748b", fontSize: '0.9rem' }}>{item.specification}</TableCell>
+                                                            <TableCell>
+                                                                <Chip
+                                                                    label={item.method}
+                                                                    size="small"
+                                                                    sx={{ bgcolor: "#f1f5f9", fontWeight: 600, color: "#475569", borderRadius: '6px' }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ color: "#334155", fontWeight: 600 }}>{item.observation}</TableCell>
+                                                            <TableCell align="right">
+                                                                <Stack direction="row" spacing={1} alignItems="center" justifyContent="flex-end">
+                                                                    <Typography variant="caption" sx={{ fontWeight: 800, color: "#059669" }}>PASS</Typography>
+                                                                    <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: "#059669" }} />
+                                                                </Stack>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    ))}
+                                                </TableBody>
+                                            </Table>
+                                        </TableContainer>
+                                    </Box>
+                                </Box>
+                            </Paper>
+                        </Grid>
+
+                        {/* Sidebar / Control Area */}
+                        <Grid item xs={12} lg={3}>
+                            <Stack spacing={3}>
+                                {/* Authorization Card */}
+                                <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+                                    <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <VerifiedUser sx={{ color: '#1172ba', fontSize: 20 }} /> Authorization
+                                    </Typography>
+
+                                    <Stack spacing={4}>
+                                        <Stack direction="row" spacing={2}>
+                                            <Avatar sx={{ bgcolor: "#f1f5f9", color: "#64748b" }}><Person /></Avatar>
+                                            <Box>
+                                                <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 700, textTransform: "uppercase" }}>QC Officer</Typography>
+                                                <Typography variant="body2" sx={{ fontWeight: 800, color: "#0f172a" }}>{approval.reviewedBy || "Pending"}</Typography>
+                                                <Typography variant="caption" sx={{ color: "#1172ba", fontWeight: 700 }}>{approval.reviewedDate}</Typography>
+                                            </Box>
+                                        </Stack>
+
+                                        <Divider sx={{ borderStyle: 'dashed' }} />
+
+                                        <Stack direction="row" spacing={2}>
+                                            <Avatar sx={{ bgcolor: "#dcfce7", color: "#166534" }}>
+                                                <CheckCircle />
+                                            </Avatar>
+                                            <Box>
+                                                <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 700, textTransform: "uppercase" }}>Approved By</Typography>
+                                                <Typography variant="body2" sx={{ fontWeight: 800, color: "#0f172a" }}>{approval.approvedBy || "Pending"}</Typography>
+                                                <Typography variant="caption" sx={{ color: "#166534", fontWeight: 700 }}>{approval.approvedDate}</Typography>
+                                            </Box>
+                                        </Stack>
+                                    </Stack>
+                                </Paper>
+
+                                {/* Results Card */}
+                                <Paper sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#f8fafc' }}>
+                                    <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <Science sx={{ color: '#1172ba', fontSize: 20 }} /> Verdict Metrics
+                                    </Typography>
+                                    <Stack spacing={2}>
+                                        <Stack direction="row" justifyContent="space-between">
+                                            <Typography variant="caption" fontWeight={700} color="#64748b">Accepted</Typography>
+                                            <Typography variant="caption" fontWeight={900} color="#059669" sx={{ fontSize: '1rem' }}>
+                                                {inspectionSummary.acceptedQuantity}
+                                            </Typography>
+                                        </Stack>
+                                        <Stack direction="row" justifyContent="space-between">
+                                            <Typography variant="caption" fontWeight={700} color="#64748b">Rejected</Typography>
+                                            <Typography variant="caption" fontWeight={900} color="#dc2626" sx={{ fontSize: '1rem' }}>
+                                                {inspectionSummary.rejectedQuantity}
+                                            </Typography>
+                                        </Stack>
+                                        <Divider />
+                                        <Stack direction="row" justifyContent="space-between">
+                                            <Typography variant="caption" fontWeight={700} color="#64748b">Yield Rate</Typography>
+                                            <Typography variant="caption" fontWeight={900} color="#0f172a">
+                                                {((Number(inspectionSummary.acceptedQuantity) / Number(productDetails.checkedQuantity)) * 100).toFixed(1)}%
+                                            </Typography>
+                                        </Stack>
+                                    </Stack>
+                                </Paper>
+
+                                {/* Record Metadata */}
+                                <Paper sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+                                    <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <Description sx={{ color: '#1172ba', fontSize: 20 }} /> System Info
+                                    </Typography>
+                                    <Stack spacing={2}>
+                                        <Stack direction="row" justifyContent="space-between">
+                                            <Typography variant="caption" fontWeight={700} color="#64748b">Check ID</Typography>
+                                            <Typography variant="caption" fontWeight={900} color="#0f172a">{id || "N/A"}</Typography>
+                                        </Stack>
+                                        <Stack direction="row" justifyContent="space-between">
+                                            <Typography variant="caption" fontWeight={700} color="#64748b">Methodology</Typography>
+                                            <Typography variant="caption" fontWeight={900} color="#0f172a" sx={{ textAlign: 'right', maxWidth: '60%' }}>
+                                                Quantitative Analysis
+                                            </Typography>
+                                        </Stack>
+                                    </Stack>
+                                </Paper>
+                            </Stack>
+                        </Grid>
                     </Grid>
-                </Grid>
+
+                    {/* Print Context Styles */}
+                    <style dangerouslySetInnerHTML={{
+                        __html: `
+                        @media print {
+                            .no-print { display: none !important; }
+                            body { background: white !important; }
+                            .MuiContainer-root { max-width: 100% !important; padding: 0 !important; }
+                            .MuiPaper-root { border: none !important; box-shadow: none !important; }
+                            .MuiGrid-item.lg-3 { display: none !important; }
+                            .MuiGrid-item.lg-9 { width: 100% !important; max-width: 100% !important; flex-basis: 100% !important; }
+                        }
+                    `}} />
+                </Container>
             </Box>
-        </Box>
+        </Fade>
     );
 }
 
