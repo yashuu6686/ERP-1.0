@@ -16,9 +16,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import CommonCard from "../../../components/CommonCard";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "../../../components/Loader";
+import { useAuth } from "@/context/AuthContext";
+import NotificationService from "@/services/NotificationService";
 
 function CreateDispatchEntryContent() {
   const router = useRouter();
+  const { user } = useAuth();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
 
@@ -170,6 +173,9 @@ function CreateDispatchEntryContent() {
 
     try {
       setLoading(true);
+      const isHR = user?.role === 'hr';
+      const status = isHR ? "Pending Approval" : "Shipped";
+
       const payload = {
         shipmentInfo: {
           orderNumber: formData.orderNumber,
@@ -192,16 +198,28 @@ function CreateDispatchEntryContent() {
           serialNo: "-",
           weight: "-"
         })),
-        status: id ? "Updated" : "Shipped",
+        status: status,
         packedBy: formData.packedBy,
         approvedBy: formData.approvedBy,
         accountingBy: formData.accountingBy,
       };
 
+      let response;
       if (id) {
-        await axiosInstance.put(`/dispatches/${id}`, payload);
+        response = await axiosInstance.put(`/dispatches/${id}`, payload);
       } else {
-        await axiosInstance.post("/dispatches", payload);
+        response = await axiosInstance.post("/dispatches", payload);
+      }
+
+      if (isHR && (response.status === 201 || response.status === 200)) {
+        await NotificationService.createNotification({
+          title: "Dispatch Approval Required",
+          message: `HR ${user.name} has submitted a dispatch entry for ${formData.customerName || 'a customer'} (Order: ${formData.orderNumber}).`,
+          targetRole: "admin",
+          type: "dispatch_approval",
+          link: `/dispatch/view-dispatch?id=${id || response.data.id}`,
+          inspectionId: id || response.data.id
+        });
       }
 
       alert(`Dispatch Entry ${id ? "Updated" : "Saved"} Successfully!`);

@@ -29,12 +29,14 @@ import Download from "@mui/icons-material/Download";
 import CheckCircle from "@mui/icons-material/CheckCircle";
 import Schedule from "@mui/icons-material/Schedule";
 import Explore from "@mui/icons-material/Explore";
-import Person from "@mui/icons-material/Person"; // Fallback icon
+import Cancel from "@mui/icons-material/Cancel";
+import Person from "@mui/icons-material/Person";
 import Inventory from "@mui/icons-material/Inventory";
 import Map from "@mui/icons-material/Map";
 import Phone from "@mui/icons-material/Phone";
 
 import axiosInstance from "@/axios/axiosInstance";
+import { useAuth } from "@/context/AuthContext";
 import Loader from "@/components/Loader";
 
 const InfoItem = ({ icon: Icon, label, value, color = "#1e293b", fullWidth = false }) => (
@@ -70,6 +72,7 @@ function ViewDispatchContent() {
 
     const [dispatch, setDispatch] = useState(null);
     const [loading, setLoading] = useState(true);
+    const { user } = useAuth();
 
     useEffect(() => {
         const fetchDispatchDetails = async () => {
@@ -113,6 +116,40 @@ function ViewDispatchContent() {
         }
     }, [id]);
 
+    const handleApprove = async () => {
+        try {
+            setLoading(true);
+            await axiosInstance.put(`/dispatches/${id}`, {
+                ...dispatch,
+                status: 'Shipped'
+            });
+            setDispatch(prev => ({ ...prev, status: 'Shipped' }));
+            alert("Dispatch entry has been approved.");
+        } catch (error) {
+            console.error("Error approving dispatch:", error);
+            alert("Failed to approve dispatch.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleReject = async () => {
+        try {
+            setLoading(true);
+            await axiosInstance.put(`/dispatches/${id}`, {
+                ...dispatch,
+                status: 'Rejected'
+            });
+            setDispatch(prev => ({ ...prev, status: 'Rejected' }));
+            alert("Dispatch entry has been rejected.");
+        } catch (error) {
+            console.error("Error rejecting dispatch:", error);
+            alert("Failed to reject dispatch.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     if (loading) return <Loader fullPage message="Tracking Shipment..." />;
 
     if (!dispatch) {
@@ -134,6 +171,8 @@ function ViewDispatchContent() {
             Delivered: { color: "#155724", bg: "#d4edda", label: "DELIVERED", icon: <CheckCircle sx={{ fontSize: '16px !important' }} /> },
             Pending: { color: "#856404", bg: "#fff3cd", label: "PENDING", icon: <Schedule sx={{ fontSize: '16px !important' }} /> },
             Processing: { color: "#383d41", bg: "#e2e3e5", label: "PROCESSING", icon: <Schedule sx={{ fontSize: '16px !important' }} /> },
+            "Pending Approval": { color: "#92400e", bg: "#fef3c7", label: "PENDING APPROVAL", icon: <Schedule sx={{ fontSize: '16px !important' }} /> },
+            Rejected: { color: "#b91c1c", bg: "#fee2e2", label: "REJECTED", icon: <Cancel sx={{ fontSize: '16px !important' }} /> },
         };
         const config = configs[currentStatus] || configs.Pending;
 
@@ -179,6 +218,34 @@ function ViewDispatchContent() {
                         </Button>
 
                         <Stack direction="row" spacing={1.5}>
+                            {user?.role === 'admin' && dispatch.status === 'Pending Approval' && (
+                                <>
+                                    <Button
+                                        variant="contained"
+                                        color="error"
+                                        startIcon={<Cancel />}
+                                        onClick={handleReject}
+                                        sx={{ borderRadius: "10px", textTransform: "none", fontWeight: 700 }}
+                                    >
+                                        Reject
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        color="success"
+                                        startIcon={<CheckCircle />}
+                                        onClick={handleApprove}
+                                        sx={{
+                                            borderRadius: "10px",
+                                            textTransform: "none",
+                                            fontWeight: 700,
+                                            bgcolor: "#16a34a",
+                                            "&:hover": { bgcolor: "#15803d" }
+                                        }}
+                                    >
+                                        Approve Entry
+                                    </Button>
+                                </>
+                            )}
                             <Tooltip title="Download Waybill">
                                 <Button
                                     variant="outlined"
@@ -217,7 +284,7 @@ function ViewDispatchContent() {
                             <Button
                                 variant="contained"
                                 startIcon={<Edit />}
-                                onClick={() => {/* Handle Edit */ }}
+                                onClick={() => router.push(`/dispatch/create-dispatch-entry?id=${id}`)}
                                 sx={{
                                     borderRadius: "12px",
                                     textTransform: "none",

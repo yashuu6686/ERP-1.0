@@ -21,6 +21,8 @@ import MaterialInformation from "./components/MaterialInformation";
 import VerificationChecks from "./components/VerificationChecks";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/Loader";
+import { useAuth } from "@/context/AuthContext";
+import NotificationService from "@/services/NotificationService";
 
 const steps = [
   "Material Information & Verification",
@@ -34,6 +36,7 @@ function MaterialInspectionFormContent() {
   const [pendingGRNs, setPendingGRNs] = useState([]);
   const [selectedGRN, setSelectedGRN] = useState(null);
   const router = useRouter();
+  const { user } = useAuth();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const isEditMode = !!id;
@@ -260,12 +263,13 @@ function MaterialInspectionFormContent() {
   const handleSubmit = async () => {
     try {
       setLoading(true);
+      const isHR = user?.role === 'hr';
       const inspectionData = {
         materialData,
         observations,
         summaryData,
         approvalData,
-        inspectionStatus: "Approved", // Assuming submission means approval for now
+        inspectionStatus: isHR ? "Pending Approval" : "Approved",
         grnId: selectedGRN?.id,
       };
 
@@ -274,6 +278,17 @@ function MaterialInspectionFormContent() {
         : await axiosInstance.post("/incoming-inspection", inspectionData);
 
       if (response.status === 201 || response.status === 200) {
+        // Send notification to Admin if HR is submitting
+        if (user?.role === 'hr') {
+          await NotificationService.createNotification({
+            title: "Inspection Approval Required",
+            message: `HR ${user.name} has submitted an inspection for ${materialData.materialName} (Report: ${materialData.inspectionReportNumber}).`,
+            targetRole: "admin",
+            type: "inspection_approval",
+            link: `/incoming-inspection/view-inspection?id=${isEditMode ? id : response.data.id}`,
+            inspectionId: isEditMode ? id : response.data.id
+          });
+        }
         // Automatic Rejection Record Integration
         const rejQty = parseInt(summaryData.rejectedQuantity) || 0;
         if (rejQty > 0) {
@@ -453,14 +468,14 @@ function MaterialInspectionFormContent() {
                 fontWeight: 600,
               },
               "& .MuiStepLabel-label.Mui-completed": {
-                color: "#10b981",
+                color: "#1172ba",
                 fontWeight: 600,
               },
               "& .MuiStepIcon-root.Mui-active": {
                 color: "#1172ba",
               },
               "& .MuiStepIcon-root.Mui-completed": {
-                color: "#10b981",
+                color: "#1172ba",
               },
             }}
           >

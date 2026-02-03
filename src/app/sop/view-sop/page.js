@@ -26,17 +26,20 @@ import Devices from "@mui/icons-material/Devices";
 import FactCheck from "@mui/icons-material/FactCheck";
 import Inventory from "@mui/icons-material/Inventory";
 import Print from "@mui/icons-material/Print";
+import CheckCircle from "@mui/icons-material/CheckCircle";
+import Cancel from "@mui/icons-material/Cancel";
+import Schedule from "@mui/icons-material/Schedule";
 import Business from "@mui/icons-material/Business";
 import AssignmentInd from "@mui/icons-material/AssignmentInd";
 import Engineering from "@mui/icons-material/Engineering";
 import VerifiedUser from "@mui/icons-material/VerifiedUser";
-import CheckCircle from "@mui/icons-material/CheckCircle";
 import TaskAlt from "@mui/icons-material/TaskAlt";
 import Person from "@mui/icons-material/Person";
 import LocalShipping from "@mui/icons-material/LocalShipping";
 
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/Loader";
+import { useAuth } from "@/context/AuthContext";
 
 // Constant definitions matching the creation steps
 const deviceTestingSteps = [
@@ -110,6 +113,7 @@ function ViewSOPContent() {
     const id = searchParams.get("id");
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState(null);
+    const { user } = useAuth();
 
     useEffect(() => {
         const fetchSOP = async () => {
@@ -128,6 +132,40 @@ function ViewSOPContent() {
             fetchSOP();
         }
     }, [id]);
+
+    const handleApprove = async () => {
+        try {
+            setLoading(true);
+            await axiosInstance.put(`/sops/${id}`, {
+                ...data,
+                status: 'Approved'
+            });
+            setData(prev => ({ ...prev, status: 'Approved' }));
+            alert("SOP has been approved.");
+        } catch (error) {
+            console.error("Error approving SOP:", error);
+            alert("Failed to approve SOP.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleReject = async () => {
+        try {
+            setLoading(true);
+            await axiosInstance.put(`/sops/${id}`, {
+                ...data,
+                status: 'Rejected'
+            });
+            setData(prev => ({ ...prev, status: 'Rejected' }));
+            alert("SOP has been rejected.");
+        } catch (error) {
+            console.error("Error rejecting SOP:", error);
+            alert("Failed to reject SOP.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     if (loading) return <Loader fullPage message="Accessing SOP Registry..." />;
 
@@ -184,6 +222,34 @@ function ViewSOPContent() {
                         </Button>
 
                         <Stack direction="row" spacing={1.5}>
+                            {user?.role === 'admin' && data.status === 'Pending Approval' && (
+                                <>
+                                    <Button
+                                        variant="contained"
+                                        color="error"
+                                        startIcon={<Cancel />}
+                                        onClick={handleReject}
+                                        sx={{ borderRadius: "10px", textTransform: "none", fontWeight: 700 }}
+                                    >
+                                        Reject
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        color="success"
+                                        startIcon={<CheckCircle />}
+                                        onClick={handleApprove}
+                                        sx={{
+                                            borderRadius: "10px",
+                                            textTransform: "none",
+                                            fontWeight: 700,
+                                            bgcolor: "#16a34a",
+                                            "&:hover": { bgcolor: "#15803d" }
+                                        }}
+                                    >
+                                        Approve Report
+                                    </Button>
+                                </>
+                            )}
                             <Tooltip title="Print Document">
                                 <Button
                                     variant="outlined"
@@ -222,7 +288,6 @@ function ViewSOPContent() {
                             </Button>
                         </Stack>
                     </Stack>
-
                     <Grid container spacing={4}>
                         {/* Main Document Area */}
                         <Grid item xs={12} lg={9}>
@@ -467,9 +532,9 @@ function ViewSOPContent() {
                             .MuiGrid-item.lg-9 { width: 100% !important; max-width: 100% !important; flex-basis: 100% !important; }
                         }
                     `}} />
-                </Container>
-            </Box>
-        </Fade>
+                </Container >
+            </Box >
+        </Fade >
     );
 }
 
