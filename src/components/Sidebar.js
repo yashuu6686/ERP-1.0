@@ -65,6 +65,9 @@ const menuItems = [
   { text: "Rejected Goods", icon: <Cancel />, path: "/rejected-goods" },
 ];
 
+const DRAWER_WIDTH = 264;
+const MINI_DRAWER_WIDTH = 56;
+
 export default function Sidebar({ children }) {
   const { user, logout } = useAuth();
   const [selectedIndex, setSelectedIndex] = React.useState(0);
@@ -95,7 +98,8 @@ export default function Sidebar({ children }) {
   // Prevent hydration mismatch/flicker by assuming desktop on first render if that's the default
   // or just waiting for mount to apply responsive variants.
   const drawerVariant = hasMounted ? (isLargeScreen ? "persistent" : "temporary") : "persistent";
-  const drawerOpen = hasMounted ? (isLargeScreen ? isSidebarOpen : isSidebarOpen) : true;
+  // On large screens, drawer is always open (either full or mini). On small screens, use isSidebarOpen.
+  const drawerOpen = hasMounted ? (isLargeScreen ? true : isSidebarOpen) : true;
 
   if (pathname === "/login") {
     return <Box sx={{ minHeight: "100vh" }}>{children}</Box>;
@@ -111,17 +115,24 @@ export default function Sidebar({ children }) {
           keepMounted: true, // Better open performance on mobile.
         }}
         sx={{
-          width: (hasMounted ? isSidebarOpen : true) ? 264 : 0,
+          width: isLargeScreen ? (isSidebarOpen ? DRAWER_WIDTH : MINI_DRAWER_WIDTH) : (isSidebarOpen ? DRAWER_WIDTH : 0),
           flexShrink: 0,
+          whiteSpace: isSidebarOpen ? 'normal' : 'nowrap',
+          boxSizing: 'border-box',
           transition: theme.transitions.create('width', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen,
           }),
           "& .MuiDrawer-paper": {
-            width: 264,
+            width: isLargeScreen ? (isSidebarOpen ? DRAWER_WIDTH : MINI_DRAWER_WIDTH) : (isSidebarOpen ? DRAWER_WIDTH : 0),
             boxSizing: "border-box",
             borderRight: "1px solid var(--border-default)",
             backgroundColor: "var(--bg-surface)",
+            overflowX: 'hidden',
+            transition: theme.transitions.create('width', {
+              easing: theme.transitions.easing.sharp,
+              duration: theme.transitions.duration.enteringScreen,
+            }),
           },
         }}
       >
@@ -130,46 +141,61 @@ export default function Sidebar({ children }) {
         <List
           className="sidebar-scroll"
           style={{
-            padding: "var(--space-md) var(--space-sm)",
+            padding: isSidebarOpen ? "var(--space-md) var(--space-sm)" : "var(--space-md) 4px",
             overflowY: "auto",
+            overflowX: "hidden"
           }}
         >
-          <Box sx={{ p: "6px" }}>
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-              <Image src="/Scanbo_logo_new.png" alt="Logo" width={100} height={100} />
-              <IconButton
-                size="small"
-                onClick={logout}
-                sx={{
-                  color: "var(--brand-primary)",
-                  borderRadius: "8px",
-                  padding: "8px",
-                  transition: "all 0.3s ease",
-                  "&:hover": {
-                    bgcolor: "rgba(17, 114, 186, 0.08)",
-                    color: "#0d5a94",
-                    transform: "translateY(-2px)"
-                  }
-                }}
-              >
-                <Box sx={{ display: "flex", alignItems: "center", flexDirection: "column", gap: "2px" }}>
-                  <Logout sx={{ fontSize: "20px" }} />
-                  <Typography sx={{ fontSize: "10px", color: "inherit", fontWeight: 700, textTransform: "uppercase" }}>Logout</Typography>
-                </Box>
-              </IconButton>
+          <Box sx={{ p: isSidebarOpen ? "6px" : "0px", display: 'flex', flexDirection: 'column', alignItems: isSidebarOpen ? 'stretch' : 'center' }}>
+            <Box sx={{
+              display: "flex",
+              justifyContent: isSidebarOpen ? "space-between" : "center",
+              alignItems: "center",
+              mb: 2,
+              width: '100%'
+            }}>
+              {isSidebarOpen ? (
+                <Image src="/Scanbo_logo_new.png" alt="Logo" width={100} height={100} />
+              ) : (
+                <Image src="/Scanbo_logo_new.png" alt="Logo" width={40} height={40} style={{ objectFit: 'contain' }} />
+              )}
+              {isSidebarOpen && (
+                <IconButton
+                  size="small"
+                  onClick={logout}
+                  sx={{
+                    color: "var(--brand-primary)",
+                    borderRadius: "8px",
+                    padding: "8px",
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      bgcolor: "rgba(17, 114, 186, 0.08)",
+                      color: "#0d5a94",
+                      transform: "translateY(-2px)"
+                    }
+                  }}
+                >
+                  <Box sx={{ display: "flex", alignItems: "center", flexDirection: "column", gap: "2px" }}>
+                    <Logout sx={{ fontSize: "20px" }} />
+                    <Typography sx={{ fontSize: "10px", color: "inherit", fontWeight: 700, textTransform: "uppercase" }}>Logout</Typography>
+                  </Box>
+                </IconButton>
+              )}
             </Box>
 
-            <Box>
-              <Typography sx={{ fontWeight: 700, fontSize: "18px", color: "var(--text-primary)", mb: 0.5, fontFamily: "var(--font-manrope)" }}>
-                {user?.name || "Member"}
-              </Typography>
-              <Typography sx={{ fontSize: "14px", color: "var(--text-secondary)", mb: 0.2, fontFamily: "var(--font-manrope)" }}>
-                Login ID: <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>{user?.id || "N/A"}</span>
-              </Typography>
-              <Typography sx={{ fontSize: "14px", color: "var(--text-secondary)", fontFamily: "var(--font-manrope)" }}>
-                Current Profile: <span style={{ color: "var(--text-primary)", fontWeight: 700 }}>{user?.role || "User"}</span>
-              </Typography>
-            </Box>
+            {isSidebarOpen && (
+              <Box>
+                <Typography sx={{ fontWeight: 700, fontSize: "18px", color: "var(--text-primary)", mb: 0.5, fontFamily: "var(--font-manrope)" }}>
+                  {user?.name || "Member"}
+                </Typography>
+                <Typography sx={{ fontSize: "14px", color: "var(--text-secondary)", mb: 0.2, fontFamily: "var(--font-manrope)" }}>
+                  Login ID: <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>{user?.id || "N/A"}</span>
+                </Typography>
+                <Typography sx={{ fontSize: "14px", color: "var(--text-secondary)", fontFamily: "var(--font-manrope)" }}>
+                  Current Profile: <span style={{ color: "var(--text-primary)", fontWeight: 700 }}>{user?.role || "User"}</span>
+                </Typography>
+              </Box>
+            )}
           </Box>
 
           <Divider sx={{ borderColor: "var(--border-default)", mb: 1, }} />
@@ -182,36 +208,59 @@ export default function Sidebar({ children }) {
             return (
               <Link key={index} href={item.path} passHref legacyBehavior>
                 <ListItemButton
-                  disableRipple
                   selected={isActive}
                   onClick={handleListItemClick}
+                  sx={{
+                    position: 'relative',
+                    '&::before': isActive ? {
+                      content: '""',
+                      position: 'absolute',
+                      left: 0,
+                      top: '15%',
+                      height: '70%',
+                      width: '4px',
+                      backgroundColor: 'var(--brand-primary)',
+                      borderRadius: '0 4px 4px 0',
+                    } : {}
+                  }}
                   style={{
                     borderRadius: "8px",
                     marginBottom: "4px",
-                    padding: "10px 12px",
+                    padding: isSidebarOpen ? "10px 12px" : "10px 0",
                     backgroundColor: isActive ? "var(--brand-soft)" : "transparent",
                     color: isActive ? "var(--brand-primary)" : "var(--text-primary)",
+                    justifyContent: isSidebarOpen ? 'initial' : 'center',
+                    minHeight: isSidebarOpen ? 'auto' : '48px'
                   }}
                 >
                   <Box
                     style={{
-                      marginRight: "12px",
+                      marginRight: isSidebarOpen ? "12px" : "0px",
                       display: "flex",
                       alignItems: "center",
+                      justifyContent: 'center',
                       color: isActive ? "var(--brand-primary)" : "rgb(17, 114, 186)",
                     }}
                   >
                     {React.cloneElement(item.icon, { fontSize: "small" })}
                   </Box>
 
-                  <ListItemText
-                    primary={item.text}
-                    primaryTypographyProps={{
-                      fontSize: "var(--size-body)",
-                      fontWeight: isActive ? 600 : 500,
-                      fontFamily: "var(--font-manrope)"
-                    }}
-                  />
+                  {isSidebarOpen && (
+                    <ListItemText
+                      primary={item.text}
+                      primaryTypographyProps={{
+                        fontSize: "var(--size-body)",
+                        fontWeight: isActive ? 600 : 500,
+                        fontFamily: "var(--font-manrope)",
+                        noWrap: false,
+                        style: {
+                          lineHeight: 1.2,
+                          whiteSpace: 'normal',
+                          wordBreak: 'break-word'
+                        }
+                      }}
+                    />
+                  )}
                 </ListItemButton>
               </Link>
             );
@@ -230,6 +279,7 @@ export default function Sidebar({ children }) {
           height: '100vh',
           overflowY: 'auto',
           position: 'relative',
+          // ml: isLargeScreen ? (isSidebarOpen ? `${DRAWER_WIDTH}px` : `${MINI_DRAWER_WIDTH}px`) : 0,
           transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
@@ -238,53 +288,8 @@ export default function Sidebar({ children }) {
       >
         {/* Global Breadcrumbs */}
         <TopNavbar onToggleSidebar={handleDrawerToggle} />
-        <Box sx={{ padding: "6px", flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-          {/* {pathname !== "/" && (
-            <Box sx={{ mb: 2, mt: 2 }}>
-              <Breadcrumbs
-                separator={<NavigateNext fontSize="small" sx={{ color: '#94a3b8' }} />}
-                aria-label="breadcrumb"
-              >
-                <MuiLink
-                  component={Link}
-                  underline="hover"
-                  color="inherit"
-                  href="/"
-                  sx={{ display: 'flex', alignItems: 'center', fontSize: '0.875rem', color: '#64748b' }}
-                >
-                  Home
-                </MuiLink>
-                {pathname.split('/').filter(x => x).map((part, index, array) => {
-                  const path = `/${array.slice(0, index + 1).join('/')}`;
-                  const menuItem = menuItems.find(item => item.path === path);
-                  const isLast = index === array.length - 1;
-                  const label = menuItem ? menuItem.text : part.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-
-                  return isLast ? (
-                    <MuiTypography
-                      key={path}
-                      sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#1e293b' }}
-                    >
-                      {label}
-                    </MuiTypography>
-                  ) : (
-                    <MuiLink
-                      key={path}
-                      component={Link}
-                      underline="hover"
-                      color="inherit"
-                      href={path}
-                      sx={{ fontSize: '0.875rem', color: '#64748b' }}
-                    >
-                      {label}
-                    </MuiLink>
-                  );
-                })}
-              </Breadcrumbs>
-            </Box>
-          )} */}
-
-          <Box sx={{ flexGrow: 1 }}>
+        <Box sx={{ padding: "0px", flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+          <Box sx={{ flexGrow: 1, p: { xs: 1.5, md: 2 } }}>
             {children}
           </Box>
           <Footer />

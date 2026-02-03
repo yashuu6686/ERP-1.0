@@ -271,7 +271,7 @@ function ViewRejectedGoodsContent() {
                                     <Divider sx={{ mb: 5, opacity: 0.6 }} />
 
                                     {/* Source and Inspector Info */}
-                                    <Grid container spacing={6} sx={{ mb: 6 }}>
+                                    <Grid container spacing={2} sx={{ mb: 6 }}>
                                         <Grid size={{ xs: 12, md: 6 }}>
                                             <Box sx={{ p: 3, borderRadius: 3, border: '1px solid #e2e8f0', bgcolor: '#f8fafc', height: '100%' }}>
                                                 {/* Blue Header */}
@@ -365,9 +365,9 @@ function ViewRejectedGoodsContent() {
 
                         {/* Sidebar */}
                         <Grid size={{ xs: 12, md: 3 }}>
-                            <Stack spacing={3}>
+                            <Stack spacing={2}>
                                 {/* Cost Impact Summary */}
-                                <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+                                <Paper elevation={0} sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
 
                                     <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1 }}>
                                         <Calculate sx={{ color: '#1172ba', fontSize: 20 }} /> Impact Analysis
@@ -395,7 +395,7 @@ function ViewRejectedGoodsContent() {
                                 </Paper>
 
                                 {/* System Info */}
-                                <Paper sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#f8fafc' }}>
+                                <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#f8fafc' }}>
                                     <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, color: '#1172ba', display: 'flex', alignItems: 'center', gap: 1 }}>
                                         <Warning sx={{ color: '#1172ba', fontSize: 20 }} /> Action Required
                                     </Typography>

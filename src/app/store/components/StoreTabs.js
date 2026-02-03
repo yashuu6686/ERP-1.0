@@ -1,8 +1,10 @@
 import React from "react";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
+import { Tabs, Tab, useMediaQuery, useTheme } from "@mui/material";
 
 const StoreTabs = ({ value, handleChange }) => {
+    const theme = useTheme();
+    const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
+
     return (
         <Tabs
             value={value}
@@ -15,9 +17,9 @@ const StoreTabs = ({ value, handleChange }) => {
                 minHeight: "45px",
                 borderBottom: "1px solid #e2e8f0",
                 "& .MuiTab-root": {
-                    fontWeight: 500,
+                    fontWeight: 400,
                     textTransform: "none",
-                    fontSize: "15px",
+                    fontSize: isSmall ? "0.85rem" : "0.95rem",
                     minHeight: "45px",
                     px: 3,
                     color: "#64748b",
