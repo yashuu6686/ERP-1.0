@@ -119,7 +119,7 @@ export default function OrderDetails() {
     return (
         <Fade in={!loading}>
             <Box>
-                <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 3 } }}>
+                <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 1 } }}>
                     {/* Header Actions */}
                     <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }} className="no-print">
                         <Button
@@ -180,9 +180,9 @@ export default function OrderDetails() {
                         </Stack>
                     </Stack>
 
-                    <Grid container spacing={4}>
+                    <Grid container spacing={2}>
                         {/* Main Document Area */}
-                        <Grid item xs={12} lg={9}>
+                        <Grid size={{ xs: 12, lg: 9 }}>
                             <Paper
                                 elevation={0}
                                 sx={{
@@ -248,13 +248,13 @@ export default function OrderDetails() {
 
                                     {/* Customer & Address Grid */}
                                     <Grid container spacing={3} sx={{ mb: 6 }}>
-                                        <Grid item xs={12} sm={6}>
+                                        <Grid size={{ xs: 6, sm: 4 }}>
                                             <InfoItem icon={Person} label="Attn. Customer" value={customerName} />
                                         </Grid>
-                                        <Grid item xs={12} sm={6}>
+                                        <Grid size={{ xs: 6, sm: 4 }}>
                                             <InfoItem icon={ContactPhone} label="Contact Point" value={contact} />
                                         </Grid>
-                                        <Grid item xs={12} sm={12}>
+                                        <Grid size={{ xs: 6, sm: 4 }}>
                                             <InfoItem icon={Home} label="Shipping Destination" value={address} />
                                         </Grid>
                                     </Grid>
@@ -339,7 +339,7 @@ export default function OrderDetails() {
                         </Grid>
 
                         {/* Sidebar / Authorization Area */}
-                        <Grid item xs={12} lg={3}>
+                        <Grid size={{ xs: 12, lg: 3 }}>
                             <Stack spacing={3}>
                                 {/* Summary Card */}
                                 <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>

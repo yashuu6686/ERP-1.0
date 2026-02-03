@@ -1,22 +1,26 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
     Box,
     Typography,
     Grid,
-    Card,
-    CardContent,
+    Chip,
+    Divider,
+    Button,
+    Paper,
+    Stack,
+    Container,
+    Fade,
+    Tooltip,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
     TableRow,
-    Chip,
-    Divider,
-    Button,
-    Paper
+    Avatar
 } from "@mui/material";
 import {
     ArrowBack,
@@ -24,10 +28,42 @@ import {
     FactCheck,
     Summarize,
     DateRange,
-    Numbers
+    Numbers,
+    Print,
+    Edit,
+    Description,
+    VerifiedUser,
+    CheckCircle,
+    Analytics
 } from "@mui/icons-material";
 import axiosInstance from "../../../axios/axiosInstance";
 import Loader from "../../../components/Loader";
+
+const InfoItem = ({ icon: Icon, label, value, color = "#1e293b" }) => (
+    <Stack direction="row" spacing={2} alignItems="flex-start">
+        <Box sx={{
+            width: 32,
+            height: 32,
+            borderRadius: "10px",
+            bgcolor: "rgba(17, 114, 186, 0.08)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            mt: 0.5
+        }}>
+            <Icon sx={{ color: "#1172ba", fontSize: 18 }} />
+        </Box>
+        <Box>
+            <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", display: "block", mb: 0.5 }}>
+                {label}
+            </Typography>
+            <Typography variant="body1" sx={{ color, fontWeight: 700, fontSize: "0.95rem" }}>
+                {value || "-"}
+            </Typography>
+        </Box>
+    </Stack>
+);
 
 export default function BatchDetails() {
     const params = useParams();
@@ -55,10 +91,19 @@ export default function BatchDetails() {
         }
     }, [id]);
 
-    if (loading) return <Loader fullPage message="Loading Batch Details..." />;
-    if (!data) return <Box sx={{ p: 4, textAlign: "center" }}>Batch not found</Box>;
+    if (loading) return <Loader fullPage message="Accessing Production Record..." />;
 
-    // Destructure for easier access, handling optional fields
+    if (!data) {
+        return (
+            <Box sx={{ p: 4, textAlign: "center", minHeight: "80vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+                <Typography variant="h5" color="error" fontWeight={600}>Batch Record Not Found</Typography>
+                <Button variant="contained" startIcon={<ArrowBack />} onClick={() => router.push("/batch")} sx={{ mt: 3, borderRadius: '12px', textTransform: 'none' }}>
+                    Back to Registry
+                </Button>
+            </Box>
+        );
+    }
+
     const {
         batchNo,
         requestNo,
@@ -71,185 +116,282 @@ export default function BatchDetails() {
         summary = {}
     } = data;
 
-    const InfoCard = ({ icon: Icon, title, value, color = "#1e293b" }) => (
-        <Box sx={{ display: "flex", alignItems: "flex-start", gap: 2, p: 2, bgcolor: "#f8fafc", borderRadius: 2 }}>
-            <Box sx={{ p: 1, bgcolor: "rgba(17, 114, 186, 0.1)", borderRadius: 1.5, color: "#1172ba" }}>
-                <Icon sx={{ fontSize: 24 }} />
-            </Box>
-            <Box>
-                <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 600, mb: 0.5 }}>
-                    {title}
-                </Typography>
-                <Typography variant="h6" sx={{ color, fontWeight: 700, fontSize: "1rem" }}>
-                    {value || "-"}
-                </Typography>
-            </Box>
-        </Box>
-    );
-
     return (
-        <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: "auto" }}>
-            {/* Header */}
-            <Box sx={{ mb: 4, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <Button
-                        startIcon={<ArrowBack />}
-                        onClick={() => router.back()}
-                        sx={{
-                            color: "#64748b",
-                            textTransform: "none",
-                            fontWeight: 600,
-                            "&:hover": { bgcolor: "#f1f5f9" }
-                        }}
-                    >
-                        Back
-                    </Button>
-                    <Box>
-                        <Typography variant="h4" sx={{ fontWeight: 800, color: "#0f172a" }}>
-                            Batch Details
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 500 }}>
-                            Serialized tracking and quality assurance log
-                        </Typography>
-                    </Box>
-                </Box>
-                <Chip
-                    label={status}
-                    color={status === "Ready" ? "success" : "default"}
-                    sx={{ fontWeight: 700, borderRadius: 1.5 }}
-                />
-            </Box>
+        <Fade in={!loading}>
+            <Box>
+                <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 1 } }}>
+                    {/* Header Actions */}
+                    <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }} className="no-print">
+                        <Button
+                            startIcon={<ArrowBack />}
+                            onClick={() => router.back()}
+                            sx={{
+                                color: "#64748b",
+                                fontWeight: 600,
+                                textTransform: "none",
+                                bgcolor: "rgba(255,255,255,0.8)",
+                                px: 2,
+                                borderRadius: '12px',
+                                backdropFilter: "blur(4px)",
+                                border: '1px solid #e2e8f0',
+                                "&:hover": { bgcolor: "#f1f5f9", borderColor: "#cbd5e1" },
+                            }}
+                        >
+                            Back to Registry
+                        </Button>
 
-            <Grid container spacing={3}>
-                {/* Core Info */}
-                <Grid item xs={12}>
-                    <Card elevation={0} sx={{ border: "1px solid #e2e8f0", borderRadius: 3, overflow: "hidden" }}>
-                        <Box sx={{ p: 2, bgcolor: "#fff", borderBottom: "1px solid #e2e8f0" }}>
-                            <Typography variant="h6" sx={{ fontWeight: 700, display: "flex", alignItems: "center", gap: 1 }}>
-                                <Inventory2 sx={{ color: "#1172ba" }} /> Batch Overview
-                            </Typography>
-                        </Box>
-                        <CardContent>
-                            <Grid container spacing={3}>
-                                <Grid item xs={12} sm={6} md={3}>
-                                    <InfoCard icon={Numbers} title="Batch Number" value={batchNo} />
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={3}>
-                                    <InfoCard icon={Inventory2} title="Request No." value={requestNo} />
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={3}>
-                                    <InfoCard icon={FactCheck} title="Check No." value={checkNo} />
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={3}>
-                                    <InfoCard icon={DateRange} title="Created Date" value={date ? new Date(date).toLocaleDateString() : "-"} />
-                                </Grid>
-                            </Grid>
+                        <Stack direction="row" spacing={1.5}>
+                            <Tooltip title="Print Record">
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<Print />}
+                                    onClick={() => window.print()}
+                                    sx={{
+                                        borderRadius: "12px",
+                                        textTransform: "none",
+                                        fontWeight: 600,
+                                        color: "#475569",
+                                        borderColor: "#e2e8f0",
+                                        bgcolor: "white",
+                                        "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" },
+                                    }}
+                                >
+                                    Print Log
+                                </Button>
+                            </Tooltip>
+                            <Button
+                                variant="contained"
+                                startIcon={<Edit />}
+                                onClick={() => router.push(`/batch/edit-batch?id=${id}`)}
+                                sx={{
+                                    borderRadius: "12px",
+                                    textTransform: "none",
+                                    fontWeight: 600,
+                                    background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
+                                    boxShadow: "0 4px 12px rgba(17, 114, 186, 0.25)",
+                                    "&:hover": {
+                                        background: "linear-gradient(135deg, #0d5a94 0%, #0a4571 100%)",
+                                        boxShadow: "0 6px 16px rgba(17, 114, 186, 0.35)",
+                                    },
+                                }}
+                            >
+                                Modify Batch
+                            </Button>
+                        </Stack>
+                    </Stack>
 
-                            <Box sx={{ mt: 3, p: 2, bgcolor: "#f0f9ff", borderRadius: 2, border: "1px dashed #bae6fd" }}>
-                                <Typography variant="body2" sx={{ color: "#0c4a6e", fontWeight: 600 }}>
-                                    Product Serial Range: <span style={{ color: "#0284c7" }}>{productSr}</span>
-                                </Typography>
-                            </Box>
-                        </CardContent>
-                    </Card>
-                </Grid>
+                    <Grid container spacing={2}>
+                        {/* Main Document Area */}
+                        <Grid size={{ xs: 12, lg: 9 }}>
+                            <Paper
+                                elevation={0}
+                                sx={{
+                                    borderRadius: 4,
+                                    border: "1px solid #e2e8f0",
+                                    overflow: "hidden",
+                                    bgcolor: "#fff",
+                                    position: 'relative'
+                                }}
+                            >
+                                {/* Decorative Header Gradient */}
+                                <Box sx={{ height: 6, background: "linear-gradient(90deg, #1172ba 0%, #60a5fa 100%)" }} />
 
-                {/* Quality Check Details */}
-                <Grid item xs={12} lg={8}>
-                    <Card elevation={0} sx={{ border: "1px solid #e2e8f0", borderRadius: 3, height: "100%" }}>
-                        <Box sx={{ p: 2, bgcolor: "#fff", borderBottom: "1px solid #e2e8f0" }}>
-                            <Typography variant="h6" sx={{ fontWeight: 700, display: "flex", alignItems: "center", gap: 1 }}>
-                                <FactCheck sx={{ color: "#1172ba" }} /> Quality Verification Log
-                            </Typography>
-                        </Box>
-                        <TableContainer>
-                            <Table>
-                                <TableHead sx={{ bgcolor: "#f8fafc" }}>
-                                    <TableRow>
-                                        <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Parameter</TableCell>
-                                        <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Specification</TableCell>
-                                        <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Observation</TableCell>
-                                        <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Remarks</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {qualityCheck.length > 0 ? (
-                                        qualityCheck.map((row, index) => (
-                                            <TableRow key={index} hover>
-                                                <TableCell sx={{ fontWeight: 600 }}>{row.parameters}</TableCell>
-                                                <TableCell>{row.specification}</TableCell>
-                                                <TableCell sx={{ color: "#1172ba", fontWeight: 500 }}>{row.observation}</TableCell>
-                                                <TableCell sx={{ fontStyle: "italic", color: "#64748b" }}>{row.remarks || "-"}</TableCell>
-                                            </TableRow>
-                                        ))
-                                    ) : (
-                                        <TableRow>
-                                            <TableCell colSpan={4} align="center" sx={{ py: 4, color: "#94a3b8" }}>
-                                                No quality check details recorded.
-                                            </TableCell>
-                                        </TableRow>
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </Card>
-                </Grid>
+                                <Box sx={{ p: { xs: 3, md: 5 } }}>
+                                    {/* Document Header */}
+                                    <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between" alignItems="flex-start" spacing={4} sx={{ mb: 6 }}>
+                                        <Box>
+                                            <Typography variant="h3" fontWeight={900} sx={{ color: "#0f172a", letterSpacing: "-0.04em", mb: 1 }}>
+                                                PRODUCTION LOG
+                                            </Typography>
+                                            <Typography variant="h6" fontWeight={600} sx={{ color: "#64748b", mb: 2.5 }}>
+                                                Serialized Batch Tracking
+                                            </Typography>
+                                            <Stack direction="row" spacing={1} alignItems="center">
+                                                <Chip
+                                                    label={batchNo}
+                                                    sx={{
+                                                        fontWeight: 700,
+                                                        bgcolor: "#f1f5f9",
+                                                        color: "#0f172a",
+                                                        borderRadius: '8px',
+                                                        fontSize: '0.95rem'
+                                                    }}
+                                                />
+                                                <Chip
+                                                    label={status || "PENDING"}
+                                                    sx={{
+                                                        fontWeight: 700,
+                                                        bgcolor: status === "Ready" ? "#dcfce7" : "#fff7ed",
+                                                        color: status === "Ready" ? "#166534" : "#c2410c",
+                                                        borderRadius: '8px',
+                                                        fontSize: '0.85rem'
+                                                    }}
+                                                />
+                                            </Stack>
+                                        </Box>
 
-                {/* Summary Side Panel */}
-                <Grid item xs={12} lg={4}>
-                    <Card elevation={0} sx={{ border: "1px solid #e2e8f0", borderRadius: 3, height: "100%" }}>
-                        <Box sx={{ p: 2, bgcolor: "#fff", borderBottom: "1px solid #e2e8f0" }}>
-                            <Typography variant="h6" sx={{ fontWeight: 700, display: "flex", alignItems: "center", gap: 1 }}>
-                                <Summarize sx={{ color: "#1172ba" }} /> Inspection Summary
-                            </Typography>
-                        </Box>
-                        <CardContent>
-                            <Box sx={{ mb: 3, p: 2, bgcolor: "#ecfdf5", borderRadius: 2, border: "1px solid #d1fae5" }}>
-                                <Typography variant="caption" sx={{ color: "#059669", fontWeight: 700, textTransform: "uppercase" }}>
-                                    Accepted Quantity
-                                </Typography>
-                                <Typography variant="h4" sx={{ color: "#047857", fontWeight: 800 }}>
-                                    {summary.acceptedQuantity || acceptedQty || 0}
-                                </Typography>
-                            </Box>
+                                        <Stack spacing={2} sx={{ minWidth: 280 }}>
+                                            <InfoItem
+                                                icon={DateRange}
+                                                label="Created Date"
+                                                value={date ? new Date(date).toLocaleDateString("en-GB", {
+                                                    day: "2-digit",
+                                                    month: "short",
+                                                    year: "numeric"
+                                                }) : "-"}
+                                            />
+                                            <InfoItem
+                                                icon={Numbers}
+                                                label="Product Serial Range"
+                                                value={productSr}
+                                            />
+                                        </Stack>
+                                    </Stack>
 
-                            <Grid container spacing={2}>
-                                <Grid item xs={6}>
-                                    <Box sx={{ p: 1.5, bgcolor: "#fef2f2", borderRadius: 2, border: "1px solid #fee2e2" }}>
-                                        <Typography variant="caption" sx={{ color: "#b91c1c", fontWeight: 700 }}>
-                                            Rejected
-                                        </Typography>
-                                        <Typography variant="h6" sx={{ color: "#991b1b", fontWeight: 700 }}>
-                                            {summary.rejectedQuantity || 0}
-                                        </Typography>
+                                    <Divider sx={{ mb: 5, opacity: 0.6 }} />
+
+                                    {/* Core Info Grid */}
+                                    <Grid container spacing={3} sx={{ mb: 6 }}>
+                                        <Grid size={{ xs: 6, sm: 4 }}>
+                                            <InfoItem icon={Inventory2} label="Request No." value={requestNo} />
+                                        </Grid>
+                                        <Grid size={{ xs: 6, sm: 4 }}>
+                                            <InfoItem icon={FactCheck} label="Check No." value={checkNo} />
+                                        </Grid>
+                                        <Grid size={{ xs: 6, sm: 4 }}>
+                                            <InfoItem icon={CheckCircle} label="Initial Status" value={status} />
+                                        </Grid>
+                                    </Grid>
+
+                                    {/* Quality Verification Log Table */}
+                                    <Box sx={{ mb: 5 }}>
+                                        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+                                            <Typography variant="h6" fontWeight={800} color="#0f172a" sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                                <FactCheck sx={{ color: '#1172ba' }} /> Quality Verification Log
+                                            </Typography>
+                                        </Stack>
+
+                                        <TableContainer sx={{
+                                            borderRadius: 3,
+                                            border: '1px solid #f1f5f9',
+                                            bgcolor: '#f8fafc'
+                                        }}>
+                                            <Table>
+                                                <TableHead>
+                                                    <TableRow sx={{ bgcolor: "#f1f5f9" }}>
+                                                        <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>PARAMETER</TableCell>
+                                                        <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>SPECIFICATION</TableCell>
+                                                        <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>OBSERVATION</TableCell>
+                                                        <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>REMARKS</TableCell>
+                                                    </TableRow>
+                                                </TableHead>
+                                                <TableBody>
+                                                    {qualityCheck.length > 0 ? (
+                                                        qualityCheck.map((row, index) => (
+                                                            <TableRow key={index} sx={{ "&:hover": { bgcolor: "#fff" }, bgcolor: 'white' }}>
+                                                                <TableCell sx={{ fontWeight: 700, color: "#1e293b" }}>{row.parameters}</TableCell>
+                                                                <TableCell sx={{ color: "#64748b", fontSize: '0.9rem' }}>{row.specification}</TableCell>
+                                                                <TableCell sx={{ color: "#1172ba", fontWeight: 700 }}>{row.observation}</TableCell>
+                                                                <TableCell sx={{ fontStyle: "italic", color: "#64748b" }}>{row.remarks || "-"}</TableCell>
+                                                            </TableRow>
+                                                        ))
+                                                    ) : (
+                                                        <TableRow bgcolor="white">
+                                                            <TableCell colSpan={4} align="center" sx={{ py: 4, color: "#94a3b8", fontStyle: 'italic' }}>
+                                                                No technical observations recorded.
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    )}
+                                                </TableBody>
+                                            </Table>
+                                        </TableContainer>
                                     </Box>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Box sx={{ p: 1.5, bgcolor: "#fff7ed", borderRadius: 2, border: "1px solid #ffedd5" }}>
-                                        <Typography variant="caption" sx={{ color: "#c2410c", fontWeight: 700 }}>
-                                            Hold/Scrap
-                                        </Typography>
-                                        <Typography variant="h6" sx={{ color: "#9a3412", fontWeight: 700 }}>
-                                            {summary.holdScrapQuantity || 0}
-                                        </Typography>
-                                    </Box>
-                                </Grid>
-                            </Grid>
-
-                            {summary.comments && (
-                                <Box sx={{ mt: 3 }}>
-                                    <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
-                                        Comments
-                                    </Typography>
-                                    <Typography variant="body2" sx={{ color: "#475569", p: 1.5, bgcolor: "#f8fafc", borderRadius: 2 }}>
-                                        {summary.comments}
-                                    </Typography>
                                 </Box>
-                            )}
-                        </CardContent>
-                    </Card>
-                </Grid>
-            </Grid>
-        </Box>
+                            </Paper>
+                        </Grid>
+
+                        {/* Sidebar / Sidebar Panels */}
+                        <Grid size={{ xs: 12, lg: 3 }}>
+                            <Stack spacing={3}>
+                                {/* Inspection Summary Card */}
+                                <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+                                    <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <Summarize sx={{ color: '#1172ba', fontSize: 20 }} /> Yield Summary
+                                    </Typography>
+
+                                    <Stack spacing={3}>
+                                        <Box sx={{ p: 2, bgcolor: '#f0fdf4', borderRadius: 3, border: '1px solid #dcfce7' }}>
+                                            <Typography variant="caption" sx={{ color: "#166534", fontWeight: 800, textTransform: "uppercase", display: 'block', mb: 0.5 }}>Accepted Quantity</Typography>
+                                            <Typography variant="h3" color="#166534" fontWeight={900}>{summary.acceptedQuantity || acceptedQty || 0}</Typography>
+                                        </Box>
+
+                                        <Grid container spacing={2}>
+                                            <Grid size={{ xs: 6 }}>
+                                                <Box sx={{ p: 2, bgcolor: '#fff1f2', borderRadius: 3, border: '1px solid #ffe4e6' }}>
+                                                    <Typography variant="caption" sx={{ color: "#b91c1c", fontWeight: 800, display: 'block' }}>REJECTED</Typography>
+                                                    <Typography variant="h6" color="#991b1b" fontWeight={800}>{summary.rejectedQuantity || 0}</Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Grid size={{ xs: 6 }}>
+                                                <Box sx={{ p: 2, bgcolor: '#fff7ed', borderRadius: 3, border: '1px solid #ffedd5' }}>
+                                                    <Typography variant="caption" sx={{ color: "#c2410c", fontWeight: 800, display: 'block' }}>HOLD/SCRAP</Typography>
+                                                    <Typography variant="h6" color="#9a3412" fontWeight={800}>{summary.holdScrapQuantity || 0}</Typography>
+                                                </Box>
+                                            </Grid>
+                                        </Grid>
+
+                                        <Divider borderStyle="dashed" />
+
+                                        {summary.comments && (
+                                            <Box sx={{ mt: 1 }}>
+                                                <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1.5 }}>
+                                                    <Description sx={{ color: '#64748b', fontSize: 18 }} />
+                                                    <Typography variant="caption" sx={{ color: "#475569", fontWeight: 800, textTransform: "uppercase" }}>Batch Remarks</Typography>
+                                                </Stack>
+                                                <Typography variant="body2" sx={{ color: "#475569", fontWeight: 600, fontStyle: "italic", lineHeight: 1.5, display: 'block', p: 2, bgcolor: '#f8fafc', borderRadius: 2 }}>
+                                                    &quot;{summary.comments}&quot;
+                                                </Typography>
+                                            </Box>
+                                        )}
+                                    </Stack>
+
+                                </Paper>
+
+                                {/* System Tracking */}
+                                <Paper sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#f8fafc' }}>
+                                    <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <VerifiedUser sx={{ color: '#1172ba', fontSize: 20 }} /> System Trace
+                                    </Typography>
+                                    <Stack spacing={2}>
+                                        <Stack direction="row" justifyContent="space-between">
+                                            <Typography variant="caption" fontWeight={700} color="#64748b">Batch UUID</Typography>
+                                            <Typography variant="caption" fontWeight={900} color="#0f172a" sx={{ fontFamily: 'monospace' }}>{id ? id.substring(0, 13).toUpperCase() : 'N/A'}</Typography>
+                                        </Stack>
+                                        <Stack direction="row" justifyContent="space-between">
+                                            <Typography variant="caption" fontWeight={700} color="#64748b">Record Status</Typography>
+                                            <Typography variant="caption" fontWeight={900} color={status === "Ready" ? "#166534" : "#c2410c"}>{status?.toUpperCase()}</Typography>
+                                        </Stack>
+                                    </Stack>
+                                </Paper>
+                            </Stack>
+                        </Grid>
+                    </Grid>
+
+                    {/* Print Context Styles */}
+                    <style dangerouslySetInnerHTML={{
+                        __html: `
+                        @media print {
+                            .no-print { display: none !important; }
+                            body { background: white !important; }
+                            .MuiContainer-root { max-width: 100% !important; padding: 0 !important; }
+                            .MuiPaper-root { border: none !important; box-shadow: none !important; }
+                            .MuiGrid-item.lg-3 { display: none !important; }
+                            .MuiGrid-item.lg-9 { width: 100% !important; max-width: 100% !important; flex-basis: 100% !important; }
+                        }
+                    `}} />
+                </Container>
+            </Box>
+        </Fade>
     );
 }
+

@@ -12,10 +12,17 @@ import Checkbox from "@mui/material/Checkbox";
 import Edit from "@mui/icons-material/Edit";
 import CheckCircle from "@mui/icons-material/CheckCircle";
 
-const ActionChecklistSection = () => {
+const ActionChecklistSection = ({ formData = {}, onChange }) => {
+    const handleChecklistChange = (field) => {
+        onChange("checklist", {
+            ...formData.checklist,
+            [field]: !formData.checklist?.[field]
+        });
+    };
+
     return (
         <Grid container spacing={3} sx={{ mb: 4 }}>
-            <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
                 <Card
                     elevation={0}
                     sx={{
@@ -46,6 +53,8 @@ const ActionChecklistSection = () => {
                             multiline
                             rows={3}
                             size="small"
+                            value={formData.actionItemsDescription || ""}
+                            onChange={(e) => onChange("actionItemsDescription", e.target.value)}
                             sx={{
                                 mb: 3,
                                 "& .MuiOutlinedInput-root": { backgroundColor: "white" },
@@ -57,12 +66,14 @@ const ActionChecklistSection = () => {
                             type="date"
                             InputLabelProps={{ shrink: true }}
                             size="small"
+                            value={formData.actionItemsFinishDate || ""}
+                            onChange={(e) => onChange("actionItemsFinishDate", e.target.value)}
                             sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
                         />
                     </CardContent>
                 </Card>
             </Grid>
-            <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
                 <Card
                     elevation={0}
                     sx={{
@@ -92,10 +103,10 @@ const ActionChecklistSection = () => {
                     <CardContent sx={{ p: 3, bgcolor: "#f8fafc" }}>
                         <Box sx={{ display: "grid", gap: 1 }}>
                             {[
-                                "Label attached?",
-                                "Packaging proof attached?",
-                                "Final test done?",
-                            ].map((label, idx) => (
+                                { label: "Label attached?", field: "labelAttached" },
+                                { label: "Packaging proof attached?", field: "packagingProof" },
+                                { label: "Final test done?", field: "finalTestDone" },
+                            ].map((item, idx) => (
                                 <Paper
                                     key={idx}
                                     elevation={0}
@@ -110,8 +121,15 @@ const ActionChecklistSection = () => {
                                     }}
                                 >
                                     <FormControlLabel
-                                        control={<Checkbox size="small" color="primary" />}
-                                        label={label}
+                                        control={
+                                            <Checkbox
+                                                size="small"
+                                                color="primary"
+                                                checked={!!formData.checklist?.[item.field]}
+                                                onChange={() => handleChecklistChange(item.field)}
+                                            />
+                                        }
+                                        label={item.label}
                                         sx={{ width: "100%", m: 0 }}
                                     />
                                 </Paper>

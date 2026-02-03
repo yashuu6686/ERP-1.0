@@ -20,12 +20,14 @@ import ProductInformationSection from "./components/ProductInformationSection";
 import ProblemReportAQDSection from "./components/ProblemReportAQDSection";
 import ActionChecklistSection from "./components/ActionChecklistSection";
 import ApprovalCommentsSection from "./components/ApprovalCommentsSection";
-import SignaturesApprovalSection from "./components/SignaturesApprovalSection";
+import SignaturesApprovalSection from "../../../components/inspection/InspectionApproval";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/Loader";
 import { useAuth } from "@/context/AuthContext";
 import NotificationService from "@/services/NotificationService";
 import { ArrowBack } from "@mui/icons-material";
+import InspectionSummary from "@/components/inspection/InspectionSummary";
+import { Grid } from "@mui/material";
 
 const steps = [
   "General Information",
@@ -57,6 +59,21 @@ function FinalInspectionFormContent() {
     remarks: "",
     approvedBy: "",
     approvalDate: new Date().toISOString().split("T")[0],
+    updatedBySignature: "",
+    updatedByDate: new Date().toISOString().split("T")[0],
+    problemReport: "no",
+    problemDescription: "",
+    problemActionTaken: "",
+    aqd: "no",
+    aqdDescription: "",
+    actionItemsDescription: "",
+    actionItemsFinishDate: "",
+    checklist: {
+      labelAttached: false,
+      packagingProof: false,
+      finalTestDone: false,
+    },
+    observationColumns: [{ id: "observation", label: "Observation" }],
     observations: [
       {
         id: 1,
@@ -69,8 +86,16 @@ function FinalInspectionFormContent() {
     ],
   });
 
-  const [problemReport, setProblemReport] = useState("no");
-  const [aqd, setAqd] = useState("no");
+  const addObservationColumn = () => {
+    const newColId = `observation_${formData.observationColumns.length + 1}`;
+    const newColLabel = `Obs ${formData.observationColumns.length + 1}`;
+
+    setFormData(prev => ({
+      ...prev,
+      observationColumns: [...prev.observationColumns, { id: newColId, label: newColLabel }],
+      observations: prev.observations.map(obs => ({ ...obs, [newColId]: "" }))
+    }));
+  };
 
   useEffect(() => {
     const fetchInspection = async () => {
@@ -184,7 +209,9 @@ function FinalInspectionFormContent() {
         return (
           <InspectionObservations
             observations={formData.observations}
+            observationColumns={formData.observationColumns}
             onAdd={addObservation}
+            onAddColumn={addObservationColumn}
             onRemove={removeObservation}
             onChange={handleObservationChange}
             icon={Assignment}
@@ -194,13 +221,14 @@ function FinalInspectionFormContent() {
         return (
           <>
             <ProblemReportAQDSection
-              problemReport={problemReport}
-              setProblemReport={setProblemReport}
-              aqd={aqd}
-              setAqd={setAqd}
+              formData={formData}
+              onChange={handleInputChange}
             />
             <Box sx={{ mt: 3 }}>
-              <ActionChecklistSection />
+              <ActionChecklistSection
+                formData={formData}
+                onChange={handleInputChange}
+              />
             </Box>
             {user?.role === 'admin' && (
               <Box sx={{ mt: 3 }}>
@@ -214,10 +242,23 @@ function FinalInspectionFormContent() {
         );
       case 3:
         return (
-          <SignaturesApprovalSection
-            formData={formData}
-            onChange={handleInputChange}
-          />
+          <>
+            <Grid container spacing={2}>
+              <Grid size={{ md: 8 }}>
+                <InspectionSummary
+                  formData={formData}
+                  onChange={handleInputChange}
+                />
+              </Grid>
+
+              <Grid size={{ md: 4 }}>
+                <SignaturesApprovalSection
+                  formData={formData}
+                  onChange={handleInputChange}
+                />
+              </Grid>
+            </Grid>
+          </>
         );
       default:
         return "Unknown step";
@@ -267,20 +308,20 @@ function FinalInspectionFormContent() {
         <Divider sx={{ my: 4 }} />
 
         <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
-           <Button
-              variant="outlined"
-              startIcon={<ArrowBack />}
-              onClick={handleBack}
-              disabled={activeStep === 0}
-              sx={{
-                borderRadius: 2,
-                textTransform: "none",
-                fontWeight: 600,
-                visibility: activeStep === 0 ? "hidden" : "visible",
-              }}
-            >
-              Previous
-            </Button>
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBack />}
+            onClick={handleBack}
+            disabled={activeStep === 0}
+            sx={{
+              borderRadius: 2,
+              textTransform: "none",
+              fontWeight: 600,
+              visibility: activeStep === 0 ? "hidden" : "visible",
+            }}
+          >
+            Previous
+          </Button>
           <Box sx={{ display: "flex", gap: 2 }}>
             <Button
               variant="outlined"
