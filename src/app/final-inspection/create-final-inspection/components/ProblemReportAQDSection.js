@@ -13,14 +13,12 @@ import ReportProblem from "@mui/icons-material/ReportProblem";
 import Info from "@mui/icons-material/Info";
 
 const ProblemReportAQDSection = ({
-    problemReport,
-    setProblemReport,
-    aqd,
-    setAqd,
+    formData = {},
+    onChange,
 }) => {
     return (
         <Grid container spacing={3} sx={{ mb: 4 }}>
-            <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
                 <Card
                     elevation={0}
                     sx={{
@@ -43,7 +41,7 @@ const ProblemReportAQDSection = ({
                         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                             <ReportProblem sx={{ color: "#fff" }} />
                             <Typography
-                                 variant="h6"
+                                variant="h6"
                                 sx={{ color: "#fff", fontWeight: 600 }}
                             >
                                 Problem Report
@@ -51,8 +49,8 @@ const ProblemReportAQDSection = ({
                         </Box>
                         <RadioGroup
                             row
-                            value={problemReport}
-                            onChange={(e) => setProblemReport(e.target.value)}
+                            value={formData.problemReport || "no"}
+                            onChange={(e) => onChange("problemReport", e.target.value)}
                         >
                             <FormControlLabel
                                 value="yes"
@@ -83,15 +81,17 @@ const ProblemReportAQDSection = ({
                         </RadioGroup>
                     </Box>
                     <CardContent sx={{ p: 3, bgcolor: "#f8fafc" }}>
-                        {problemReport === "yes" ? (
+                        {formData.problemReport === "yes" ? (
                             <Grid container spacing={2}>
-                                <Grid item xs={12} size={{ xs: 12 }}>
+                                <Grid size={{ xs: 12 }}>
                                     <TextField
                                         fullWidth
                                         label="Description"
                                         multiline
                                         rows={2}
                                         size="small"
+                                        value={formData.problemDescription || ""}
+                                        onChange={(e) => onChange("problemDescription", e.target.value)}
                                         sx={{
                                             "& .MuiOutlinedInput-root": {
                                                 backgroundColor: "white",
@@ -99,13 +99,15 @@ const ProblemReportAQDSection = ({
                                         }}
                                     />
                                 </Grid>
-                                <Grid item xs={12} size={{ xs: 12 }}>
+                                <Grid size={{ xs: 12 }}>
                                     <TextField
                                         fullWidth
                                         label="Action Taken"
                                         multiline
                                         rows={2}
                                         size="small"
+                                        value={formData.problemActionTaken || ""}
+                                        onChange={(e) => onChange("problemActionTaken", e.target.value)}
                                         sx={{
                                             "& .MuiOutlinedInput-root": {
                                                 backgroundColor: "white",
@@ -124,7 +126,7 @@ const ProblemReportAQDSection = ({
                     </CardContent>
                 </Card>
             </Grid>
-            <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
                 <Card
                     elevation={0}
                     sx={{
@@ -155,8 +157,8 @@ const ProblemReportAQDSection = ({
                         </Box>
                         <RadioGroup
                             row
-                            value={aqd}
-                            onChange={(e) => setAqd(e.target.value)}
+                            value={formData.aqd || "no"}
+                            onChange={(e) => onChange("aqd", e.target.value)}
                         >
                             <FormControlLabel
                                 value="yes"
@@ -187,13 +189,15 @@ const ProblemReportAQDSection = ({
                         </RadioGroup>
                     </Box>
                     <CardContent sx={{ p: 3, bgcolor: "#f8fafc" }}>
-                        {aqd === "yes" ? (
+                        {formData.aqd === "yes" ? (
                             <TextField
                                 fullWidth
                                 label="AQD Description"
                                 multiline
                                 rows={4.5}
                                 size="small"
+                                value={formData.aqdDescription || ""}
+                                onChange={(e) => onChange("aqdDescription", e.target.value)}
                                 sx={{
                                     "& .MuiOutlinedInput-root": { backgroundColor: "white" },
                                 }}

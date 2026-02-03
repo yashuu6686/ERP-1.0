@@ -76,26 +76,37 @@ function ViewRejectedGoodsContent() {
         const fetchRejectedGoods = async () => {
             try {
                 setLoading(true);
-                const response = await axiosInstance.get(`/rejectedGoods/${id}`);
-                setData(response.data);
+                const response = await axiosInstance.get(`/rejected-goods/${id}`);
+                // Map server data to view format
+                const serverData = response.data;
+                console.log("Server Data:", serverData);
+                setData({
+                    rejectionNo: serverData.rejectionId || serverData.rejectionNo,
+                    date: serverData.date,
+                    vendor: serverData.vendor || "-",
+                    sourceRef: serverData.sourceRef,
+                    sourceType: serverData.sourceType,
+                    invoiceNo: serverData.sourceRef || serverData.invoiceNo,
+                    inspectedBy: serverData.rejectedBy || serverData.inspectedBy,
+                    department: serverData.department || "Quality Control",
+                    status: serverData.status === "total" ? "Pending Disposal" :
+                        serverData.status === "return" ? "Returned" :
+                            serverData.status === "scrap" ? "Scrapped" : serverData.status,
+                    totalRejectionCost: serverData.totalRejectionCost || "0.00",
+                    items: serverData.items || [
+                        {
+                            name: serverData.goods,
+                            batchNo: serverData.batchNo || "-",
+                            qty: serverData.qty,
+                            reason: serverData.reason,
+                            action: serverData.status === "return" ? "Return to Vendor" : "Scrap"
+                        }
+                    ],
+                    remarks: serverData.remarks || serverData.reason || ""
+                });
             } catch (error) {
                 console.error("Error fetching rejected goods:", error);
-                // Fallback for demo
-                setData({
-                    rejectionNo: "REJ-2026-003",
-                    date: "2026-02-03",
-                    vendor: "Apex Electronics Supply",
-                    invoiceNo: "INV-99852",
-                    inspectedBy: "Alex Chen",
-                    department: "Quality Control",
-                    status: "Pending Disposal",
-                    totalRejectionCost: "12,500.00",
-                    items: [
-                        { name: "Capacitor 10uF", batchNo: "B-101", qty: 50, reason: "Leaking electrolyte", action: "Scrap" },
-                        { name: "PCB Board v2.1", batchNo: "B-105", qty: 10, reason: "Traces broken", action: "Return to Vendor" }
-                    ],
-                    remarks: "Batch shows signs of moisture damage. Immediate quarantine required."
-                });
+                setData(null);
             } finally {
                 setLoading(false);
             }
@@ -105,7 +116,6 @@ function ViewRejectedGoodsContent() {
             fetchRejectedGoods();
         }
     }, [id]);
-
     if (loading) return <Loader fullPage message="Loading Rejection Report..." />;
 
     if (!data) return (

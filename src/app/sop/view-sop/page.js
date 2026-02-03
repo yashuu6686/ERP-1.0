@@ -200,7 +200,7 @@ function ViewSOPContent() {
     return (
         <Fade in={!loading}>
             <Box>
-                <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 3 } }}>
+                <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 1 } }}>
                     {/* Header Actions */}
                     <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }} className="no-print">
                         <Button
@@ -288,9 +288,9 @@ function ViewSOPContent() {
                             </Button>
                         </Stack>
                     </Stack>
-                    <Grid container spacing={4}>
+                    <Grid container spacing={2}>
                         {/* Main Document Area */}
-                        <Grid item xs={12} lg={9}>
+                        <Grid size={{ xs: 12, lg: 9 }}>
                             <Paper
                                 elevation={0}
                                 sx={{
@@ -480,15 +480,15 @@ function ViewSOPContent() {
                         </Grid>
 
                         {/* Sidebar / Signatures */}
-                        <Grid item xs={12} lg={3}>
+                        <Grid size={{ xs: 12, lg: 3 }}>
                             <Stack spacing={3}>
                                 {/* Authorization Card */}
                                 <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
-                                    <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
                                         <VerifiedUser sx={{ color: '#1172ba', fontSize: 20 }} /> Authorization
                                     </Typography>
 
-                                    <Stack spacing={4}>
+                                    <Stack spacing={2}>
                                         <Stack direction="row" spacing={2}>
                                             <Avatar sx={{ bgcolor: "#f1f5f9", color: "#64748b" }}><Person /></Avatar>
                                             <Box>

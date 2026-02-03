@@ -79,33 +79,12 @@ function ViewDispatchContent() {
             try {
                 setLoading(true);
                 const response = await axiosInstance.get(`/dispatches/${id}`);
+                console.log("Dispatch Server Data:", response.data);
                 setDispatch(response.data);
             } catch (error) {
                 console.error("Fetch Error:", error);
-
-                // Demo Fallback Data
-                setDispatch({
-                    id: "dsp_1",
-                    status: "Shipped",
-                    shipmentInfo: {
-                        orderNumber: "ORD-2026-885",
-                        shippingDate: "2026-02-03",
-                        carrier: "FedEx Express",
-                        trackingNumber: "7854-1254-9985",
-                        platform: "Direct Sales",
-                        expectedDelivery: "2026-02-06",
-                    },
-                    customer: {
-                        companyName: "Apollo Hospitals Group",
-                        address: "No. 21, Greams Lane, Off Greams Road, Chennai, TN 600006",
-                        contactPerson: "Dr. Rajesh Gupta",
-                        phone: "+91 98765 43210"
-                    },
-                    items: [
-                        { name: "Scanbo D8 Pro Unit", serialNo: "SN-80001", qty: 50, weight: "25kg" },
-                        { name: "Glucose Test Strips (Pack of 50)", serialNo: "BATCH-992", qty: 200, weight: "12kg" }
-                    ]
-                });
+                // No fallback - only show server data
+                setDispatch(null);
             } finally {
                 setLoading(false);
             }

@@ -47,7 +47,6 @@ const OrderInformationSection = ({ formData, handleChange }) => {
                             fullWidth: true,
                         },
                         { label: "Delivery Date", name: "deliveryDate", type: "date" },
-                        { label: "Order Status", name: "status", placeholder: "Pending" },
                     ].map((field, i) => (
                         <Grid
                             item

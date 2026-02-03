@@ -108,7 +108,30 @@ function ViewInvoiceContent() {
         );
     }
 
-    const { invoiceInfo, customer, delivery, items, totals, status, paymentStatus } = invoice;
+    const invoiceInfo = invoice.invoiceInfo || {};
+    const customer = invoice.customer || {};
+    const delivery = invoice.delivery || {};
+
+    // Support both 'items' and 'products' naming
+    const rawItems = invoice.items || invoice.products || [];
+    const items = rawItems.map(item => ({
+        ...item,
+        name: item.name || item.itemName || "Unnamed Item",
+        qty: item.qty || item.quantity || 0,
+        price: item.price || 0,
+        total: item.total || item.amount || 0
+    }));
+
+    // Support both 'totals' and 'summary' naming
+    const totals = {
+        subtotal: invoice.totals?.subtotal ?? invoice.summary?.subtotal ?? 0,
+        taxAmount: invoice.totals?.taxAmount ?? invoice.summary?.tax ?? 0,
+        discountAmount: invoice.totals?.discountAmount ?? invoice.summary?.discount ?? 0,
+        grandTotal: invoice.totals?.grandTotal ?? invoice.summary?.total ?? 0
+    };
+
+    const status = invoice.status || "Draft";
+    const paymentStatus = invoice.paymentStatus || "Unpaid";
 
     const getPaymentChip = (pStatus) => {
         const configs = {
@@ -218,7 +241,7 @@ function ViewInvoiceContent() {
 
                     <Grid container spacing={4}>
                         {/* Main Document Area */}
-                        <Grid item xs={12} lg={9}>
+                        <Grid size={{ xs: 12, lg: 9 }}>
                             <Paper
                                 elevation={0}
                                 sx={{
@@ -276,7 +299,7 @@ function ViewInvoiceContent() {
 
                                     {/* Billing & Delivery Info */}
                                     <Grid container spacing={6} sx={{ mb: 6 }}>
-                                        <Grid item xs={12} md={6}>
+                                        <Grid size={{ xs: 12, md: 6 }}>
                                             <Box sx={{ p: 3, borderRadius: 3, border: '1px solid #e2e8f0', bgcolor: '#f8fafc', height: '100%' }}>
                                                 <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1.5, color: '#0f172a' }}>
                                                     <Business sx={{ color: '#1172ba' }} /> BILLING DETAILS
@@ -297,7 +320,7 @@ function ViewInvoiceContent() {
                                                 </Stack>
                                             </Box>
                                         </Grid>
-                                        <Grid item xs={12} md={6}>
+                                        <Grid size={{ xs: 12, md: 6 }}>
                                             <Box sx={{ p: 3, borderRadius: 3, border: '1px solid #e2e8f0', bgcolor: '#fff', height: '100%' }}>
                                                 <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1.5, color: '#0f172a' }}>
                                                     <LocalShipping sx={{ color: '#1172ba' }} /> SHIPPING DETAILS
@@ -360,7 +383,7 @@ function ViewInvoiceContent() {
                         </Grid>
 
                         {/* Sidebar / Calculation Area */}
-                        <Grid item xs={12} lg={3}>
+                        <Grid size={{ xs: 12, lg: 3 }}>
                             <Stack spacing={3}>
                                 {/* Payment Summary */}
                                 <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>

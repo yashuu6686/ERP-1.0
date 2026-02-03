@@ -36,7 +36,7 @@ const ProductInformationSection = ({ formData = {}, onChange }) => {
 
             <CardContent sx={{ padding: 3, backgroundColor: "#f8fafc" }}>
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={3}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                         <TextField
                             fullWidth
                             label="Product Name"
@@ -48,7 +48,7 @@ const ProductInformationSection = ({ formData = {}, onChange }) => {
                             }}
                         />
                     </Grid>
-                    <Grid item xs={12} md={3}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                         <TextField
                             fullWidth
                             label="Inspection Std No."
@@ -60,7 +60,7 @@ const ProductInformationSection = ({ formData = {}, onChange }) => {
                             }}
                         />
                     </Grid>
-                    <Grid item xs={12} md={3}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                         <TextField
                             fullWidth
                             label="Quantity"
@@ -73,7 +73,7 @@ const ProductInformationSection = ({ formData = {}, onChange }) => {
                             }}
                         />
                     </Grid>
-                    <Grid item xs={12} md={3}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                         <TextField
                             fullWidth
                             label="Check Date"
@@ -87,7 +87,7 @@ const ProductInformationSection = ({ formData = {}, onChange }) => {
                             }}
                         />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField
                             fullWidth
                             label="Inspection No."
@@ -99,7 +99,7 @@ const ProductInformationSection = ({ formData = {}, onChange }) => {
                             }}
                         />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField
                             fullWidth
                             label="Serial From"
@@ -111,7 +111,7 @@ const ProductInformationSection = ({ formData = {}, onChange }) => {
                             }}
                         />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField
                             fullWidth
                             label="Serial To"

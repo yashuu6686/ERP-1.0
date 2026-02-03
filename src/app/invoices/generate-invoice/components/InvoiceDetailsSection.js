@@ -5,10 +5,11 @@ import Typography from "@mui/material/Typography";
 import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
+import MenuItem from "@mui/material/MenuItem";
 
 import Receipt from "@mui/icons-material/Receipt";
 
-const InvoiceDetailsSection = ({ formData = {}, onChange }) => {
+const InvoiceDetailsSection = ({ formData = {}, orders = [], selectedOrderId, onOrderChange, onChange }) => {
     return (
         <Card
             elevation={0}
@@ -35,7 +36,30 @@ const InvoiceDetailsSection = ({ formData = {}, onChange }) => {
             </Box>
             <CardContent sx={{ p: 3, bgcolor: "#f8fafc" }}>
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={4} size={{ xs: 12, md: 4 }}>
+                    <Grid item xs={12} md={3} size={{ xs: 12, md: 3 }}>
+                        <TextField
+                            select
+                            fullWidth
+                            label="Order Number"
+                            variant="outlined"
+                            size="small"
+                            value={selectedOrderId || ""}
+                            onChange={(e) => onOrderChange?.(e.target.value)}
+                            sx={{
+                                "& .MuiOutlinedInput-root": { bgcolor: "white" },
+                            }}
+                        >
+                            {/* <MenuItem value="">
+                                <em>None</em>
+                            </MenuItem> */}
+                            {orders.map((order) => (
+                                <MenuItem key={order.id} value={order.id}>
+                                    {order.orderNo}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </Grid>
+                    <Grid item xs={12} md={3} size={{ xs: 12, md: 3 }}>
                         <TextField
                             fullWidth
                             label="Invoice No."
@@ -50,7 +74,7 @@ const InvoiceDetailsSection = ({ formData = {}, onChange }) => {
                             }}
                         />
                     </Grid>
-                    <Grid item xs={12} md={4} size={{ xs: 12, md: 4 }}>
+                    <Grid item xs={12} md={3} size={{ xs: 12, md: 3 }}>
                         <TextField
                             fullWidth
                             label="Invoice Date"
@@ -65,7 +89,7 @@ const InvoiceDetailsSection = ({ formData = {}, onChange }) => {
                             }}
                         />
                     </Grid>
-                    <Grid item xs={12} md={4} size={{ xs: 12, md: 4 }}>
+                    <Grid item xs={12} md={3} size={{ xs: 12, md: 3 }}>
                         <TextField
                             fullWidth
                             label="Due Date"

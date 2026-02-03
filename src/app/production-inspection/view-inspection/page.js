@@ -187,7 +187,7 @@ function ViewInspectionContent() {
     return (
         <Fade in={!loading}>
             <Box>
-                <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 3 } }}>
+                <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 1 } }}>
                     {/* Header Actions */}
                     <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }} className="no-print">
                         <Button
@@ -207,32 +207,6 @@ function ViewInspectionContent() {
                         >
                             Back to Registry
                         </Button>
-                        <Divider orientation="vertical" flexItem sx={{ height: 24, alignSelf: "center" }} />
-                        <Box>
-                            <Typography variant="h6" sx={{ fontWeight: 800, color: COLORS.primary, lineHeight: 1 }}>
-                                {productDetails.checkNumber || data.id}
-                            </Typography>
-                            <Stack direction="row" spacing={1} alignItems="center">
-                                <Typography variant="caption" sx={{ color: COLORS.secondary, fontWeight: 600 }}>
-                                    QC Report • {productDetails.productName}
-                                </Typography>
-                                {data.status && (
-                                    <Chip
-                                        icon={data.status === "Pending Approval" ? <Schedule sx={{ fontSize: '14px !important' }} /> : data.status === "Approved" ? <CheckCircle sx={{ fontSize: '14px !important' }} /> : data.status === "Rejected" ? <Cancel sx={{ fontSize: '14px !important' }} /> : undefined}
-                                        label={data.status}
-                                        size="small"
-                                        sx={{
-                                            height: 20,
-                                            fontSize: "0.65rem",
-                                            fontWeight: 800,
-                                            textTransform: "uppercase",
-                                            bgcolor: data.status === "Approved" ? "#dcfce7" : data.status === "Rejected" ? "#fee2e2" : data.status === "Pending Approval" ? "#fef3c7" : "#f1f5f9",
-                                            color: data.status === "Approved" ? "#059669" : data.status === "Rejected" ? "#dc2626" : data.status === "Pending Approval" ? "#92400e" : "#475569",
-                                        }}
-                                    />
-                                )}
-                            </Stack>
-                        </Box>
                         <Stack direction="row" spacing={1.5}>
                             {user?.role === 'admin' && data.status === 'Pending Approval' && (
                                 <>
@@ -302,9 +276,9 @@ function ViewInspectionContent() {
                         </Stack>
                     </Stack>
 
-                    <Grid container spacing={4}>
+                    <Grid container spacing={2}>
                         {/* Main Document Area */}
-                        <Grid item xs={12} lg={9}>
+                        <Grid size={{ xs: 12, lg: 9 }}>
                             <Paper
                                 elevation={0}
                                 sx={{
@@ -444,7 +418,7 @@ function ViewInspectionContent() {
                         </Grid>
 
                         {/* Sidebar / Control Area */}
-                        <Grid item xs={12} lg={3}>
+                        <Grid size={{ xs: 12, lg: 3 }}>
                             <Stack spacing={3}>
                                 {/* Authorization Card */}
                                 <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>

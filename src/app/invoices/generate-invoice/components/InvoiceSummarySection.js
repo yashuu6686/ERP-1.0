@@ -8,9 +8,9 @@ import Divider from "@mui/material/Divider";
 import Assessment from "@mui/icons-material/Assessment";
 
 const InvoiceSummarySection = ({ formData = {}, products = [] }) => {
-    const subtotal = products.reduce((sum, p) => sum + ((parseFloat(p.quantity) || 0) * (parseFloat(p.price) || 0)), 0);
+    const subtotal = products.reduce((sum, p) => sum + ((parseFloat(p.qty) || 0) * (parseFloat(p.price) || 0)), 0);
     const tax = products.reduce((sum, p) => sum + (parseFloat(p.taxAmount) || 0), 0);
-    const discount = parseFloat(formData.discount) || 0;
+    const discount = parseFloat(formData.discountAmount || formData.discount) || 0;
     const total = subtotal + tax - discount;
     return (
         <Card
