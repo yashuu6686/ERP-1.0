@@ -205,7 +205,7 @@ const ProfilePage = () => {
                 sx={{
                     p: "var(--space-2xl)",
                     mb: "var(--space-xl)",
-                    borderRadius: "var(--card-radius)",
+                    // borderRadius: "var(--card-radius)",
                     border: "1px solid var(--border-default)",
                     bgcolor: "var(--bg-surface)",
                     boxShadow: "var(--card-shadow)",
@@ -218,6 +218,7 @@ const ProfilePage = () => {
                     sx={{
                         position: "absolute",
                         top: 0,
+                        mb: 2,
                         right: 0,
                         width: "300px",
                         height: "100%",

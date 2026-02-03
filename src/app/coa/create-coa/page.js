@@ -38,27 +38,27 @@ function COAFormContent() {
     ]);
 
     useEffect(() => {
+        const fetchCOA = async () => {
+            try {
+                setLoading(true);
+                const response = await axiosInstance.get(`/coa/${id}`);
+                if (response.data) {
+                    setFormData(response.data);
+                    if (response.data.testResults) {
+                        setTestRows(response.data.testResults);
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching COA:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         if (id) {
             fetchCOA();
         }
     }, [id]);
-
-    const fetchCOA = async () => {
-        try {
-            setLoading(true);
-            const response = await axiosInstance.get(`/coa/${id}`);
-            if (response.data) {
-                setFormData(response.data);
-                if (response.data.testResults) {
-                    setTestRows(response.data.testResults);
-                }
-            }
-        } catch (error) {
-            console.error("Error fetching COA:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleInputChange = (field, value) => {
         setFormData((prev) => ({ ...prev, [field]: value }));

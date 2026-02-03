@@ -63,22 +63,22 @@ function ViewInspectionContent() {
     const [data, setData] = useState(null);
 
     useEffect(() => {
+        const fetchInspection = async () => {
+            try {
+                setLoading(true);
+                const response = await axiosInstance.get(`/incoming-inspection/${id}`);
+                setData(response.data);
+            } catch (error) {
+                console.error("Error fetching inspection:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         if (id) {
             fetchInspection();
         }
     }, [id]);
-
-    const fetchInspection = async () => {
-        try {
-            setLoading(true);
-            const response = await axiosInstance.get(`/incoming-inspection/${id}`);
-            setData(response.data);
-        } catch (error) {
-            console.error("Error fetching inspection:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     if (loading) return <Loader fullPage message="Loading Inspection Details..." />;
     if (!data) return (

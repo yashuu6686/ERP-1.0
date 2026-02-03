@@ -29,7 +29,7 @@ export default function MaterialIssueRequests() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchData = async () => {
+  const fetchData = React.useCallback(async () => {
     try {
       setLoading(true);
       const endpoint = tab === 0 ? "/material-issue" : "/defective-returns";
@@ -41,11 +41,11 @@ export default function MaterialIssueRequests() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [tab]);
 
   useEffect(() => {
     fetchData();
-  }, [tab]);
+  }, [fetchData]);
 
   const handleTabChange = (e, newValue) => {
     setTab(newValue);
@@ -229,14 +229,6 @@ export default function MaterialIssueRequests() {
         onSearchChange={(e) => setSearch(e.target.value)}
       >
         <MaterialIssueTabs value={tab} handleChange={handleTabChange} />
-
-        {tab === 1 && (
-          <Box sx={{ mb: 2, p: 2, border: "1px solid #e2e8f0", borderRadius: 1 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600, color: "#334155" }}>
-              Defective Material Returns
-            </Typography>
-          </Box>
-        )}
 
         <GlobalTable columns={columns} data={filtered} loading={loading} />
 

@@ -27,43 +27,43 @@ export default function StockMovementHistory() {
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
+    const fetchMaterialDetails = async () => {
+      try {
+        setLoading(true);
+        const endpoints = ["/store", "/it-goods", "/finish-goods", "/other-goods"];
+        let foundMaterial = null;
+
+        for (const endpoint of endpoints) {
+          const response = await axiosInstance.get(endpoint);
+          const items = response.data || [];
+          foundMaterial = items.find(item => (item.id == id || item.code == id));
+          if (foundMaterial) break;
+        }
+
+        setMaterial(foundMaterial);
+
+        // Generating history entries based on actual data
+        setHistory([
+          {
+            date: foundMaterial?.updated || new Date().toLocaleDateString(),
+            type: "IN (Purchase)",
+            ref: foundMaterial?.code || "N/A",
+            qty: foundMaterial?.available || 0,
+            balance: foundMaterial?.available || 0,
+            from: "Main Store",
+            remarks: "Opening Balance",
+          }
+        ]);
+
+      } catch (error) {
+        console.error("Error fetching material details:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchMaterialDetails();
   }, [id]);
-
-  const fetchMaterialDetails = async () => {
-    try {
-      setLoading(true);
-      const endpoints = ["/store", "/it-goods", "/finish-goods", "/other-goods"];
-      let foundMaterial = null;
-
-      for (const endpoint of endpoints) {
-        const response = await axiosInstance.get(endpoint);
-        const items = response.data || [];
-        foundMaterial = items.find(item => (item.id == id || item.code == id));
-        if (foundMaterial) break;
-      }
-
-      setMaterial(foundMaterial);
-
-      // Generating history entries based on actual data
-      setHistory([
-        {
-          date: foundMaterial?.updated || new Date().toLocaleDateString(),
-          type: "IN (Purchase)",
-          ref: foundMaterial?.code || "N/A",
-          qty: foundMaterial?.available || 0,
-          balance: foundMaterial?.available || 0,
-          from: "Main Store",
-          remarks: "Opening Balance",
-        }
-      ]);
-
-    } catch (error) {
-      console.error("Error fetching material details:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) return <Loader message="Fetching movement history..." />;
 

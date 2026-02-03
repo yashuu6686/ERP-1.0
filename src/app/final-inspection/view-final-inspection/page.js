@@ -59,22 +59,22 @@ function ViewFinalInspectionContent() {
     const [data, setData] = useState(null);
 
     useEffect(() => {
+        const fetchInspection = async () => {
+            try {
+                setLoading(true);
+                const response = await axiosInstance.get(`/final-inspections/${id}`);
+                setData(response.data);
+            } catch (error) {
+                console.error("Error fetching inspection:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         if (id) {
             fetchInspection();
         }
     }, [id]);
-
-    const fetchInspection = async () => {
-        try {
-            setLoading(true);
-            const response = await axiosInstance.get(`/final-inspections/${id}`);
-            setData(response.data);
-        } catch (error) {
-            console.error("Error fetching inspection:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     if (loading) return <Loader fullPage message="Fetching Inspection Details..." />;
     if (!data) return <Box sx={{ p: 4 }}>Inspection Not Found</Box>;

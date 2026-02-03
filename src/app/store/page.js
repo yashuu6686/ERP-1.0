@@ -30,11 +30,7 @@ export default function Store() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    fetchData();
-  }, [tab]);
-
-  const fetchData = async () => {
+  const fetchData = React.useCallback(async () => {
     const endpoints = ["/store", "/it-goods", "/finish-goods", "/other-goods"];
     try {
       setLoading(true);
@@ -45,7 +41,11 @@ export default function Store() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [tab]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleTabChange = (e, newValue) => setTab(newValue);
 

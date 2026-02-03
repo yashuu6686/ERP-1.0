@@ -50,24 +50,24 @@ function SOPFormContent() {
     });
 
     useEffect(() => {
+        const fetchSopDetails = async () => {
+            try {
+                setLoading(true);
+                const response = await axiosInstance.get(`/sops/${id}`);
+                if (response.data) {
+                    setFormData(response.data);
+                }
+            } catch (error) {
+                console.error("Error fetching SOP details:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         if (id) {
             fetchSopDetails();
         }
     }, [id]);
-
-    const fetchSopDetails = async () => {
-        try {
-            setLoading(true);
-            const response = await axiosInstance.get(`/sops/${id}`);
-            if (response.data) {
-                setFormData(response.data);
-            }
-        } catch (error) {
-            console.error("Error fetching SOP details:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleInputChange = (field, value) => {
         setFormData((prev) => ({ ...prev, [field]: value }));

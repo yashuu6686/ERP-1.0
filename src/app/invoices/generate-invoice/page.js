@@ -69,34 +69,34 @@ function InvoiceGeneratorContent() {
   ]);
 
   useEffect(() => {
+    const fetchInvoice = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get(`/invoices/${id}`);
+        if (response.data) {
+          setFormData({
+            invoiceInfo: response.data.invoiceInfo || formData.invoiceInfo,
+            customer: response.data.customer || formData.customer,
+            delivery: response.data.delivery || formData.delivery,
+            notes: response.data.notes || formData.notes,
+            summary: response.data.summary || formData.summary,
+            status: response.data.status || "Draft",
+          });
+          if (response.data.products) {
+            setProducts(response.data.products);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching invoice:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (id) {
       fetchInvoice();
     }
   }, [id]);
-
-  const fetchInvoice = async () => {
-    try {
-      setLoading(true);
-      const response = await axiosInstance.get(`/invoices/${id}`);
-      if (response.data) {
-        setFormData({
-          invoiceInfo: response.data.invoiceInfo || formData.invoiceInfo,
-          customer: response.data.customer || formData.customer,
-          delivery: response.data.delivery || formData.delivery,
-          notes: response.data.notes || formData.notes,
-          summary: response.data.summary || formData.summary,
-          status: response.data.status || "Draft",
-        });
-        if (response.data.products) {
-          setProducts(response.data.products);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching invoice:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleFieldChange = (section, field, value) => {
     setFormData((prev) => ({
