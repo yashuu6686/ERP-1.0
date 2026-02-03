@@ -364,7 +364,7 @@ export default function OrderDetails() {
                                                 <Typography variant="caption" sx={{ color: "#166534", fontWeight: 800, textTransform: "uppercase" }}>Verification</Typography>
                                             </Stack>
                                             <Typography variant="caption" sx={{ color: "#166534", fontWeight: 600, fontStyle: "italic", lineHeight: 1.4, display: 'block' }}>
-                                                "Finalized registry. Order verified for dispatch."
+                                                &quot;Finalized registry. Order verified for dispatch.&quot;
                                             </Typography>
                                         </Box>
                                     </Stack>

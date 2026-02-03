@@ -493,7 +493,7 @@ function ViewDispatchContent() {
                                     </Stack>
                                     <Divider sx={{ my: 1.5, borderStyle: 'dashed' }} />
                                     <Typography variant="caption" color="#64748b" sx={{ fontStyle: 'italic', display: 'block', textAlign: 'center' }}>
-                                        "Verify condition upon receipt."
+                                        &quot;Verify condition upon receipt.&quot;
                                     </Typography>
                                 </Paper>
                             </Stack>
