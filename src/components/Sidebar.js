@@ -136,7 +136,7 @@ export default function Sidebar({ children }) {
         >
           <Box sx={{ p: "6px" }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-              <Image src="/Scanbo_logo_new.png" alt="Logo" width={80} height={100} />
+              <Image src="/Scanbo_logo_new.png" alt="Logo" width={100} height={100} />
               <IconButton
                 size="small"
                 onClick={logout}

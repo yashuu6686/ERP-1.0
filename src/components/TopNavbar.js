@@ -29,7 +29,7 @@ const TopNavbar = ({ onToggleSidebar }) => {
     const [notifications, setNotifications] = React.useState([]);
     const [anchorEl, setAnchorEl] = React.useState(null);
 
-    const fetchNotifications = async () => {
+    const fetchNotifications = React.useCallback(async () => {
         if (user) {
             console.log("TopNavbar: Fetching notifications for role:", user.role);
             const data = await NotificationService.getNotifications(user.role);
@@ -38,14 +38,14 @@ const TopNavbar = ({ onToggleSidebar }) => {
         } else {
             console.log("TopNavbar: No user logged in, skipping notification fetch.");
         }
-    };
+    }, [user]);
 
     React.useEffect(() => {
         fetchNotifications();
         // Poll for notifications every 10 seconds for better responsiveness
         const interval = setInterval(fetchNotifications, 10000);
         return () => clearInterval(interval);
-    }, [user]);
+    }, [fetchNotifications]);
 
     const handleNotificationClick = (event) => {
         setAnchorEl(event.currentTarget);

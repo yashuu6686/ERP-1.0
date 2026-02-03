@@ -181,7 +181,7 @@ function ViewGRNContent() {
 
                 <Grid container spacing={3}>
                     {/* Main Content Area */}
-                    <Grid item xs={12} lg={9}>
+                    <Grid size={{ xs: 12, lg: 9 }}>
                         <Paper
                             elevation={0}
                             sx={{
@@ -242,7 +242,7 @@ function ViewGRNContent() {
 
                                 {/* Entities Grid */}
                                 <Grid container spacing={4} sx={{ mb: 6 }}>
-                                    <Grid item xs={12} md={6}>
+                                    <Grid size={{ xs: 12, md: 6 }}>
                                         <Typography variant="subtitle2" sx={{ color: "#94a3b8", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", mb: 2 }}>
                                             From (Supplier)
                                         </Typography>
@@ -258,7 +258,7 @@ function ViewGRNContent() {
                                             </Stack>
                                         </Paper>
                                     </Grid>
-                                    <Grid item xs={12} md={6}>
+                                    <Grid size={{ xs: 12, md: 6 }}>
                                         <Typography variant="subtitle2" sx={{ color: "#94a3b8", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", mb: 2 }}>
                                             Received By
                                         </Typography>
@@ -342,20 +342,20 @@ function ViewGRNContent() {
                                 </Box>
 
                                 {/* Footer Note */}
-                                <Box sx={{ mt: 6, p: 3, bgcolor: '#f1f5f9', borderRadius: 3, border: '1px dashed #cbd5e1' }}>
+                                {/* <Box sx={{ mt: 6, p: 3, bgcolor: '#f1f5f9', borderRadius: 3, border: '1px dashed #cbd5e1' }}>
                                     <Stack direction="row" spacing={2} alignItems="center">
                                         <AssignmentTurnedIn sx={{ color: '#64748b' }} />
                                         <Typography variant="body2" color="#475569" sx={{ fontWeight: 500 }}>
                                             This is a computer generated Goods Receipt Note. All materials listed above have been physically verified and counted upon arrival at the facility.
                                         </Typography>
                                     </Stack>
-                                </Box>
+                                </Box> */}
                             </Box>
                         </Paper>
                     </Grid>
 
                     {/* Sidebar Area */}
-                    <Grid item xs={12} lg={3}>
+                    <Grid size={{ xs: 12, lg: 3 }}>
                         <Stack spacing={3}>
                             {/* Summary Card */}
                             <Paper sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
@@ -420,8 +420,8 @@ function ViewGRNContent() {
                             <Box sx={{
                                 p: 3,
                                 borderRadius: 4,
-                                background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
-                                color: '#fff'
+                                background: '#fff',
+                                color: '#1172ba'
                             }}>
                                 <Typography variant="h4" fontWeight={900} sx={{ mb: 1 }}>
                                     {grn.items?.reduce((acc, item) => acc + (Number(item.receivedQty) || 0), 0)}

@@ -23,11 +23,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/Loader";
 import { Suspense } from "react";
+import { useAuth } from "@/context/AuthContext";
+import NotificationService from "@/services/NotificationService";
 
 const steps = ["Device Info", "Testing Process", "Packaging", "Review & Save"];
 
 function SOPFormContent() {
     const router = useRouter();
+    const { user } = useAuth();
     const searchParams = useSearchParams();
     const id = searchParams.get("id");
     const [activeStep, setActiveStep] = useState(0);
@@ -50,24 +53,24 @@ function SOPFormContent() {
     });
 
     useEffect(() => {
+        const fetchSopDetails = async () => {
+            try {
+                setLoading(true);
+                const response = await axiosInstance.get(`/sops/${id}`);
+                if (response.data) {
+                    setFormData(response.data);
+                }
+            } catch (error) {
+                console.error("Error fetching SOP details:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         if (id) {
             fetchSopDetails();
         }
     }, [id]);
-
-    const fetchSopDetails = async () => {
-        try {
-            setLoading(true);
-            const response = await axiosInstance.get(`/sops/${id}`);
-            if (response.data) {
-                setFormData(response.data);
-            }
-        } catch (error) {
-            console.error("Error fetching SOP details:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleInputChange = (field, value) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
@@ -91,19 +94,41 @@ function SOPFormContent() {
 
     const handleSave = async () => {
         try {
+            setLoading(true);
+            const isHR = user?.role === 'hr';
+            const status = isHR ? "Pending Approval" : "Completed";
+
+            const payload = {
+                ...formData,
+                sopNumber: formData.sopNumber || `SOP-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+                status: status,
+            };
+
+            let response;
             if (id) {
-                await axiosInstance.put(`/sops/${id}`, formData);
+                response = await axiosInstance.put(`/sops/${id}`, payload);
             } else {
-                const payload = {
-                    ...formData,
-                    sopNumber: `SOP-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
-                    status: "Completed",
-                };
-                await axiosInstance.post("/sops", payload);
+                response = await axiosInstance.post("/sops", payload);
             }
+
+            if (isHR && (response.status === 201 || response.status === 200)) {
+                await NotificationService.createNotification({
+                    title: "SOP Approval Required",
+                    message: `HR ${user.name} has submitted an SOP for ${formData.deviceId || 'a device'} (Report: ${payload.sopNumber}).`,
+                    targetRole: "admin",
+                    type: "sop_approval",
+                    link: `/sop/view-sop?id=${id || response.data.id}`,
+                    inspectionId: id || response.data.id
+                });
+            }
+
+            alert(`SOP ${id ? "Updated" : "Saved"} Successfully!`);
             router.push("/sop");
         } catch (error) {
             console.error("Error saving SOP:", error);
+            alert("Failed to save SOP.");
+        } finally {
+            setLoading(false);
         }
     };
 

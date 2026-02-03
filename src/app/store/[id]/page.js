@@ -73,56 +73,45 @@ export default function StockMovementHistory() {
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
-    if (id) fetchMaterialDetails();
+    const fetchMaterialDetails = async () => {
+      try {
+        setLoading(true);
+        const endpoints = ["/store", "/it-goods", "/finish-goods", "/other-goods"];
+        let foundMaterial = null;
+
+        for (const endpoint of endpoints) {
+          const response = await axiosInstance.get(endpoint);
+          const items = response.data || [];
+          foundMaterial = items.find(item => (item.id == id || item.code == id));
+          if (foundMaterial) break;
+        }
+
+        setMaterial(foundMaterial);
+
+        // Generating history entries based on actual data
+        setHistory([
+          {
+            date: foundMaterial?.updated || new Date().toLocaleDateString(),
+            type: "IN (Purchase)",
+            ref: foundMaterial?.code || "N/A",
+            qty: foundMaterial?.available || 0,
+            balance: foundMaterial?.available || 0,
+            from: "Main Store",
+            remarks: "Opening Balance",
+          }
+        ]);
+
+      } catch (error) {
+        console.error("Error fetching material details:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMaterialDetails();
   }, [id]);
 
-  const fetchMaterialDetails = async () => {
-    try {
-      setLoading(true);
-      const endpoints = ["/store", "/it-goods", "/finish-goods", "/other-goods"];
-      let foundMaterial = null;
-
-      for (const endpoint of endpoints) {
-        const response = await axiosInstance.get(endpoint);
-        const items = response.data || [];
-        foundMaterial = items.find(item => (item.id == id || item.code == id));
-        if (foundMaterial) break;
-      }
-
-      setMaterial(foundMaterial);
-
-      // Mocking historical data based on modern patterns
-      setHistory([
-        {
-          date: "2026-02-01 10:30 AM",
-          type: "IN",
-          source: "Purchase Order #PO-2024-001",
-          qty: foundMaterial?.available || 500,
-          balance: foundMaterial?.available || 500,
-          operator: "Admin User",
-          remarks: "Main Stock Replenishment"
-        },
-        {
-          date: "2026-01-28 02:15 PM",
-          type: "OUT",
-          source: "Work Order #WO-882",
-          qty: -120,
-          balance: (foundMaterial?.available || 500) - 120,
-          operator: "Store Manager",
-          remarks: "Assembly Line Allocation"
-        }
-      ]);
-
-    } catch (error) {
-      console.error("Error fetching material details:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) return <Loader fullPage message="Authenticating Stock Ledger..." />;
-
-  const isLowStock = (Number(material?.available) || 0) <= (Number(material?.minimum) || 0);
+  if (loading) return <Loader message="Fetching movement history..." />;
 
   return (
     <Fade in={!loading}>

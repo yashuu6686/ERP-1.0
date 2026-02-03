@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stepper from "@mui/material/Stepper";
@@ -20,10 +21,10 @@ import ProblemReportAQDSection from "./components/ProblemReportAQDSection";
 import ActionChecklistSection from "./components/ActionChecklistSection";
 import ApprovalCommentsSection from "./components/ApprovalCommentsSection";
 import SignaturesApprovalSection from "./components/SignaturesApprovalSection";
-import { useRouter, useSearchParams } from "next/navigation";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/Loader";
-import { Suspense, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
+import NotificationService from "@/services/NotificationService";
 
 const steps = [
   "General Information",
@@ -34,11 +35,13 @@ const steps = [
 
 function FinalInspectionFormContent() {
   const router = useRouter();
+  const { user } = useAuth();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
+    inspectionStatus: "Approved", // Default status
     inspectionNo: "",
     productName: "",
     inspectionStdNo: "",
@@ -69,27 +72,24 @@ function FinalInspectionFormContent() {
   const [aqd, setAqd] = useState("no");
 
   useEffect(() => {
+    const fetchInspection = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get(`/final-inspections/${id}`);
+        if (response.data) {
+          setFormData(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching inspection:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (id) {
       fetchInspection();
     }
   }, [id]);
-
-  const fetchInspection = async () => {
-    try {
-      setLoading(true);
-      const response = await axiosInstance.get(`/final-inspections/${id}`);
-      if (response.data) {
-        setFormData(response.data);
-        if (response.data.observations) {
-          setObservations(response.data.observations);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching inspection:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const setObservations = (obs) => {
     setFormData(prev => ({ ...prev, observations: obs }));
@@ -137,18 +137,41 @@ function FinalInspectionFormContent() {
 
   const handleSave = async () => {
     try {
+      setLoading(true);
+      const isHR = user?.role === 'hr';
+      const status = isHR ? "Pending Approval" : "Approved";
+
+      const payload = {
+        ...formData,
+        inspectionStatus: status,
+        inspectionNo: formData.inspectionNo || `FIN-INS-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+      };
+
+      let response;
       if (id) {
-        await axiosInstance.put(`/final-inspections/${id}`, formData);
+        response = await axiosInstance.put(`/final-inspections/${id}`, payload);
       } else {
-        const payload = {
-          ...formData,
-          inspectionNo: formData.inspectionNo || `FIN-INS-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
-        };
-        await axiosInstance.post("/final-inspections", payload);
+        response = await axiosInstance.post("/final-inspections", payload);
       }
+
+      if (isHR && (response.status === 201 || response.status === 200)) {
+        await NotificationService.createNotification({
+          title: "Final Inspection Approval Required",
+          message: `HR ${user.name} has submitted a final inspection for ${formData.productName || 'a product'} (Report: ${payload.inspectionNo}).`,
+          targetRole: "admin",
+          type: "final_inspection_approval",
+          link: `/final-inspection/view-final-inspection?id=${id || response.data.id}`,
+          inspectionId: id || response.data.id
+        });
+      }
+
+      alert(`Inspection ${id ? "Updated" : "Submitted"} Successfully!`);
       router.push("/final-inspection");
     } catch (error) {
       console.error("Error saving inspection:", error);
+      alert("Failed to save inspection.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -198,7 +221,7 @@ function FinalInspectionFormContent() {
     }
   };
 
-  if (loading) return <Loader fullPage message="Fetching Details..." />;
+  if (loading) return <Loader fullPage message="Processing..." />;
 
   return (
     <CommonCard title={id ? "Edit Final Inspection" : "Final Inspection Verification"}>
@@ -321,7 +344,3 @@ export default function FinalInspectionForm() {
     </Suspense>
   );
 }
-
-
-
-" ✓ Compiled /final-inspection/create-final-inspection in 1139ms (2902 modules)"

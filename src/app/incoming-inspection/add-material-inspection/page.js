@@ -21,6 +21,8 @@ import MaterialInformation from "./components/MaterialInformation";
 import VerificationChecks from "./components/VerificationChecks";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/Loader";
+import { useAuth } from "@/context/AuthContext";
+import NotificationService from "@/services/NotificationService";
 
 const steps = [
   "Material Information & Verification",
@@ -34,6 +36,7 @@ function MaterialInspectionFormContent() {
   const [pendingGRNs, setPendingGRNs] = useState([]);
   const [selectedGRN, setSelectedGRN] = useState(null);
   const router = useRouter();
+  const { user } = useAuth();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const isEditMode = !!id;
@@ -87,78 +90,79 @@ function MaterialInspectionFormContent() {
   });
 
   useEffect(() => {
+    const fetchPendingGRNs = async (currentGrnNumber = null) => {
+      try {
+        const response = await axiosInstance.get("/grn");
+        const targetGrn = currentGrnNumber || materialData.grnNumber;
+        const pending = (response.data || []).filter(g =>
+          g.inspectionStatus === "Pending" || (isEditMode && targetGrn === g.grnNumber)
+        );
+        setPendingGRNs(pending);
+      } catch (error) {
+        console.error("Error fetching GRNs:", error);
+      }
+    };
+
+    const fetchInspectionData = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get(`/incoming-inspection/${id}`);
+        const data = response.data;
+        if (data) {
+          // 1. Fetch all GRNs to find the matching one
+          const grnResponse = await axiosInstance.get("/grn");
+          const allGRNs = grnResponse.data || [];
+          const matchingGRN = allGRNs.find(g => g.grnNumber === data.materialData.grnNumber);
+
+          if (matchingGRN) setSelectedGRN(matchingGRN);
+
+          // 2. Flatten and merge data, using matchingGRN as a fallback for missing fields
+          const materialDataLoaded = {
+            ...data.materialData,
+            poNumber: data.materialData.poNumber || matchingGRN?.poNumber || "",
+            materialName: data.materialData.materialName || matchingGRN?.items?.[0]?.name || "",
+            supplierName: data.materialData.supplierName || matchingGRN?.supplierName || "",
+            ...(data.materialData.verificationChecks || {})
+          };
+
+          setMaterialData(materialDataLoaded);
+          setObservations(data.observations || []);
+          setSummaryData(data.summaryData);
+          setApprovalData(data.approvalData);
+
+          // Update observation columns if dynamic ones exist
+          if (data.observations?.length > 0) {
+            const firstObs = data.observations[0];
+            const dynamicKeys = Object.keys(firstObs).filter(k => k.startsWith("observation_"));
+            if (dynamicKeys.length > 0) {
+              const newCols = dynamicKeys.map(k => ({
+                id: k,
+                label: `Observation ${k.split("_")[1]}`
+              }));
+              const allCols = [{ id: "observation", label: "Observation" }, ...newCols];
+              // Remove duplicates just in case
+              const uniqueCols = Array.from(new Map(allCols.map(c => [c.id, c])).values());
+              setObservationColumns(uniqueCols);
+            }
+          }
+
+          // Re-fetch pending GRNs lists for the dropdown
+          fetchPendingGRNs(data.materialData.grnNumber);
+        }
+      } catch (error) {
+        console.error("Error fetching inspection data:", error);
+        alert("Failed to load inspection data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchPendingGRNs();
     if (isEditMode) {
       fetchInspectionData();
     }
-  }, [id]);
-
-  const fetchInspectionData = async () => {
-    try {
-      setLoading(true);
-      const response = await axiosInstance.get(`/incoming-inspection/${id}`);
-      const data = response.data;
-      if (data) {
-        // 1. Fetch all GRNs to find the matching one
-        const grnResponse = await axiosInstance.get("/grn");
-        const allGRNs = grnResponse.data || [];
-        const matchingGRN = allGRNs.find(g => g.grnNumber === data.materialData.grnNumber);
-
-        if (matchingGRN) setSelectedGRN(matchingGRN);
-
-        // 2. Flatten and merge data, using matchingGRN as a fallback for missing fields
-        const materialDataLoaded = {
-          ...data.materialData,
-          poNumber: data.materialData.poNumber || matchingGRN?.poNumber || "",
-          materialName: data.materialData.materialName || matchingGRN?.items?.[0]?.name || "",
-          supplierName: data.materialData.supplierName || matchingGRN?.supplierName || "",
-          ...(data.materialData.verificationChecks || {})
-        };
-
-        setMaterialData(materialDataLoaded);
-        setObservations(data.observations || []);
-        setSummaryData(data.summaryData);
-        setApprovalData(data.approvalData);
-
-        // Update observation columns if dynamic ones exist
-        if (data.observations?.length > 0) {
-          const firstObs = data.observations[0];
-          const dynamicKeys = Object.keys(firstObs).filter(k => k.startsWith("observation_"));
-          if (dynamicKeys.length > 0) {
-            const newCols = dynamicKeys.map(k => ({
-              id: k,
-              label: `Observation ${k.split("_")[1]}`
-            }));
-            const allCols = [{ id: "observation", label: "Observation" }, ...newCols];
-            // Remove duplicates just in case
-            const uniqueCols = Array.from(new Map(allCols.map(c => [c.id, c])).values());
-            setObservationColumns(uniqueCols);
-          }
-        }
-
-        // Re-fetch pending GRNs lists for the dropdown
-        fetchPendingGRNs(data.materialData.grnNumber);
-      }
-    } catch (error) {
-      console.error("Error fetching inspection data:", error);
-      alert("Failed to load inspection data.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchPendingGRNs = async (currentGrnNumber = null) => {
-    try {
-      const response = await axiosInstance.get("/grn");
-      const targetGrn = currentGrnNumber || materialData.grnNumber;
-      const pending = (response.data || []).filter(g =>
-        g.inspectionStatus === "Pending" || (isEditMode && targetGrn === g.grnNumber)
-      );
-      setPendingGRNs(pending);
-    } catch (error) {
-      console.error("Error fetching GRNs:", error);
-    }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, isEditMode]);
 
   const handleGRNChange = (event, newValue) => {
     setSelectedGRN(newValue);
@@ -260,12 +264,13 @@ function MaterialInspectionFormContent() {
   const handleSubmit = async () => {
     try {
       setLoading(true);
+      const isHR = user?.role === 'hr';
       const inspectionData = {
         materialData,
         observations,
         summaryData,
         approvalData,
-        inspectionStatus: "Approved", // Assuming submission means approval for now
+        inspectionStatus: isHR ? "Pending Approval" : "Approved",
         grnId: selectedGRN?.id,
       };
 
@@ -274,6 +279,17 @@ function MaterialInspectionFormContent() {
         : await axiosInstance.post("/incoming-inspection", inspectionData);
 
       if (response.status === 201 || response.status === 200) {
+        // Send notification to Admin if HR is submitting
+        if (user?.role === 'hr') {
+          await NotificationService.createNotification({
+            title: "Inspection Approval Required",
+            message: `HR ${user.name} has submitted an inspection for ${materialData.materialName} (Report: ${materialData.inspectionReportNumber}).`,
+            targetRole: "admin",
+            type: "inspection_approval",
+            link: `/incoming-inspection/view-inspection?id=${isEditMode ? id : response.data.id}`,
+            inspectionId: isEditMode ? id : response.data.id
+          });
+        }
         // Automatic Rejection Record Integration
         const rejQty = parseInt(summaryData.rejectedQuantity) || 0;
         if (rejQty > 0) {
@@ -453,14 +469,14 @@ function MaterialInspectionFormContent() {
                 fontWeight: 600,
               },
               "& .MuiStepLabel-label.Mui-completed": {
-                color: "#10b981",
+                color: "#1172ba",
                 fontWeight: 600,
               },
               "& .MuiStepIcon-root.Mui-active": {
                 color: "#1172ba",
               },
               "& .MuiStepIcon-root.Mui-completed": {
-                color: "#10b981",
+                color: "#1172ba",
               },
             }}
           >

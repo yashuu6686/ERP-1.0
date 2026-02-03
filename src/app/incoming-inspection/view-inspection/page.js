@@ -19,6 +19,7 @@ import Stack from "@mui/material/Stack";
 import Container from "@mui/material/Container";
 import Fade from "@mui/material/Fade";
 import Tooltip from "@mui/material/Tooltip";
+import { useAuth } from "@/context/AuthContext";
 
 import ArrowBack from "@mui/icons-material/ArrowBack";
 import CheckCircle from "@mui/icons-material/CheckCircle";
@@ -92,22 +93,58 @@ function ViewInspectionContent() {
     const [data, setData] = useState(null);
 
     useEffect(() => {
+        const fetchInspection = async () => {
+            try {
+                setLoading(true);
+                const response = await axiosInstance.get(`/incoming-inspection/${id}`);
+                setData(response.data);
+            } catch (error) {
+                console.error("Error fetching inspection:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         if (id) {
             fetchInspection();
         }
     }, [id]);
 
-    const fetchInspection = async () => {
+    const handleApprove = async () => {
         try {
             setLoading(true);
-            const response = await axiosInstance.get(`/incoming-inspection/${id}`);
-            setData(response.data);
+            await axiosInstance.put(`/incoming-inspection/${id}`, {
+                ...data,
+                inspectionStatus: 'Approved'
+            });
+            setData(prev => ({ ...prev, inspectionStatus: 'Approved' }));
+            alert("Inspection report has been approved.");
         } catch (error) {
-            console.error("Error fetching inspection:", error);
+            console.error("Error approving inspection:", error);
+            alert("Failed to approve inspection.");
         } finally {
             setLoading(false);
         }
     };
+
+    const handleReject = async () => {
+        try {
+            setLoading(true);
+            await axiosInstance.put(`/incoming-inspection/${id}`, {
+                ...data,
+                inspectionStatus: 'Rejected'
+            });
+            setData(prev => ({ ...prev, inspectionStatus: 'Rejected' }));
+            alert("Inspection report has been rejected.");
+        } catch (error) {
+            console.error("Error rejecting inspection:", error);
+            alert("Failed to reject inspection.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const { user } = useAuth();
 
     if (loading) return <Loader fullPage message="Loading Inspection Details..." />;
 
@@ -135,7 +172,7 @@ function ViewInspectionContent() {
 
     return (
         <Fade in={!loading}>
-            <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 3 } }}>
+            <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 1 } }}>
                 {/* Header Actions */}
                 <Stack
                     direction={{ xs: "column", sm: "row" }}
@@ -182,6 +219,36 @@ function ViewInspectionContent() {
                                 Print
                             </Button>
                         </Tooltip>
+
+                        {user?.role === 'admin' && inspectionStatus === 'Pending Approval' && (
+                            <>
+                                <Button
+                                    variant="contained"
+                                    color="error"
+                                    startIcon={<Cancel />}
+                                    onClick={handleReject}
+                                    sx={{ borderRadius: "12px", textTransform: "none", fontWeight: 600 }}
+                                >
+                                    Reject
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    color="success"
+                                    startIcon={<CheckCircle />}
+                                    onClick={handleApprove}
+                                    sx={{
+                                        borderRadius: "12px",
+                                        textTransform: "none",
+                                        fontWeight: 600,
+                                        bgcolor: "#16a34a",
+                                        "&:hover": { bgcolor: "#15803d" }
+                                    }}
+                                >
+                                    Approve Report
+                                </Button>
+                            </>
+                        )}
+
                         <Button
                             variant="contained"
                             startIcon={<Edit />}
@@ -203,9 +270,9 @@ function ViewInspectionContent() {
                     </Stack>
                 </Stack>
 
-                <Grid container spacing={4}>
+                <Grid container spacing={2}>
                     {/* Main Content Area */}
-                    <Grid item xs={12} lg={9}>
+                    <Grid item xs={12} lg={9} size={{ xs: 12, lg: 9 }}>
                         <Paper
                             elevation={0}
                             sx={{
@@ -270,8 +337,8 @@ function ViewInspectionContent() {
                                     <Typography variant="subtitle2" sx={{ color: "#94a3b8", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", mb: 2.5 }}>
                                         Material & Source Details
                                     </Typography>
-                                    <Grid container spacing={3}>
-                                        <Grid item xs={12} md={6}>
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
                                             <Paper elevation={0} sx={{ p: 2.5, bgcolor: "#f8fafc", borderRadius: 3, border: '1px solid #f1f5f9' }}>
                                                 <Stack direction="row" spacing={2} alignItems="center">
                                                     <Box sx={{ width: 48, height: 48, borderRadius: 3, bgcolor: "#fff", display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #e2e8f0' }}>
@@ -284,7 +351,7 @@ function ViewInspectionContent() {
                                                 </Stack>
                                             </Paper>
                                         </Grid>
-                                        <Grid item xs={12} md={6}>
+                                        <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
                                             <Paper elevation={0} sx={{ p: 2.5, bgcolor: "#f8fafc", borderRadius: 3, border: '1px solid #f1f5f9' }}>
                                                 <Stack direction="row" spacing={2} alignItems="center">
                                                     <Box sx={{ width: 48, height: 48, borderRadius: 3, bgcolor: "#fff", display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #e2e8f0' }}>
@@ -363,8 +430,8 @@ function ViewInspectionContent() {
                     </Grid>
 
                     {/* Sidebar Area */}
-                    <Grid item xs={12} lg={3}>
-                        <Stack spacing={3}>
+                    <Grid item xs={12} lg={3} size={{ xs: 12, lg: 3 }}>
+                        <Stack spacing={2}>
                             {/* Quantity Breakdown */}
                             <Paper sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                                 <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -388,8 +455,9 @@ function ViewInspectionContent() {
                                 </Stack>
                             </Paper>
 
+
                             {/* Batch Info */}
-                            <Paper sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+                            <Paper className="no-print" sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                                 <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
                                     <VerifiedUser sx={{ color: '#1172ba', fontSize: 20 }} /> Batch Control
                                 </Typography>

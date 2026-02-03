@@ -73,48 +73,49 @@ function ViewRejectedGoodsContent() {
     const [data, setData] = useState(null);
 
     useEffect(() => {
+        const fetchRejectedGoods = async () => {
+            try {
+                setLoading(true);
+                const response = await axiosInstance.get(`/rejected-goods/${id}`);
+                // Map server data to view format
+                const serverData = response.data;
+                console.log("Server Data:", serverData);
+                setData({
+                    rejectionNo: serverData.rejectionId || serverData.rejectionNo,
+                    date: serverData.date,
+                    vendor: serverData.vendor || "-",
+                    sourceRef: serverData.sourceRef,
+                    sourceType: serverData.sourceType,
+                    invoiceNo: serverData.sourceRef || serverData.invoiceNo,
+                    inspectedBy: serverData.rejectedBy || serverData.inspectedBy,
+                    department: serverData.department || "Quality Control",
+                    status: serverData.status === "total" ? "Pending Disposal" :
+                        serverData.status === "return" ? "Returned" :
+                            serverData.status === "scrap" ? "Scrapped" : serverData.status,
+                    totalRejectionCost: serverData.totalRejectionCost || "0.00",
+                    items: serverData.items || [
+                        {
+                            name: serverData.goods,
+                            batchNo: serverData.batchNo || "-",
+                            qty: serverData.qty,
+                            reason: serverData.reason,
+                            action: serverData.status === "return" ? "Return to Vendor" : "Scrap"
+                        }
+                    ],
+                    remarks: serverData.remarks || serverData.reason || ""
+                });
+            } catch (error) {
+                console.error("Error fetching rejected goods:", error);
+                setData(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         if (id) {
             fetchRejectedGoods();
         }
     }, [id]);
-
-    const fetchRejectedGoods = async () => {
-        try {
-            setLoading(true);
-            const response = await axiosInstance.get(`/rejected-goods/${id}`);
-            // Map server data to view format
-            const serverData = response.data;
-            console.log("Server Data:", serverData);
-            setData({
-                rejectionNo: serverData.rejectionId || serverData.rejectionNo,
-                date: serverData.date,
-                vendor: serverData.vendor || "-",
-                invoiceNo: serverData.sourceRef || serverData.invoiceNo,
-                inspectedBy: serverData.rejectedBy || serverData.inspectedBy,
-                department: serverData.department || "Quality Control",
-                status: serverData.status === "total" ? "Pending Disposal" :
-                    serverData.status === "return" ? "Returned" :
-                        serverData.status === "scrap" ? "Scrapped" : serverData.status,
-                totalRejectionCost: serverData.totalRejectionCost || "0.00",
-                items: serverData.items || [
-                    {
-                        name: serverData.goods,
-                        batchNo: serverData.batchNo || "-",
-                        qty: serverData.qty,
-                        reason: serverData.reason,
-                        action: serverData.status === "return" ? "Return to Vendor" : "Scrap"
-                    }
-                ],
-                remarks: serverData.remarks || serverData.reason || ""
-            });
-        } catch (error) {
-            console.error("Error fetching rejected goods:", error);
-            setData(null);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     if (loading) return <Loader fullPage message="Loading Rejection Report..." />;
 
     if (!data) return (
@@ -399,7 +400,7 @@ function ViewRejectedGoodsContent() {
                                         <Warning sx={{ color: '#1172ba', fontSize: 20 }} /> Action Required
                                     </Typography>
                                     <Typography variant="body2" color="#334155" sx={{ mb: 2 }}>
-                                        Items marked for "Return to Vendor" must be dispatched within 48 hours. Items for "Scrap" require manager approval.
+                                        Items marked for &quot;Return to Vendor&quot; must be dispatched within 48 hours. Items for &quot;Scrap&quot; require manager approval.
                                     </Typography>
                                     <Button fullWidth variant="outlined" sx={{ borderRadius: 2, textTransform: "none", fontWeight: 700, bgcolor: "white", borderColor: "#e2e8f0", color: "#475569" }}>
                                         Notify Vendor

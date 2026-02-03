@@ -241,7 +241,7 @@ function EditBatchContent() {
                                     {(formData.qualityCheck || []).length === 0 && (
                                         <tr>
                                             <td colSpan={5} style={{ padding: "24px", textAlign: "center", color: "#94a3b8", fontStyle: "italic" }}>
-                                                No logs. Click "Add Row" to start.
+                                                No logs. Click &quot;Add Row&quot; to start.
                                             </td>
                                         </tr>
                                     )}

@@ -63,6 +63,48 @@ const InfoItem = ({ icon: Icon, label, value, color = "#1e293b" }) => (
     </Stack>
 );
 
+// Initial dummy data for demonstration if API fails or ID is dummy
+const dummyBOM = {
+    number: "BOM-202502-001",
+    date: "02-02-2025",
+    status: "Approved",
+    materials: [
+        {
+            id: 1,
+            scanboPartNumber: "SIPL.ASY.PBT.ool",
+            supplierPartNumber: "lktp.20240501-0011",
+            quantity: "1",
+            materialName: "Upper Case",
+            manufacturerName: "Xiamen Linktop Technology Co., Ltd",
+            technicalDetails: "Main PCB board with sensors and integrated wireless module"
+        },
+        {
+            id: 2,
+            scanboPartNumber: "SIPL.MEC.HSG.002",
+            supplierPartNumber: "SUP-MEC-992",
+            quantity: "1",
+            materialName: "Lower Housing",
+            manufacturerName: "Precision Plastics Ltd",
+            technicalDetails: "ABS Industrial Grade, Grade A finish"
+        },
+        {
+            id: 3,
+            scanboPartNumber: "SIPL.ELE.BAT.005",
+            supplierPartNumber: "BAT-LI-2000",
+            quantity: "1",
+            materialName: "Lithium Battery",
+            manufacturerName: "Energy Cell Corp",
+            technicalDetails: "2000mAh, 3.7V with protection circuit"
+        }
+    ],
+    authorization: {
+        reviewedBy: "Sanjay Kumar",
+        reviewedDate: "01-02-2025",
+        approvedBy: "John Doe",
+        approvedDate: "02-02-2025"
+    }
+};
+
 function ViewBOMContent() {
     const router = useRouter();
     const searchParams = useSearchParams();

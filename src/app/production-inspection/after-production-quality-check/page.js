@@ -18,6 +18,8 @@ import InspectionSummarySection from "./components/InspectionSummarySection";
 import InspectionApproval from "@/components/inspection/InspectionApproval";
 import axiosInstance from "../../../axios/axiosInstance";
 import { useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
+import NotificationService from "@/services/NotificationService";
 
 const steps = [
   "Product Details",
@@ -27,6 +29,7 @@ const steps = [
 
 export default function QualityCheckForm() {
   const router = useRouter();
+  const { user } = useAuth();
   const [activeStep, setActiveStep] = useState(0);
 
   const [productDetails, setProductDetails] = useState({
@@ -145,18 +148,32 @@ export default function QualityCheckForm() {
 
   const handleSubmit = async () => {
     try {
+      const isHR = user?.role === 'hr';
+      const status = isHR ? "Pending Approval" : "Completed";
+
       const formData = {
         ...productDetails,
         checkDetails,
         ...inspectionSummary,
         approval,
         id: `QC-${Math.floor(Math.random() * 10000)}`,
-        status: "Completed",
+        status: status,
         createdAt: new Date().toISOString()
       };
 
       console.log("Submitting Quality Check:", formData);
-      await axiosInstance.post("/quality-inspection", formData);
+      const response = await axiosInstance.post("/quality-inspection", formData);
+
+      if (isHR && (response.status === 201 || response.status === 200)) {
+        await NotificationService.createNotification({
+          title: "Production Inspection Approval Required",
+          message: `HR ${user.name} has submitted a production inspection for ${productDetails.productName || 'a product'} (Report: ${formData.id}).`,
+          targetRole: "admin",
+          type: "production_inspection_approval",
+          link: `/production-inspection/view-inspection?id=${formData.id}`,
+          inspectionId: formData.id
+        });
+      }
 
       // Create Batch Entry
       try {
