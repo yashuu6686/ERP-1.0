@@ -90,13 +90,13 @@ export default function DispatchDetails() {
 
   const columns = [
     {
-      label: "Sr. No.",
+      label: "Sr.No.",
       align: "center",
       sx: { width: "60px" },
       render: (row, index) => <span style={{ color: "#6c757d" }}>{index + 1}</span>,
     },
     {
-      label: "Order Details",
+      label: "Dispatch NO.",
       align: "center",
       render: (row) => (
         <Typography variant="body2" sx={{ fontWeight: 600, color: "#1172ba" }}>

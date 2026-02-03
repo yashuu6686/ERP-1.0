@@ -168,7 +168,7 @@ function ViewPurchaseOrderContent() {
 
     return (
         <Fade in={!loading}>
-            <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 3 } }}>
+            <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 1 } }}>
                 {/* Header Actions */}
                 <Stack
                     direction={{ xs: "column", sm: "row" }}
@@ -271,7 +271,7 @@ function ViewPurchaseOrderContent() {
                     </Stack>
                 </Stack>
 
-                <Grid container spacing={4}>
+                <Grid container spacing={2}>
                     {/* Main Document Area */}
                     <Grid size={{ xs: 12, lg: 9 }}>
                         <Paper
@@ -467,7 +467,7 @@ function ViewPurchaseOrderContent() {
 
                     {/* Sidebar / Summary Area */}
                     <Grid size={{ xs: 12, lg: 3 }}>
-                        <Stack spacing={3}>
+                        <Stack spacing={2}>
                             {/* Financial Summary */}
                             <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                                 <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>

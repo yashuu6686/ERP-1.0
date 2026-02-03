@@ -87,7 +87,7 @@ export default function SOPTrackingTable() {
             label: "Device ID",
             align: "center",
             render: (row) => (
-                <Typography variant="body2" sx={{ color: "#1e293b", fontWeight: 600 }}>
+                <Typography variant="body2" sx={{ color: "#1e293b", fontWeight: 500 }}>
                     {row.deviceId}
                 </Typography>
             ),

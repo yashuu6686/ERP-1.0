@@ -138,7 +138,7 @@ export default function DashboardPage() {
 
   const procurementFlow = [
     { title: "Purchase Orders", icon: <ShoppingCart />, path: "/purchase" },
-    { title: "Goods Receipt (GRN)", icon: <Inventory />, path: "/grn" },
+    { title: "Goods Receipt Note", icon: <Inventory />, path: "/grn" },
     { title: "Incoming Quality", icon: <Verified />, path: "/incoming-inspection" },
     { title: "Store Inventory", icon: <Store />, path: "/store" },
   ];
@@ -154,6 +154,12 @@ export default function DashboardPage() {
     { title: "Customer Orders", icon: <Assignment />, path: "/orders" },
     { title: "Dispatch Planning", icon: <LocalShipping />, path: "/dispatch" },
     { title: "Invoices", icon: <Receipt />, path: "/invoices" },
+  ];
+
+  const otherModules = [
+    { title: "Standard Operating Procedures", icon: <Description />, path: "/sop", color: "#64748b" },
+    { title: "Certificates of Analysis", icon: <Description />, path: "/coa", color: "#8b5cf6" },
+    { title: "Rejected Goods", icon: <Cancel />, path: "/rejected-goods", color: "#ef4444" },
   ];
 
   return (
@@ -233,31 +239,8 @@ export default function DashboardPage() {
       <WorkflowSection title="Procurement & Inward Flow" steps={procurementFlow} color="#2563eb" />
       <WorkflowSection title="Production & Quality Flow" steps={productionFlow} color="#059669" />
       <WorkflowSection title="Sales & Fulfillment Flow" steps={salesFlow} color="#d97706" />
+      <WorkflowSection title="Other Modules" steps={otherModules} color="#64748b" />
 
-      {/* Auxiliary Modules Grid (Others) */}
-      <Box sx={{ mt: 6 }}>
-        <Typography variant="h6" fontWeight={700} sx={{ mb: 3 }}>Other Modules</Typography>
-        <Grid container spacing={2}>
-          {[
-            { title: "Standard Operating Procedures (SOP)", icon: <Description />, path: "/sop", color: "#64748b" },
-            { title: "Certificates of Analysis (COA)", icon: <Description />, path: "/coa", color: "#8b5cf6" },
-            { title: "Rejected Goods", icon: <Cancel />, path: "/rejected-goods", color: "#ef4444" },
-          ].map((mod, i) => (
-            <Grid item xs={12} sm={6} md={4} key={i} size={{ xs: 12, sm: 6, md: 4 }}>
-              <Card
-                elevation={0}
-                onClick={() => router.push(mod.path)}
-                sx={{ border: "1px solid #e2e8f0", borderRadius: 3, cursor: "pointer", "&:hover": { bgcolor: "#f8fafc" } }}
-              >
-                <CardContent sx={{ display: "flex", alignItems: "center", gap: 2, p: 2 }}>
-                  <Box sx={{ color: mod.color }}>{mod.icon}</Box>
-                  <Typography fontWeight={600}>{mod.title}</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
 
     </Box>
   );

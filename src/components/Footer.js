@@ -6,7 +6,7 @@ const Footer = () => {
     const currentYear = new Date().getFullYear();
 
     return (
-        <Box sx={{ mt: "var(--space-xl)", pb: "var(--space-md)" }}>
+        <Box sx={{ mt: "var(--space-xl)", pb: "var(--space-md)", px: "var(--space-md)" }}>
             <Divider sx={{ mb: 3, borderStyle: "solid", borderColor: "var(--border-default)" }} />
             <Box sx={{
                 display: "flex",

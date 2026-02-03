@@ -111,7 +111,7 @@ function ViewGRNContent() {
 
     return (
         <Fade in={!loading}>
-            <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 3 } }}>
+            <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 1 } }}>
                 {/* Header Actions */}
                 <Stack
                     direction={{ xs: "column", sm: "row" }}
@@ -179,7 +179,7 @@ function ViewGRNContent() {
                     </Stack>
                 </Stack>
 
-                <Grid container spacing={3}>
+                <Grid container spacing={2}>
                     {/* Main Content Area */}
                     <Grid size={{ xs: 12, lg: 9 }}>
                         <Paper
@@ -356,7 +356,7 @@ function ViewGRNContent() {
 
                     {/* Sidebar Area */}
                     <Grid size={{ xs: 12, lg: 3 }}>
-                        <Stack spacing={3}>
+                        <Stack spacing={2}>
                             {/* Summary Card */}
                             <Paper sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                                 <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -420,8 +420,7 @@ function ViewGRNContent() {
                             <Box sx={{
                                 p: 3,
                                 borderRadius: 4,
-                                background: '#fff',
-                                color: '#1172ba'
+                                border: '1px solid #e2e8f0', bgcolor: '#fff'
                             }}>
                                 <Typography variant="h4" fontWeight={900} sx={{ mb: 1 }}>
                                     {grn.items?.reduce((acc, item) => acc + (Number(item.receivedQty) || 0), 0)}
