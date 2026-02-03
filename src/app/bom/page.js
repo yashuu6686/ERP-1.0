@@ -92,9 +92,13 @@ export default function BOMList() {
       render: (row) => (
         <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
           <IconButton
-            color="primary"
             size="small"
             onClick={() => router.push(`/bom/view-bom?id=${row.id}`)}
+            sx={{
+              color: "rgb(17, 114, 186)",
+              bgcolor: "#f1f5f9",
+              "&:hover": { bgcolor: "#e2e8f0" },
+            }}
           >
             <Visibility fontSize="small" />
           </IconButton>

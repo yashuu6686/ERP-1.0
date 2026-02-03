@@ -201,12 +201,12 @@ export default function PurchaseOrderTable() {
             size="small"
             onClick={() => router.push(`/purchase/view-purchase?id=${row.id}`)}
             sx={{
-              color: "#0891b2",
-              bgcolor: "#ecfeff",
-              "&:hover": { bgcolor: "#cffafe" }
+              color: "rgb(17, 114, 186)",
+              bgcolor: "#f1f5f9",
+              "&:hover": { bgcolor: "#e2e8f0" }
             }}
           >
-            <Visibility sx={{ fontSize: 16 }} />
+            <Visibility fontSize="small" />
           </IconButton>
           <IconButton
             size="small"

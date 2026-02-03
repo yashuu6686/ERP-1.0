@@ -130,7 +130,6 @@ export default function TestingProcessStep({ formData, handleInputChange, handle
                                         <TextField
                                             size="small"
                                             fullWidth
-                                            defaultValue={row.expected}
                                             onChange={(e) => handleStepResultChange('testingResults', idx, 'expected', e.target.value)}
                                             variant="standard"
                                         />
