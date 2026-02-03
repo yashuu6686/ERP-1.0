@@ -15,7 +15,7 @@ const AddMaterialDialog = ({ open, handleClose, form, handleChange, handleSave }
             <DialogTitle sx={{ fontWeight: 700 }}>Add Raw Material</DialogTitle>
             <DialogContent dividers>
                 <Grid container spacing={2}>
-                    <Grid item size={{ xs: 12, sm: 6 }}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField
                             select
                             fullWidth
@@ -31,7 +31,7 @@ const AddMaterialDialog = ({ open, handleClose, form, handleChange, handleSave }
                             <MenuItem value="/other-goods">Other Goods</MenuItem>
                         </TextField>
                     </Grid>
-                    <Grid item size={{ xs: 12, sm: 6 }}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             label="Material Name"
@@ -41,7 +41,7 @@ const AddMaterialDialog = ({ open, handleClose, form, handleChange, handleSave }
                             size="small"
                         />
                     </Grid>
-                    <Grid item size={{ xs: 12, sm: 6 }}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             label="Material Code"
@@ -51,7 +51,7 @@ const AddMaterialDialog = ({ open, handleClose, form, handleChange, handleSave }
                             size="small"
                         />
                     </Grid>
-                    <Grid item size={{ xs: 12, sm: 6 }}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             type="number"
@@ -62,7 +62,7 @@ const AddMaterialDialog = ({ open, handleClose, form, handleChange, handleSave }
                             onChange={handleChange}
                         />
                     </Grid>
-                    <Grid item size={{ xs: 12, sm: 6 }}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             size="small"
@@ -73,7 +73,7 @@ const AddMaterialDialog = ({ open, handleClose, form, handleChange, handleSave }
                             onChange={handleChange}
                         />
                     </Grid>
-                    <Grid item size={{ xs: 12, sm: 6 }}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             size="small"
@@ -83,7 +83,7 @@ const AddMaterialDialog = ({ open, handleClose, form, handleChange, handleSave }
                             onChange={handleChange}
                         />
                     </Grid>
-                    <Grid item size={{ xs: 12, sm: 6 }}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             size="small"

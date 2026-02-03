@@ -96,8 +96,9 @@ export default function StockMovementHistory() {
             ref: foundMaterial?.code || "N/A",
             qty: foundMaterial?.available || 0,
             balance: foundMaterial?.available || 0,
-            from: "Main Store",
+            source: "Main Store",
             remarks: "Opening Balance",
+            operator: "System Audit"
           }
         ]);
 
@@ -111,11 +112,13 @@ export default function StockMovementHistory() {
     fetchMaterialDetails();
   }, [id]);
 
+  const isLowStock = material && material.available <= (material.minimum || 0);
+
   if (loading) return <Loader message="Fetching movement history..." />;
 
   return (
     <Fade in={!loading}>
-      <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 3 } }}>
+      <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 1 } }}>
         {/* Header Actions */}
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }} className="no-print">
           <Button
@@ -163,9 +166,9 @@ export default function StockMovementHistory() {
           </Stack>
         </Stack>
 
-        <Grid container spacing={4}>
+        <Grid container spacing={2}>
           {/* Main Document Area */}
-          <Grid item xs={12} lg={9}>
+          <Grid size={{ xs: 12, lg: 9 }}>
             <Paper
               elevation={0}
               sx={{
@@ -260,15 +263,15 @@ export default function StockMovementHistory() {
                             </TableCell>
                             <TableCell>
                               <Chip
-                                label={row.type}
+                                label={row.type.includes("IN") ? "IN" : "OUT"}
                                 size="small"
-                                icon={row.type === 'IN' ? <TrendingUp sx={{ fontSize: '14px !important' }} /> : <TrendingDown sx={{ fontSize: '14px !important' }} />}
+                                icon={row.type.includes("IN") ? <TrendingUp sx={{ fontSize: '14px !important' }} /> : <TrendingDown sx={{ fontSize: '14px !important' }} />}
                                 sx={{
                                   fontWeight: 800,
-                                  bgcolor: row.type === 'IN' ? '#dcfce7' : '#fee2e2',
-                                  color: row.type === 'IN' ? '#166534' : '#991b1b',
+                                  bgcolor: row.type.includes("IN") ? '#dcfce7' : '#fee2e2',
+                                  color: row.type.includes("IN") ? '#166534' : '#991b1b',
                                   borderRadius: '6px',
-                                  "& .MuiChip-icon": { color: row.type === 'IN' ? '#166534' : '#991b1b' }
+                                  "& .MuiChip-icon": { color: row.type.includes("IN") ? '#166534' : '#991b1b' }
                                 }}
                               />
                             </TableCell>
@@ -280,9 +283,9 @@ export default function StockMovementHistory() {
                               <Typography
                                 variant="body2"
                                 fontWeight={800}
-                                sx={{ color: row.type === 'IN' ? '#10b981' : '#ef4444', fontFamily: 'monospace' }}
+                                sx={{ color: row.type.includes("IN") ? '#10b981' : '#ef4444', fontFamily: 'monospace' }}
                               >
-                                {row.type === 'IN' ? `+${row.qty}` : row.qty}
+                                {row.type.includes("IN") ? `+${row.qty}` : `-${row.qty}`}
                               </Typography>
                             </TableCell>
                             <TableCell align="right">
@@ -304,7 +307,7 @@ export default function StockMovementHistory() {
           </Grid>
 
           {/* Sidebar Area */}
-          <Grid item xs={12} lg={3}>
+          <Grid size={{ xs: 12, lg: 3 }}>
             <Stack spacing={3}>
               {/* Stock Pulse Card */}
               <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
