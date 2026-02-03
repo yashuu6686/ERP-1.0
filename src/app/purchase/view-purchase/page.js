@@ -273,7 +273,7 @@ function ViewPurchaseOrderContent() {
 
                 <Grid container spacing={4}>
                     {/* Main Document Area */}
-                    <Grid item xs={12} lg={9}>
+                    <Grid size={{ xs: 12, lg: 9 }}>
                         <Paper
                             elevation={0}
                             sx={{
@@ -343,7 +343,7 @@ function ViewPurchaseOrderContent() {
                                 {/* Entities Grid */}
                                 <Grid container spacing={4} sx={{ mb: 6 }}>
                                     {/* Vendor Details */}
-                                    <Grid item xs={12} md={6}>
+                                    <Grid size={{ xs: 12, md: 6 }}>
                                         <Typography variant="subtitle2" sx={{ color: "#94a3b8", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", mb: 2.5 }}>
                                             Vendor / Supplier
                                         </Typography>
@@ -378,7 +378,7 @@ function ViewPurchaseOrderContent() {
                                     </Grid>
 
                                     {/* Delivery Details */}
-                                    <Grid item xs={12} md={6}>
+                                    <Grid size={{ xs: 12, md: 6 }}>
                                         <Typography variant="subtitle2" sx={{ color: "#94a3b8", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", mb: 2.5 }}>
                                             Ship To / Delivery
                                         </Typography>
@@ -466,7 +466,7 @@ function ViewPurchaseOrderContent() {
                     </Grid>
 
                     {/* Sidebar / Summary Area */}
-                    <Grid item xs={12} lg={3}>
+                    <Grid size={{ xs: 12, lg: 3 }}>
                         <Stack spacing={3}>
                             {/* Financial Summary */}
                             <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>

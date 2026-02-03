@@ -135,7 +135,7 @@ function ViewInspectionContent() {
 
     return (
         <Fade in={!loading}>
-            <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 3 } }}>
+            <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 1 } }}>
                 {/* Header Actions */}
                 <Stack
                     direction={{ xs: "column", sm: "row" }}
@@ -203,9 +203,9 @@ function ViewInspectionContent() {
                     </Stack>
                 </Stack>
 
-                <Grid container spacing={4}>
+                <Grid container spacing={2}>
                     {/* Main Content Area */}
-                    <Grid item xs={12} lg={9}>
+                    <Grid item xs={12} lg={9} size={{ xs: 12, lg: 9 }}>
                         <Paper
                             elevation={0}
                             sx={{
@@ -270,8 +270,8 @@ function ViewInspectionContent() {
                                     <Typography variant="subtitle2" sx={{ color: "#94a3b8", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", mb: 2.5 }}>
                                         Material & Source Details
                                     </Typography>
-                                    <Grid container spacing={3}>
-                                        <Grid item xs={12} md={6}>
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
                                             <Paper elevation={0} sx={{ p: 2.5, bgcolor: "#f8fafc", borderRadius: 3, border: '1px solid #f1f5f9' }}>
                                                 <Stack direction="row" spacing={2} alignItems="center">
                                                     <Box sx={{ width: 48, height: 48, borderRadius: 3, bgcolor: "#fff", display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #e2e8f0' }}>
@@ -284,7 +284,7 @@ function ViewInspectionContent() {
                                                 </Stack>
                                             </Paper>
                                         </Grid>
-                                        <Grid item xs={12} md={6}>
+                                        <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
                                             <Paper elevation={0} sx={{ p: 2.5, bgcolor: "#f8fafc", borderRadius: 3, border: '1px solid #f1f5f9' }}>
                                                 <Stack direction="row" spacing={2} alignItems="center">
                                                     <Box sx={{ width: 48, height: 48, borderRadius: 3, bgcolor: "#fff", display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #e2e8f0' }}>
@@ -363,8 +363,8 @@ function ViewInspectionContent() {
                     </Grid>
 
                     {/* Sidebar Area */}
-                    <Grid item xs={12} lg={3}>
-                        <Stack spacing={3}>
+                    <Grid item xs={12} lg={3} size={{ xs: 12, lg: 3 }}>
+                        <Stack spacing={2}>
                             {/* Quantity Breakdown */}
                             <Paper sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                                 <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -388,8 +388,9 @@ function ViewInspectionContent() {
                                 </Stack>
                             </Paper>
 
+
                             {/* Batch Info */}
-                            <Paper sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+                            <Paper className="no-print" sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                                 <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
                                     <VerifiedUser sx={{ color: '#1172ba', fontSize: 20 }} /> Batch Control
                                 </Typography>
@@ -400,7 +401,7 @@ function ViewInspectionContent() {
                             </Paper>
 
                             {/* Approval Workflow */}
-                            <Paper sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+                            <Paper  sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                                 <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
                                     <CheckCircle sx={{ color: '#1172ba', fontSize: 20 }} /> Verification
                                 </Typography>
