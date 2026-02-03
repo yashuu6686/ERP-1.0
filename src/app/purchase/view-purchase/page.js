@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Box from "@mui/material/Box";
@@ -15,6 +16,9 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
+import Container from "@mui/material/Container";
+import Fade from "@mui/material/Fade";
+import Tooltip from "@mui/material/Tooltip";
 
 import Download from "@mui/icons-material/Download";
 import ArrowBack from "@mui/icons-material/ArrowBack";
@@ -23,15 +27,64 @@ import Print from "@mui/icons-material/Print";
 import Business from "@mui/icons-material/Business";
 import LocalShipping from "@mui/icons-material/LocalShipping";
 import Description from "@mui/icons-material/Description";
-import CalendarToday from "@mui/icons-material/CalendarToday";
+import CalendarMonth from "@mui/icons-material/CalendarMonth";
 import CheckCircle from "@mui/icons-material/CheckCircle";
 import Schedule from "@mui/icons-material/Schedule";
 import Cancel from "@mui/icons-material/Cancel";
-import CommonCard from "../../../components/CommonCard";
-import Loader from "../../../components/Loader";
+import Receipt from "@mui/icons-material/Receipt";
+import Payments from "@mui/icons-material/Payments";
+import Person from "@mui/icons-material/Person";
+import Email from "@mui/icons-material/Email";
+import Phone from "@mui/icons-material/Phone";
+import AccountBalanceWallet from "@mui/icons-material/AccountBalanceWallet";
+
 import axiosInstance from "@/axios/axiosInstance";
 import { useAuth } from "@/context/AuthContext";
 import NotificationService from "@/services/NotificationService";
+import Loader from "@/components/Loader";
+
+const InfoItem = ({ icon: Icon, label, value, color = "#1e293b" }) => (
+    <Stack direction="row" spacing={2} alignItems="flex-start">
+        <Box sx={{
+            width: 32,
+            height: 32,
+            borderRadius: "10px",
+            bgcolor: "rgba(17, 114, 186, 0.08)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            mt: 0.5
+        }}>
+            <Icon sx={{ color: "#1172ba", fontSize: 18 }} />
+        </Box>
+        <Box>
+            <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", display: "block", mb: 0.5 }}>
+                {label}
+            </Typography>
+            <Typography variant="body1" sx={{ color, fontWeight: 700, fontSize: "0.95rem" }}>
+                {value || "-"}
+            </Typography>
+        </Box>
+    </Stack>
+);
+
+const SummaryRow = ({ label, value, isTotal = false, isDiscount = false }) => (
+    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
+        <Typography variant={isTotal ? "subtitle1" : "body2"} color={isTotal ? "#0f172a" : "#64748b"} fontWeight={isTotal ? 800 : 500}>
+            {label}
+        </Typography>
+        <Typography
+            variant={isTotal ? "h6" : "body2"}
+            fontWeight={isTotal ? 900 : 700}
+            color={isDiscount ? "#ef4444" : isTotal ? "#1172ba" : "#1e293b"}
+            sx={{ fontFamily: 'monospace' }}
+        >
+            {isDiscount ? `-₹${value}` : `₹${value}`}
+        </Typography>
+    </Box>
+);
+
 function ViewPurchaseOrderContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -68,15 +121,13 @@ function ViewPurchaseOrderContent() {
 
     useEffect(() => {
         const fetchOrderDetails = async () => {
-            console.log("ViewPurchase: Start fetching for ID:", id);
             try {
                 setLoading(true);
                 const response = await axiosInstance.get(`/purachase/${id}`);
-                console.log("ViewPurchase: Successfully fetched PO:", response.data);
                 setOrder(response.data);
             } catch (error) {
-                console.error("ViewPurchase: Fetch Error Detail:", error.response || error);
-                alert(`Failed to fetch purchase order details for ID: ${id}. Error: ${error.message}`);
+                console.error("Fetch Error:", error);
+                alert(`Failed to fetch purchase order details.`);
             } finally {
                 setLoading(false);
             }
@@ -84,22 +135,17 @@ function ViewPurchaseOrderContent() {
 
         if (id) {
             fetchOrderDetails();
-        } else {
-            console.warn("ViewPurchase: No ID found in search params");
         }
     }, [id]);
 
-    if (loading) {
-        return <Loader fullPage message="Loading Order Details..." />;
-    }
+    if (loading) return <Loader fullPage message="Securely Loading Order..." />;
 
     if (!order) {
         return (
-            <Box sx={{ p: 4, textAlign: "center", minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-                <Typography variant="h5" color="error" gutterBottom fontWeight={600}>Order Not Found</Typography>
-                <Typography variant="body1" color="textSecondary" sx={{ mb: 3 }}>The purchase order you are looking for does not exist or has been removed.</Typography>
-                <Button variant="contained" startIcon={<ArrowBack />} onClick={() => router.back()} sx={{ borderRadius: 2, textTransform: "none" }}>
-                    Go Back
+            <Box sx={{ p: 4, textAlign: "center", minHeight: "80vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+                <Typography variant="h5" color="error" fontWeight={600}>Purchase Order Not Found</Typography>
+                <Button variant="contained" startIcon={<ArrowBack />} onClick={() => router.push("/purchase")} sx={{ mt: 3, borderRadius: '12px', textTransform: 'none' }}>
+                    Back to List
                 </Button>
             </Box>
         );
@@ -107,45 +153,13 @@ function ViewPurchaseOrderContent() {
 
     const { orderInfo, supplier, delivery, items, totals, status, shippingCharges, otherDiscount } = order;
 
-
-
     const getStatusConfig = (status) => {
         const configs = {
-            Approved: {
-                color: "#059669",
-                bg: "#d1fae5",
-                border: "#34d399",
-                icon: <CheckCircle sx={{ fontSize: 18 }} />,
-                label: "Approved",
-            },
-            Pending: {
-                color: "#d97706",
-                bg: "#fef3c7",
-                border: "#fbbf24",
-                icon: <Schedule sx={{ fontSize: 18 }} />,
-                label: "Pending",
-            },
-            Rejected: {
-                color: "#dc2626",
-                bg: "#fee2e2",
-                border: "#f87171",
-                icon: <Cancel sx={{ fontSize: 18 }} />,
-                label: "Rejected",
-            },
-            "Pending Approval": {
-                color: "#2563eb",
-                bg: "#eff6ff",
-                border: "#93c5fd",
-                icon: <Schedule sx={{ fontSize: 18 }} />,
-                label: "Pending Approval",
-            },
-            Completed: {
-                color: "#0369a1",
-                bg: "#e0f2fe",
-                border: "#bae6fd",
-                icon: <CheckCircle sx={{ fontSize: 18 }} />,
-                label: "Completed",
-            },
+            Approved: { color: "#166534", bg: "#dcfce7", border: "#bbedc2", icon: <CheckCircle /> },
+            Pending: { color: "#92400e", bg: "#fef3c7", border: "#fde68a", icon: <Schedule /> },
+            Rejected: { color: "#991b1b", bg: "#fee2e2", border: "#fecaca", icon: <Cancel /> },
+            "Pending Approval": { color: "#1e40af", bg: "#dbeafe", border: "#bfdbfe", icon: <Schedule /> },
+            Completed: { color: "#0369a1", bg: "#e0f2fe", border: "#bae6fd", icon: <CheckCircle /> },
         };
         return configs[status] || configs.Pending;
     };
@@ -153,11 +167,17 @@ function ViewPurchaseOrderContent() {
     const statusConfig = getStatusConfig(status);
 
     return (
-        <Box
-        >
-            <Box >
-                {/* Top Navigation & Actions */}
-                <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems={{ xs: "start", sm: "center" }} spacing={1} sx={{ mb: 1 }}>
+        <Fade in={!loading}>
+            <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 3 } }}>
+                {/* Header Actions */}
+                <Stack
+                    direction={{ xs: "column", sm: "row" }}
+                    justifyContent="space-between"
+                    alignItems={{ xs: "flex-start", sm: "center" }}
+                    spacing={2}
+                    sx={{ mb: 3 }}
+                    className="no-print"
+                >
                     <Button
                         startIcon={<ArrowBack />}
                         onClick={() => router.push("/purchase")}
@@ -165,68 +185,58 @@ function ViewPurchaseOrderContent() {
                             color: "#64748b",
                             fontWeight: 600,
                             textTransform: "none",
-                            fontSize: "0.95rem",
-                            "&:hover": { color: "#334155", bgcolor: "transparent" },
+                            bgcolor: "rgba(255,255,255,0.8)",
+                            px: 2,
+                            borderRadius: '12px',
+                            backdropFilter: "blur(4px)",
+                            border: '1px solid #e2e8f0',
+                            "&:hover": { bgcolor: "#f1f5f9", borderColor: "#cbd5e1" },
                         }}
                     >
                         Back to Orders
                     </Button>
 
-                    <Stack direction="row" spacing={2}>
-                        <Button
-                            variant="outlined"
-                            startIcon={<Print />}
-                            onClick={() => window.print()}
-                            sx={{
-                                borderRadius: "10px",
-                                textTransform: "none",
-                                fontWeight: 600,
-                                color: "#475569",
-                                borderColor: "#e2e8f0",
-                                bgcolor: "white",
-                                boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-                                "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" },
-                            }}
-                        >
-                            Print
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            startIcon={<Download />}
-                            sx={{
-                                borderRadius: "10px",
-                                textTransform: "none",
-                                fontWeight: 600,
-                                color: "#475569",
-                                borderColor: "#e2e8f0",
-                                bgcolor: "white",
-                                boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-                                "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" },
-                            }}
-                        >
-                            Download
-                        </Button>
-                        {user?.role === "hr" && status === "Pending Approval" && (
+                    <Stack direction="row" spacing={1.5}>
+                        <Tooltip title="Print Order">
+                            <Button
+                                variant="outlined"
+                                startIcon={<Print />}
+                                onClick={() => window.print()}
+                                sx={{
+                                    borderRadius: "12px",
+                                    textTransform: "none",
+                                    fontWeight: 600,
+                                    color: "#475569",
+                                    borderColor: "#e2e8f0",
+                                    bgcolor: "white",
+                                    "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" },
+                                }}
+                            >
+                                Print
+                            </Button>
+                        </Tooltip>
+
+                        {user?.role === "hr" && status === "Pending Approval" ? (
                             <>
                                 <Button
                                     variant="contained"
                                     onClick={handleApprove}
                                     sx={{
-                                        borderRadius: "10px",
+                                        borderRadius: "12px",
                                         textTransform: "none",
                                         fontWeight: 600,
                                         bgcolor: "#059669",
                                         "&:hover": { bgcolor: "#047857" },
-                                        boxShadow: "0 4px 6px -1px rgba(5, 150, 105, 0.2)",
+                                        boxShadow: "0 4px 12px rgba(5, 150, 105, 0.25)",
                                     }}
                                 >
-                                    Approve
+                                    Approve PO
                                 </Button>
                                 <Button
                                     variant="outlined"
                                     onClick={handleReject}
                                     sx={{
-                                        borderRadius: "10px",
+                                        borderRadius: "12px",
                                         textTransform: "none",
                                         fontWeight: 600,
                                         color: "#dc2626",
@@ -238,21 +248,20 @@ function ViewPurchaseOrderContent() {
                                     Reject
                                 </Button>
                             </>
-                        )}
-                        {user?.role !== "hr" && (
+                        ) : (
                             <Button
                                 variant="contained"
                                 startIcon={<Edit />}
                                 onClick={() => router.push(`/purchase/create-purchase?id=${id}`)}
                                 sx={{
-                                    borderRadius: "10px",
+                                    borderRadius: "12px",
                                     textTransform: "none",
                                     fontWeight: 600,
                                     background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
-                                    boxShadow: "0 4px 6px -1px rgba(17, 114, 186, 0.2)",
+                                    boxShadow: "0 4px 12px rgba(17, 114, 186, 0.25)",
                                     "&:hover": {
                                         background: "linear-gradient(135deg, #0d5a94 0%, #0a4571 100%)",
-                                        boxShadow: "0 6px 8px -1px rgba(17, 114, 186, 0.3)",
+                                        boxShadow: "0 6px 16px rgba(17, 114, 186, 0.35)",
                                     },
                                 }}
                             >
@@ -262,383 +271,271 @@ function ViewPurchaseOrderContent() {
                     </Stack>
                 </Stack>
 
-                {/* Main Content Card */}
-                <Paper
-                    elevation={0}
-                    sx={{
-                        borderRadius: 4,
-                        overflow: "hidden",
-                        border: "1px solid",
-                        borderColor: "rgba(226, 232, 240, 0.8)",
-                        boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01)",
-                        bgcolor: "rgba(255, 255, 255, 0.9)",
-                        backdropFilter: "blur(10px)",
-                    }}
-                >
-                    {/* Header Banner */}
-                    <Box sx={{ p: { xs: 3, md: 2 }, borderBottom: "1px solid #f1f5f9" }}>
-                        <Grid container alignItems="center" spacing={1}>
-                            <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
-                                <Stack direction="row" spacing={2} alignItems="center">
-                                    {/* <Box
-                                        sx={{
-                                            width: 56,
-                                            height: 56,
-                                            borderRadius: 3,
-                                            background: "linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            border: "1px solid #bfdbfe",
-                                        }}
-                                    >
-                                        <Description sx={{ color: "#1172ba", fontSize: 28 }} />
-                                    </Box> */}
+                <Grid container spacing={4}>
+                    {/* Main Document Area */}
+                    <Grid item xs={12} lg={9}>
+                        <Paper
+                            elevation={0}
+                            sx={{
+                                borderRadius: 4,
+                                border: "1px solid #e2e8f0",
+                                overflow: "hidden",
+                                bgcolor: "#fff",
+                                position: 'relative'
+                            }}
+                        >
+                            {/* Decorative Header Gradient */}
+                            <Box sx={{ height: 6, background: "linear-gradient(90deg, #1172ba 0%, #60a5fa 100%)" }} />
+
+                            <Box sx={{ p: { xs: 3, md: 5 } }}>
+                                {/* Document Header */}
+                                <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between" alignItems="flex-start" spacing={4} sx={{ mb: 6 }}>
                                     <Box>
-                                        <Typography variant="h4" fontWeight={800} sx={{ color: "#1e293b", letterSpacing: "-0.02em" }}>
-                                            Purchase Order
+                                        <Typography variant="h3" fontWeight={900} sx={{ color: "#0f172a", letterSpacing: "-0.04em", mb: 1 }}>
+                                            PURCHASE ORDER
                                         </Typography>
-                                        <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mt: 0.5 }}>
-                                            <Typography variant="body1" fontWeight={600} sx={{ color: "#64748b" }}>
-                                                {orderInfo.orderNumber}
-                                            </Typography>
+                                        <Typography variant="h6" fontWeight={600} sx={{ color: "#64748b", mb: 2.5 }}>
+                                            Official Procurement Document
+                                        </Typography>
+                                        <Stack direction="row" spacing={1} alignItems="center">
                                             <Chip
-                                                icon={statusConfig.icon}
-                                                label={statusConfig.label}
-                                                size="small"
+                                                label={orderInfo.orderNumber}
                                                 sx={{
                                                     fontWeight: 700,
-                                                    fontSize: "0.75rem",
-                                                    borderRadius: "6px",
+                                                    bgcolor: "#f1f5f9",
+                                                    color: "#0f172a",
+                                                    borderRadius: '8px',
+                                                    fontSize: '0.95rem'
+                                                }}
+                                            />
+                                            <Chip
+                                                icon={React.cloneElement(statusConfig.icon, { sx: { fontSize: '18px !important' } })}
+                                                label={status}
+                                                sx={{
+                                                    fontWeight: 700,
                                                     bgcolor: statusConfig.bg,
                                                     color: statusConfig.color,
+                                                    borderRadius: '8px',
+                                                    fontSize: '0.85rem',
                                                     border: `1px solid ${statusConfig.border}`,
-                                                    height: 24,
-                                                    "& .MuiChip-icon": { color: "inherit", marginLeft: "4px" },
-                                                    "& .MuiChip-label": { paddingLeft: "8px", paddingRight: "8px" },
+                                                    "& .MuiChip-icon": { color: statusConfig.color }
                                                 }}
                                             />
                                         </Stack>
                                     </Box>
+
+                                    <Stack spacing={2} sx={{ minWidth: 280 }}>
+                                        <InfoItem
+                                            icon={CalendarMonth}
+                                            label="Order Date"
+                                            value={new Date(orderInfo.orderDate).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+                                        />
+                                        <InfoItem
+                                            icon={LocalShipping}
+                                            label="Expected Delivery"
+                                            value={new Date(orderInfo.expectedDelivery).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+                                        />
+                                    </Stack>
                                 </Stack>
-                            </Grid>
-                            <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
-                                <Stack
-                                    direction={{ xs: "column", sm: "row" }}
-                                    spacing={{ xs: 2, sm: 4 }}
-                                    justifyContent={{ md: "flex-end" }}
-                                    sx={{ bgcolor: "#f8fafc", p: 2, borderRadius: 3, border: "1px solid #e2e8f0" }}
-                                >
-                                    <Box>
-                                        <Typography variant="caption" display="block" color="#64748b" fontWeight={600} textTransform="uppercase" sx={{ mb: 0.5 }}>
-                                            Order Date
-                                        </Typography>
-                                        <Typography variant="subtitle2" fontWeight={700} color="#0f172a">
-                                            {new Date(orderInfo.orderDate).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
-                                        </Typography>
-                                    </Box>
-                                    <Box>
-                                        <Typography variant="caption" display="block" color="#64748b" fontWeight={600} textTransform="uppercase" sx={{ mb: 0.5 }}>
-                                            Expected Delivery
-                                        </Typography>
-                                        <Typography variant="subtitle2" fontWeight={700} color="#0f172a">
-                                            {new Date(orderInfo.expectedDelivery).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
-                                        </Typography>
-                                    </Box>
-                                </Stack>
-                            </Grid>
-                        </Grid>
-                    </Box>
 
-                    {/* Content Section */}
-                    <Box sx={{ p: { xs: 1, md: 2 } }}>
+                                <Divider sx={{ mb: 5, opacity: 0.6 }} />
 
-                        {/* 2-Column Info Grid */}
-                        <Grid container spacing={2} sx={{ mb: 2 }}>
-                            {/* Supplier Card */}
-                            <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
-                                <Paper
-                                    elevation={0}
-                                    sx={{
-                                        p: 3,
-                                        height: "100%",
-                                        borderRadius: 3,
-                                        border: "1px solid #e2e8f0",
-                                        bgcolor: "white",
-                                        boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-                                    }}
-                                >
-                                    <Stack spacing={2.5}>
-                                        {/* Header */}
-                                        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                                            <Box sx={{
-                                                width: 36, height: 36, borderRadius: "8px", bgcolor: "#eff6ff",
-                                                display: "flex", alignItems: "center", justifyContent: "center"
-                                            }}>
-                                                <Business sx={{ color: "#1172ba", fontSize: 20 }} />
-                                            </Box>
-                                            <Typography variant="subtitle2" fontWeight={700} color="#1172ba" textTransform="uppercase" letterSpacing="0.05em">
-                                                Supplier Details
-                                            </Typography>
-                                        </Box>
-                                        <Divider sx={{ borderStyle: "solid", borderColor: "#f1f5f9" }} />
+                                {/* Entities Grid */}
+                                <Grid container spacing={4} sx={{ mb: 6 }}>
+                                    {/* Vendor Details */}
+                                    <Grid item xs={12} md={6}>
+                                        <Typography variant="subtitle2" sx={{ color: "#94a3b8", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", mb: 2.5 }}>
+                                            Vendor / Supplier
+                                        </Typography>
+                                        <Paper elevation={0} sx={{ p: 4, bgcolor: "#f8fafc", borderRadius: 4, border: '1px solid #f1f5f9', height: '100%' }}>
+                                            <Stack spacing={3}>
+                                                <Box>
+                                                    <Typography variant="h6" fontWeight={800} color="#1e293b" sx={{ mb: 1 }}>{supplier.companyName}</Typography>
+                                                    <Typography variant="body2" sx={{ color: "#64748b", lineHeight: 1.6 }}>{supplier.address}</Typography>
+                                                </Box>
 
-                                        {/* Content */}
-                                        <Stack spacing={2}>
-                                            <Box>
-                                                <Typography variant="h6" fontWeight={700} color="#1e293b" sx={{ mb: 0.5 }}>
-                                                    {supplier.companyName}
-                                                </Typography>
-                                                <Typography variant="body2" color="#64748b" sx={{ lineHeight: 1.6 }}>{supplier.address}</Typography>
-                                                {supplier.gstin && (
-                                                    <Box sx={{ mt: 1.5, display: "flex", gap: 1 }}>
-                                                        <Box sx={{
-                                                            display: "inline-block", bgcolor: "#eff6ff", color: "#1172ba",
-                                                            px: 1.5, py: 0.5, borderRadius: "6px", fontSize: "0.75rem", fontWeight: 600
-                                                        }}>
-                                                            GSTIN: {supplier.gstin}
-                                                        </Box>
-                                                        {supplier.pan && (
-                                                            <Box sx={{
-                                                                display: "inline-block", bgcolor: "#f1f5f9", color: "#475569",
-                                                                px: 1.5, py: 0.5, borderRadius: "6px", fontSize: "0.75rem", fontWeight: 600
-                                                            }}>
-                                                                PAN: {supplier.pan}
-                                                            </Box>
+                                                <Stack direction="row" spacing={1}>
+                                                    <Chip label={`GSTIN: ${supplier.gstin}`} size="small" sx={{ fontWeight: 700, bgcolor: "#fff", border: '1px solid #e2e8f0', color: '#1172ba' }} />
+                                                    {supplier.pan && <Chip label={`PAN: ${supplier.pan}`} size="small" sx={{ fontWeight: 700, bgcolor: "#fff", border: '1px solid #e2e8f0', color: '#475569' }} />}
+                                                </Stack>
+
+                                                <Stack spacing={1.5}>
+                                                    <Stack direction="row" spacing={1.5} alignItems="center">
+                                                        <Person sx={{ color: "#94a3b8", fontSize: 18 }} />
+                                                        <Typography variant="body2" fontWeight={600}>{supplier.contactPerson}</Typography>
+                                                    </Stack>
+                                                    <Stack direction="row" spacing={1.5} alignItems="center">
+                                                        <Phone sx={{ color: "#94a3b8", fontSize: 18 }} />
+                                                        <Typography variant="body2" fontWeight={600}>{supplier.phone}</Typography>
+                                                    </Stack>
+                                                    <Stack direction="row" spacing={1.5} alignItems="center">
+                                                        <Email sx={{ color: "#94a3b8", fontSize: 18 }} />
+                                                        <Typography variant="body2" fontWeight={600}>{supplier.email}</Typography>
+                                                    </Stack>
+                                                </Stack>
+                                            </Stack>
+                                        </Paper>
+                                    </Grid>
+
+                                    {/* Delivery Details */}
+                                    <Grid item xs={12} md={6}>
+                                        <Typography variant="subtitle2" sx={{ color: "#94a3b8", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", mb: 2.5 }}>
+                                            Ship To / Delivery
+                                        </Typography>
+                                        <Paper elevation={0} sx={{ p: 4, bgcolor: "#f8fafc", borderRadius: 4, border: '1px solid #f1f5f9', height: '100%' }}>
+                                            <Stack spacing={3}>
+                                                <Box>
+                                                    <Typography variant="h6" fontWeight={800} color="#1e293b" sx={{ mb: 1 }}>{delivery.deliverTo}</Typography>
+                                                    <Typography variant="body2" sx={{ color: "#64748b", lineHeight: 1.6 }}>{delivery.deliveryAddress}</Typography>
+                                                </Box>
+
+                                                <Box sx={{ mt: 'auto', pt: 2 }}>
+                                                    <Stack spacing={1.5}>
+                                                        <Stack direction="row" spacing={1.5} alignItems="center">
+                                                            <Person sx={{ color: "#94a3b8", fontSize: 18 }} />
+                                                            <Typography variant="body2" fontWeight={600}>{delivery.contactPerson}</Typography>
+                                                        </Stack>
+                                                        <Stack direction="row" spacing={1.5} alignItems="center">
+                                                            <Phone sx={{ color: "#94a3b8", fontSize: 18 }} />
+                                                            <Typography variant="body2" fontWeight={600}>{delivery.phone}</Typography>
+                                                        </Stack>
+                                                        {delivery.email && (
+                                                            <Stack direction="row" spacing={1.5} alignItems="center">
+                                                                <Email sx={{ color: "#94a3b8", fontSize: 18 }} />
+                                                                <Typography variant="body2" fontWeight={600}>{delivery.email}</Typography>
+                                                            </Stack>
                                                         )}
-                                                    </Box>
-                                                )}
-                                            </Box>
-
-                                            <Stack spacing={1.5} sx={{ mt: 2 }}>
-                                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                                                    <Typography variant="body2" color="#64748b">Contact Person</Typography>
-                                                    <Typography variant="body2" fontWeight={600} color="#334155">{supplier.contactPerson}</Typography>
-                                                </Box>
-                                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                                                    <Typography variant="body2" color="#64748b">Phone</Typography>
-                                                    <Typography variant="body2" fontWeight={600} color="#334155">{supplier.phone}</Typography>
-                                                </Box>
-                                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                                                    <Typography variant="body2" color="#64748b">Email</Typography>
-                                                    <Typography variant="body2" fontWeight={600} color="#334155">{supplier.email}</Typography>
+                                                    </Stack>
                                                 </Box>
                                             </Stack>
-                                        </Stack>
+                                        </Paper>
+                                    </Grid>
+                                </Grid>
+
+                                {/* Items Table */}
+                                <Box sx={{ mb: 6 }}>
+                                    <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+                                        <Typography variant="h6" fontWeight={800} color="#0f172a" sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                            <Receipt sx={{ color: '#1172ba' }} /> Line Items
+                                        </Typography>
+                                        <Typography variant="body2" color="#64748b" fontWeight={600}>
+                                            {items.length} Distinct Products
+                                        </Typography>
                                     </Stack>
-                                </Paper>
-                            </Grid>
 
-                            {/* Delivery Card */}
-                            <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
-                                <Paper
-                                    elevation={0}
-                                    sx={{
-                                        p: 3,
-                                        height: "100%",
-                                        borderRadius: 3,
-                                        border: "1px solid #e2e8f0",
-                                        bgcolor: "white",
-                                        boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-                                    }}
-                                >
-                                    <Stack spacing={2.5}>
-                                        {/* Header */}
-                                        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                                            <Box sx={{
-                                                width: 36, height: 36, borderRadius: "8px", bgcolor: "#eff6ff",
-                                                display: "flex", alignItems: "center", justifyContent: "center"
-                                            }}>
-                                                <LocalShipping sx={{ color: "#1172ba", fontSize: 20 }} />
-                                            </Box>
-                                            <Typography variant="subtitle2" fontWeight={700} color="#1172ba" textTransform="uppercase" letterSpacing="0.05em">
-                                                Ship To
-                                            </Typography>
-                                        </Box>
-                                        <Divider sx={{ borderStyle: "solid", borderColor: "#f1f5f9" }} />
-
-                                        {/* Content */}
-                                        <Stack spacing={2}>
-                                            <Box>
-                                                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>
-                                                    <Box sx={{ width: 24, height: 24, borderRadius: "50%", bgcolor: "#dcfce7", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                                        <LocalShipping sx={{ fontSize: 14, color: "#16a34a" }} />
-                                                    </Box>
-                                                    <Typography variant="h6" fontWeight={700} color="#1e293b">
-                                                        {delivery.deliverTo}
-                                                    </Typography>
-                                                </Box>
-                                                <Typography variant="body2" color="#64748b" sx={{ lineHeight: 1.6 }}>{delivery.deliveryAddress}</Typography>
-                                            </Box>
-
-                                            <Stack spacing={1.5} sx={{ mt: "auto" }}>
-                                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                                                    <Typography variant="body2" color="#64748b">Contact Person</Typography>
-                                                    <Typography variant="body2" fontWeight={600} color="#334155">{delivery.contactPerson}</Typography>
-                                                </Box>
-                                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                                                    <Typography variant="body2" color="#64748b">Phone</Typography>
-                                                    <Typography variant="body2" fontWeight={600} color="#334155">{delivery.phone}</Typography>
-                                                </Box>
-                                                {delivery.email && (
-                                                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                                                        <Typography variant="body2" color="#64748b">Email</Typography>
-                                                        <Typography variant="body2" fontWeight={600} color="#334155">{delivery.email}</Typography>
-                                                    </Box>
-                                                )}
-                                            </Stack>
-                                        </Stack>
-                                    </Stack>
-                                </Paper>
-                            </Grid>
-                        </Grid>
-
-                        {/* Order Items and Totals Row */}
-                        <Grid container spacing={2} sx={{}}>
-                            {/* Order Items Table */}
-                            <Grid size={{ xs: 12, lg: 8 }}>
-                                <Paper
-                                    elevation={0}
-                                    sx={{
-                                        p: 3,
-                                        bgcolor: "white",
-                                        borderRadius: 3,
-                                        border: "1px solid #e2e8f0",
-                                        height: "100%",
-                                        boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-                                    }}
-                                >
-                                    <Typography variant="h6" fontWeight={700} color="#1e293b" sx={{ mb: 3 }}>
-                                        Order Items
-                                    </Typography>
-                                    <TableContainer>
-                                        <Table sx={{ minWidth: 500 }}>
+                                    <TableContainer sx={{ borderRadius: 3, border: '1px solid #f1f5f9' }}>
+                                        <Table>
                                             <TableHead>
-                                                <TableRow sx={{ bgcolor: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
-                                                    <TableCell sx={{ fontWeight: 700, color: "#94a3b8", py: 2, fontSize: "0.75rem", letterSpacing: "0.05em" }}>SR NO.</TableCell>
-                                                    <TableCell sx={{ fontWeight: 700, color: "#94a3b8", py: 2, fontSize: "0.75rem", letterSpacing: "0.05em" }}>ITEM DETAILS</TableCell>
-                                                    <TableCell align="center" sx={{ fontWeight: 700, color: "#94a3b8", py: 2, fontSize: "0.75rem", letterSpacing: "0.05em" }}>QTY</TableCell>
-                                                    <TableCell align="right" sx={{ fontWeight: 700, color: "#94a3b8", py: 2, fontSize: "0.75rem", letterSpacing: "0.05em" }}>UNIT PRICE</TableCell>
-                                                    <TableCell align="right" sx={{ fontWeight: 700, color: "#94a3b8", py: 2, fontSize: "0.75rem", letterSpacing: "0.05em" }}>TOTAL</TableCell>
+                                                <TableRow sx={{ bgcolor: "#f1f5f9" }}>
+                                                    <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>SR.</TableCell>
+                                                    <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>ITEM DESCRIPTION</TableCell>
+                                                    <TableCell align="center" sx={{ fontWeight: 800, color: "#475569", py: 2 }}>QTY</TableCell>
+                                                    <TableCell align="right" sx={{ fontWeight: 800, color: "#475569", py: 2 }}>UNIT PRICE</TableCell>
+                                                    <TableCell align="right" sx={{ fontWeight: 800, color: "#475569", py: 2 }}>TOTAL</TableCell>
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                {items.map((item, index) => (
-                                                    <TableRow
-                                                        key={index}
-                                                        sx={{
-                                                            "&:hover": { bgcolor: "#f8fafc" },
-                                                            "&:last-child td, &:last-child th": { border: 0 },
-                                                            transition: "background-color 0.1s",
-                                                            borderBottom: "1px solid #f1f5f9"
-                                                        }}
-                                                    >
-                                                        <TableCell sx={{ py: 2.5, color: "#64748b", fontWeight: 600, fontSize: "0.85rem" }}>
-                                                            {index + 1 < 10 ? `0${index + 1}` : index + 1}
+                                                {items.map((item, idx) => (
+                                                    <TableRow key={idx} sx={{ "&:hover": { bgcolor: "#f8fafc" } }}>
+                                                        <TableCell sx={{ color: "#94a3b8", fontWeight: 700 }}>{String(idx + 1).padStart(2, '0')}</TableCell>
+                                                        <TableCell>
+                                                            <Typography variant="subtitle2" fontWeight={700} color="#1e293b">{item.name}</Typography>
+                                                            {item.description && <Typography variant="caption" color="#64748b">{item.description}</Typography>}
                                                         </TableCell>
-                                                        <TableCell sx={{ py: 2.5 }}>
-                                                            <Typography variant="subtitle2" fontWeight={600} color="#1e293b">{item.name}</Typography>
-                                                            {item.description && <Typography variant="caption" color="#64748b" display="block" sx={{ mt: 0.5 }}>{item.description}</Typography>}
+                                                        <TableCell align="center">
+                                                            <Chip
+                                                                label={item.qty}
+                                                                size="small"
+                                                                sx={{ fontWeight: 800, bgcolor: "#eff6ff", color: "#1172ba", borderRadius: '6px' }}
+                                                            />
                                                         </TableCell>
-                                                        <TableCell align="center" sx={{ py: 2.5 }}>
-                                                            <Box
-                                                                sx={{
-                                                                    display: "inline-block",
-                                                                    bgcolor: "#eff6ff",
-                                                                    color: "#1172ba",
-                                                                    px: 1.5,
-                                                                    py: 0.5,
-                                                                    borderRadius: "6px",
-                                                                    fontWeight: 700,
-                                                                    fontSize: "0.85rem",
-                                                                    minWidth: "40px",
-                                                                    textAlign: "center"
-                                                                }}
-                                                            >
-                                                                {item.qty}
-                                                            </Box>
+                                                        <TableCell align="right" sx={{ fontFamily: 'monospace', fontWeight: 600, color: "#475569" }}>
+                                                            ₹{parseFloat(item.price).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                                                         </TableCell>
-                                                        <TableCell align="right" sx={{ py: 2.5, color: "#64748b", fontWeight: 500, fontFamily: 'monospace', fontSize: "0.95rem" }}>₹{parseFloat(item.price).toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
-                                                        <TableCell align="right" sx={{ py: 2.5, color: "#0f172a", fontWeight: 700, fontFamily: 'monospace', fontSize: "0.95rem" }}>₹{parseFloat(item.total).toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
+                                                        <TableCell align="right" sx={{ fontFamily: 'monospace', fontWeight: 800, color: "#0f172a" }}>
+                                                            ₹{parseFloat(item.total).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                                        </TableCell>
                                                     </TableRow>
                                                 ))}
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
-                                </Paper>
-                            </Grid>
+                                </Box>
+                            </Box>
+                        </Paper>
+                    </Grid>
 
-                            {/* Totals Section */}
-                            <Grid size={{ xs: 12, lg: 4 }}>
-                                <Paper
-                                    elevation={0}
-                                    sx={{
-                                        p: 3,
-                                        bgcolor: "white",
-                                        borderRadius: 3,
-                                        border: "1px solid #e2e8f0",
-                                        height: "fit-content",
-                                        boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-                                    }}
-                                >
-                                    <Typography variant="h6" fontWeight={700} color="#1e293b" sx={{ mb: 3 }}>
-                                        Order Summary
-                                    </Typography>
-                                    <Stack spacing={2.5}>
-                                        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                                            <Typography variant="body2" color="#64748b" fontWeight={500}>Subtotal</Typography>
-                                            <Typography variant="body2" color="#1e293b" fontWeight={600} sx={{ fontFamily: 'monospace' }}>₹{totals.subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</Typography>
-                                        </Box>
-                                        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                                            <Typography variant="body2" color="#64748b" fontWeight={500}>Tax (GST)</Typography>
-                                            <Typography variant="body2" color="#1e293b" fontWeight={600} sx={{ fontFamily: 'monospace' }}>₹{totals.taxAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</Typography>
-                                        </Box>
-                                        {shippingCharges > 0 && (
-                                            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                                                <Typography variant="body2" color="#64748b" fontWeight={500}>Shipping Charges</Typography>
-                                                <Typography variant="body2" color="#1e293b" fontWeight={600} sx={{ fontFamily: 'monospace' }}>+₹{Number(shippingCharges).toLocaleString(undefined, { minimumFractionDigits: 2 })}</Typography>
-                                            </Box>
-                                        )}
-                                        {otherDiscount > 0 && (
-                                            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                                                <Typography variant="body2" color="#64748b" fontWeight={500}>Other Discount</Typography>
-                                                <Typography variant="body2" color="#ef4444" fontWeight={600} sx={{ fontFamily: 'monospace' }}>-₹{Number(otherDiscount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</Typography>
-                                            </Box>
-                                        )}
-                                        {totals.discountAmount > 0 && (
-                                            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                                                <Typography variant="body2" color="#64748b" fontWeight={500}>Discount</Typography>
-                                                <Typography variant="body2" color="#ef4444" fontWeight={600} sx={{ fontFamily: 'monospace' }}>-₹{totals.discountAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</Typography>
-                                            </Box>
-                                        )}
-                                        <Divider sx={{ borderColor: "#e2e8f0", borderStyle: "dashed", my: 1 }} />
-                                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", pt: 1 }}>
-                                            <Typography variant="h6" color="#0f172a" fontWeight={700}>Grand Total</Typography>
-                                            <Typography
-                                                variant="h5"
-                                                fontWeight={800}
-                                                color="#1172ba"
-                                                sx={{
-                                                    fontFamily: 'monospace'
-                                                }}
-                                            >
-                                                ₹{totals.grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                                            </Typography>
-                                        </Box>
-                                    </Stack>
-                                </Paper>
-                            </Grid>
-                        </Grid>
-                    </Box>
-                </Paper>
-            </Box>
-        </Box>
+                    {/* Sidebar / Summary Area */}
+                    <Grid item xs={12} lg={3}>
+                        <Stack spacing={3}>
+                            {/* Financial Summary */}
+                            <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+                                <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <Payments sx={{ color: '#1172ba', fontSize: 20 }} /> Order Summary
+                                </Typography>
+
+                                <Stack spacing={0.5}>
+                                    <SummaryRow label="Subtotal" value={totals.subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })} />
+                                    <SummaryRow label="Tax (GST)" value={totals.taxAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })} />
+
+                                    {shippingCharges > 0 && (
+                                        <SummaryRow label="Shipping" value={Number(shippingCharges).toLocaleString(undefined, { minimumFractionDigits: 2 })} />
+                                    )}
+
+                                    {(otherDiscount > 0 || totals.discountAmount > 0) && (
+                                        <SummaryRow
+                                            label="Discount"
+                                            value={(Number(otherDiscount) + totals.discountAmount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                            isDiscount
+                                        />
+                                    )}
+
+                                    <Divider sx={{ my: 2, borderStyle: 'dashed' }} />
+
+                                    <Box sx={{ p: 2, bgcolor: '#f0f9ff', borderRadius: 3, border: '1px solid #bae6fd', textAlign: 'center' }}>
+                                        <Typography variant="caption" sx={{ color: '#0369a1', fontWeight: 800, textTransform: 'uppercase', display: 'block', mb: 0.5 }}>
+                                            Grand Total
+                                        </Typography>
+                                        <Typography variant="h5" fontWeight={900} color="#1172ba" sx={{ fontFamily: 'monospace' }}>
+                                            ₹{totals.grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                        </Typography>
+                                    </Box>
+                                </Stack>
+                            </Paper>
+
+                            {/* Payment/Account Details */}
+                            <Paper sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+                                <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <AccountBalanceWallet sx={{ color: '#1172ba', fontSize: 20 }} /> Accounting Info
+                                </Typography>
+                                <Stack spacing={2.5}>
+                                    <InfoItem icon={Description} label="PO Reference" value={orderInfo.orderNumber} />
+                                    <InfoItem icon={Payments} label="Payment Terms" value="Net 30 Days" />
+                                </Stack>
+                            </Paper>
+
+                            {/* Print Context Styles */}
+                            <style jsx global>{`
+                                @media print {
+                                    .no-print { display: none !important; }
+                                    body { background: white !important; }
+                                    .MuiContainer-root { max-width: 100% !important; padding: 0 !important; }
+                                    .MuiPaper-root { border: none !important; box-shadow: none !important; }
+                                    .MuiGrid-item.lg-3 { display: none !important; }
+                                    .MuiGrid-item.lg-9 { width: 100% !important; max-width: 100% !important; flex-basis: 100% !important; }
+                                }
+                            `}</style>
+                        </Stack>
+                    </Grid>
+                </Grid>
+            </Container>
+        </Fade>
     );
 }
 
 export default function ViewPurchaseOrder() {
     return (
-        <Suspense fallback={<Loader fullPage message="Loading..." />}>
+        <Suspense fallback={<Loader fullPage message="Loading Order Details..." />}>
             <ViewPurchaseOrderContent />
         </Suspense>
     );
