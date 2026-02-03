@@ -116,7 +116,6 @@ function ViewDispatchContent() {
         }
     }, [id]);
 
-<<<<<<< HEAD
     const handleApprove = async () => {
         try {
             setLoading(true);
@@ -151,12 +150,7 @@ function ViewDispatchContent() {
         }
     };
 
-    if (loading) {
-        return <Loader fullPage message="Loading Dispatch Details..." />;
-    }
-=======
     if (loading) return <Loader fullPage message="Tracking Shipment..." />;
->>>>>>> 352dda4881e823626fa762448ee477da4f60698d
 
     if (!dispatch) {
         return (
@@ -173,19 +167,12 @@ function ViewDispatchContent() {
 
     const getStatusChip = (currentStatus) => {
         const configs = {
-<<<<<<< HEAD
-            Shipped: { color: "#0c5460", bg: "#d1ecf1", border: "#bee5eb", label: "Shipped", icon: <LocalShipping sx={{ fontSize: 16 }} /> },
-            Delivered: { color: "#155724", bg: "#d4edda", border: "#c3e6cb", label: "Delivered", icon: <CheckCircle sx={{ fontSize: 16 }} /> },
-            Pending: { color: "#856404", bg: "#fff3cd", border: "#ffeeba", label: "Pending", icon: <Schedule sx={{ fontSize: 16 }} /> },
-            Processing: { color: "#383d41", bg: "#e2e3e5", border: "#d6d8db", label: "Processing", icon: <Schedule sx={{ fontSize: 16 }} /> },
-            "Pending Approval": { color: "#92400e", bg: "#fef3c7", border: "#fde68a", label: "Pending Approval", icon: <Schedule sx={{ fontSize: 16 }} /> },
-            Rejected: { color: "#b91c1c", bg: "#fee2e2", border: "#fecaca", label: "Rejected", icon: <Cancel sx={{ fontSize: 16 }} /> },
-=======
             Shipped: { color: "#0c5460", bg: "#d1ecf1", label: "SHIPPED", icon: <LocalShipping sx={{ fontSize: '16px !important' }} /> },
             Delivered: { color: "#155724", bg: "#d4edda", label: "DELIVERED", icon: <CheckCircle sx={{ fontSize: '16px !important' }} /> },
             Pending: { color: "#856404", bg: "#fff3cd", label: "PENDING", icon: <Schedule sx={{ fontSize: '16px !important' }} /> },
             Processing: { color: "#383d41", bg: "#e2e3e5", label: "PROCESSING", icon: <Schedule sx={{ fontSize: '16px !important' }} /> },
->>>>>>> 352dda4881e823626fa762448ee477da4f60698d
+            "Pending Approval": { color: "#92400e", bg: "#fef3c7", label: "PENDING APPROVAL", icon: <Schedule sx={{ fontSize: '16px !important' }} /> },
+            Rejected: { color: "#b91c1c", bg: "#fee2e2", label: "REJECTED", icon: <Cancel sx={{ fontSize: '16px !important' }} /> },
         };
         const config = configs[currentStatus] || configs.Pending;
 
@@ -230,144 +217,35 @@ function ViewDispatchContent() {
                             Back to Dispatch
                         </Button>
 
-<<<<<<< HEAD
-    <Stack direction="row" spacing={2}>
-        {user?.role === 'admin' && dispatch.status === 'Pending Approval' && (
-            <>
-                <Button
-                    variant="contained"
-                    color="error"
-                    startIcon={<Cancel />}
-                    onClick={handleReject}
-                    sx={{ borderRadius: "10px", textTransform: "none", fontWeight: 600 }}
-                >
-                    Reject
-                </Button>
-                <Button
-                    variant="contained"
-                    color="success"
-                    startIcon={<CheckCircle />}
-                    onClick={handleApprove}
-                    sx={{
-                        borderRadius: "10px",
-                        textTransform: "none",
-                        fontWeight: 600,
-                        bgcolor: "#16a34a",
-                        "&:hover": { bgcolor: "#15803d" }
-                    }}
-                >
-                    Approve Entry
-                </Button>
-            </>
-        )}
-        <Button
-            variant="outlined"
-            startIcon={<Print />}
-            onClick={() => window.print()}
-            sx={{
-                borderRadius: "10px",
-                textTransform: "none",
-                fontWeight: 600,
-                color: "#475569",
-                borderColor: "#e2e8f0",
-                bgcolor: "white",
-                boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-                "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" },
-            }}
-        >
-            Print
-        </Button>
-        <Button
-            variant="outlined"
-            startIcon={<Download />}
-            sx={{
-                borderRadius: "10px",
-                textTransform: "none",
-                fontWeight: 600,
-                color: "#475569",
-                borderColor: "#e2e8f0",
-                bgcolor: "white",
-                boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-                "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" },
-            }}
-        >
-            Download
-        </Button>
-        <Button
-            variant="contained"
-            startIcon={<Edit />}
-            sx={{
-                borderRadius: "10px",
-                textTransform: "none",
-                fontWeight: 600,
-                background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
-                boxShadow: "0 4px 6px -1px rgba(17, 114, 186, 0.2)",
-                "&:hover": {
-                    background: "linear-gradient(135deg, #0d5a94 0%, #0a4571 100%)",
-                    boxShadow: "0 6px 8px -1px rgba(17, 114, 186, 0.3)",
-                },
-            }}
-        >
-            Edit Tracking
-        </Button>
-    </Stack>
-            </Stack >
-
-        {/* Main Content Card */ }
-        < Paper
-    elevation = { 0}
-    sx = {{
-        borderRadius: 4,
-            overflow: "hidden",
-                border: "1px solid",
-                    borderColor: "rgba(226, 232, 240, 0.8)",
-                        boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01)",
-                            bgcolor: "rgba(255, 255, 255, 0.9)",
-                                backdropFilter: "blur(10px)",
-                }
-}
-            >
-    {/* Header Banner */ }
-    < Box sx = {{ p: { xs: 3, md: 2 }, borderBottom: "1px solid #f1f5f9" }}>
-                    <Grid container alignItems="center" spacing={1}>
-                        <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
-                            <Stack direction="row" spacing={2} alignItems="center">
-                                <Box>
-                                    <Typography variant="h4" fontWeight={800} sx={{ color: "#1e293b", letterSpacing: "-0.02em" }}>
-                                        Dispatch Entry
-                                    </Typography>
-                                    <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mt: 0.5 }}>
-                                        <Typography variant="body1" fontWeight={600} sx={{ color: "#64748b" }}>
-                                            Order: {shipmentInfo.orderNumber}
-                                        </Typography>
-                                        <Chip
-                                            icon={statusConfig.icon}
-                                            label={statusConfig.label}
-                                            size="small"
-                                            sx={{
-                                                fontWeight: 700,
-                                                fontSize: "0.75rem",
-                                                borderRadius: "6px",
-                                                bgcolor: statusConfig.bg,
-                                                color: statusConfig.color,
-                                                border: `1px solid ${statusConfig.border}`,
-                                                height: 24,
-                                                "& .MuiChip-icon": { color: "inherit", marginLeft: "4px" },
-                                                "& .MuiChip-label": { paddingLeft: "8px", paddingRight: "8px" },
-                                            }}
-                                        />
-                                    </Stack>
-                                </Box>
-                            </Stack>
-                        </Grid>
-                        <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
-                            <Stack
-                                direction={{ xs: "column", sm: "row" }}
-                                spacing={{ xs: 2, sm: 4 }}
-                                justifyContent={{ md: "flex-end" }}
-                                sx={{ bgcolor: "#f8fafc", p: 2, borderRadius: 3, border: "1px solid #e2e8f0" }}
-=======
                         <Stack direction="row" spacing={1.5}>
+                            {user?.role === 'admin' && dispatch.status === 'Pending Approval' && (
+                                <>
+                                    <Button
+                                        variant="contained"
+                                        color="error"
+                                        startIcon={<Cancel />}
+                                        onClick={handleReject}
+                                        sx={{ borderRadius: "10px", textTransform: "none", fontWeight: 700 }}
+                                    >
+                                        Reject
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        color="success"
+                                        startIcon={<CheckCircle />}
+                                        onClick={handleApprove}
+                                        sx={{
+                                            borderRadius: "10px",
+                                            textTransform: "none",
+                                            fontWeight: 700,
+                                            bgcolor: "#16a34a",
+                                            "&:hover": { bgcolor: "#15803d" }
+                                        }}
+                                    >
+                                        Approve Entry
+                                    </Button>
+                                </>
+                            )}
                             <Tooltip title="Download Waybill">
                                 <Button
                                     variant="outlined"
@@ -406,7 +284,7 @@ function ViewDispatchContent() {
                             <Button
                                 variant="contained"
                                 startIcon={<Edit />}
-                                onClick={() => {/* Handle Edit */ }}
+                                onClick={() => router.push(`/dispatch/create-dispatch-entry?id=${id}`)}
                                 sx={{
                                     borderRadius: "12px",
                                     textTransform: "none",
@@ -418,7 +296,6 @@ function ViewDispatchContent() {
                                         boxShadow: "0 6px 16px rgba(17, 114, 186, 0.35)",
                                     },
                                 }}
->>>>>>> 352dda4881e823626fa762448ee477da4f60698d
                             >
                                 Edit Tracking
                             </Button>
@@ -623,9 +500,9 @@ function ViewDispatchContent() {
                         </Grid>
                     </Grid>
 
-{/* Print Context Styles */ }
-<style dangerouslySetInnerHTML={{
-    __html: `
+                    {/* Print Context Styles */}
+                    <style dangerouslySetInnerHTML={{
+                        __html: `
                         @media print {
                             .no-print { display: none !important; }
                             body { background: white !important; }
@@ -635,9 +512,9 @@ function ViewDispatchContent() {
                             .MuiGrid-item.lg-9 { width: 100% !important; max-width: 100% !important; flex-basis: 100% !important; }
                         }
                     `}} />
-                </Container >
-            </Box >
-        </Fade >
+                </Container>
+            </Box>
+        </Fade>
     );
 }
 

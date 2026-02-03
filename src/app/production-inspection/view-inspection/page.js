@@ -45,6 +45,15 @@ import Loader from "@/components/Loader";
 import { useAuth } from "@/context/AuthContext";
 import Schedule from "@mui/icons-material/Schedule";
 
+const COLORS = {
+    primary: "#1172ba",
+    secondary: "#64748b",
+    accent: "#0ea5e9",
+    background: "#f8fafc",
+    card: "#ffffff",
+    border: "#e2e8f0"
+};
+
 const InfoItem = ({ icon: Icon, label, value, color = "#1e293b" }) => (
     <Stack direction="row" spacing={2} alignItems="flex-start">
         <Box sx={{
@@ -135,7 +144,6 @@ function ViewInspectionContent() {
         fetchInspection();
     }, [id]);
 
-<<<<<<< HEAD
     const handleApprove = async () => {
         try {
             setLoading(true);
@@ -172,20 +180,6 @@ function ViewInspectionContent() {
 
     if (loading) return <Loader fullPage message="Accessing Quality Control Records..." />;
     if (!data) return <Box sx={{ p: 4, textAlign: "center", color: COLORS.secondary }}>Secure Record Not Found.</Box>;
-=======
-    if (loading) return <Loader fullPage message="Accessing Quality Governance Records..." />;
-
-    if (!data) {
-        return (
-            <Box sx={{ p: 4, textAlign: "center", minHeight: "80vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-                <Typography variant="h5" color="error" fontWeight={600}>Inspection Record Not Found</Typography>
-                <Button variant="contained" startIcon={<ArrowBack />} onClick={() => router.push("/production-inspection")} sx={{ mt: 3, borderRadius: '12px', textTransform: 'none' }}>
-                    Back to Registry
-                </Button>
-            </Box>
-        );
-    }
->>>>>>> 352dda4881e823626fa762448ee477da4f60698d
 
     const { productDetails, checkDetails, inspectionSummary, approval } = data;
 
