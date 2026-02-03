@@ -1,61 +1,66 @@
 "use client";
+
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-    Box,
-    Typography,
-    Grid,
-    Divider,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    Button,
-    Stack,
-    Avatar,
-    Chip,
-} from "@mui/material";
-import {
-    ArrowBack,
-    Build,
-    Assignment,
-    Print as PrintIcon,
-    Edit as EditIcon,
-    Inventory,
-    VerifiedUser,
-    Person,
-    HistoryEdu
-} from "@mui/icons-material";
-import CommonCard from "@/components/CommonCard";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import Chip from "@mui/material/Chip";
+import Stack from "@mui/material/Stack";
+import Container from "@mui/material/Container";
+import Fade from "@mui/material/Fade";
+import Tooltip from "@mui/material/Tooltip";
+import Avatar from "@mui/material/Avatar";
+
+import ArrowBack from "@mui/icons-material/ArrowBack";
+import Edit from "@mui/icons-material/Edit";
+import Print from "@mui/icons-material/Print";
+import Build from "@mui/icons-material/Build";
+import Inventory from "@mui/icons-material/Inventory";
+import VerifiedUser from "@mui/icons-material/VerifiedUser";
+import Person from "@mui/icons-material/Person";
+import HistoryEdu from "@mui/icons-material/HistoryEdu";
+import Description from "@mui/icons-material/Description";
+import CalendarMonth from "@mui/icons-material/CalendarMonth";
+import Receipt from "@mui/icons-material/Receipt";
+import Settings from "@mui/icons-material/Settings";
+
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/Loader";
 
-const InfoItem = ({ label, value, icon: Icon }) => (
-    <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5, mb: 1 }}>
-        {Icon && (
-            <Box sx={{
-                p: 0.75,
-                bgcolor: "rgba(17, 114, 186, 0.05)",
-                borderRadius: 1,
-                color: "#1172ba",
-                display: "flex",
-                mt: 0.5
-            }}>
-                <Icon sx={{ fontSize: 18 }} />
-            </Box>
-        )}
+const InfoItem = ({ icon: Icon, label, value, color = "#1e293b" }) => (
+    <Stack direction="row" spacing={2} alignItems="flex-start">
+        <Box sx={{
+            width: 32,
+            height: 32,
+            borderRadius: "10px",
+            bgcolor: "rgba(17, 114, 186, 0.08)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            mt: 0.5
+        }}>
+            <Icon sx={{ color: "#1172ba", fontSize: 18 }} />
+        </Box>
         <Box>
-            <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.5 }}>
+            <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", display: "block", mb: 0.5 }}>
                 {label}
             </Typography>
-            <Typography variant="body1" sx={{ fontWeight: 600, color: "#1e293b" }}>
+            <Typography variant="body1" sx={{ color, fontWeight: 700, fontSize: "0.95rem" }}>
                 {value || "-"}
             </Typography>
         </Box>
-    </Box>
+    </Stack>
 );
 
 function ViewBOMContent() {
@@ -64,48 +69,6 @@ function ViewBOMContent() {
     const id = searchParams.get("id");
     const [loading, setLoading] = useState(true);
     const [bom, setBom] = useState(null);
-
-    // Initial dummy data for demonstration if API fails or ID is dummy
-    const dummyBOM = {
-        number: "BOM-202502-001",
-        date: "02-02-2025",
-        status: "Approved",
-        materials: [
-            {
-                id: 1,
-                scanboPartNumber: "SIPL.ASY.PBT.ool",
-                supplierPartNumber: "lktp.20240501-0011",
-                quantity: "1",
-                materialName: "Upper Case",
-                manufacturerName: "Xiamen Linktop Technology Co., Ltd",
-                technicalDetails: "Main PCB board with sensors and integrated wireless module"
-            },
-            {
-                id: 2,
-                scanboPartNumber: "SIPL.MEC.HSG.002",
-                supplierPartNumber: "SUP-MEC-992",
-                quantity: "1",
-                materialName: "Lower Housing",
-                manufacturerName: "Precision Plastics Ltd",
-                technicalDetails: "ABS Industrial Grade, Grade A finish"
-            },
-            {
-                id: 3,
-                scanboPartNumber: "SIPL.ELE.BAT.005",
-                supplierPartNumber: "BAT-LI-2000",
-                quantity: "1",
-                materialName: "Lithium Battery",
-                manufacturerName: "Energy Cell Corp",
-                technicalDetails: "2000mAh, 3.7V with protection circuit"
-            }
-        ],
-        authorization: {
-            reviewedBy: "Sanjay Kumar",
-            reviewedDate: "01-02-2025",
-            approvedBy: "John Doe",
-            approvedDate: "02-02-2025"
-        }
-    };
 
     useEffect(() => {
         const fetchBOM = async () => {
@@ -116,15 +79,23 @@ function ViewBOMContent() {
                 setBom(response.data);
             } catch (error) {
                 console.error("Error fetching BOM:", error);
-                // Simulation fallback for d8 if server fails
-                if (id === "d8") {
-                    setBom(d8BOM);
-                } else if (id === "fe82") {
-                    // D8 from server might have this ID
-                    setBom(d8BOM);
-                } else {
-                    setBom(dummyBOM);
-                }
+                // Fallback to dummy for demonstration if API fails
+                setBom({
+                    number: "BOM-202502-001",
+                    productName: "Scanbo Pro Health Kit",
+                    date: "02-02-2025",
+                    status: "Approved",
+                    materials: [
+                        { scanboPartNumber: "SIPL.ASY.PBT.001", materialName: "Upper Case", quantity: "1", manufacturerName: "Xiamen Linktop", technicalDetails: "ABS Industrial Grade, Grade A" },
+                        { scanboPartNumber: "SIPL.MEC.HSG.002", materialName: "Main PCB", quantity: "1", manufacturerName: "Precision Circuits", technicalDetails: "Main logic board with wireless module" }
+                    ],
+                    authorization: {
+                        reviewedBy: "Sanjay Kumar",
+                        reviewedDate: "01-02-2025",
+                        approvedBy: "John Doe",
+                        approvedDate: "02-02-2025"
+                    }
+                });
             } finally {
                 setLoading(false);
             }
@@ -133,198 +104,271 @@ function ViewBOMContent() {
         fetchBOM();
     }, [id]);
 
-    if (loading) return <Loader fullPage message="Loading Professional BOM..." />;
-    if (!bom) return <Box sx={{ p: 4, textAlign: "center" }}>BOM not found.</Box>;
+    if (loading) return <Loader fullPage message="Authentizing BOM Specifications..." />;
+
+    if (!bom) {
+        return (
+            <Box sx={{ p: 4, textAlign: "center", minHeight: "80vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+                <Typography variant="h5" color="error" fontWeight={600}>Bill of Materials Not Found</Typography>
+                <Button variant="contained" startIcon={<ArrowBack />} onClick={() => router.push("/bom")} sx={{ mt: 3, borderRadius: '12px', textTransform: 'none' }}>
+                    Back to Registry
+                </Button>
+            </Box>
+        );
+    }
 
     return (
-        <Box sx={{ pb: 6, bgcolor: "#f8fafc" }}>
-            {/* Header Section */}
-            <Box sx={{
-                bgcolor: "#fff",
-                borderBottom: "1px solid #e2e8f0",
-                py: 3,
-                px: 4,
-                mb: 4,
-                display: "flex",
-                flexDirection: { xs: "column", md: "row" },
-                justifyContent: "space-between",
-                alignItems: { xs: "flex-start", md: "center" },
-                gap: 2
-            }}>
-                <Stack spacing={0.5}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                        <Avatar sx={{ bgcolor: "#1172ba", width: 44, height: 44 }}>
-                            <Build />
-                        </Avatar>
-                        <Box>
-                            <Typography variant="h5" sx={{ fontWeight: 900, color: "#0f172a", letterSpacing: -0.5 }}>
-                                {bom.number}
-                            </Typography>
-                            <Typography variant="body2" sx={{ color: "#1172ba", fontWeight: 700, mb: 0.5 }}>
-                                Product: {bom.productName || "N/A"}
-                            </Typography>
-                            <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 700, textTransform: "uppercase" }}>
-                                Bill of Materials • Registered on {bom.date}
-                            </Typography>
-                        </Box>
-                    </Box>
-                </Stack>
-
-                <Stack direction="row" spacing={2} sx={{ width: { xs: "100%", md: "auto" } }}>
+        <Fade in={!loading}>
+            <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 3 } }}>
+                {/* Header Actions */}
+                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }} className="no-print">
                     <Button
-                        variant="outlined"
-                        startIcon={<PrintIcon />}
-                        onClick={() => window.print()}
-                        sx={{ textTransform: "none", fontWeight: 700, borderRadius: 2, borderColor: "#e2e8f0", color: "#475569" }}
-                    >
-                        Export PDF
-                    </Button>
-                    <Button
-                        variant="contained"
-                        startIcon={<EditIcon />}
-                        onClick={() => router.push(`/bom/edit-bom?id=${id}`)}
+                        startIcon={<ArrowBack />}
+                        onClick={() => router.push("/bom")}
                         sx={{
+                            color: "#64748b",
+                            fontWeight: 600,
                             textTransform: "none",
-                            fontWeight: 700,
-                            borderRadius: 2,
-                            bgcolor: "#1172ba",
-                            boxShadow: "0 4px 12px rgba(17, 114, 186, 0.2)"
+                            bgcolor: "rgba(255,255,255,0.8)",
+                            px: 2,
+                            borderRadius: '12px',
+                            backdropFilter: "blur(4px)",
+                            border: '1px solid #e2e8f0',
+                            "&:hover": { bgcolor: "#f1f5f9", borderColor: "#cbd5e1" },
                         }}
                     >
-                        Edit BOM
+                        Back to Registry
                     </Button>
-                </Stack>
-            </Box>
 
-            <Box sx={{ px: { xs: 2, md: 4 } }}>
-                <Grid container spacing={3}>
-                    {/* Material List Table */}
+                    <Stack direction="row" spacing={1.5}>
+                        <Tooltip title="Print Document">
+                            <Button
+                                variant="outlined"
+                                startIcon={<Print />}
+                                onClick={() => window.print()}
+                                sx={{
+                                    borderRadius: "12px",
+                                    textTransform: "none",
+                                    fontWeight: 600,
+                                    color: "#475569",
+                                    borderColor: "#e2e8f0",
+                                    bgcolor: "white",
+                                    "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" },
+                                }}
+                            >
+                                Print
+                            </Button>
+                        </Tooltip>
+                        <Button
+                            variant="contained"
+                            startIcon={<Edit />}
+                            onClick={() => router.push(`/bom/edit-bom?id=${id}`)}
+                            sx={{
+                                borderRadius: "12px",
+                                textTransform: "none",
+                                fontWeight: 600,
+                                background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
+                                boxShadow: "0 4px 12px rgba(17, 114, 186, 0.25)",
+                                "&:hover": {
+                                    background: "linear-gradient(135deg, #0d5a94 0%, #0a4571 100%)",
+                                    boxShadow: "0 6px 16px rgba(17, 114, 186, 0.35)",
+                                },
+                            }}
+                        >
+                            Edit BOM
+                        </Button>
+                    </Stack>
+                </Stack>
+
+                <Grid container spacing={4}>
+                    {/* Main Document Area */}
                     <Grid item xs={12} lg={9}>
-                        <Paper elevation={0} sx={{ borderRadius: 3, border: "1px solid #e2e8f0", overflow: "hidden" }}>
-                            <Box sx={{ p: 3, bgcolor: "#f8fafc", borderBottom: "1px solid #e2e8f0", display: "flex", alignItems: "center", gap: 1.5 }}>
-                                <Inventory sx={{ color: "#1172ba" }} />
-                                <Typography variant="h6" sx={{ fontWeight: 800 }}>Component Specifications</Typography>
+                        <Paper
+                            elevation={0}
+                            sx={{
+                                borderRadius: 4,
+                                border: "1px solid #e2e8f0",
+                                overflow: "hidden",
+                                bgcolor: "#fff",
+                                position: 'relative'
+                            }}
+                        >
+                            {/* Decorative Header Gradient */}
+                            <Box sx={{ height: 6, background: "linear-gradient(90deg, #1172ba 0%, #60a5fa 100%)" }} />
+
+                            <Box sx={{ p: { xs: 3, md: 5 } }}>
+                                {/* Document Header */}
+                                <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between" alignItems="flex-start" spacing={4} sx={{ mb: 6 }}>
+                                    <Box>
+                                        <Typography variant="h3" fontWeight={900} sx={{ color: "#0f172a", letterSpacing: "-0.04em", mb: 1 }}>
+                                            BILL OF MATERIALS
+                                        </Typography>
+                                        <Typography variant="h6" fontWeight={600} sx={{ color: "#64748b", mb: 2.5 }}>
+                                            Component Engineering Registry
+                                        </Typography>
+                                        <Stack direction="row" spacing={1} alignItems="center">
+                                            <Chip
+                                                label={bom.number}
+                                                sx={{
+                                                    fontWeight: 700,
+                                                    bgcolor: "#f1f5f9",
+                                                    color: "#0f172a",
+                                                    borderRadius: '8px',
+                                                    fontSize: '0.95rem'
+                                                }}
+                                            />
+                                            <Chip
+                                                icon={<VerifiedUser sx={{ fontSize: '18px !important' }} />}
+                                                label={bom.status || "Approved"}
+                                                sx={{
+                                                    fontWeight: 700,
+                                                    bgcolor: "#dcfce7",
+                                                    color: "#166534",
+                                                    borderRadius: '8px',
+                                                    fontSize: '0.85rem'
+                                                }}
+                                            />
+                                        </Stack>
+                                    </Box>
+
+                                    <Stack spacing={2} sx={{ minWidth: 280 }}>
+                                        <InfoItem
+                                            icon={Build}
+                                            label="Assigned Product"
+                                            value={bom.productName}
+                                        />
+                                        <InfoItem
+                                            icon={CalendarMonth}
+                                            label="Effective Date"
+                                            value={bom.date}
+                                        />
+                                    </Stack>
+                                </Stack>
+
+                                <Divider sx={{ mb: 5, opacity: 0.6 }} />
+
+                                {/* Component Grid */}
+                                <Box sx={{ mb: 6 }}>
+                                    <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+                                        <Typography variant="h6" fontWeight={800} color="#0f172a" sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                            <Inventory sx={{ color: '#1172ba' }} /> Component Specifications
+                                        </Typography>
+                                        <Typography variant="body2" color="#64748b" fontWeight={600}>
+                                            {bom.materials.length} Engineering Units
+                                        </Typography>
+                                    </Stack>
+
+                                    <TableContainer sx={{ borderRadius: 3, border: '1px solid #f1f5f9' }}>
+                                        <Table>
+                                            <TableHead>
+                                                <TableRow sx={{ bgcolor: "#f1f5f9" }}>
+                                                    <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>SR.</TableCell>
+                                                    <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>PART NUMBER</TableCell>
+                                                    <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>MATERIAL NAME</TableCell>
+                                                    <TableCell align="center" sx={{ fontWeight: 800, color: "#475569", py: 2 }}>QTY</TableCell>
+                                                    <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>MANUFACTURER</TableCell>
+                                                    <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>TECHNICAL DETAILS</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {bom.materials.map((item, idx) => (
+                                                    <TableRow key={idx} sx={{ "&:hover": { bgcolor: "#f8fafc" } }}>
+                                                        <TableCell sx={{ color: "#94a3b8", fontWeight: 700 }}>{String(idx + 1).padStart(2, '0')}</TableCell>
+                                                        <TableCell sx={{ fontWeight: 700, color: "#1172ba" }}>
+                                                            {item.scanboPartNumber || item.scanboPartNo}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Typography variant="subtitle2" fontWeight={700} color="#1e293b">{item.materialName || item.description}</Typography>
+                                                        </TableCell>
+                                                        <TableCell align="center">
+                                                            <Chip
+                                                                label={item.quantity || item.qty}
+                                                                size="small"
+                                                                sx={{ fontWeight: 800, bgcolor: "#eff6ff", color: "#1172ba", borderRadius: '6px', fontFamily: 'monospace' }}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell sx={{ color: "#475569", fontWeight: 600 }}>
+                                                            {item.manufacturerName || item.manufacturer}
+                                                        </TableCell>
+                                                        <TableCell sx={{ color: "#64748b", fontSize: '0.8rem', maxWidth: 250 }}>
+                                                            {item.technicalDetails || item.specs}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </Box>
                             </Box>
-                            <TableContainer>
-                                <Table>
-                                    <TableHead>
-                                        <TableRow sx={{ bgcolor: "#fff" }}>
-                                            <TableCell sx={{ fontWeight: 800, color: "#64748b", width: 60 }}>SR.</TableCell>
-                                            <TableCell sx={{ fontWeight: 800, color: "#64748b" }}>PART NUMBER</TableCell>
-                                            <TableCell sx={{ fontWeight: 800, color: "#64748b" }}>MATERIAL NAME</TableCell>
-                                            <TableCell sx={{ fontWeight: 800, color: "#64748b", textAlign: "center" }}>QTY</TableCell>
-                                            <TableCell sx={{ fontWeight: 800, color: "#64748b" }}>MANUFACTURER</TableCell>
-                                            <TableCell sx={{ fontWeight: 800, color: "#64748b" }}>TECHNICAL DETAILS</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {bom.materials.map((item, index) => (
-                                            <TableRow key={index} hover sx={{ "&:hover": { bgcolor: "#f1f5f9" } }}>
-                                                <TableCell sx={{ fontWeight: 700, color: "#94a3b8" }}>{index + 1}</TableCell>
-                                                <TableCell>
-                                                    <Typography variant="body2" sx={{ fontWeight: 800, color: "#1172ba" }}>
-                                                        {item.scanboPartNumber || item.scanboPartNo}
-                                                    </Typography>
-                                                    <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                                                        Supp: {item.supplierPartNumber || item.oemPartNo || "-"}
-                                                    </Typography>
-                                                </TableCell>
-                                                <TableCell sx={{ fontWeight: 700 }}>
-                                                    {item.materialName || item.description}
-                                                </TableCell>
-                                                <TableCell sx={{ textAlign: "center" }}>
-                                                    <Box sx={{
-                                                        display: "inline-block",
-                                                        px: 1.5,
-                                                        py: 0.5,
-                                                        bgcolor: "rgba(17, 114, 186, 0.1)",
-                                                        color: "#1172ba",
-                                                        borderRadius: 1,
-                                                        fontWeight: 800
-                                                    }}>
-                                                        {item.quantity || item.qty}
-                                                    </Box>
-                                                </TableCell>
-                                                <TableCell sx={{ fontWeight: 600, color: "#475569" }}>
-                                                    {item.manufacturerName || item.manufacturer || item.oemSupplier}
-                                                </TableCell>
-                                                <TableCell sx={{ color: "#64748b", fontSize: "0.85rem", maxWidth: 300 }}>
-                                                    {item.technicalDetails || item.specs}
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
                         </Paper>
                     </Grid>
 
-                    {/* Sidebar: Authorization & Metadata */}
+                    {/* Sidebar / Authorization Area */}
                     <Grid item xs={12} lg={3}>
                         <Stack spacing={3}>
-                            <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: "1px solid #e2e8f0" }}>
-                                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
-                                    <VerifiedUser sx={{ color: "#10b981" }} />
-                                    <Typography variant="h6" sx={{ fontWeight: 800 }}>Authorization</Typography>
-                                </Box>
+                            {/* Authorization Stack */}
+                            <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+                                <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <VerifiedUser sx={{ color: '#1172ba', fontSize: 20 }} /> Authorization
+                                </Typography>
 
-                                <Stack spacing={3}>
-                                    <Box sx={{ display: "flex", gap: 2 }}>
+                                <Stack spacing={4}>
+                                    <Stack direction="row" spacing={2}>
                                         <Avatar sx={{ bgcolor: "#f1f5f9", color: "#64748b" }}><HistoryEdu /></Avatar>
                                         <Box>
-                                            <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 700 }}>REVIEWED BY</Typography>
-                                            <Typography variant="body1" sx={{ fontWeight: 700 }}>{bom.authorization.reviewedBy}</Typography>
-                                            <Typography variant="caption" sx={{ color: "#1172ba" }}>{bom.authorization.reviewedDate}</Typography>
+                                            <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 700, textTransform: "uppercase" }}>Reviewed By</Typography>
+                                            <Typography variant="body2" sx={{ fontWeight: 800, color: "#0f172a" }}>{bom.authorization.reviewedBy}</Typography>
+                                            <Typography variant="caption" sx={{ color: "#1172ba", fontWeight: 700 }}>{bom.authorization.reviewedDate}</Typography>
                                         </Box>
-                                    </Box>
+                                    </Stack>
 
-                                    <Divider />
+                                    <Divider sx={{ borderStyle: 'dashed' }} />
 
-                                    <Box sx={{ display: "flex", gap: 2 }}>
-                                        <Avatar sx={{ bgcolor: "#f0fdf4", color: "#15803d" }}><Person /></Avatar>
+                                    <Stack direction="row" spacing={2}>
+                                        <Avatar sx={{ bgcolor: "#dcfce7", color: "#166534" }}><Person /></Avatar>
                                         <Box>
-                                            <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 700 }}>APPROVED BY</Typography>
-                                            <Typography variant="body1" sx={{ fontWeight: 700 }}>{bom.authorization.approvedBy}</Typography>
-                                            <Typography variant="caption" sx={{ color: "#10b981" }}>{bom.authorization.approvedDate}</Typography>
+                                            <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 700, textTransform: "uppercase" }}>Approved By</Typography>
+                                            <Typography variant="body2" sx={{ fontWeight: 800, color: "#0f172a" }}>{bom.authorization.approvedBy}</Typography>
+                                            <Typography variant="caption" sx={{ color: "#166534", fontWeight: 700 }}>{bom.authorization.approvedDate}</Typography>
                                         </Box>
-                                    </Box>
+                                    </Stack>
                                 </Stack>
                             </Paper>
 
-                            <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: "1px solid #e2e8f0", bgcolor: "#fff" }}>
-                                <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 800, textTransform: "uppercase", display: "block", mb: 2 }}>
-                                    Report Details
+                            {/* Summary Metadata */}
+                            <Paper sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#f8fafc' }}>
+                                <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <Description sx={{ color: '#1172ba', fontSize: 20 }} /> Metadata
                                 </Typography>
-                                <Table size="small">
-                                    <TableBody>
-                                        <TableRow sx={{ "& td": { border: 0, py: 0.5, px: 0 } }}>
-                                            <TableCell sx={{ color: "#64748b", fontWeight: 600 }}>Total Parts</TableCell>
-                                            <TableCell align="right" sx={{ fontWeight: 800 }}>{bom.materials.length}</TableCell>
-                                        </TableRow>
-                                        <TableRow sx={{ "& td": { border: 0, py: 0.5, px: 0 } }}>
-                                            <TableCell sx={{ color: "#64748b", fontWeight: 600 }}>Status</TableCell>
-                                            <TableCell align="right">
-                                                <Chip label="Certified" size="small" sx={{ bgcolor: "#dcfce7", color: "#15803d", fontWeight: 800, fontSize: "0.65rem" }} />
-                                            </TableCell>
-                                        </TableRow>
-                                    </TableBody>
-                                </Table>
+                                <Stack spacing={2}>
+                                    <Stack direction="row" justifyContent="space-between">
+                                        <Typography variant="caption" fontWeight={700} color="#64748b">Total Components</Typography>
+                                        <Typography variant="caption" fontWeight={900} color="#0f172a">{bom.materials.length}</Typography>
+                                    </Stack>
+                                    <Stack direction="row" justifyContent="space-between">
+                                        <Typography variant="caption" fontWeight={700} color="#64748b">Revision Status</Typography>
+                                        <Typography variant="caption" fontWeight={900} color="#166534">CERTIFIED</Typography>
+                                    </Stack>
+                                </Stack>
                             </Paper>
                         </Stack>
                     </Grid>
                 </Grid>
 
-                <Box sx={{ mt: 4, textAlign: "center" }}>
-                    <Button
-                        startIcon={<ArrowBack />}
-                        onClick={() => router.push("/bom")}
-                        sx={{ color: "#64748b", fontWeight: 700, textTransform: "none" }}
-                    >
-                        Back to BOM Registry
-                    </Button>
-                </Box>
-            </Box>
-        </Box>
+                {/* Print Context Styles */}
+                <style dangerouslySetInnerHTML={{
+                    __html: `
+                    @media print {
+                        .no-print { display: none !important; }
+                        body { background: white !important; }
+                        .MuiContainer-root { max-width: 100% !important; padding: 0 !important; }
+                        .MuiPaper-root { border: none !important; box-shadow: none !important; }
+                        .MuiGrid-item.lg-3 { display: none !important; }
+                        .MuiGrid-item.lg-9 { width: 100% !important; max-width: 100% !important; flex-basis: 100% !important; }
+                    }
+                `}} />
+            </Container>
+        </Fade>
     );
 }
 
