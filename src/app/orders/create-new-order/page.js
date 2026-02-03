@@ -25,7 +25,7 @@ export default function CreateOrder() {
     contact: "",
     address: "",
     deliveryDate: "",
-    status: "",
+    status: "Pending",
     reference: "",
   });
 

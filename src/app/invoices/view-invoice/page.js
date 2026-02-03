@@ -108,7 +108,30 @@ function ViewInvoiceContent() {
         );
     }
 
-    const { invoiceInfo, customer, delivery, items, totals, status, paymentStatus } = invoice;
+    const invoiceInfo = invoice.invoiceInfo || {};
+    const customer = invoice.customer || {};
+    const delivery = invoice.delivery || {};
+
+    // Support both 'items' and 'products' naming
+    const rawItems = invoice.items || invoice.products || [];
+    const items = rawItems.map(item => ({
+        ...item,
+        name: item.name || item.itemName || "Unnamed Item",
+        qty: item.qty || item.quantity || 0,
+        price: item.price || 0,
+        total: item.total || item.amount || 0
+    }));
+
+    // Support both 'totals' and 'summary' naming
+    const totals = {
+        subtotal: invoice.totals?.subtotal ?? invoice.summary?.subtotal ?? 0,
+        taxAmount: invoice.totals?.taxAmount ?? invoice.summary?.tax ?? 0,
+        discountAmount: invoice.totals?.discountAmount ?? invoice.summary?.discount ?? 0,
+        grandTotal: invoice.totals?.grandTotal ?? invoice.summary?.total ?? 0
+    };
+
+    const status = invoice.status || "Draft";
+    const paymentStatus = invoice.paymentStatus || "Unpaid";
 
     const getPaymentChip = (pStatus) => {
         const configs = {

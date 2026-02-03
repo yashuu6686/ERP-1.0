@@ -8,7 +8,7 @@ import TextField from "@mui/material/TextField";
 
 import Person from "@mui/icons-material/Person";
 
-const CustomerInformationSection = ({ formData = {}, onChange }) => {
+const CustomerInformationSection = ({ formData = {}, lockedFields = {}, onChange }) => {
     return (
         <Card
             elevation={0}
@@ -43,7 +43,8 @@ const CustomerInformationSection = ({ formData = {}, onChange }) => {
                             size="small"
                             value={formData.companyName || ""}
                             onChange={(e) => onChange?.("companyName", e.target.value)}
-                            sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                            InputProps={{ readOnly: !!lockedFields.companyName }}
+                            sx={{ "& .MuiOutlinedInput-root": { bgcolor: lockedFields.companyName ? "#f1f5f9" : "white" } }}
                         />
                     </Grid>
                     <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
@@ -53,7 +54,8 @@ const CustomerInformationSection = ({ formData = {}, onChange }) => {
                             size="small"
                             value={formData.organization || ""}
                             onChange={(e) => onChange?.("organization", e.target.value)}
-                            sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                            InputProps={{ readOnly: !!lockedFields.organization }}
+                            sx={{ "& .MuiOutlinedInput-root": { bgcolor: lockedFields.organization ? "#f1f5f9" : "white" } }}
                         />
                     </Grid>
                     <Grid item xs={12} size={{ xs: 12 }}>
@@ -63,7 +65,8 @@ const CustomerInformationSection = ({ formData = {}, onChange }) => {
                             size="small"
                             value={formData.address || ""}
                             onChange={(e) => onChange?.("address", e.target.value)}
-                            sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                            InputProps={{ readOnly: !!lockedFields.address }}
+                            sx={{ "& .MuiOutlinedInput-root": { bgcolor: lockedFields.address ? "#f1f5f9" : "white" } }}
                         />
                     </Grid>
                     <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
@@ -73,7 +76,8 @@ const CustomerInformationSection = ({ formData = {}, onChange }) => {
                             size="small"
                             value={formData.contact || ""}
                             onChange={(e) => onChange?.("contact", e.target.value)}
-                            sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                            InputProps={{ readOnly: !!lockedFields.contact }}
+                            sx={{ "& .MuiOutlinedInput-root": { bgcolor: lockedFields.contact ? "#f1f5f9" : "white" } }}
                         />
                     </Grid>
                     <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
@@ -83,7 +87,8 @@ const CustomerInformationSection = ({ formData = {}, onChange }) => {
                             size="small"
                             value={formData.drugLicence || ""}
                             onChange={(e) => onChange?.("drugLicence", e.target.value)}
-                            sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                            InputProps={{ readOnly: !!lockedFields.drugLicence }}
+                            sx={{ "& .MuiOutlinedInput-root": { bgcolor: lockedFields.drugLicence ? "#f1f5f9" : "white" } }}
                         />
                     </Grid>
                 </Grid>

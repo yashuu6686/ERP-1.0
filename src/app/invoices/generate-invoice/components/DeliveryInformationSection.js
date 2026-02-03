@@ -8,7 +8,7 @@ import TextField from "@mui/material/TextField";
 
 import LocalShipping from "@mui/icons-material/LocalShipping";
 
-const DeliveryInformationSection = ({ formData = {}, onChange }) => {
+const DeliveryInformationSection = ({ formData = {}, lockedFields = {}, onChange }) => {
     return (
         <Card
             elevation={0}
@@ -43,7 +43,8 @@ const DeliveryInformationSection = ({ formData = {}, onChange }) => {
                             size="small"
                             value={formData.deliveryAddress || ""}
                             onChange={(e) => onChange?.("deliveryAddress", e.target.value)}
-                            sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                            InputProps={{ readOnly: !!lockedFields.deliveryAddress }}
+                            sx={{ "& .MuiOutlinedInput-root": { bgcolor: lockedFields.deliveryAddress ? "#f1f5f9" : "white" } }}
                         />
                     </Grid>
                     <Grid item xs={12} size={{ xs: 12 }}>
@@ -53,7 +54,8 @@ const DeliveryInformationSection = ({ formData = {}, onChange }) => {
                             size="small"
                             value={formData.contactPerson || ""}
                             onChange={(e) => onChange?.("contactPerson", e.target.value)}
-                            sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                            InputProps={{ readOnly: !!lockedFields.contactPerson }}
+                            sx={{ "& .MuiOutlinedInput-root": { bgcolor: lockedFields.contactPerson ? "#f1f5f9" : "white" } }}
                         />
                     </Grid>
                     <Grid item xs={12} size={{ xs: 12 }}>
@@ -63,7 +65,8 @@ const DeliveryInformationSection = ({ formData = {}, onChange }) => {
                             size="small"
                             value={formData.phone || ""}
                             onChange={(e) => onChange?.("phone", e.target.value)}
-                            sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                            InputProps={{ readOnly: !!lockedFields.phone }}
+                            sx={{ "& .MuiOutlinedInput-root": { bgcolor: lockedFields.phone ? "#f1f5f9" : "white" } }}
                         />
                     </Grid>
                 </Grid>
