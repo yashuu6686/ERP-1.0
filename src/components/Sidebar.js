@@ -182,6 +182,7 @@ export default function Sidebar({ children }) {
             return (
               <Link key={index} href={item.path} passHref legacyBehavior>
                 <ListItemButton
+                  disableRipple
                   selected={isActive}
                   onClick={handleListItemClick}
                   style={{
