@@ -357,8 +357,8 @@ function ViewSOPContent() {
 
                                     {/* Exec Team & Scope */}
                                     <Grid container spacing={6} sx={{ mb: 6 }}>
-                                        <Grid item xs={12} md={6}>
-                                            <Box sx={{ p: 3, borderRadius: 3, border: '1px solid #e2e8f0', bgcolor: '#f8fafc', height: '100%' }}>
+                                        <Grid item size={{ xs: 12, md: 6 }}>
+                                            <Box sx={{ p: 3, borderRadius: 3, border: '1px solid #e2e8f0', bgcolor: '#fff', height: '100%' }}>
                                                 <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1.5, color: '#0f172a' }}>
                                                     <AssignmentInd sx={{ color: '#1172ba' }} /> EXECUTION DETAILS
                                                 </Typography>
@@ -372,19 +372,19 @@ function ViewSOPContent() {
                                                 </Stack>
                                             </Box>
                                         </Grid>
-                                        <Grid item xs={12} md={6}>
+                                        <Grid item size={{ xs: 12, md: 6 }}>
                                             <Box sx={{ p: 3, borderRadius: 3, border: '1px solid #e2e8f0', bgcolor: '#fff', height: '100%' }}>
                                                 <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1.5, color: '#0f172a' }}>
                                                     <FactCheck sx={{ color: '#1172ba' }} /> PROCESS METRICS
                                                 </Typography>
                                                 <Grid container spacing={2}>
-                                                    <Grid item xs={6}>
+                                                    <Grid item size={{ xs: 6 }}>
                                                         <InfoItem icon={TaskAlt} label="Tests Configured" value={deviceTestingSteps.length} />
                                                     </Grid>
-                                                    <Grid item xs={6}>
+                                                    <Grid item size={{ xs: 6 }}>
                                                         <InfoItem icon={LocalShipping} label="Pack Items" value={packagingSteps.length} />
                                                     </Grid>
-                                                    <Grid item xs={12}>
+                                                    <Grid item size={{ xs: 12 }}>
                                                         <InfoItem icon={VerifiedUser} label="Final Validator" value={data.checkedBy} />
                                                     </Grid>
                                                 </Grid>
