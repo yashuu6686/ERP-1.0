@@ -66,6 +66,7 @@ function ViewSOPContent() {
             try {
                 setLoading(true);
                 const response = await axiosInstance.get(`/sops/${id}`);
+                console.log("SOP Data:", response.data);
                 setData(response.data);
             } catch (error) {
                 console.error("Error fetching SOP:", error);

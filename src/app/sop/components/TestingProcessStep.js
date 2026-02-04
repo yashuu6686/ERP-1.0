@@ -78,6 +78,18 @@ export default function TestingProcessStep({ formData, handleInputChange, handle
         // boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.07)",
     };
 
+    React.useEffect(() => {
+        // Initialize default values for parameters and methodology if not present
+        deviceTestingSteps.forEach((step, idx) => {
+            if (!formData.testingResults?.[idx]?.parameter) {
+                handleStepResultChange('testingResults', idx, 'parameter', step.parameter);
+            }
+            if (!formData.testingResults?.[idx]?.methodology) {
+                handleStepResultChange('testingResults', idx, 'methodology', step.methodology);
+            }
+        });
+    }, []); // Run once on mount
+
     return (
         <Fade in={true} timeout={500}>
             <Card sx={{ mb: 4, borderRadius: 3, ...glassStyle, overflow: "hidden" }}>

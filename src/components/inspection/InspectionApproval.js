@@ -12,8 +12,12 @@ import { useAuth } from '@/context/AuthContext';
 
 const InspectionApproval = ({ approvalData, onChange }) => {
     const { user } = useAuth();
-    const handleChange = (section, field) => (event) => {
-        onChange?.(section, field, event.target.value);
+
+    // Support both prop patterns if needed, but prefer formData
+    const data = approvalData || {};
+
+    const handleChange = (field) => (event) => {
+        onChange?.(field, event.target.value);
     };
 
     return (
@@ -37,76 +41,77 @@ const InspectionApproval = ({ approvalData, onChange }) => {
             >
                 <FactCheck sx={{ color: '#fff', fontSize: 24 }} />
                 <Typography variant="subtitle1" sx={{ color: '#fff', fontWeight: 600 }}>
-                    Approval
+                    Final Approval
                 </Typography>
             </Box>
 
             <CardContent sx={{ padding: 3 }}>
                 <Grid container spacing={4}>
-                    <Grid item xs={12} md={12} size={{ xs: 12, md: 12 }}>
+                    <Grid item xs={12} size={{ xs: 12 }}>
                         <Box sx={{ p: 2, border: '1px solid #e2e8f0', borderRadius: 2 }}>
                             <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
                                 Updated By
                             </Typography>
                             <Grid container spacing={2}>
-                                <Grid item xs={6} size={{ xs: 6 }}>
+                                <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
                                     <Typography variant="caption" sx={{ display: 'block', mb: 0.5 }}>
-                                        name
+                                        Name / Signature
                                     </Typography>
                                     <TextField
                                         fullWidth
                                         size="small"
-                                        placeholder="signature images"
-                                        value={approvalData?.updatedByName || ''}
-                                        onChange={handleChange('updatedBy', 'name')}
+                                        placeholder="Enter Name"
+                                        value={data.updatedBySignature || ''}
+                                        onChange={handleChange('updatedBySignature')}
                                     />
                                 </Grid>
-                                <Grid item xs={6} size={{ xs: 6 }}>
+                                <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
                                     <Typography variant="caption" sx={{ display: 'block', mb: 0.5 }}>
-                                        date
+                                        Date
                                     </Typography>
                                     <TextField
                                         fullWidth
                                         size="small"
                                         type="date"
                                         InputLabelProps={{ shrink: true }}
-                                        value={approvalData?.updatedByDate || ''}
-                                        onChange={handleChange('updatedBy', 'date')}
+                                        value={data.updatedByDate || ''}
+                                        onChange={handleChange('updatedByDate')}
                                     />
                                 </Grid>
                             </Grid>
                         </Box>
                     </Grid>
+
                     {user?.role === 'admin' && (
-                        <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+                        <Grid item xs={12} size={{ xs: 12 }}>
                             <Box sx={{ p: 2, border: '1px solid #e2e8f0', borderRadius: 2 }}>
                                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
                                     Approved By
                                 </Typography>
                                 <Grid container spacing={2}>
-                                    <Grid item xs={6} size={{ xs: 6 }}>
+                                    <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
                                         <Typography variant="caption" sx={{ display: 'block', mb: 0.5 }}>
-                                            name
+                                            Name
                                         </Typography>
                                         <TextField
                                             fullWidth
                                             size="small"
-                                            placeholder="signature images"
-                                            value={approvalData?.approvedByName || ''}
-                                            onChange={handleChange('approvedBy', 'name')}
+                                            placeholder="Enter Name"
+                                            value={data.approvedBy || ''}
+                                            onChange={handleChange('approvedBy')}
                                         />
                                     </Grid>
-                                    <Grid item xs={6} size={{ xs: 6 }}>
+                                    <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
                                         <Typography variant="caption" sx={{ display: 'block', mb: 0.5 }}>
-                                            date
+                                            Date
                                         </Typography>
                                         <TextField
                                             fullWidth
                                             size="small"
                                             type="date"
                                             InputLabelProps={{ shrink: true }}
-                                            value={approvalData?.approvedByDate || ''}
-                                            onChange={handleChange('approvedBy', 'date')}
+                                            value={data.approvalDate || ''}
+                                            onChange={handleChange('approvalDate')}
                                         />
                                     </Grid>
                                 </Grid>
