@@ -245,8 +245,6 @@ export default function PurchaseOrderTable() {
           >
             <MenuItem value="All">All Status</MenuItem>
             <MenuItem value="Pending">Pending</MenuItem>
-            <MenuItem value="Approved">Approved</MenuItem>
-            <MenuItem value="Rejected">Rejected</MenuItem>
             <MenuItem value="Completed">Completed</MenuItem>
           </Select>
         }

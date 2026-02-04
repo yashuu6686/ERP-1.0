@@ -154,7 +154,7 @@ function CreatePurchaseOrderContent() {
       discount,
       shippingCharges,
       otherDiscount,
-      status: isEditMode ? formData.status : "Pending Approval",
+      status: isEditMode ? formData.status : "Pending",
       isEdited: isEditMode,
       creatorId: user?.id,
       creatorName: user?.name,
