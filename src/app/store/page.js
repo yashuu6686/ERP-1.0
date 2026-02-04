@@ -158,7 +158,7 @@ export default function Store() {
       render: (row) => (
         <IconButton
           size="small"
-          onClick={() => router.push(`/store/${row.code || row.id}`)}
+          onClick={() => router.push(`/store/${encodeURIComponent(row.id || row.code)}`)}
           sx={{
             color: "rgb(17, 114, 186)",
             bgcolor: "#f1f5f9",

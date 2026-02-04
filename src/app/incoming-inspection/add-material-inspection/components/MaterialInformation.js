@@ -63,14 +63,39 @@ const MaterialInformation = ({ isEditMode, data, onChange, pendingGRNs, selected
                             />
                         )}
                     />
-                    <TextField
-                        label="Material Name"
-                        variant="outlined"
-                        fullWidth
-                        size="small"
-                        value={data.materialName}
-                        onChange={(e) => onChange("materialName", e.target.value)}
-                    />
+                    {selectedGRN?.items?.length > 0 ? (
+                        <Autocomplete
+                            options={selectedGRN.items}
+                            getOptionLabel={(option) => option.name || option}
+                            value={selectedGRN.items.find(i => i.name === data.materialName) || data.materialName}
+                            onChange={(event, newValue) => {
+                                const name = newValue?.name || newValue || "";
+                                onChange("materialName", name);
+                                if (newValue?.receivedQty) {
+                                    onChange("lotQuantity", newValue.receivedQty);
+                                }
+                            }}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Material Name"
+                                    variant="outlined"
+                                    fullWidth
+                                    size="small"
+                                />
+                            )}
+                            freeSolo
+                        />
+                    ) : (
+                        <TextField
+                            label="Material Name"
+                            variant="outlined"
+                            fullWidth
+                            size="small"
+                            value={data.materialName}
+                            onChange={(e) => onChange("materialName", e.target.value)}
+                        />
+                    )}
                     <TextField
                         label="PO Number"
                         variant="outlined"
