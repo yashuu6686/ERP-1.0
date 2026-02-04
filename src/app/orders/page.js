@@ -150,13 +150,8 @@ export default function CustomerOrders() {
       >
         {loading ? (
           <Loader message="Loading orders from server..." />
-        ) : filtered.length > 0 ? (
-          <GlobalTable columns={columns} data={filtered} />
         ) : (
-          <Box sx={{ p: 4, textAlign: 'center', color: '#64748b' }}>
-            <Typography variant="body1">No orders found.</Typography>
-            <Typography variant="caption">Try adding a new order or check your connection.</Typography>
-          </Box>
+          <GlobalTable columns={columns} data={filtered} />
         )}
       </CommonCard>
     </Box>

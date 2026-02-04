@@ -229,14 +229,14 @@ export default function QualityCheckForm() {
         return (
           <>
             <Grid container spacing={1}>
-              <Grid size={{ xs: 12, md: 8 }}>
+              <Grid size={{ xs: 12, md: user?.role === 'admin' ? 12 : 8 }}>
 
                 <InspectionSummarySection
                   data={inspectionSummary}
                   onChange={handleInspectionSummaryChange}
                 />
               </Grid>
-              <Grid size={{ xs: 12, md: 4 }}>
+              <Grid size={{ xs: 12, md: user?.role === 'admin' ? 12 : 4 }}>
                 <InspectionApproval approvalData={approval} onChange={handleApprovalChange} />
               </Grid>
 

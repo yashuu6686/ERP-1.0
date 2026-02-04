@@ -69,6 +69,7 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate }) =>
                     <TableHead>
                         <TableRow>
                             <TableCell
+                                align="center"
                                 sx={{
                                     fontWeight: 700,
                                     bgcolor: "#f8fafc",
@@ -78,9 +79,10 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate }) =>
                                     fontSize: "0.75rem",
                                 }}
                             >
-                                Sr.
+                                Sr.No.
                             </TableCell>
                             <TableCell
+                                align="center"
                                 sx={{
                                     fontWeight: 700,
                                     bgcolor: "#f8fafc",
@@ -93,6 +95,7 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate }) =>
                                 Part Number
                             </TableCell>
                             <TableCell
+                            align="center"
                                 sx={{
                                     fontWeight: 700,
                                     bgcolor: "#f8fafc",
@@ -105,6 +108,7 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate }) =>
                                 Supplier Part
                             </TableCell>
                             <TableCell
+                             align="center"
                                 sx={{
                                     fontWeight: 700,
                                     bgcolor: "#f8fafc",
@@ -117,6 +121,7 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate }) =>
                                 Qty
                             </TableCell>
                             <TableCell
+                            align="center"
                                 sx={{
                                     fontWeight: 700,
                                     bgcolor: "#f8fafc",
@@ -129,6 +134,7 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate }) =>
                                 Material Name
                             </TableCell>
                             <TableCell
+                             align="center"
                                 sx={{
                                     fontWeight: 700,
                                     bgcolor: "#f8fafc",
@@ -141,6 +147,7 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate }) =>
                                 Manufacturer
                             </TableCell>
                             <TableCell
+                             align="center"
                                 sx={{
                                     fontWeight: 700,
                                     bgcolor: "#f8fafc",
@@ -173,7 +180,7 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate }) =>
                                 key={material.id}
                                 sx={{ "&:hover": { bgcolor: "#f8f9fa" } }}
                             >
-                                <TableCell sx={{ py: 0.2, fontSize: "0.75rem" }}>
+                                <TableCell  align="center" sx={{ py: 0.2, fontSize: "0.75rem" }}>
                                     {index + 1}
                                 </TableCell>
                                 <TableCell sx={{ py: 0.2 }}>

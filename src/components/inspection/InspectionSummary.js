@@ -17,7 +17,7 @@ const InspectionSummary = ({ summaryData, onChange }) => {
         <Card
             elevation={0}
             sx={{
-                marginBottom: 4,
+                // marginBottom: 2,
                 borderRadius: 2,
                 border: '1px solid #e2e8f0',
                 overflow: 'hidden',
@@ -37,7 +37,7 @@ const InspectionSummary = ({ summaryData, onChange }) => {
                 </Typography>
             </Box>
 
-            <CardContent sx={{ padding: 3 }}>
+            <CardContent sx={{ padding: 2, '&:last-child': { paddingBottom: 2 } }}>
                 <Grid container spacing={3} alignItems="center" sx={{ mb: 3 }}>
                     <Grid item xs={12} sm={6} md={3} size={{ xs: 12, sm: 6, md: 3 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

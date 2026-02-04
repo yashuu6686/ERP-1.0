@@ -52,7 +52,7 @@ const FullKitSection = ({ kitQty, setKitQty, additionalProducts }) => {
                         </Typography>
                         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0.5, mt: 1 }}>
                             {[
-                                "Scanbo D8 Device", "BP Cuffs", "Large BP Cuff",
+                                "Scanbo D8 Device", "BP Cuffs",
                                 "Glucose Bottles", "Lancet Pouch", "Lancet Pen",
                                 "USB Cable", "Plastic Shield", "Scanbo Jute Bag"
                             ].map((comp, idx) => (
