@@ -41,10 +41,10 @@ const PurchaseItemsTable = ({ items }) => {
                                     />
                                 </TableCell>
                                 <TableCell align="right" sx={{ fontFamily: 'monospace', fontWeight: 600, color: "#475569" }}>
-                                    ₹{parseFloat(item.price).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                    ₹{parseFloat(item.price || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                 </TableCell>
                                 <TableCell align="right" sx={{ fontFamily: 'monospace', fontWeight: 800, color: "#0f172a" }}>
-                                    ₹{parseFloat(item.total).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                    ₹{parseFloat(item.total || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                 </TableCell>
                             </TableRow>
                         ))}

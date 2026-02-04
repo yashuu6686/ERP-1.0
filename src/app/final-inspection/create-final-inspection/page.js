@@ -251,10 +251,24 @@ function FinalInspectionFormContent() {
                 />
               </Grid>
 
-             <Grid size={{ xs: 12, md: user?.role === 'admin' ? 12 : 4 }}>
+              <Grid size={{ xs: 12, md: user?.role === 'admin' ? 12 : 4 }}>
                 <SignaturesApprovalSection
-                  approvalData={formData}
-                  onChange={handleInputChange}
+                  approvalData={{
+                    updatedByName: formData.updatedBySignature,
+                    updatedByDate: formData.updatedByDate,
+                    approvedByName: formData.approvedBy,
+                    approvedByDate: formData.approvalDate
+                  }}
+                  onChange={(section, field, value) => {
+                    const mapping = {
+                      'updatedBy': { 'name': 'updatedBySignature', 'date': 'updatedByDate' },
+                      'approvedBy': { 'name': 'approvedBy', 'date': 'approvalDate' }
+                    };
+                    const targetField = mapping[section]?.[field];
+                    if (targetField) {
+                      handleInputChange(targetField, value);
+                    }
+                  }}
                 />
               </Grid>
             </Grid>

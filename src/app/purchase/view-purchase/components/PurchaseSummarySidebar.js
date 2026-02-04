@@ -37,18 +37,18 @@ const PurchaseSummarySidebar = ({ totals, taxRate, discount, shippingCharges, ot
                 <Stack spacing={0.5}>
                     <SummaryRow
                         label="Subtotal"
-                        value={subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        value={subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     />
 
                     <SummaryRow
                         label={`Tax (${taxRate || 0}%)`}
-                        value={taxAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        value={taxAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     />
 
                     {discountAmount > 0 && (
                         <SummaryRow
                             label={`Discount (${discount || 0}%)`}
-                            value={discountAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                            value={discountAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             isDiscount
                         />
                     )}
@@ -56,14 +56,14 @@ const PurchaseSummarySidebar = ({ totals, taxRate, discount, shippingCharges, ot
                     {shipping > 0 && (
                         <SummaryRow
                             label="Shipping"
-                            value={shipping.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                            value={shipping.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         />
                     )}
 
                     {otherDiscountAmount > 0 && (
                         <SummaryRow
                             label={`Other Discount (${otherDiscount || 0}%)`}
-                            value={otherDiscountAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                            value={otherDiscountAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             isDiscount
                         />
                     )}
@@ -75,7 +75,7 @@ const PurchaseSummarySidebar = ({ totals, taxRate, discount, shippingCharges, ot
                             Grand Total
                         </Typography>
                         <Typography variant="h5" fontWeight={900} color="#1172ba" sx={{ fontFamily: 'monospace' }}>
-                            ₹{totals.grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                            ₹{totals.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </Typography>
                     </Box>
                 </Stack>

@@ -34,7 +34,7 @@ const PurchaseSummary = ({
                                 type="number"
                                 size="small"
                                 value={discount}
-                                onChange={(e) => setDiscount(parseFloat(e.target.value) )}
+                                onChange={(e) => setDiscount(parseFloat(e.target.value))}
                                 sx={{ bgcolor: "white" }}
                             />
                         </Grid>
@@ -45,7 +45,7 @@ const PurchaseSummary = ({
                                 type="number"
                                 size="small"
                                 value={taxRate}
-                                onChange={(e) => setTaxRate(parseFloat(e.target.value) )}
+                                onChange={(e) => setTaxRate(parseFloat(e.target.value))}
                                 sx={{ bgcolor: "white" }}
                             />
                         </Grid>
@@ -56,7 +56,7 @@ const PurchaseSummary = ({
                                 type="number"
                                 size="small"
                                 value={shippingCharges}
-                                onChange={(e) => setShippingCharges(parseFloat(e.target.value) )}
+                                onChange={(e) => setShippingCharges(parseFloat(e.target.value))}
                                 sx={{ bgcolor: "white" }}
                             />
                         </Grid>
@@ -67,7 +67,7 @@ const PurchaseSummary = ({
                                 type="number"
                                 size="small"
                                 value={otherDiscount}
-                                onChange={(e) => setOtherDiscount(parseFloat(e.target.value) )}
+                                onChange={(e) => setOtherDiscount(parseFloat(e.target.value))}
                                 sx={{ bgcolor: "white" }}
                             />
                         </Grid>
@@ -77,26 +77,26 @@ const PurchaseSummary = ({
                     <Paper sx={{ p: 3, border: "2px solid #1172ba", borderRadius: 2 }}>
                         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
                             <Typography color="textSecondary">Subtotal:</Typography>
-                            <Typography fontWeight={600}>₹{subtotal.toFixed(2)}</Typography>
+                            <Typography fontWeight={600}>₹{subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
                         </Box>
                         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
                             <Typography color="textSecondary">Tax ({taxRate}%):</Typography>
-                            <Typography fontWeight={600}>₹{taxAmount.toFixed(2)}</Typography>
+                            <Typography fontWeight={600}>₹{taxAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
                         </Box>
                         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
                             <Typography color="textSecondary">Discount ({discount}%):</Typography>
                             <Typography fontWeight={600} color="error">
-                                -₹{discountAmount.toFixed(2)}
+                                -₹{discountAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </Typography>
                         </Box>
                         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
                             <Typography color="textSecondary">Shipping Charges:</Typography>
-                            <Typography fontWeight={600}>₹{shippingCharges.toFixed(2)}</Typography>
+                            <Typography fontWeight={600}>₹{shippingCharges.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
                         </Box>
                         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
                             <Typography color="textSecondary">Other Discount ({otherDiscount}%):</Typography>
                             <Typography fontWeight={600} color="error">
-                                -₹{otherDiscountAmount.toFixed(2)}
+                                -₹{otherDiscountAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </Typography>
                         </Box>
                         <Divider sx={{ my: 2 }} />
@@ -105,7 +105,7 @@ const PurchaseSummary = ({
                                 Grand Total:
                             </Typography>
                             <Typography variant="h6" fontWeight={700} color="primary">
-                                ₹{grandTotal.toFixed(2)}
+                                ₹{grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </Typography>
                         </Box>
                     </Paper>

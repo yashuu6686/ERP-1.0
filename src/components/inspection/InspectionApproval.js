@@ -16,8 +16,8 @@ const InspectionApproval = ({ approvalData, onChange }) => {
     // Support both prop patterns if needed, but prefer formData
     const data = approvalData || {};
 
-    const handleChange = (field) => (event) => {
-        onChange?.(field, event.target.value);
+    const handleChange = (section, field) => (event) => {
+        onChange?.(section, field, event.target.value);
     };
 
     return (
@@ -74,8 +74,8 @@ const InspectionApproval = ({ approvalData, onChange }) => {
                                         size="small"
                                         type="date"
                                         InputLabelProps={{ shrink: true }}
-                                        value={data.updatedByDate || ''}
-                                        onChange={handleChange('updatedByDate')}
+                                        value={approvalData?.updatedByDate || ''}
+                                        onChange={handleChange('updatedBy', 'date')}
                                     />
                                 </Grid>
                             </Grid>
@@ -89,7 +89,7 @@ const InspectionApproval = ({ approvalData, onChange }) => {
                                     Approved By
                                 </Typography>
                                 <Grid container spacing={2}>
-                                    <Grid item xs={12} md={12} size={{ xs: 12, md:6 }}>
+                                    <Grid item xs={12} md={12} size={{ xs: 12, md: 6 }}>
                                         <Typography variant="caption" sx={{ mb: 0.5 }}>
                                             name
                                         </Typography>
@@ -101,7 +101,7 @@ const InspectionApproval = ({ approvalData, onChange }) => {
                                             onChange={handleChange('approvedBy', 'name')}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} md={12} size={{ xs: 12, md:6 }}>
+                                    <Grid item xs={12} md={12} size={{ xs: 12, md: 6 }}>
                                         <Typography variant="caption" sx={{ mb: 0.5 }}>
                                             date
                                         </Typography>
@@ -110,8 +110,8 @@ const InspectionApproval = ({ approvalData, onChange }) => {
                                             size="small"
                                             type="date"
                                             InputLabelProps={{ shrink: true }}
-                                            value={data.approvalDate || ''}
-                                            onChange={handleChange('approvalDate')}
+                                            value={approvalData?.approvedByDate || ''}
+                                            onChange={handleChange('approvedBy', 'date')}
                                         />
                                     </Grid>
                                 </Grid>

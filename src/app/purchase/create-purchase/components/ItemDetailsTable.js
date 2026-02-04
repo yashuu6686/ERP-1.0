@@ -165,7 +165,7 @@ const ItemDetailsTable = ({ items, addItem, removeItem, handleItemChange }) => {
                                 </TableCell>
                                 <TableCell align="center">
                                     <Typography fontWeight={600} sx={{ color: "#2d3748" }}>
-                                        ₹{item.total.toFixed(2)}
+                                        ₹{item.total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                     </Typography>
                                 </TableCell>
                                 <TableCell align="center">
