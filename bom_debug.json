@@ -1,0 +1,243 @@
+[
+  {
+    "id": "e5c0",
+    "number": "BOM-D8",
+    "productName": "Scanbo D8",
+    "date": "02-02-2026",
+    "approvedBy": "Sanjay Kumar",
+    "status": "Approved",
+    "materials": [
+      {
+        "sNo": 1,
+        "oemSupplier": "Xiamen Linktop Technology Co., Ltd",
+        "oemPartNo": "lktp.20240501-0011",
+        "qty": "1",
+        "description": "Upper cover",
+        "bubbleNo": "1",
+        "manufacturer": "Scanbo Technologies",
+        "scanboPartNo": "SIPL.ASY.PBT.ool",
+        "specs": "Polycarbonate (PC)/ Acrylonitrile Butadiene Styrene (ABS) Resin"
+      },
+      {
+        "sNo": 2,
+        "oemSupplier": "Xiamen Linktop Technology Co., Ltd",
+        "oemPartNo": "lktp.20240501-0012",
+        "qty": "1",
+        "description": "Mainboard With Components",
+        "bubbleNo": "2",
+        "manufacturer": "Scanbo Technologies",
+        "scanboPartNo": "SIPL.ASY.PC/A.ool",
+        "specs": "Main PCB board with sensors"
+      },
+      {
+        "sNo": 3,
+        "oemSupplier": "Xiamen Linktop Technology Co., Ltd",
+        "oemPartNo": "lktp.20240501-0013",
+        "qty": "1",
+        "description": "Deflator Motor",
+        "bubbleNo": "3",
+        "manufacturer": "Scanbo Technologies",
+        "scanboPartNo": "SIPL.ASY.MC.oo2",
+        "specs": "3.7V Deflator pump"
+      },
+      {
+        "sNo": 4,
+        "oemSupplier": "Xiamen Linktop Technology Co., Ltd",
+        "oemPartNo": "lktp.20240501-0014",
+        "qty": "1",
+        "description": "Silicon T-shaped tube",
+        "bubbleNo": "4",
+        "manufacturer": "Scanbo Technologies",
+        "scanboPartNo": "SIPL.ASY.SFM.ool",
+        "specs": "T shape tube"
+      },
+      {
+        "sNo": 5,
+        "oemSupplier": "Xiamen Linktop Technology Co., Ltd",
+        "oemPartNo": "lktp.20240501-0015",
+        "qty": "1",
+        "description": "Silicon L-shaped tube",
+        "bubbleNo": "5",
+        "manufacturer": "Scanbo Technologies",
+        "scanboPartNo": "SIPL.ASY.SFM.oo2",
+        "specs": "L shape tube"
+      },
+      {
+        "sNo": 6,
+        "oemSupplier": "Xiamen Linktop Technology Co., Ltd",
+        "oemPartNo": "lktp.20240501-0016",
+        "qty": "1",
+        "description": "Fourway tube",
+        "bubbleNo": "6",
+        "manufacturer": "Scanbo Technologies",
+        "scanboPartNo": "SIPL.ASY.SFM.oo3",
+        "specs": "Fourway tube"
+      },
+      {
+        "sNo": 7,
+        "oemSupplier": "Xiamen Linktop Technology Co., Ltd",
+        "oemPartNo": "lktp.20240501-0017",
+        "qty": "1",
+        "description": "Inflator Motor",
+        "bubbleNo": "7",
+        "manufacturer": "Scanbo Technologies",
+        "scanboPartNo": "SIPL.ASY.MC.oo3",
+        "specs": "Inflator motor with the pump mechanism"
+      },
+      {
+        "sNo": 8,
+        "oemSupplier": "Xiamen Linktop Technology Co., Ltd",
+        "oemPartNo": "lktp.20240501-0018",
+        "qty": "2",
+        "description": "Screws",
+        "bubbleNo": "8",
+        "manufacturer": "Scanbo Technologies",
+        "scanboPartNo": "SIPL.ASY.FPX.ool",
+        "specs": "NA"
+      },
+      {
+        "sNo": 9,
+        "oemSupplier": "Xiamen Linktop Technology Co., Ltd",
+        "oemPartNo": "lktp.20240501-0019",
+        "qty": "1",
+        "description": "Battery",
+        "bubbleNo": "9",
+        "manufacturer": "Scanbo Technologies",
+        "scanboPartNo": "SIPL.ASY.BTM.ool",
+        "specs": "Lithium-ion, 400 mAh, DC 3.7 V"
+      },
+      {
+        "sNo": 10,
+        "oemSupplier": "Xiamen Linktop Technology Co., Ltd",
+        "oemPartNo": "lktp.20240501-0020",
+        "qty": "1",
+        "description": "Valve Enclosure",
+        "bubbleNo": "10",
+        "manufacturer": "Scanbo Technologies",
+        "scanboPartNo": "SIPL.ASY.MC.ool",
+        "specs": "Plastic body part"
+      },
+      {
+        "sNo": 11,
+        "oemSupplier": "Xiamen Linktop Technology Co., Ltd",
+        "oemPartNo": "lktp.20240501-0021",
+        "qty": "1",
+        "description": "Bottom Cover",
+        "bubbleNo": "11",
+        "manufacturer": "Scanbo Technologies",
+        "scanboPartNo": "SIPL.ASY.PBT.oo2",
+        "specs": "Polycarbonate (PC)/ Acrylonitrile Butadiene Styrene (ABS) Resin"
+      },
+      {
+        "sNo": 12,
+        "oemSupplier": "STICOL",
+        "oemPartNo": "-",
+        "qty": "-",
+        "description": "Double-sided tape",
+        "bubbleNo": "-",
+        "manufacturer": "STICOL",
+        "scanboPartNo": "SIPL.ASY.FPX.oo2",
+        "specs": "-"
+      },
+      {
+        "sNo": 13,
+        "oemSupplier": "STICOL",
+        "oemPartNo": "-",
+        "qty": "1",
+        "description": "Gasket Tape",
+        "bubbleNo": "-",
+        "manufacturer": "STICOL",
+        "scanboPartNo": "SIPL.ASY.FPX.oo3",
+        "specs": "-"
+      },
+      {
+        "sNo": 14,
+        "oemSupplier": "Scanbo Technologies Inc",
+        "oemPartNo": "-",
+        "qty": "1",
+        "description": "Scanbo D8 Signal Acquisition Module (SAM)",
+        "bubbleNo": "NA",
+        "manufacturer": "Scanbo Technologies",
+        "scanboPartNo": "SIPL.ASY.EO.oo1",
+        "specs": "-"
+      },
+      {
+        "sNo": 15,
+        "oemSupplier": "Scanbo Technologies Inc",
+        "oemPartNo": "-",
+        "qty": "1",
+        "description": "Top Casing Assembly",
+        "bubbleNo": "-",
+        "manufacturer": "Scanbo Technologies",
+        "scanboPartNo": "SIPL.SY.oo1",
+        "specs": "-"
+      },
+      {
+        "sNo": 16,
+        "oemSupplier": "Scanbo Technologies Inc",
+        "oemPartNo": "-",
+        "qty": "1",
+        "description": "Bottom Case Assembly",
+        "bubbleNo": "-",
+        "manufacturer": "Scanbo Technologies",
+        "scanboPartNo": "SIPL.SY.oo2",
+        "specs": "-"
+      },
+      {
+        "sNo": 17,
+        "oemSupplier": "Scanbo Technologies Inc",
+        "oemPartNo": "-",
+        "qty": "1",
+        "description": "Scanbo D8",
+        "bubbleNo": "-",
+        "manufacturer": "Scanbo Technologies",
+        "scanboPartNo": "SIPL.FP.oo1",
+        "specs": "-"
+      }
+    ],
+    "authorization": {
+      "reviewedBy": "Sanjay Kumar",
+      "reviewedDate": "01-02-2026",
+      "approvedBy": "John Doe",
+      "approvedDate": "02-02-2026"
+    }
+  },
+  {
+    "id": "f413",
+    "number": "BOM-946897",
+    "productName": "smart scale",
+    "date": "02-02-2026",
+    "approvedBy": "ME",
+    "status": "Approved",
+    "materials": [
+      {
+        "sNo": 1,
+        "oemSupplier": "rfwrfewf",
+        "oemPartNo": "AAAA",
+        "qty": "50",
+        "description": "PO-2024",
+        "bubbleNo": "-",
+        "manufacturer": "rfwrfewf",
+        "scanboPartNo": "Screw",
+        "specs": "rfwrefew"
+      },
+      {
+        "sNo": 2,
+        "oemSupplier": "rfewf",
+        "oemPartNo": "BBBBB",
+        "qty": "1",
+        "description": "SCANBI",
+        "bubbleNo": "-",
+        "manufacturer": "rfewf",
+        "scanboPartNo": "scale",
+        "specs": "ewfewfewf"
+      }
+    ],
+    "authorization": {
+      "reviewedBy": "ME",
+      "reviewedDate": "02-02-2026",
+      "approvedBy": "ME",
+      "approvedDate": "02-02-2026"
+    }
+  }
+]

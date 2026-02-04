@@ -34,7 +34,7 @@ const PurchaseSummary = ({
                                 type="number"
                                 size="small"
                                 value={discount}
-                                onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
+                                onChange={(e) => setDiscount(parseFloat(e.target.value) )}
                                 sx={{ bgcolor: "white" }}
                             />
                         </Grid>
@@ -45,7 +45,7 @@ const PurchaseSummary = ({
                                 type="number"
                                 size="small"
                                 value={taxRate}
-                                onChange={(e) => setTaxRate(parseFloat(e.target.value) || 0)}
+                                onChange={(e) => setTaxRate(parseFloat(e.target.value) )}
                                 sx={{ bgcolor: "white" }}
                             />
                         </Grid>
@@ -56,7 +56,7 @@ const PurchaseSummary = ({
                                 type="number"
                                 size="small"
                                 value={shippingCharges}
-                                onChange={(e) => setShippingCharges(parseFloat(e.target.value) || 0)}
+                                onChange={(e) => setShippingCharges(parseFloat(e.target.value) )}
                                 sx={{ bgcolor: "white" }}
                             />
                         </Grid>
@@ -67,7 +67,7 @@ const PurchaseSummary = ({
                                 type="number"
                                 size="small"
                                 value={otherDiscount}
-                                onChange={(e) => setOtherDiscount(parseFloat(e.target.value) || 0)}
+                                onChange={(e) => setOtherDiscount(parseFloat(e.target.value) )}
                                 sx={{ bgcolor: "white" }}
                             />
                         </Grid>
