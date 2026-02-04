@@ -65,10 +65,16 @@ function CreatePurchaseOrderContent() {
           const response = await axiosInstance.get(`/purachase/${id}`);
           const data = response.data;
           if (data) {
+            if (data.status === "Completed") {
+              alert("This purchase order is completed and cannot be edited.");
+              router.push("/purchase");
+              return;
+            }
             setFormData({
               orderInfo: data.orderInfo,
               supplier: data.supplier,
               delivery: data.delivery,
+              status: data.status, // Preserve status
             });
             setItems(data.items);
             if (data.taxRate) setTaxRate(data.taxRate);

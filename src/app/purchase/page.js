@@ -211,7 +211,7 @@ export default function PurchaseOrderTable() {
           <IconButton
             size="small"
             onClick={() => router.push(`/purchase/create-purchase?id=${row.id}`)}
-            disabled={row.status !== "Pending"}
+            disabled={row.status === "Completed"}
             sx={{
               color: "rgb(17, 114, 186)",
               bgcolor: "#f1f5f9",

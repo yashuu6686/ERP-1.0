@@ -96,49 +96,15 @@ function ViewInspectionContent() {
                 setLoading(true);
                 // Attempt real fetch if ID exists
                 if (id) {
-                    const response = await axiosInstance.get(`/production-inspection`);
-                    foundData = response.data.find(item => item.id === id || item.checkNumber === id);
+                    const response = await axiosInstance.get(`/quality-inspection/${id}`);
+                    foundData = response.data;
+                    console.log("Quality Inspection Data:", foundData);
+                    setData(foundData);
                 }
             } catch (error) {
                 console.warn("API fetch failed, generating verified dummy record...");
             } finally {
-                if (foundData) {
-                    setData(foundData);
-                    setLoading(false);
-                } else {
-                    // Fallback / Dummy for ID like QC-6444
-                    const dummyData = {
-                        productDetails: {
-                            productName: "D8 Smart Device",
-                            qualityStandard: "ISO-9001:2015 / SCAN-V2",
-                            checkedQuantity: "250",
-                            inspectionDate: "2026-02-02",
-                            checkNumber: id || "QC-6444",
-                        },
-                        checkDetails: [
-                            { id: 1, parameters: "Housing Alignment", specification: "Tolerance +/- 0.05mm", method: "Laser Micrometer", observation: "All within range (0.02mm avg)", remarks: "Exceptional" },
-                            { id: 2, parameters: "Display Calibration", specification: "Delta E < 2.0", method: "Colorimeter", observation: "Avg Delta E = 1.4", remarks: "N/A" },
-                            { id: 3, parameters: "Battery Thermal Stress", specification: "Max 45°C during fast charge", method: "Thermal Camera", observation: "Max recorded 41.2°C", remarks: "Pass" },
-                        ],
-                        inspectionSummary: {
-                            acceptedQuantity: "248",
-                            rejectedQuantity: "2",
-                            holdScrapQuantity: "0",
-                            comments: "High yield batch. 2 units rejected due to minor silk-screen inconsistencies on the rear panel. Electronic metrics are optimal."
-                        },
-                        approval: {
-                            reviewedBy: "Sanjay Kumar",
-                            reviewedDate: "2026-02-02 10:30 AM",
-                            approvedBy: "John Doe",
-                            approvedDate: "2026-02-02 11:15 AM",
-                        }
-                    };
-                    // Simulate delay
-                    setTimeout(() => {
-                        setData(dummyData);
-                        setLoading(false);
-                    }, 800);
-                }
+                setLoading(false);
             }
         };
 
@@ -182,7 +148,20 @@ function ViewInspectionContent() {
     if (loading) return <Loader fullPage message="Accessing Quality Control Records..." />;
     if (!data) return <Box sx={{ p: 4, textAlign: "center", color: COLORS.secondary }}>Secure Record Not Found.</Box>;
 
-    const { productDetails, checkDetails, inspectionSummary, approval } = data;
+    const {
+        productName,
+        qualityStandard,
+        checkedQuantity,
+        inspectionDate,
+        checkNumber,
+        checkDetails,
+        acceptedQuantity,
+        rejectedQuantity,
+        comments,
+        approval,
+        status,
+        id: checkId
+    } = data;
 
     return (
         <Fade in={!loading}>
@@ -304,7 +283,7 @@ function ViewInspectionContent() {
                                             </Typography>
                                             <Stack direction="row" spacing={1} alignItems="center">
                                                 <Chip
-                                                    label={productDetails.checkNumber}
+                                                    label={checkNumber}
                                                     sx={{
                                                         fontWeight: 700,
                                                         bgcolor: "#f1f5f9",
@@ -314,11 +293,11 @@ function ViewInspectionContent() {
                                                     }}
                                                 />
                                                 <Chip
-                                                    label="COMPLETED"
+                                                    label={status || "COMPLETED"}
                                                     sx={{
                                                         fontWeight: 700,
-                                                        bgcolor: "#dcfce7",
-                                                        color: "#166534",
+                                                        bgcolor: status === "Approved" ? "#dcfce7" : status === "Rejected" ? "#fee2e2" : "#dcfce7",
+                                                        color: status === "Approved" ? "#166534" : status === "Rejected" ? "#b91c1c" : "#166534",
                                                         borderRadius: '8px',
                                                         fontSize: '0.85rem'
                                                     }}
@@ -330,12 +309,12 @@ function ViewInspectionContent() {
                                             <InfoItem
                                                 icon={Assignment}
                                                 label="Inspected Product"
-                                                value={productDetails.productName}
+                                                value={productName}
                                             />
                                             <InfoItem
                                                 icon={CalendarMonth}
                                                 label="Inspection Date"
-                                                value={productDetails.inspectionDate}
+                                                value={inspectionDate}
                                             />
                                         </Stack>
                                     </Stack>
@@ -345,10 +324,10 @@ function ViewInspectionContent() {
                                     {/* Issue Metadata Grid */}
                                     <Grid container spacing={3} sx={{ mb: 6 }}>
                                         <Grid item xs={12} sm={4}>
-                                            <InfoItem icon={VerifiedUser} label="Quality Standard" value={productDetails.qualityStandard} />
+                                            <InfoItem icon={VerifiedUser} label="Quality Standard" value={qualityStandard} />
                                         </Grid>
                                         <Grid item xs={12} sm={4}>
-                                            <InfoItem icon={ProductionQuantityLimits} label="Total Sample Size" value={`${productDetails.checkedQuantity} Units`} />
+                                            <InfoItem icon={ProductionQuantityLimits} label="Total Sample Size" value={`${checkedQuantity} Units`} />
                                         </Grid>
                                         <Grid item xs={12} sm={4}>
                                             <InfoItem icon={Layers} label="Batch Reference" value="BATCH-2026-EXP-A" />
@@ -362,7 +341,7 @@ function ViewInspectionContent() {
                                             <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 700, textTransform: "uppercase" }}>Executive Summary</Typography>
                                         </Stack>
                                         <Typography variant="body2" sx={{ color: "#1e293b", lineHeight: 1.6, fontWeight: 500 }}>
-                                            {inspectionSummary.comments || "No specific comments recorded."}
+                                            {comments || "No specific comments recorded."}
                                         </Typography>
                                     </Box>
 
@@ -373,7 +352,7 @@ function ViewInspectionContent() {
                                                 <Rule sx={{ color: '#1172ba' }} /> Parameter Verification Header
                                             </Typography>
                                             <Typography variant="body2" color="#64748b" fontWeight={600}>
-                                                {checkDetails.length} Control Points Checked
+                                                {checkDetails?.length || 0} Control Points Checked
                                             </Typography>
                                         </Stack>
 
@@ -389,7 +368,7 @@ function ViewInspectionContent() {
                                                     </TableRow>
                                                 </TableHead>
                                                 <TableBody>
-                                                    {checkDetails.map((item, idx) => (
+                                                    {checkDetails?.map((item, idx) => (
                                                         <TableRow key={idx} sx={{ "&:hover": { bgcolor: "#f8fafc" } }}>
                                                             <TableCell sx={{ fontWeight: 700, color: "#1e293b" }}>{item.parameters}</TableCell>
                                                             <TableCell sx={{ color: "#64748b", fontSize: '0.9rem' }}>{item.specification}</TableCell>
@@ -431,8 +410,8 @@ function ViewInspectionContent() {
                                             <Avatar sx={{ bgcolor: "#f1f5f9", color: "#64748b" }}><Person /></Avatar>
                                             <Box>
                                                 <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 700, textTransform: "uppercase" }}>QC Officer</Typography>
-                                                <Typography variant="body2" sx={{ fontWeight: 800, color: "#0f172a" }}>{approval.reviewedBy || "Pending"}</Typography>
-                                                <Typography variant="caption" sx={{ color: "#1172ba", fontWeight: 700 }}>{approval.reviewedDate}</Typography>
+                                                <Typography variant="body2" sx={{ fontWeight: 800, color: "#0f172a" }}>{approval?.updatedByName || "Pending"}</Typography>
+                                                <Typography variant="caption" sx={{ color: "#1172ba", fontWeight: 700 }}>{approval?.updatedByDate}</Typography>
                                             </Box>
                                         </Stack>
 
@@ -444,8 +423,8 @@ function ViewInspectionContent() {
                                             </Avatar>
                                             <Box>
                                                 <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 700, textTransform: "uppercase" }}>Approved By</Typography>
-                                                <Typography variant="body2" sx={{ fontWeight: 800, color: "#0f172a" }}>{approval.approvedBy || "Pending"}</Typography>
-                                                <Typography variant="caption" sx={{ color: "#166534", fontWeight: 700 }}>{approval.approvedDate}</Typography>
+                                                <Typography variant="body2" sx={{ fontWeight: 800, color: "#0f172a" }}>{approval?.approvedByName || "Pending"}</Typography>
+                                                <Typography variant="caption" sx={{ color: "#166534", fontWeight: 700 }}>{approval?.approvedByDate}</Typography>
                                             </Box>
                                         </Stack>
                                     </Stack>
@@ -460,20 +439,20 @@ function ViewInspectionContent() {
                                         <Stack direction="row" justifyContent="space-between">
                                             <Typography variant="caption" fontWeight={700} color="#64748b">Accepted</Typography>
                                             <Typography variant="caption" fontWeight={900} color="#059669" sx={{ fontSize: '1rem' }}>
-                                                {inspectionSummary.acceptedQuantity}
+                                                {acceptedQuantity}
                                             </Typography>
                                         </Stack>
                                         <Stack direction="row" justifyContent="space-between">
                                             <Typography variant="caption" fontWeight={700} color="#64748b">Rejected</Typography>
                                             <Typography variant="caption" fontWeight={900} color="#dc2626" sx={{ fontSize: '1rem' }}>
-                                                {inspectionSummary.rejectedQuantity}
+                                                {rejectedQuantity}
                                             </Typography>
                                         </Stack>
                                         <Divider />
                                         <Stack direction="row" justifyContent="space-between">
                                             <Typography variant="caption" fontWeight={700} color="#64748b">Yield Rate</Typography>
                                             <Typography variant="caption" fontWeight={900} color="#0f172a">
-                                                {((Number(inspectionSummary.acceptedQuantity) / Number(productDetails.checkedQuantity)) * 100).toFixed(1)}%
+                                                {((Number(acceptedQuantity || 0) / Number(checkedQuantity || 1)) * 100).toFixed(1)}%
                                             </Typography>
                                         </Stack>
                                     </Stack>

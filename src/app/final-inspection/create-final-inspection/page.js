@@ -246,14 +246,14 @@ function FinalInspectionFormContent() {
             <Grid container spacing={2}>
               <Grid size={{ xs: 12, md: user?.role === 'admin' ? 12 : 8 }}>
                 <InspectionSummary
-                  formData={formData}
+                  summaryData={formData}
                   onChange={handleInputChange}
                 />
               </Grid>
 
              <Grid size={{ xs: 12, md: user?.role === 'admin' ? 12 : 4 }}>
                 <SignaturesApprovalSection
-                  formData={formData}
+                  approvalData={formData}
                   onChange={handleInputChange}
                 />
               </Grid>

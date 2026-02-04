@@ -132,18 +132,7 @@ function ViewMaterialIssueContent() {
         );
     }
 
-    const calculateStockStatus = (material) => {
-        const partNo = material.scanboPartNo || material.scanboPartNumber || material.partNo;
-        const storeItem = storeItems.find(item => (item.id === partNo || item.code === partNo));
-        const needed = Number(material.qty || material.quantity || 0) * Number(request.requiredQty || request.qty || 0);
 
-        if (!storeItem) return { status: "unknown", color: "#64748b", text: "NOT LISTED" };
-        const available = Number(storeItem.available || storeItem.stock || 0);
-
-        if (available >= needed) return { status: "ready", color: "#059669", text: "SUFFICIENT" };
-        if (available > 0) return { status: "partial", color: "#d97706", text: `PARTIAL (${available})` };
-        return { status: "out", color: "#dc2626", text: "DEPLETED" };
-    };
 
     return (
         <Fade in={!loading}>
@@ -313,34 +302,19 @@ function ViewMaterialIssueContent() {
                                                     <TableRow sx={{ bgcolor: "#f1f5f9" }}>
                                                         <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>SR.</TableCell>
                                                         <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>COMPONENT DETAILS</TableCell>
-                                                        <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>UNIT RATIO</TableCell>
-                                                        <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>TOTAL ISSUE</TableCell>
-                                                        <TableCell align="right" sx={{ fontWeight: 800, color: "#475569", py: 2 }}>STOCK STATUS</TableCell>
+                                                        <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>QUANTITY</TableCell>
                                                     </TableRow>
                                                 </TableHead>
                                                 <TableBody>
                                                     {bomItems.map((item, idx) => {
-                                                        const stock = calculateStockStatus(item);
-                                                        const totalReq = Number(item.qty || 0) * Number(request.requiredQty || 0);
                                                         return (
                                                             <TableRow key={idx} sx={{ "&:hover": { bgcolor: "#f8fafc" } }}>
                                                                 <TableCell sx={{ color: "#94a3b8", fontWeight: 700 }}>{String(idx + 1).padStart(2, '0')}</TableCell>
                                                                 <TableCell>
-                                                                    <Typography variant="subtitle2" fontWeight={700} color="#1e293b">{item.componentName || item.component}</Typography>
-                                                                    <Typography variant="caption" sx={{ color: "#1172ba", fontWeight: 600 }}>PN: {item.scanboPartNo || item.scanboPartNumber}</Typography>
+                                                                    <Typography variant="subtitle2" fontWeight={700} color="#1e293b">{item.componentName || item.component || item.materialName || item.goods}</Typography>
+                                                                    <Typography variant="caption" sx={{ color: "#1172ba", fontWeight: 600 }}>PN: {item.scanboPartNo || item.scanboPartNumber || item.partNo || "-"}</Typography>
                                                                 </TableCell>
-                                                                <TableCell sx={{ fontWeight: 600, color: "#475569" }}>{item.qty || 0} / unit</TableCell>
-                                                                <TableCell>
-                                                                    <Typography variant="body2" fontWeight={800} sx={{ fontFamily: 'monospace', color: "#0f172a" }}>{totalReq}</Typography>
-                                                                </TableCell>
-                                                                <TableCell align="right">
-                                                                    <Stack direction="row" spacing={1} alignItems="center" justifyContent="flex-end">
-                                                                        <Typography variant="caption" sx={{ fontWeight: 800, color: stock.color }}>
-                                                                            {stock.text}
-                                                                        </Typography>
-                                                                        <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: stock.color }} />
-                                                                    </Stack>
-                                                                </TableCell>
+                                                                <TableCell sx={{ fontWeight: 600, color: "#475569" }}>{item.qty || item.quantity || 0}</TableCell>
                                                             </TableRow>
                                                         );
                                                     })}

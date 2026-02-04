@@ -28,6 +28,7 @@ export default function GRNTable() {
     try {
       setLoading(true);
       const response = await axiosInstance.get("/grn");
+      console.log("grn:", response.data);
       setGrns(response.data || []);
     } catch (error) {
       console.error("Error fetching GRNs:", error);
@@ -71,7 +72,7 @@ export default function GRNTable() {
     {
       label: "Item",
       align: "center",
-      render: (row) => row.items?.[0]?.name || "N/A",
+      render: (row) => row.items?.length || 0,
       sx: { maxWidth: 280 },
     },
     {
