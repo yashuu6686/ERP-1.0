@@ -310,7 +310,7 @@ export default function StockMovementHistory() {
           <Grid size={{ xs: 12, lg: 3 }}>
             <Stack spacing={3}>
               {/* Stock Pulse Card */}
-              <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+              <Paper elevation={0} sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                 <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Inventory sx={{ color: '#1172ba', fontSize: 20 }} /> Current Stock
                 </Typography>
@@ -345,7 +345,7 @@ export default function StockMovementHistory() {
               </Paper>
 
               {/* Audit Metadata */}
-              <Paper sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+              <Paper elevation={0}sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                 <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Description sx={{ color: '#1172ba', fontSize: 20 }} /> Audit Info
                 </Typography>

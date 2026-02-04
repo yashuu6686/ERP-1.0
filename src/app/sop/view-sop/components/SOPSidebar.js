@@ -7,7 +7,7 @@ export default function SOPSidebar({ data }) {
     return (
         <Stack spacing={3}>
             {/* Authorization Card */}
-            <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+            <Paper elevation={0} sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                 <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
                     <VerifiedUser sx={{ color: '#1172ba', fontSize: 20 }} /> Authorization
                 </Typography>

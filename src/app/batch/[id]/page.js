@@ -314,7 +314,7 @@ export default function BatchDetails() {
                         <Grid size={{ xs: 12, lg: 3 }}>
                             <Stack spacing={3}>
                                 {/* Inspection Summary Card */}
-                                <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+                                <Paper elevation={0} sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                                     <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1 }}>
                                         <Summarize sx={{ color: '#1172ba', fontSize: 20 }} /> Yield Summary
                                     </Typography>
@@ -358,7 +358,7 @@ export default function BatchDetails() {
                                 </Paper>
 
                                 {/* System Tracking */}
-                                <Paper sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#f8fafc' }}>
+                                <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                                     <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
                                         <VerifiedUser sx={{ color: '#1172ba', fontSize: 20 }} /> System Trace
                                     </Typography>

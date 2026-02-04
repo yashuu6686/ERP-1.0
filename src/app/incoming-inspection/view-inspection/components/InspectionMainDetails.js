@@ -78,7 +78,7 @@ const InspectionMainDetails = ({ materialData, inspectionStatus }) => {
                     </Stack>
                 </Box>
 
-                <Stack spacing={2} sx={{ minWidth: 260 }}>
+                <Stack spacing={2}>
                     <InfoItem icon={CalendarMonth} label="Inspection Date" value={materialData.inspectionDate} />
                     <InfoItem icon={Description} label="GRN Reference" value={materialData.grnNumber} />
                     <InfoItem icon={CalendarMonth} label="Received Date" value={materialData.receivedDate} />
