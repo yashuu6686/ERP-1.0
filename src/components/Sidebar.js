@@ -155,9 +155,9 @@ export default function Sidebar({ children }) {
               width: '100%'
             }}>
               {isSidebarOpen ? (
-                <Image src="/Scanbo_logo_new.png" alt="Logo" width={80} height={100} />
+                <img src="/logo.png" alt="Logo" style={{ width: '80px', height: '100px', objectFit: 'contain' }} />
               ) : (
-                <Image src="/Scanbo_logo_new.png" alt="Logo" width={40} height={40} style={{ objectFit: 'contain' }} />
+                <img src="/logo.png" alt="Logo" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
               )}
             </Box>
 
