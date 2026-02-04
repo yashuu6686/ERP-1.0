@@ -31,7 +31,7 @@ function CreateDispatchEntryContent() {
     officeAddress: "Mumbai, Maharashtra, India",
     email: "info@scanbo.com",
     phone: "+91 98765 43210",
-    orderNumber: "",
+    dispatchNo: "",
     dispatchDate: "",
     trackingNumber: "",
     customerName: "",
@@ -50,11 +50,23 @@ function CreateDispatchEntryContent() {
   const [products, setProducts] = useState([
     { name: "", quantity: "" },
   ]);
+  const [orders, setOrders] = useState([]);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // Fetch orders for the autocomplete
+    const fetchOrders = async () => {
+      try {
+        const response = await axiosInstance.get("/orders");
+        setOrders(response.data);
+      } catch (error) {
+        console.error("Failed to fetch orders:", error);
+      }
+    };
+    fetchOrders();
+
     if (id) {
       const fetchDispatch = async () => {
         try {
@@ -67,7 +79,7 @@ function CreateDispatchEntryContent() {
             officeAddress: data.customer?.address || "Mumbai, Maharashtra, India",
             email: data.customer?.email || "info@scanbo.com",
             phone: data.customer?.phone || "+91 98765 43210",
-            orderNumber: data.shipmentInfo?.orderNumber || "",
+            dispatchNo: data.shipmentInfo?.dispatchNo || data.shipmentInfo?.orderNumber || "",
             dispatchDate: data.shipmentInfo?.shippingDate || "",
             trackingNumber: data.shipmentInfo?.trackingNumber || "",
             customerName: data.customer?.companyName || "",
@@ -107,6 +119,30 @@ function CreateDispatchEntryContent() {
     }
   };
 
+  const handleOrderSelect = (order) => {
+    if (!order) return;
+
+    setFormData(prev => ({
+      ...prev,
+      customerName: order.customerName || "",
+      // If order has email/contact, map them here. Assuming standard structure:
+      contactPerson: order.contactPerson || "",
+      email: order.email || "",
+      contactNo: order.phone || "",
+      deliveryAddress: order.address || "",
+      referenceNo: order.orderId || order.orderNo || "",
+      // Map other fields if available in order object
+    }));
+
+    // Map products from order if they exist
+    if (order.products && Array.isArray(order.products)) {
+      setProducts(order.products.map(p => ({
+        name: p.productName || p.name || "",
+        quantity: p.quantity || ""
+      })));
+    }
+  };
+
   const handleProductChange = (index, field, value) => {
     const updated = [...products];
     updated[index][field] = value;
@@ -139,7 +175,7 @@ function CreateDispatchEntryContent() {
     const newErrors = {};
 
     const requiredFields = [
-      "orderNumber",
+      "dispatchNo",
       "dispatchDate",
       "trackingNumber",
       "customerName",
@@ -178,7 +214,7 @@ function CreateDispatchEntryContent() {
 
       const payload = {
         shipmentInfo: {
-          orderNumber: formData.orderNumber,
+          dispatchNo: formData.dispatchNo,
           trackingNumber: formData.trackingNumber,
           shippingDate: formData.dispatchDate,
           expectedDelivery: formData.deliveryDate,
@@ -214,7 +250,7 @@ function CreateDispatchEntryContent() {
       if (isHR && (response.status === 201 || response.status === 200)) {
         await NotificationService.createNotification({
           title: "Dispatch Approval Required",
-          message: `HR ${user.name} has submitted a dispatch entry for ${formData.customerName || 'a customer'} (Order: ${formData.orderNumber}).`,
+          message: `HR ${user.name} has submitted a dispatch entry for ${formData.customerName || 'a customer'} (Dispatch: ${formData.dispatchNo}).`,
           targetRole: "admin",
           type: "dispatch_approval",
           link: `/dispatch/view-dispatch?id=${id || response.data.id}`,
@@ -243,6 +279,8 @@ function CreateDispatchEntryContent() {
             formData={formData}
             handleChange={handleChange}
             errors={errors}
+            orders={orders}
+            onOrderSelect={handleOrderSelect}
           />
           <CustomerDeliveryCard
             formData={formData}

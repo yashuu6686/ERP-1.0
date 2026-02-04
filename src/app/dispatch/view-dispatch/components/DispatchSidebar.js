@@ -43,8 +43,8 @@ export default function DispatchSidebar({ shipmentInfo, items }) {
                     <Explore sx={{ color: '#1172ba', fontSize: 20 }} /> System Data
                 </Typography>
                 <Stack direction="row" justifyContent="space-between">
-                    <Typography variant="caption" fontWeight={700} color="#64748b">Order Ref</Typography>
-                    <Typography variant="caption" fontWeight={900} color="#0f172a" sx={{ fontFamily: 'monospace' }}>{shipmentInfo.orderNumber}</Typography>
+                    <Typography variant="caption" fontWeight={700} color="#64748b">Dispatch Ref</Typography>
+                    <Typography variant="caption" fontWeight={900} color="#0f172a" sx={{ fontFamily: 'monospace' }}>{shipmentInfo.dispatchNo || shipmentInfo.orderNumber}</Typography>
                 </Stack>
                 <Divider sx={{ my: 1.5, borderStyle: 'dashed' }} />
                 <Typography variant="caption" color="#64748b" sx={{ fontStyle: 'italic', display: 'block', textAlign: 'center' }}>

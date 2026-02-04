@@ -7,10 +7,11 @@ import {
     Grid,
     TextField,
     InputAdornment,
+    Autocomplete,
 } from "@mui/material";
 import { Description, CalendarToday, LocalShipping } from "@mui/icons-material";
 
-export default function DispatchInfoCard({ formData, handleChange, errors }) {
+export default function DispatchInfoCard({ formData, handleChange, errors, orders, onOrderSelect }) {
     return (
         <Card
             sx={{
@@ -37,15 +38,53 @@ export default function DispatchInfoCard({ formData, handleChange, errors }) {
             <CardContent sx={{ background: "linear-gradient(135deg, #f8fafc, #f1f5f9)" }}>
                 <Grid container spacing={3}>
                     <Grid item xs={12} md={4} size={{ xs: 12, md: 4 }}>
+                        <Autocomplete
+                            options={orders || []}
+                            getOptionLabel={(option) => option.orderNo || option.orderId || option.orderNumber || option.id || ""}
+                            onChange={(event, newValue) => {
+                                if (newValue) {
+                                    onOrderSelect?.(newValue);
+                                }
+                            }}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Select Order No"
+                                    placeholder="Search Order..."
+                                    required
+                                    InputProps={{
+                                        ...params.InputProps,
+                                        startAdornment: (
+                                            <>
+                                                <InputAdornment position="start">
+                                                    <Description sx={{ color: "#1172ba" }} />
+                                                </InputAdornment>
+                                                {params.InputProps.startAdornment}
+                                            </>
+                                        ),
+                                    }}
+                                    sx={{
+                                        "& .MuiOutlinedInput-root": {
+                                            bgcolor: "white",
+                                            "&:hover": {
+                                                "& > fieldset": { borderColor: "#1172ba" },
+                                            },
+                                        },
+                                    }}
+                                />
+                            )}
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={4} size={{ xs: 12, md: 4 }}>
                         <TextField
                             fullWidth
-                            label="Order Number"
-                            placeholder="SO-001"
-                            value={formData.orderNumber}
-                            onChange={(e) => handleChange("orderNumber", e.target.value)}
+                            label="Dispatch No"
+                            placeholder="DIS-001"
+                            value={formData.dispatchNo}
+                            onChange={(e) => handleChange("dispatchNo", e.target.value)}
                             required
-                            error={errors.orderNumber}
-                            helperText={errors.orderNumber && "This field is required"}
+                            error={errors.dispatchNo}
+                            helperText={errors.dispatchNo && "This field is required"}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
