@@ -400,7 +400,7 @@ function ViewInspectionContent() {
                         <Grid size={{ xs: 12, lg: 3 }}>
                             <Stack spacing={3}>
                                 {/* Authorization Card */}
-                                <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+                                <Paper elevation={0} sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                                     <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1 }}>
                                         <VerifiedUser sx={{ color: '#1172ba', fontSize: 20 }} /> Authorization
                                     </Typography>
@@ -431,7 +431,7 @@ function ViewInspectionContent() {
                                 </Paper>
 
                                 {/* Results Card */}
-                                <Paper sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#f8fafc' }}>
+                                <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#f8fafc' }}>
                                     <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
                                         <Science sx={{ color: '#1172ba', fontSize: 20 }} /> Verdict Metrics
                                     </Typography>
@@ -459,7 +459,7 @@ function ViewInspectionContent() {
                                 </Paper>
 
                                 {/* Record Metadata */}
-                                <Paper sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+                                <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                                     <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
                                         <Description sx={{ color: '#1172ba', fontSize: 20 }} /> System Info
                                     </Typography>

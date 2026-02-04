@@ -10,7 +10,7 @@ const InspectionMaterialIdentity = ({ materialData }) => {
                 Material & Source Details
             </Typography>
             <Grid container spacing={3}>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
                     <Paper elevation={0} sx={{ p: 4, bgcolor: "#f8fafc", borderRadius: 4, border: '1px solid #f1f5f9', height: '100%' }}>
                         <Stack spacing={3}>
                             <Stack direction="row" spacing={2} alignItems="center">
@@ -26,19 +26,19 @@ const InspectionMaterialIdentity = ({ materialData }) => {
                             <Divider sx={{ borderStyle: 'dashed' }} />
 
                             <Grid container spacing={2}>
-                                <Grid item xs={6}>
+                                <Grid item xs={6} size={{ xs: 6 }}>
                                     <InfoItem icon={Assignment} label="PO Number" value={materialData.poNumber} />
                                 </Grid>
-                                <Grid item xs={6}>
+                                <Grid item xs={6} size={{ xs: 6 }}>
                                     <InfoItem icon={VerifiedUser} label="Lot Quantity" value={materialData.lotQuantity} />
                                 </Grid>
-                                <Grid item xs={6}>
+                                <Grid item xs={6} size={{ xs: 6 }}>
                                     <InfoItem icon={Science} label="Sample Size" value={materialData.sampleSize} />
                                 </Grid>
-                                <Grid item xs={6}>
+                                <Grid item xs={6} size={{ xs: 6 }}>
                                     <InfoItem icon={Settings} label="Equipment ID" value={materialData.equipmentId} />
                                 </Grid>
-                                <Grid item xs={12}>
+                                <Grid item xs={12} size={{ xs: 12 }}>
                                     <InfoItem icon={Science} label="Inspection Standard No." value={materialData.inspectionStandardNumber} />
                                 </Grid>
                             </Grid>
@@ -46,7 +46,7 @@ const InspectionMaterialIdentity = ({ materialData }) => {
                     </Paper>
                 </Grid>
 
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
                     <Paper elevation={0} sx={{ p: 4, bgcolor: "#f8fafc", borderRadius: 4, border: '1px solid #f1f5f9', height: '100%' }}>
                         <Stack spacing={3}>
                             <Stack direction="row" spacing={2} alignItems="center">
