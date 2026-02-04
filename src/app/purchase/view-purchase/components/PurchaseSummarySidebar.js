@@ -19,7 +19,13 @@ const SummaryRow = ({ label, value, isTotal = false, isDiscount = false }) => (
     </Box>
 );
 
-const PurchaseSummarySidebar = ({ totals, shippingCharges, otherDiscount, orderNumber }) => {
+const PurchaseSummarySidebar = ({ totals, taxRate, discount, shippingCharges, otherDiscount, orderNumber }) => {
+    const subtotal = totals.subtotal || 0;
+    const taxAmount = totals.taxAmount || 0;
+    const discountAmount = totals.discountAmount || 0;
+    const otherDiscountAmount = (subtotal * (otherDiscount || 0)) / 100;
+    const shipping = Number(shippingCharges) || 0;
+
     return (
         <Stack spacing={2}>
             {/* Financial Summary */}
@@ -29,17 +35,35 @@ const PurchaseSummarySidebar = ({ totals, shippingCharges, otherDiscount, orderN
                 </Typography>
 
                 <Stack spacing={0.5}>
-                    <SummaryRow label="Subtotal" value={totals.subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })} />
-                    <SummaryRow label="Tax (GST)" value={totals.taxAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })} />
+                    <SummaryRow
+                        label="Subtotal"
+                        value={subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    />
 
-                    {shippingCharges > 0 && (
-                        <SummaryRow label="Shipping" value={Number(shippingCharges).toLocaleString(undefined, { minimumFractionDigits: 2 })} />
+                    <SummaryRow
+                        label={`Tax (${taxRate || 0}%)`}
+                        value={taxAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    />
+
+                    {discountAmount > 0 && (
+                        <SummaryRow
+                            label={`Discount (${discount || 0}%)`}
+                            value={discountAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                            isDiscount
+                        />
                     )}
 
-                    {(otherDiscount > 0 || totals.discountAmount > 0) && (
+                    {shipping > 0 && (
                         <SummaryRow
-                            label="Discount"
-                            value={(Number(otherDiscount) + totals.discountAmount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                            label="Shipping"
+                            value={shipping.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        />
+                    )}
+
+                    {otherDiscountAmount > 0 && (
+                        <SummaryRow
+                            label={`Other Discount (${otherDiscount || 0}%)`}
+                            value={otherDiscountAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                             isDiscount
                         />
                     )}

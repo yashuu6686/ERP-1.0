@@ -89,7 +89,7 @@ function ViewPurchaseOrderContent() {
         );
     }
 
-    const { orderInfo, supplier, delivery, items, totals, status, shippingCharges, otherDiscount } = order;
+    const { orderInfo, supplier, delivery, items, totals, status, shippingCharges, otherDiscount, taxRate, discount } = order;
 
     return (
         <Fade in={!loading}>
@@ -141,6 +141,8 @@ function ViewPurchaseOrderContent() {
                     <Grid size={{ xs: 12, lg: 3 }}>
                         <PurchaseSummarySidebar
                             totals={totals}
+                            taxRate={taxRate}
+                            discount={discount}
                             shippingCharges={shippingCharges}
                             otherDiscount={otherDiscount}
                             orderNumber={orderInfo.orderNumber}

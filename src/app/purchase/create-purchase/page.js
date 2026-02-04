@@ -149,7 +149,7 @@ function CreatePurchaseOrderContent() {
     const finalData = {
       ...formData,
       items,
-      totals: { subtotal, taxAmount, discountAmount, grandTotal },
+      totals: { subtotal, taxAmount, discountAmount, otherDiscountAmount, grandTotal },
       taxRate,
       discount,
       shippingCharges,
