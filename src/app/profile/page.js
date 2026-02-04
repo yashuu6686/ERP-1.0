@@ -53,9 +53,11 @@ import {
     Warning,
     CheckCircle,
     Share,
-    Analytics
+    Analytics,
+    Logout
 } from "@mui/icons-material";
 import CommonCard from "../../components/CommonCard";
+import { useAuth } from "@/context/AuthContext";
 
 // Professional Corporate Palette - Mapped to Brand Variables
 const COLORS = {
@@ -140,6 +142,7 @@ const getRoleData = (role) => {
 };
 
 const ProfilePage = () => {
+    const { logout } = useAuth();
     const [activeTab, setActiveTab] = useState(0);
     const [selectedRole, setSelectedRole] = useState("Admin");
 
@@ -194,6 +197,25 @@ const ProfilePage = () => {
                         <Button startIcon={<Share />} sx={{ color: COLORS.secondary, textTransform: "none", fontWeight: 600 }}>Share</Button>
                         <Button variant="contained" disableElevation startIcon={<Edit />} sx={{ bgcolor: COLORS.primary, "&:hover": { bgcolor: COLORS.accent }, textTransform: "none", fontWeight: 700, px: 3 }}>
                             Edit Profile
+                        </Button>
+                        <Button
+                            variant="contained"
+                            disableElevation
+                            startIcon={<Logout />}
+                            onClick={logout}
+                            sx={{
+                                borderColor: "var(--error)",
+                                // color: "var(--primary)",
+                                // "&:hover": {
+                                //     bgcolor: "rgba(220, 38, 38, 0.08)",
+                                //     borderColor: "var(--error)"
+                                // },
+                                textTransform: "none",
+                                fontWeight: 700,
+                                px: 3
+                            }}
+                        >
+                            Logout
                         </Button>
                     </Stack>
                 </Box>

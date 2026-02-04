@@ -437,20 +437,20 @@ function MaterialInspectionFormContent() {
       case 2:
         return (
           <>
-          <Grid container spacing={2}>
-            <Grid size={{xs:12, md:8}}>
-              <InspectionSummary
-              summaryData={summaryData}
-              onChange={handleSummaryChange}
-            />
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 12, md: user?.role === 'admin' ? 12 : 8 }}>
+                <InspectionSummary
+                  summaryData={summaryData}
+                  onChange={handleSummaryChange}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: user?.role === 'admin' ? 12 : 4 }}>
+                <InspectionApproval
+                  approvalData={approvalData}
+                  onChange={handleApprovalChange}
+                />
+              </Grid>
             </Grid>
-            <Grid size={{xs:12, md:4}}>
-            <InspectionApproval
-              approvalData={approvalData}
-              onChange={handleApprovalChange}
-            />
-            </Grid>
-          </Grid>
           </>
         );
       default:

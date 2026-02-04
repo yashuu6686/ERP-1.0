@@ -149,7 +149,7 @@ export default function Sidebar({ children }) {
           <Box sx={{ p: isSidebarOpen ? "6px" : "0px", display: 'flex', flexDirection: 'column', alignItems: isSidebarOpen ? 'stretch' : 'center' }}>
             <Box sx={{
               display: "flex",
-              justifyContent: isSidebarOpen ? "space-between" : "center",
+              justifyContent: "center",
               alignItems: "center",
               mb: 2,
               width: '100%'
@@ -158,28 +158,6 @@ export default function Sidebar({ children }) {
                 <Image src="/Scanbo_logo_new.png" alt="Logo" width={80} height={100} />
               ) : (
                 <Image src="/Scanbo_logo_new.png" alt="Logo" width={40} height={40} style={{ objectFit: 'contain' }} />
-              )}
-              {isSidebarOpen && (
-                <IconButton
-                  size="small"
-                  onClick={logout}
-                  sx={{
-                    color: "var(--brand-primary)",
-                    borderRadius: "8px",
-                    padding: "8px",
-                    transition: "all 0.3s ease",
-                    "&:hover": {
-                      bgcolor: "rgba(17, 114, 186, 0.08)",
-                      color: "#0d5a94",
-                      transform: "translateY(-2px)"
-                    }
-                  }}
-                >
-                  <Box sx={{ display: "flex", alignItems: "center", flexDirection: "column", gap: "2px" }}>
-                    <Logout sx={{ fontSize: "20px" }} />
-                    <Typography sx={{ fontSize: "10px", color: "inherit", fontWeight: 700, textTransform: "uppercase" }}>Logout</Typography>
-                  </Box>
-                </IconButton>
               )}
             </Box>
 
@@ -265,6 +243,47 @@ export default function Sidebar({ children }) {
               </Link>
             );
           })}
+
+          {/* Logout Button at Bottom */}
+          <Divider sx={{ borderColor: "var(--border-default)", my: 1 }} />
+          <ListItemButton
+            onClick={logout}
+            sx={{
+              borderRadius: "8px",
+              marginBottom: "4px",
+              padding: isSidebarOpen ? "10px 12px" : "10px 0",
+              backgroundColor: "transparent",
+              // color: "var(--text-primary)",
+              justifyContent: isSidebarOpen ? 'initial' : 'center',
+              minHeight: isSidebarOpen ? 'auto' : '48px',
+              "&:hover": {
+                backgroundColor: "var(--brand-soft)",
+              }
+            }}
+          >
+            <Box
+              style={{
+                marginRight: isSidebarOpen ? "12px" : "0px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: 'center',
+                color: "rgb(17, 114, 186)",
+              }}
+            >
+              <Logout fontSize="small" />
+            </Box>
+
+            {isSidebarOpen && (
+              <ListItemText
+                primary="Logout"
+                primaryTypographyProps={{
+                  fontSize: "var(--size-body)",
+                  fontWeight: 600,
+                  fontFamily: "var(--font-manrope)",
+                }}
+              />
+            )}
+          </ListItemButton>
         </List>
 
       </Drawer>

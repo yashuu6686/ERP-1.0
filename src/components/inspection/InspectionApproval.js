@@ -45,27 +45,27 @@ const InspectionApproval = ({ approvalData, onChange }) => {
                 </Typography>
             </Box>
 
-            <CardContent sx={{ padding: 3 }}>
+            <CardContent sx={{ padding: 1 }}>
                 <Grid container spacing={4}>
-                    <Grid item xs={12} size={{ xs: 12 }}>
-                        <Box sx={{ p: 2, border: '1px solid #e2e8f0', borderRadius: 2 }}>
+                    <Grid item xs={12} md={user?.role === 'admin' ? 6 : 12} size={{ xs: 12, md: user?.role === 'admin' ? 6 : 12 }}>
+                        <Box sx={{ p: 2, borderRadius: 2 }}>
                             <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
                                 Updated By
                             </Typography>
                             <Grid container spacing={2}>
-                                <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
+                                <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
                                     <Typography variant="caption" sx={{ display: 'block', mb: 0.5 }}>
                                         Name / Signature
                                     </Typography>
                                     <TextField
                                         fullWidth
                                         size="small"
-                                        placeholder="Enter Name"
-                                        value={data.updatedBySignature || ''}
-                                        onChange={handleChange('updatedBySignature')}
+                                        placeholder="Enter your name"
+                                        value={approvalData?.updatedByName || ''}
+                                        onChange={handleChange('updatedBy', 'name')}
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
+                                <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
                                     <Typography variant="caption" sx={{ display: 'block', mb: 0.5 }}>
                                         Date
                                     </Typography>
@@ -83,27 +83,27 @@ const InspectionApproval = ({ approvalData, onChange }) => {
                     </Grid>
 
                     {user?.role === 'admin' && (
-                        <Grid item xs={12} size={{ xs: 12 }}>
-                            <Box sx={{ p: 2, border: '1px solid #e2e8f0', borderRadius: 2 }}>
+                        <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+                            <Box sx={{ p: 2, borderRadius: 2 }}>
                                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
                                     Approved By
                                 </Typography>
                                 <Grid container spacing={2}>
-                                    <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
-                                        <Typography variant="caption" sx={{ display: 'block', mb: 0.5 }}>
-                                            Name
+                                    <Grid item xs={12} md={12} size={{ xs: 12, md:6 }}>
+                                        <Typography variant="caption" sx={{ mb: 0.5 }}>
+                                            name
                                         </Typography>
                                         <TextField
                                             fullWidth
                                             size="small"
-                                            placeholder="Enter Name"
-                                            value={data.approvedBy || ''}
-                                            onChange={handleChange('approvedBy')}
+                                            placeholder="Enter your name"
+                                            value={approvalData?.approvedByName || ''}
+                                            onChange={handleChange('approvedBy', 'name')}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
-                                        <Typography variant="caption" sx={{ display: 'block', mb: 0.5 }}>
-                                            Date
+                                    <Grid item xs={12} md={12} size={{ xs: 12, md:6 }}>
+                                        <Typography variant="caption" sx={{ mb: 0.5 }}>
+                                            date
                                         </Typography>
                                         <TextField
                                             fullWidth
