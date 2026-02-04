@@ -97,7 +97,7 @@ function CreateGRNContent() {
     const fetchPendingPOs = async () => {
         try {
             const response = await axiosInstance.get("/purachase");
-            const pending = (response.data || []).filter(po => po.status === "Approved");
+            const pending = (response.data || []).filter(po => po.status === "Pending");
             setPendingPOs(pending);
         } catch (error) {
             console.error("Error fetching POs:", error);

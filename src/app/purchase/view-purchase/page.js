@@ -33,29 +33,7 @@ function ViewPurchaseOrderContent() {
 
     const { user } = useAuth();
 
-    const handleApprove = async () => {
-        try {
-            await axiosInstance.patch(`/purachase/${id}`, { status: "Approved" });
-            setOrder({ ...order, status: "Approved" });
-            await NotificationService.clearByPoId(id);
-            alert("Purchase Order Approved Successfully!");
-        } catch (error) {
-            console.error("Approval Error:", error);
-            alert("Failed to approve PO.");
-        }
-    };
 
-    const handleReject = async () => {
-        try {
-            await axiosInstance.patch(`/purachase/${id}`, { status: "Rejected" });
-            setOrder({ ...order, status: "Rejected" });
-            await NotificationService.clearByPoId(id);
-            alert("Purchase Order Rejected.");
-        } catch (error) {
-            console.error("Rejection Error:", error);
-            alert("Failed to reject PO.");
-        }
-    };
 
     useEffect(() => {
         const fetchOrderDetails = async () => {
@@ -100,8 +78,6 @@ function ViewPurchaseOrderContent() {
                     id={id}
                     status={status}
                     user={user}
-                    handleApprove={handleApprove}
-                    handleReject={handleReject}
                 />
 
                 <Grid container spacing={2}>

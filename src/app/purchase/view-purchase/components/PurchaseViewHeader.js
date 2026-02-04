@@ -57,39 +57,7 @@ const PurchaseViewHeader = ({
                     </Button>
                 </Tooltip>
 
-                {user?.role === "admin" && status === "Pending Approval" && (
-                    <>
-                        <Button
-                            variant="contained"
-                            onClick={handleApprove}
-                            sx={{
-                                borderRadius: "12px",
-                                textTransform: "none",
-                                fontWeight: 600,
-                                bgcolor: "#059669",
-                                "&:hover": { bgcolor: "#047857" },
-                                boxShadow: "0 4px 12px rgba(5, 150, 105, 0.25)",
-                            }}
-                        >
-                            Approve PO
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            onClick={handleReject}
-                            sx={{
-                                borderRadius: "12px",
-                                textTransform: "none",
-                                fontWeight: 600,
-                                color: "#dc2626",
-                                borderColor: "#fee2e2",
-                                bgcolor: "#fff1f2",
-                                "&:hover": { borderColor: "#fecaca", bgcolor: "#ffe4e6" },
-                            }}
-                        >
-                            Reject
-                        </Button>
-                    </>
-                )}
+
 
                 <Button
                     variant="contained"
