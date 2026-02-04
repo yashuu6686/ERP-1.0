@@ -24,7 +24,7 @@ import {
 } from "@mui/icons-material";
 import InvoiceInfoItem from "./InvoiceInfoItem";
 
-export default function InvoiceDocument({ invoice, invoiceInfo, customer, delivery, items, getPaymentChip, paymentStatus }) {
+export default function InvoiceDocument({ invoice, invoiceInfo, customer, delivery, items, notes, getPaymentChip, paymentStatus }) {
     return (
         <Paper
             elevation={0}
@@ -43,9 +43,18 @@ export default function InvoiceDocument({ invoice, invoiceInfo, customer, delive
                 {/* Document Header */}
                 <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between" alignItems="flex-start" spacing={4} sx={{ mb: 6 }}>
                     <Box>
-                        <Typography variant="h3" fontWeight={900} sx={{ color: "#0f172a", letterSpacing: "-0.04em", mb: 1 }}>
-                            TAX INVOICE
-                        </Typography>
+                        <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 1 }}>
+                            <Typography variant="h3" fontWeight={900} sx={{ color: "#0f172a", letterSpacing: "-0.04em" }}>
+                                TAX INVOICE
+                            </Typography>
+                            {invoiceInfo.orderNo && (
+                                <Chip
+                                    label={`ORD: ${invoiceInfo.orderNo}`}
+                                    size="small"
+                                    sx={{ fontWeight: 700, bgcolor: "#f1f5f9", color: "#64748b", borderRadius: '6px' }}
+                                />
+                            )}
+                        </Stack>
                         <Typography variant="h6" fontWeight={600} sx={{ color: "#64748b", mb: 2.5 }}>
                             Official Payment Record
                         </Typography>
@@ -89,17 +98,26 @@ export default function InvoiceDocument({ invoice, invoiceInfo, customer, delive
                                 <Business sx={{ color: '#1172ba' }} /> BILLING DETAILS
                             </Typography>
                             <Stack spacing={2}>
-                                <Typography variant="body1" fontWeight={700} color="#1e293b">{customer.companyName}</Typography>
+                                <Box>
+                                    <Typography variant="body1" fontWeight={700} color="#1e293b">{customer.companyName}</Typography>
+                                    {customer.organization && (
+                                        <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 700, textTransform: "uppercase" }}>
+                                            {customer.organization}
+                                        </Typography>
+                                    )}
+                                </Box>
                                 <Typography variant="body2" color="#64748b" sx={{ lineHeight: 1.6 }}>{customer.address}</Typography>
-                                <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-                                    <Chip label={`GST: ${customer.gstin}`} size="small" sx={{ fontWeight: 600, bgcolor: "#fff", border: '1px solid #e2e8f0' }} />
-                                    <Chip label={`PAN: ${customer.pan}`} size="small" sx={{ fontWeight: 600, bgcolor: "#fff", border: '1px solid #e2e8f0' }} />
+
+                                <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
+                                    {customer.gstin && <Chip label={`GST: ${customer.gstin}`} size="small" sx={{ fontWeight: 600, bgcolor: "#fff", border: '1px solid #e2e8f0' }} />}
+                                    {customer.pan && <Chip label={`PAN: ${customer.pan}`} size="small" sx={{ fontWeight: 600, bgcolor: "#fff", border: '1px solid #e2e8f0' }} />}
+                                    {customer.drugLicence && <Chip label={`DL: ${customer.drugLicence}`} size="small" sx={{ fontWeight: 600, bgcolor: "#fff", border: '1px solid #e2e8f0' }} />}
                                 </Stack>
                                 <Divider sx={{ borderStyle: 'dashed' }} />
                                 <Box>
                                     <Typography variant="caption" color="#64748b" fontWeight={600}>CONTACT</Typography>
-                                    <Typography variant="body2" fontWeight={600}>{customer.contactPerson}</Typography>
-                                    <Typography variant="body2" color="#64748b">{customer.phone}</Typography>
+                                    <Typography variant="body2" fontWeight={600}>{customer.contactPerson || customer.companyName}</Typography>
+                                    <Typography variant="body2" color="#64748b">{customer.phone || customer.contact}</Typography>
                                 </Box>
                             </Stack>
                         </Box>
@@ -110,12 +128,14 @@ export default function InvoiceDocument({ invoice, invoiceInfo, customer, delive
                                 <LocalShipping sx={{ color: '#1172ba' }} /> SHIPPING DETAILS
                             </Typography>
                             <Stack spacing={2}>
-                                <Typography variant="body1" fontWeight={700} color="#1e293b">{delivery.deliverTo}</Typography>
+                                <Typography variant="body1" fontWeight={700} color="#1e293b">{delivery.deliverTo || delivery.contactPerson}</Typography>
                                 <Typography variant="body2" color="#64748b" sx={{ lineHeight: 1.6 }}>{delivery.deliveryAddress}</Typography>
                                 <Divider sx={{ borderStyle: 'dashed' }} />
                                 <Box>
                                     <Typography variant="caption" color="#64748b" fontWeight={600}>CONTACT</Typography>
                                     <Typography variant="body2" fontWeight={600}>{delivery.contactPerson}</Typography>
+                                    {delivery.phone && <Typography variant="body2" color="#64748b">{delivery.phone}</Typography>}
+                                    {delivery.email && <Typography variant="body2" color="#64748b">{delivery.email}</Typography>}
                                 </Box>
                             </Stack>
                         </Box>
@@ -123,7 +143,7 @@ export default function InvoiceDocument({ invoice, invoiceInfo, customer, delive
                 </Grid>
 
                 {/* Items Table */}
-                <Box sx={{ mb: 4 }}>
+                <Box sx={{ mb: 6 }}>
                     <Typography variant="h6" fontWeight={800} color="#0f172a" sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
                         <ShoppingCart sx={{ color: '#1172ba' }} /> Line Items
                     </Typography>
@@ -136,6 +156,8 @@ export default function InvoiceDocument({ invoice, invoiceInfo, customer, delive
                                     <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>ITEM DESCRIPTION</TableCell>
                                     <TableCell align="center" sx={{ fontWeight: 800, color: "#475569", py: 2 }}>QTY</TableCell>
                                     <TableCell align="right" sx={{ fontWeight: 800, color: "#475569", py: 2 }}>UNIT PRICE</TableCell>
+                                    <TableCell align="right" sx={{ fontWeight: 800, color: "#475569", py: 2 }}>TAX (%)</TableCell>
+                                    <TableCell align="right" sx={{ fontWeight: 800, color: "#475569", py: 2 }}>TAX AMT</TableCell>
                                     <TableCell align="right" sx={{ fontWeight: 800, color: "#475569", py: 2 }}>TOTAL</TableCell>
                                 </TableRow>
                             </TableHead>
@@ -151,10 +173,16 @@ export default function InvoiceDocument({ invoice, invoiceInfo, customer, delive
                                             <Chip label={item.qty} size="small" sx={{ fontWeight: 800, bgcolor: "#eff6ff", color: "#1172ba", borderRadius: '6px' }} />
                                         </TableCell>
                                         <TableCell align="right" sx={{ fontWeight: 600, color: "#475569", fontFamily: 'monospace' }}>
-                                            ₹{parseFloat(item.price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                                            ₹{parseFloat(item.price || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                                        </TableCell>
+                                        <TableCell align="right" sx={{ fontWeight: 600, color: "#64748b", fontFamily: 'monospace' }}>
+                                            {item.taxPercent || 0}%
+                                        </TableCell>
+                                        <TableCell align="right" sx={{ fontWeight: 600, color: "#64748b", fontFamily: 'monospace' }}>
+                                            ₹{parseFloat(item.taxAmount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                                         </TableCell>
                                         <TableCell align="right" sx={{ fontWeight: 700, color: "#0f172a", fontFamily: 'monospace' }}>
-                                            ₹{parseFloat(item.total).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                                            ₹{parseFloat(item.total || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -162,6 +190,36 @@ export default function InvoiceDocument({ invoice, invoiceInfo, customer, delive
                         </Table>
                     </TableContainer>
                 </Box>
+
+                {/* Notes & Terms Section */}
+                {(notes.termsAndConditions || notes.additionalNotes) && (
+                    <Grid container spacing={4}>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            {notes.termsAndConditions && (
+                                <Box sx={{ p: 2.5, borderRadius: 3, bgcolor: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                                    <Typography variant="subtitle2" fontWeight={800} color="#0f172a" sx={{ mb: 1, textTransform: 'uppercase' }}>
+                                        Terms & Conditions
+                                    </Typography>
+                                    <Typography variant="body2" color="#64748b" sx={{ whiteSpace: 'pre-line', lineHeight: 1.6 }}>
+                                        {notes.termsAndConditions}
+                                    </Typography>
+                                </Box>
+                            )}
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            {notes.additionalNotes && (
+                                <Box sx={{ p: 2.5, borderRadius: 3, bgcolor: '#fff9f9', border: '1px solid #fee2e2' }}>
+                                    <Typography variant="subtitle2" fontWeight={800} color="#991b1b" sx={{ mb: 1, textTransform: 'uppercase' }}>
+                                        Additional Notes
+                                    </Typography>
+                                    <Typography variant="body2" color="#b91c1c" sx={{ fontStyle: 'italic', lineHeight: 1.6 }}>
+                                        {notes.additionalNotes}
+                                    </Typography>
+                                </Box>
+                            )}
+                        </Grid>
+                    </Grid>
+                )}
             </Box>
         </Paper>
     );

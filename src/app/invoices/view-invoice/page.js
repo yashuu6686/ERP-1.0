@@ -63,6 +63,7 @@ function ViewInvoiceContent() {
     const invoiceInfo = invoice.invoiceInfo || {};
     const customer = invoice.customer || {};
     const delivery = invoice.delivery || {};
+    const notes = invoice.notes || {};
 
     // Support both 'items' and 'products' naming
     const rawItems = invoice.items || invoice.products || [];
@@ -71,6 +72,8 @@ function ViewInvoiceContent() {
         name: item.name || item.itemName || "Unnamed Item",
         qty: item.qty || item.quantity || 0,
         price: item.price || 0,
+        taxPercent: item.taxPercent || 0,
+        taxAmount: item.taxAmount || 0,
         total: item.total || item.amount || 0
     }));
 
@@ -129,6 +132,7 @@ function ViewInvoiceContent() {
                                 customer={customer}
                                 delivery={delivery}
                                 items={items}
+                                notes={notes}
                                 getPaymentChip={getPaymentChip}
                                 paymentStatus={paymentStatus}
                             />

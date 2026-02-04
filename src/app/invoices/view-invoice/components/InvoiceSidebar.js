@@ -20,7 +20,7 @@ export default function InvoiceSidebar({ totals, invoiceInfo, status }) {
                         </Typography>
                     </Stack>
                     <Stack direction="row" justifyContent="space-between">
-                        <Typography variant="body2" color="#64748b" fontWeight={600}>Tax (18%)</Typography>
+                        <Typography variant="body2" color="#64748b" fontWeight={600}>Tax Amount</Typography>
                         <Typography variant="body2" color="#0f172a" fontWeight={700} sx={{ fontFamily: 'monospace' }}>
                             ₹{totals.taxAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                         </Typography>
