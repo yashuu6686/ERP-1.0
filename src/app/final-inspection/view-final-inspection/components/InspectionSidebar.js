@@ -7,7 +7,7 @@ export default function InspectionSidebar({ data, id }) {
     return (
         <Stack spacing={3}>
             {/* QA Verdict Card */}
-            <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+            <Paper elevation={0} sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                 <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1 }}>
                     <FactCheck sx={{ color: '#1172ba', fontSize: 20 }} /> QA Verdict
                 </Typography>
@@ -37,7 +37,7 @@ export default function InspectionSidebar({ data, id }) {
             </Paper>
 
             {/* System Info & Approval */}
-            <Paper sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#f8fafc' }}>
+            <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                 <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
                     <VerifiedUser sx={{ color: '#1172ba', fontSize: 20 }} /> Authority
                 </Typography>

@@ -29,7 +29,7 @@ const PurchaseSummarySidebar = ({ totals, taxRate, discount, shippingCharges, ot
     return (
         <Stack spacing={2}>
             {/* Financial Summary */}
-            <Paper sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+            <Paper elevation={0} sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                 <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Payments sx={{ color: '#1172ba', fontSize: 20 }} /> Order Summary
                 </Typography>
@@ -82,7 +82,7 @@ const PurchaseSummarySidebar = ({ totals, taxRate, discount, shippingCharges, ot
             </Paper>
 
             {/* Payment/Account Details */}
-            <Paper sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+            <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                 <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
                     <AccountBalanceWallet sx={{ color: '#1172ba', fontSize: 20 }} /> Accounting Info
                 </Typography>
