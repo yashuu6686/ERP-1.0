@@ -17,7 +17,37 @@ import {
 } from "@mui/material";
 import { Description, Add, Delete } from "@mui/icons-material";
 
-export default function ProductDetailsTable({ products, handleProductChange, addProduct, removeProduct, errors }) {
+export default function ProductDetailsTable({ formik }) {
+    const products = formik.values.products || [];
+
+    const handleProductChange = (index, field, value) => {
+        const updated = [...products];
+        if (field === "name") {
+            // Only allow characters and spaces
+            const filteredValue = value.replace(/[^a-zA-Z\s]/g, "");
+            updated[index][field] = filteredValue;
+        } else {
+            updated[index][field] = value;
+        }
+        formik.setFieldValue("products", updated);
+    };
+
+    const addProduct = () => {
+        formik.setFieldValue("products", [...products, { name: "", quantity: "" }]);
+    };
+
+    const removeProduct = (index) => {
+        if (products.length > 1) {
+            formik.setFieldValue("products", products.filter((_, i) => i !== index));
+        }
+    };
+
+    const getError = (index, field) => {
+        if (formik.touched.products?.[index]?.[field] && formik.errors.products?.[index]?.[field]) {
+            return formik.errors.products[index][field];
+        }
+        return null;
+    };
     return (
         <Card
             sx={{
@@ -103,8 +133,11 @@ export default function ProductDetailsTable({ products, handleProductChange, add
                                         placeholder="Enter product name..."
                                         value={product.name}
                                         onChange={(e) => handleProductChange(i, "name", e.target.value)}
+                                        onBlur={formik.handleBlur}
+                                        name={`products[${i}].name`}
                                         size="small"
-                                        error={errors[`product_${i}_name`]}
+                                        error={Boolean(getError(i, "name"))}
+                                        helperText={getError(i, "name")}
                                         sx={{
                                             "& .MuiOutlinedInput-root": {
                                                 "&:hover fieldset": {
@@ -120,8 +153,11 @@ export default function ProductDetailsTable({ products, handleProductChange, add
                                         placeholder="0"
                                         value={product.quantity}
                                         onChange={(e) => handleProductChange(i, "quantity", e.target.value)}
+                                        onBlur={formik.handleBlur}
+                                        name={`products[${i}].quantity`}
                                         size="small"
-                                        error={errors[`product_${i}_quantity`]}
+                                        error={Boolean(getError(i, "quantity"))}
+                                        helperText={getError(i, "quantity")}
                                     />
                                 </TableCell>
                                 <TableCell>

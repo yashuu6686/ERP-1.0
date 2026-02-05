@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { Description, CalendarToday, LocalShipping } from "@mui/icons-material";
 
-export default function DispatchInfoCard({ formData, handleChange, errors, orders, onOrderSelect }) {
+export default function DispatchInfoCard({ formik, orders, onOrderSelect }) {
     return (
         <Card
             sx={{
@@ -79,12 +79,14 @@ export default function DispatchInfoCard({ formData, handleChange, errors, order
                         <TextField
                             fullWidth
                             label="Dispatch No"
+                            name="dispatchNo"
                             placeholder="DIS-001"
-                            value={formData.dispatchNo}
-                            onChange={(e) => handleChange("dispatchNo", e.target.value)}
+                            value={formik.values.dispatchNo}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                             required
-                            error={errors.dispatchNo}
-                            helperText={errors.dispatchNo && "This field is required"}
+                            error={formik.touched.dispatchNo && Boolean(formik.errors.dispatchNo)}
+                            helperText={formik.touched.dispatchNo && formik.errors.dispatchNo}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -107,11 +109,13 @@ export default function DispatchInfoCard({ formData, handleChange, errors, order
                             fullWidth
                             type="date"
                             label="Dispatch Date"
-                            value={formData.dispatchDate}
-                            onChange={(e) => handleChange("dispatchDate", e.target.value)}
+                            name="dispatchDate"
+                            value={formik.values.dispatchDate}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                             required
-                            error={errors.dispatchDate}
-                            helperText={errors.dispatchDate && "This field is required"}
+                            error={formik.touched.dispatchDate && Boolean(formik.errors.dispatchDate)}
+                            helperText={formik.touched.dispatchDate && formik.errors.dispatchDate}
                             InputLabelProps={{ shrink: true }}
                             InputProps={{
                                 startAdornment: (
@@ -129,12 +133,14 @@ export default function DispatchInfoCard({ formData, handleChange, errors, order
                         <TextField
                             fullWidth
                             label="Tracking Number"
+                            name="trackingNumber"
                             placeholder="TRK-889900"
-                            value={formData.trackingNumber}
-                            onChange={(e) => handleChange("trackingNumber", e.target.value)}
+                            value={formik.values.trackingNumber}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                             required
-                            error={errors.trackingNumber}
-                            helperText={errors.trackingNumber && "This field is required"}
+                            error={formik.touched.trackingNumber && Boolean(formik.errors.trackingNumber)}
+                            helperText={formik.touched.trackingNumber && formik.errors.trackingNumber}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">

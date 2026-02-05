@@ -89,10 +89,6 @@ export default function RejectedGoods() {
 
   const handleTabChange = (e, newValue) => setTab(newValue);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
   const handleAdd = () => {
     setDialogMode("add");
     setForm({
@@ -146,19 +142,19 @@ export default function RejectedGoods() {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (values) => {
     try {
       setLoading(true);
       const payload = {
-        rejectionId: form.rejectionId,
-        sourceType: form.sourceType,
-        sourceRef: form.sourceReference,
-        goods: form.rejectedGoods,
-        qty: parseInt(form.rejectedQty),
-        date: form.date,
-        reason: form.reason,
+        rejectionId: values.rejectionId,
+        sourceType: values.sourceType,
+        sourceRef: values.sourceReference,
+        goods: values.rejectedGoods,
+        qty: parseInt(values.rejectedQty),
+        date: values.date,
+        reason: values.reason,
         status: tab === 0 ? "total" : tab === 1 ? "return" : "scrap",
-        rejectedBy: form.rejectedBy,
+        rejectedBy: values.rejectedBy,
       };
 
       if (dialogMode === "add") {
@@ -392,10 +388,10 @@ export default function RejectedGoods() {
           onClose={() => setOpenDialog(false)}
           form={form}
           mode={dialogMode}
-          onChange={handleChange}
           onSubmit={handleSubmit}
         />
       </CommonCard>
     </Box>
   );
 }
+
