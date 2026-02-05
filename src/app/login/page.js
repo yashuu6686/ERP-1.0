@@ -21,6 +21,7 @@ import {
 import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import logo from "../../../public/logo.png";
 
 export default function LoginPage() {
     const [id, setId] = useState("");
@@ -31,6 +32,7 @@ export default function LoginPage() {
 
     const { login } = useAuth();
     const router = useRouter();
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -86,7 +88,7 @@ export default function LoginPage() {
                     }}
                 >
                     <Box sx={{ mb: 4, display: "flex", flexDirection: "column", alignItems: "center" }}>
-                        <img src="/logo.png" alt="Scanbo Logo" style={{ width: '100px', height: '100px', objectFit: 'contain' }} />
+                        <img src={logo.src} alt="Scanbo Logo" style={{ width: '100px', height: '100px', objectFit: 'contain' }} />
                         <Typography variant="h5" fontWeight={800} color="#1e293b" sx={{ mt: 2, letterSpacing: -0.5 }}>
                             Welcome Back
                         </Typography>
