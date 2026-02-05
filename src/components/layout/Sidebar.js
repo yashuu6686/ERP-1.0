@@ -32,44 +32,22 @@ import Footer from "./Footer";
 import Image from "next/image";
 // import '../../styles/globals.css'
 
-const menuItems = [
-  { text: "Dashboard", icon: <Home />, path: "/" },
-  { text: "Purchase", icon: <ShoppingCart />, path: "/purchase" },
-  { text: "Goods Receipt Note (GRN)", icon: <Inventory />, path: "/grn" },
-  {
-    text: "Incoming Inspection",
-    icon: <Assignment />,
-    path: "/incoming-inspection",
-  },
-  { text: "Store", icon: <Store />, path: "/store" },
-  { text: "Bill of Materials", icon: <Build />, path: "/bom" },
-  { text: "Material Issue Request", icon: <Send />, path: "/material-issue" },
-  {
-    text: "After Production Inspection",
-    icon: <CheckCircle />,
-    path: "/production-inspection",
-  },
-  { text: "Batch", icon: <Layers />, path: "/batch" },
-  { text: "Customer Orders", icon: <People />, path: "/orders" },
-  { text: "Invoices", icon: <Receipt />, path: "/invoices" },
-  { text: "Final Inspection", icon: <Verified />, path: "/final-inspection" },
-  // { text: "Certificate Of Analysis", icon: <Science />, path: "/coa" },
-  {
-    text: "Standard Operating Procedures",
-    icon: <Description />,
-    path: "/sop",
-  },
-  { text: "Dispatch Details", icon: <LocalShipping />, path: "/dispatch" },
-  { text: "Rejected Goods", icon: <Cancel />, path: "/rejected-goods" },
-];
+import { MENU_ITEMS } from "@/config/menuConfig";
 
 const DRAWER_WIDTH = 264;
 const MINI_DRAWER_WIDTH = 56;
 
 export default function Sidebar({ children }) {
   const { user, logout } = useAuth();
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
-  const [currentPath, setCurrentPath] = React.useState("/");
+
+  const menuItems = React.useMemo(() => {
+    if (!user) return [];
+    // Admin access all by default to prevent lockout
+    if (user.role === 'admin' || (user.permissions && user.permissions.includes('all'))) {
+      return MENU_ITEMS;
+    }
+    return MENU_ITEMS.filter(item => user.permissions && user.permissions.includes(item.key));
+  }, [user]);
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(true);
   const [hasMounted, setHasMounted] = React.useState(false);
 
