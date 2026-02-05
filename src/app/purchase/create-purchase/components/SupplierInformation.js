@@ -6,8 +6,11 @@ import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Business from "@mui/icons-material/Business";
+import { useFormikContext } from "formik";
 
-const SupplierInformation = ({ data, onChange }) => {
+const SupplierInformation = () => {
+    const { values, errors, touched, setFieldValue, handleBlur } = useFormikContext();
+
     return (
         <Card
             sx={{
@@ -36,12 +39,18 @@ const SupplierInformation = ({ data, onChange }) => {
                         <TextField
                             fullWidth
                             sx={{
-                                background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                "& .MuiOutlinedInput-root": {
+                                    background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                }
                             }}
                             label="Company Name"
                             placeholder="ABC Suppliers Pvt Ltd"
-                            value={data?.companyName || ""}
-                            onChange={(e) => onChange("companyName", e.target.value)}
+                            name="supplier.companyName"
+                            value={values.supplier.companyName}
+                            onChange={(e) => setFieldValue("supplier.companyName", e.target.value)}
+                            onBlur={handleBlur}
+                            error={touched.supplier?.companyName && Boolean(errors.supplier?.companyName)}
+                            helperText={touched.supplier?.companyName && errors.supplier?.companyName}
                         />
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
@@ -49,10 +58,16 @@ const SupplierInformation = ({ data, onChange }) => {
                             fullWidth
                             label="Contact Person"
                             placeholder="John Doe"
-                            value={data?.contactPerson || ""}
-                            onChange={(e) => onChange("contactPerson", e.target.value)}
+                            name="supplier.contactPerson"
+                            value={values.supplier.contactPerson}
+                            onChange={(e) => setFieldValue("supplier.contactPerson", e.target.value)}
+                            onBlur={handleBlur}
+                            error={touched.supplier?.contactPerson && Boolean(errors.supplier?.contactPerson)}
+                            helperText={touched.supplier?.contactPerson && errors.supplier?.contactPerson}
                             sx={{
-                                background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                "& .MuiOutlinedInput-root": {
+                                    background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                }
                             }}
                         />
                     </Grid>
@@ -63,10 +78,16 @@ const SupplierInformation = ({ data, onChange }) => {
                             placeholder="123 Business Street"
                             multiline
                             rows={1}
-                            value={data?.address || ""}
-                            onChange={(e) => onChange("address", e.target.value)}
+                            name="supplier.address"
+                            value={values.supplier.address}
+                            onChange={(e) => setFieldValue("supplier.address", e.target.value)}
+                            onBlur={handleBlur}
+                            error={touched.supplier?.address && Boolean(errors.supplier?.address)}
+                            helperText={touched.supplier?.address && errors.supplier?.address}
                             sx={{
-                                background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                "& .MuiOutlinedInput-root": {
+                                    background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                }
                             }}
                         />
                     </Grid>
@@ -75,10 +96,16 @@ const SupplierInformation = ({ data, onChange }) => {
                             fullWidth
                             label="Email"
                             placeholder="contact@supplier.com"
-                            value={data?.email || ""}
-                            onChange={(e) => onChange("email", e.target.value)}
+                            name="supplier.email"
+                            value={values.supplier.email}
+                            onChange={(e) => setFieldValue("supplier.email", e.target.value)}
+                            onBlur={handleBlur}
+                            error={touched.supplier?.email && Boolean(errors.supplier?.email)}
+                            helperText={touched.supplier?.email && errors.supplier?.email}
                             sx={{
-                                background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                "& .MuiOutlinedInput-root": {
+                                    background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                }
                             }}
                         />
                     </Grid>
@@ -87,10 +114,16 @@ const SupplierInformation = ({ data, onChange }) => {
                             fullWidth
                             label="Phone"
                             placeholder="+91 98765 43210"
-                            value={data?.phone || ""}
-                            onChange={(e) => onChange("phone", e.target.value)}
+                            name="supplier.phone"
+                            value={values.supplier.phone}
+                            onChange={(e) => setFieldValue("supplier.phone", e.target.value)}
+                            onBlur={handleBlur}
+                            error={touched.supplier?.phone && Boolean(errors.supplier?.phone)}
+                            helperText={touched.supplier?.phone && errors.supplier?.phone}
                             sx={{
-                                background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                "& .MuiOutlinedInput-root": {
+                                    background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                }
                             }}
                         />
                     </Grid>
@@ -98,10 +131,16 @@ const SupplierInformation = ({ data, onChange }) => {
                         <TextField
                             fullWidth
                             label="PAN Number"
-                            value={data?.pan || ""}
-                            onChange={(e) => onChange("pan", e.target.value)}
+                            name="supplier.pan"
+                            value={values.supplier.pan}
+                            onChange={(e) => setFieldValue("supplier.pan", e.target.value)}
+                            onBlur={handleBlur}
+                            error={touched.supplier?.pan && Boolean(errors.supplier?.pan)}
+                            helperText={touched.supplier?.pan && errors.supplier?.pan}
                             sx={{
-                                background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                "& .MuiOutlinedInput-root": {
+                                    background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                }
                             }}
                             placeholder="ABCDE1234F"
                         />
@@ -111,10 +150,16 @@ const SupplierInformation = ({ data, onChange }) => {
                             fullWidth
                             label="GSTIN"
                             placeholder="22ABCDE1234F1Z5"
-                            value={data?.gstin || ""}
-                            onChange={(e) => onChange("gstin", e.target.value)}
+                            name="supplier.gstin"
+                            value={values.supplier.gstin}
+                            onChange={(e) => setFieldValue("supplier.gstin", e.target.value)}
+                            onBlur={handleBlur}
+                            error={touched.supplier?.gstin && Boolean(errors.supplier?.gstin)}
+                            helperText={touched.supplier?.gstin && errors.supplier?.gstin}
                             sx={{
-                                background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                "& .MuiOutlinedInput-root": {
+                                    background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                }
                             }}
                         />
                     </Grid>

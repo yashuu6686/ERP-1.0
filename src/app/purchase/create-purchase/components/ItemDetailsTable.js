@@ -13,11 +13,23 @@ import InputAdornment from "@mui/material/InputAdornment";
 import Tooltip from "@mui/material/Tooltip";
 import IconButton from "@mui/material/IconButton";
 import Card from "@mui/material/Card";
+import { useFormikContext, FieldArray } from "formik";
 
 import Add from "@mui/icons-material/Add";
 import Delete from "@mui/icons-material/Delete";
 
-const ItemDetailsTable = ({ items, addItem, removeItem, handleItemChange }) => {
+const ItemDetailsTable = () => {
+    const { values, setFieldValue, errors, touched, handleBlur } = useFormikContext();
+
+    const handleItemChange = (index, field, value) => {
+        const items = [...values.items];
+        items[index][field] = value;
+        items[index].total =
+            (parseFloat(items[index].qty) || 0) *
+            (parseFloat(items[index].price) || 0);
+        setFieldValue("items", items);
+    };
+
     return (
         <Card
             sx={{
@@ -42,7 +54,7 @@ const ItemDetailsTable = ({ items, addItem, removeItem, handleItemChange }) => {
                 <Button
                     variant="contained"
                     startIcon={<Add />}
-                    onClick={addItem}
+                    onClick={() => setFieldValue("items", [...values.items, { name: "", qty: "", price: "", total: 0 }])}
                     sx={{
                         backgroundColor: "white",
                         color: "#1172ba",
@@ -105,7 +117,7 @@ const ItemDetailsTable = ({ items, addItem, removeItem, handleItemChange }) => {
                     </TableHead>
 
                     <TableBody>
-                        {items.map((item, i) => (
+                        {values.items.map((item, i) => (
                             <TableRow
                                 key={i}
                                 sx={{
@@ -128,8 +140,12 @@ const ItemDetailsTable = ({ items, addItem, removeItem, handleItemChange }) => {
                                     <TextField
                                         fullWidth
                                         placeholder="Enter item name..."
+                                        name={`items.${i}.name`}
                                         value={item.name}
                                         onChange={(e) => handleItemChange(i, "name", e.target.value)}
+                                        onBlur={handleBlur}
+                                        error={touched.items?.[i]?.name && Boolean(errors.items?.[i]?.name)}
+                                        helperText={touched.items?.[i]?.name && errors.items?.[i]?.name}
                                         size="small"
                                         sx={{
                                             "& .MuiOutlinedInput-root": {
@@ -144,8 +160,12 @@ const ItemDetailsTable = ({ items, addItem, removeItem, handleItemChange }) => {
                                     <TextField
                                         type="number"
                                         placeholder="0"
+                                        name={`items.${i}.qty`}
                                         value={item.qty}
                                         onChange={(e) => handleItemChange(i, "qty", e.target.value)}
+                                        onBlur={handleBlur}
+                                        error={touched.items?.[i]?.qty && Boolean(errors.items?.[i]?.qty)}
+                                        helperText={touched.items?.[i]?.qty && errors.items?.[i]?.qty}
                                         size="small"
                                     />
                                 </TableCell>
@@ -153,8 +173,12 @@ const ItemDetailsTable = ({ items, addItem, removeItem, handleItemChange }) => {
                                     <TextField
                                         type="number"
                                         placeholder="0.00"
+                                        name={`items.${i}.price`}
                                         value={item.price}
                                         onChange={(e) => handleItemChange(i, "price", e.target.value)}
+                                        onBlur={handleBlur}
+                                        error={touched.items?.[i]?.price && Boolean(errors.items?.[i]?.price)}
+                                        helperText={touched.items?.[i]?.price && errors.items?.[i]?.price}
                                         size="small"
                                         InputProps={{
                                             startAdornment: (
@@ -172,8 +196,8 @@ const ItemDetailsTable = ({ items, addItem, removeItem, handleItemChange }) => {
                                     <Tooltip title="Remove item">
                                         <IconButton
                                             color="error"
-                                            onClick={() => removeItem(i)}
-                                            disabled={items.length === 1}
+                                            onClick={() => setFieldValue("items", values.items.filter((_, idx) => idx !== i))}
+                                            disabled={values.items.length === 1}
                                         >
                                             <Delete />
                                         </IconButton>

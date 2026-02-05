@@ -28,6 +28,8 @@ import AssignmentTurnedIn from "@mui/icons-material/AssignmentTurnedIn";
 import CommonCard from "../../../components/CommonCard";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "../../../components/Loader";
+import { useFormik, FormikProvider } from "formik";
+import * as Yup from "yup";
 
 // Helper component for the internal gradient cards
 const GradientCard = ({ title, icon: Icon, children }) => (
@@ -53,6 +55,22 @@ const GradientCard = ({ title, icon: Icon, children }) => (
     </Card>
 );
 
+// Validation Schema
+const validationSchema = Yup.object().shape({
+    grnNumber: Yup.string().required("Required"),
+    poNumber: Yup.string().required("Required"),
+    invoiceNumber: Yup.string().required("Required"),
+    receivedDate: Yup.date().required("Required"),
+    receivedBy: Yup.string().required("Required"),
+    supplierName: Yup.string().required("Required"),
+    items: Yup.array().of(
+        Yup.object().shape({
+            name: Yup.string().required("Required"),
+            receivedQty: Yup.number().positive("Must be > 0").required("Required"),
+        })
+    ).min(1, "At least one item required"),
+});
+
 function CreateGRNContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -63,15 +81,46 @@ function CreateGRNContent() {
     const [pendingPOs, setPendingPOs] = useState([]);
     const [selectedPO, setSelectedPO] = useState(null);
 
-    const [formData, setFormData] = useState({
-        grnNumber: `GRN/${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`,
-        poNumber: "",
-        invoiceNumber: "",
-        receivedDate: new Date().toISOString().split("T")[0],
-        receivedBy: "",
-        supplierName: "",
-        items: [],
-        inspectionStatus: "Pending",
+    const formik = useFormik({
+        initialValues: {
+            grnNumber: `GRN/${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`,
+            poNumber: "",
+            invoiceNumber: "",
+            receivedDate: new Date().toISOString().split("T")[0],
+            receivedBy: "",
+            supplierName: "",
+            items: [],
+            inspectionStatus: "Pending",
+        },
+        validationSchema,
+        onSubmit: async (values) => {
+            try {
+                setLoading(true);
+                const response = isEditMode
+                    ? await axiosInstance.put(`/grn/${id}`, values)
+                    : await axiosInstance.post("/grn", values);
+
+                if (response.status === 201 || response.status === 200) {
+                    if (selectedPO) {
+                        try {
+                            await axiosInstance.put(`/purachase/${selectedPO.id}`, {
+                                ...selectedPO,
+                                status: "Completed",
+                            });
+                        } catch (poError) {
+                            console.error("Failed to update PO status:", poError);
+                        }
+                    }
+                    alert(`GRN ${isEditMode ? "Updated" : "Created"} Successfully!`);
+                    router.push("/grn");
+                }
+            } catch (error) {
+                console.error("Save GRN Error:", error);
+                alert("Failed to save GRN.");
+            } finally {
+                setLoading(false);
+            }
+        },
     });
 
     useEffect(() => {
@@ -79,7 +128,7 @@ function CreateGRNContent() {
             try {
                 setLoading(true);
                 const response = await axiosInstance.get(`/grn/${id}`);
-                setFormData(response.data);
+                formik.setValues(response.data);
             } catch (error) {
                 console.error("Fetch GRN Error:", error);
             } finally {
@@ -92,7 +141,6 @@ function CreateGRNContent() {
             fetchGRNDetails();
         }
     }, [id, isEditMode]);
-
 
     const fetchPendingPOs = async () => {
         try {
@@ -107,249 +155,245 @@ function CreateGRNContent() {
     const handlePOChange = (event, newValue) => {
         setSelectedPO(newValue);
         if (newValue) {
-            setFormData({
-                ...formData,
-                poNumber: newValue.orderInfo?.orderNumber || "",
-                supplierName: newValue.supplier?.companyName || "",
-                items: (newValue.items || []).map(item => ({
-                    ...item,
-                    orderedQty: item.qty,
-                    receivedQty: item.qty,
-                    remark: "",
-                })),
-            });
+            formik.setFieldValue("poNumber", newValue.orderInfo?.orderNumber || "");
+            formik.setFieldValue("supplierName", newValue.supplier?.companyName || "");
+            formik.setFieldValue("items", (newValue.items || []).map(item => ({
+                ...item,
+                orderedQty: item.qty,
+                receivedQty: item.qty,
+                remark: "",
+            })));
         } else {
-            setFormData({
-                ...formData,
-                poNumber: "",
-                supplierName: "",
-                items: [],
-            });
+            formik.setFieldValue("poNumber", "");
+            formik.setFieldValue("supplierName", "");
+            formik.setFieldValue("items", []);
         }
-    };
-
-    const handleInputChange = (field, value) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
     };
 
     const handleItemChange = (index, field, value) => {
-        const updatedItems = [...formData.items];
+        const updatedItems = [...formik.values.items];
         updatedItems[index][field] = value;
-        setFormData(prev => ({ ...prev, items: updatedItems }));
-    };
-
-    const handleSave = async () => {
-        try {
-            setLoading(true);
-            const response = isEditMode
-                ? await axiosInstance.put(`/grn/${id}`, formData)
-                : await axiosInstance.post("/grn", formData);
-
-            if (response.status === 201 || response.status === 200) {
-                if (selectedPO) {
-                    try {
-                        await axiosInstance.put(`/purachase/${selectedPO.id}`, {
-                            ...selectedPO,
-                            status: "Completed",
-                        });
-                    } catch (poError) {
-                        console.error("Failed to update PO status:", poError);
-                    }
-                }
-                alert(`GRN ${isEditMode ? "Updated" : "Created"} Successfully!`);
-                router.push("/grn");
-            }
-        } catch (error) {
-            console.error("Save GRN Error:", error);
-            alert("Failed to save GRN.");
-        } finally {
-            setLoading(false);
-        }
+        formik.setFieldValue("items", updatedItems);
     };
 
     if (loading) return <Loader fullPage message="Processing GRN..." />;
 
-    const inputStyle = { background: "linear-gradient(135deg, #f8fafc, #f1f5f9)", cursor: "pointer" };
+    const inputStyle = {
+        "& .MuiOutlinedInput-root": {
+            background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+            bgcolor: "white"
+        }
+    };
 
     return (
-        <Box>
-            <CommonCard title={isEditMode ? "Edit Goods Receipt Note (GRN)" : "Create Goods Receipt Note (GRN)"}>
-                <Box sx={{ p: 1 }}>
-                    <Grid container spacing={3} sx={{ mb: 4 }}>
-                        {/* GRN Details */}
-                        <Grid item xs={12} md={8} size={{ xs: 12, md: 12 }}>
-                            <GradientCard title="GRN Information" icon={ReceiptLong}>
-                                <Grid container spacing={2}>
-                                    <Grid item xs={12} md={6} size={{ xs: 12, md: 4 }}>
-                                        <TextField
-                                            fullWidth
-                                            label="GRN Number"
-                                            value={formData.grnNumber}
-                                            onChange={(e) => handleInputChange("grnNumber", e.target.value)}
-                                            size="small"
-                                            sx={inputStyle}
-                                        />
+        <FormikProvider value={formik}>
+            <Box>
+                <CommonCard title={isEditMode ? "Edit Goods Receipt Note (GRN)" : "Create Goods Receipt Note (GRN)"}>
+                    <Box sx={{ p: 1 }}>
+                        <Grid container spacing={3} sx={{ mb: 4 }}>
+                            {/* GRN Details */}
+                            <Grid item xs={12} md={8} size={{ xs: 12, md: 12 }}>
+                                <GradientCard title="GRN Information" icon={ReceiptLong}>
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={12} md={6} size={{ xs: 12, md: 4 }}>
+                                            <TextField
+                                                fullWidth
+                                                label="GRN Number"
+                                                name="grnNumber"
+                                                value={formik.values.grnNumber}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
+                                                error={formik.touched.grnNumber && Boolean(formik.errors.grnNumber)}
+                                                helperText={formik.touched.grnNumber && formik.errors.grnNumber}
+                                                size="small"
+                                                sx={inputStyle}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} md={6} size={{ xs: 12, md: 4 }}>
+                                            <Autocomplete
+                                                options={pendingPOs}
+                                                getOptionLabel={(option) => option.orderInfo?.orderNumber || ""}
+                                                value={pendingPOs.find(po => po.orderInfo?.orderNumber === formik.values.poNumber) || null}
+                                                onChange={handlePOChange}
+                                                sx={{ cursor: "pointer" }}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        label="Select PO Number"
+                                                        placeholder="Search Pending POs..."
+                                                        size="small"
+                                                        onBlur={formik.handleBlur}
+                                                        error={formik.touched.poNumber && Boolean(formik.errors.poNumber)}
+                                                        helperText={formik.touched.poNumber && formik.errors.poNumber}
+                                                        sx={inputStyle}
+                                                    />
+                                                )}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} md={6} size={{ xs: 12, md: 4 }}>
+                                            <TextField
+                                                fullWidth
+                                                label="Invoice Number"
+                                                name="invoiceNumber"
+                                                value={formik.values.invoiceNumber}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
+                                                error={formik.touched.invoiceNumber && Boolean(formik.errors.invoiceNumber)}
+                                                helperText={formik.touched.invoiceNumber && formik.errors.invoiceNumber}
+                                                size="small"
+                                                sx={inputStyle}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} md={6} size={{ xs: 12, md: 4 }}>
+                                            <TextField
+                                                fullWidth
+                                                type="date"
+                                                label="Received Date"
+                                                name="receivedDate"
+                                                value={formik.values.receivedDate}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
+                                                error={formik.touched.receivedDate && Boolean(formik.errors.receivedDate)}
+                                                helperText={formik.touched.receivedDate && formik.errors.receivedDate}
+                                                size="small"
+                                                InputLabelProps={{ shrink: true }}
+                                                sx={inputStyle}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} size={{ xs: 12, md: 4 }}>
+                                            <TextField
+                                                fullWidth
+                                                label="Supplier Name"
+                                                name="supplierName"
+                                                value={formik.values.supplierName}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
+                                                error={formik.touched.supplierName && Boolean(formik.errors.supplierName)}
+                                                helperText={formik.touched.supplierName && formik.errors.supplierName}
+                                                size="small"
+                                                sx={inputStyle}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} size={{ xs: 12, md: 4 }}>
+                                            <TextField
+                                                fullWidth
+                                                label="Received By"
+                                                name="receivedBy"
+                                                value={formik.values.receivedBy}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
+                                                error={formik.touched.receivedBy && Boolean(formik.errors.receivedBy)}
+                                                helperText={formik.touched.receivedBy && formik.errors.receivedBy}
+                                                size="small"
+                                                sx={inputStyle}
+                                            />
+                                        </Grid>
                                     </Grid>
-                                    <Grid item xs={12} md={6} size={{ xs: 12, md: 4 }}>
-                                        <Autocomplete
-                                            options={pendingPOs}
-                                            getOptionLabel={(option) => option.orderInfo?.orderNumber || ""}
-                                            value={selectedPO}
-                                            onChange={handlePOChange}
-                                            sx={{ cursor: "pointer" }}
-                                            renderInput={(params) => (
-                                                <TextField
+                                </GradientCard>
+                            </Grid>
 
-                                                    {...params}
-                                                    label="Select PO Number"
-                                                    placeholder="Search Pending POs..."
-                                                    size="small"
-                                                    sx={inputStyle}
-                                                />
-                                            )}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} md={6} size={{ xs: 12, md: 4 }}>
-                                        <TextField
-                                            fullWidth
-                                            label="Invoice Number"
-                                            value={formData.invoiceNumber}
-                                            onChange={(e) => handleInputChange("invoiceNumber", e.target.value)}
-                                            size="small"
-                                            sx={inputStyle}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} md={6} size={{ xs: 12, md: 4 }}>
-                                        <TextField
-                                            fullWidth
-                                            type="date"
-                                            label="Received Date"
-                                            value={formData.receivedDate}
-                                            onChange={(e) => handleInputChange("receivedDate", e.target.value)}
-                                            size="small"
-                                            InputLabelProps={{ shrink: true }}
-                                            sx={inputStyle}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} size={{ xs: 12, md: 4 }}>
-                                        <TextField
-                                            fullWidth
-                                            label="Supplier Name"
-                                            value={formData.supplierName}
-                                            onChange={(e) => handleInputChange("supplierName", e.target.value)}
-                                            size="small"
-                                            sx={inputStyle}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} size={{ xs: 12, md: 4 }}>
-                                        <TextField
-                                            fullWidth
-                                            label="Received By"
-                                            value={formData.receivedBy}
-                                            onChange={(e) => handleInputChange("receivedBy", e.target.value)}
-                                            size="small"
-                                            sx={inputStyle}
-                                        />
-                                    </Grid>
-                                </Grid>
-                            </GradientCard>
-                        </Grid>
-
-                        {/* Supplier & Receiver Info */}
-                        {/* <Grid item xs={12} md={4} size={{ xs: 12, md: 4 }}>
+                            {/* Supplier & Receiver Info */}
+                            {/* <Grid item xs={12} md={4} size={{ xs: 12, md: 4 }}>
                             <GradientCard title="Parties Involved" icon={Description}>
                                 <Grid container spacing={2}>
                                    
                                 </Grid>
                             </GradientCard>
                         </Grid> */}
-                    </Grid>
+                        </Grid>
 
-                    {/* Items Table */}
-                    <Box sx={{ mb: 4 }}>
-                        <GradientCard title="Materials Received" icon={Inventory}>
-                            <TableContainer component={Paper} elevation={0} sx={{ border: "1px solid #e2e8f0", borderRadius: 2 }}>
-                                <Table>
-                                    <TableHead sx={{ bgcolor: "#f8fafc" }}>
-                                        <TableRow>
-                                            <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Item Name</TableCell>
-                                            <TableCell align="center" sx={{ fontWeight: 700, color: "#475569" }}>Ordered Qty</TableCell>
-                                            <TableCell align="center" sx={{ fontWeight: 700, color: "#475569" }}>Received Qty</TableCell>
-                                            <TableCell align="center" sx={{ fontWeight: 700, color: "#475569" }}>Unit</TableCell>
-                                            <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Remark</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {formData.items.length > 0 ? (
-                                            formData.items.map((item, index) => (
-                                                <TableRow key={index} sx={{ "&:hover": { bgcolor: "#f8fafc" } }}>
-                                                    <TableCell sx={{ fontWeight: 600, color: "#0f172a" }}>{item.name}</TableCell>
-                                                    <TableCell align="center">{item.orderedQty}</TableCell>
-                                                    <TableCell align="center">
-                                                        <TextField
-                                                            size="small"
-                                                            type="number"
-                                                            value={item.receivedQty}
-                                                            onChange={(e) => handleItemChange(index, "receivedQty", e.target.value)}
-                                                            sx={{ width: 100, ...inputStyle }}
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell align="center">{item.unit || "Nos"}</TableCell>
-                                                    <TableCell>
-                                                        <TextField
-                                                            size="small"
-                                                            fullWidth
-                                                            value={item.remark}
-                                                            onChange={(e) => handleItemChange(index, "remark", e.target.value)}
-                                                            placeholder="Add note..."
-                                                            sx={inputStyle}
-                                                        />
+                        {/* Items Table */}
+                        <Box sx={{ mb: 4 }}>
+                            <GradientCard title="Materials Received" icon={Inventory}>
+                                <TableContainer component={Paper} elevation={0} sx={{ border: "1px solid #e2e8f0", borderRadius: 2 }}>
+                                    <Table>
+                                        <TableHead sx={{ bgcolor: "#f8fafc" }}>
+                                            <TableRow>
+                                                <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Item Name</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 700, color: "#475569" }}>Ordered Qty</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 700, color: "#475569" }}>Received Qty</TableCell>
+                                                <TableCell align="center" sx={{ fontWeight: 700, color: "#475569" }}>Unit</TableCell>
+                                                <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Remark</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {formik.values.items.length > 0 ? (
+                                                formik.values.items.map((item, index) => (
+                                                    <TableRow key={index} sx={{ "&:hover": { bgcolor: "#f8fafc" } }}>
+                                                        <TableCell sx={{ fontWeight: 600, color: "#0f172a" }}>{item.name}</TableCell>
+                                                        <TableCell align="center">{item.orderedQty}</TableCell>
+                                                        <TableCell align="center">
+                                                            <TextField
+                                                                size="small"
+                                                                type="number"
+                                                                name={`items.${index}.receivedQty`}
+                                                                value={item.receivedQty}
+                                                                onChange={(e) => handleItemChange(index, "receivedQty", e.target.value)}
+                                                                onBlur={formik.handleBlur}
+                                                                error={formik.touched.items?.[index]?.receivedQty && Boolean(formik.errors.items?.[index]?.receivedQty)}
+                                                                helperText={formik.touched.items?.[index]?.receivedQty && formik.errors.items?.[index]?.receivedQty}
+                                                                sx={{ width: 100, ...inputStyle }}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell align="center">{item.unit || "Nos"}</TableCell>
+                                                        <TableCell>
+                                                            <TextField
+                                                                size="small"
+                                                                fullWidth
+                                                                name={`items.${index}.remark`}
+                                                                value={item.remark}
+                                                                onChange={(e) => handleItemChange(index, "remark", e.target.value)}
+                                                                onBlur={formik.handleBlur}
+                                                                placeholder="Add note..."
+                                                                sx={inputStyle}
+                                                            />
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))
+                                            ) : (
+                                                <TableRow>
+                                                    <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
+                                                        <Typography color="textSecondary">No items found. Please select a PO or add items manually.</Typography>
                                                     </TableCell>
                                                 </TableRow>
-                                            ))
-                                        ) : (
-                                            <TableRow>
-                                                <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
-                                                    <Typography color="textSecondary">No items found. Please select a PO or add items manually.</Typography>
-                                                </TableCell>
-                                            </TableRow>
-                                        )}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                        </GradientCard>
-                    </Box>
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </GradientCard>
+                        </Box>
 
-                    {/* Action Buttons */}
-                    <Box sx={{ mt: 4, display: "flex", gap: 2, justifyContent: "end", alignItems: "end" }}>
-                        <Button
-                            variant="outlined"
-                            onClick={() => router.push("/grn")}
-                            sx={{ borderRadius: 2, px: 4, textTransform: "none" }}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            variant="contained"
-                            startIcon={<Save />}
-                            onClick={handleSave}
-                            sx={{
-                                backgroundColor: "#1172ba",
-                                "&:hover": { backgroundColor: "#0d5a94" },
-                                borderRadius: 2,
-                                px: 4,
-                                py: 1.5,
-                                textTransform: "none",
-                                fontWeight: 500,
-                                background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)"
-                            }}
-                        >
-                            {isEditMode ? "Update GRN" : "Save GRN"}
-                        </Button>
+                        {/* Action Buttons */}
+                        <Box sx={{ mt: 4, display: "flex", gap: 2, justifyContent: "end", alignItems: "end" }}>
+                            <Button
+                                variant="outlined"
+                                onClick={() => router.push("/grn")}
+                                sx={{ borderRadius: 2, px: 4, textTransform: "none" }}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                variant="contained"
+                                startIcon={<Save />}
+                                onClick={formik.handleSubmit}
+                                sx={{
+                                    backgroundColor: "#1172ba",
+                                    "&:hover": { backgroundColor: "#0d5a94" },
+                                    borderRadius: 2,
+                                    px: 4,
+                                    py: 1.5,
+                                    textTransform: "none",
+                                    fontWeight: 500,
+                                    background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)"
+                                }}
+                            >
+                                {isEditMode ? "Update GRN" : "Save GRN"}
+                            </Button>
+                        </Box>
                     </Box>
-                </Box>
-            </CommonCard>
-        </Box>
+                </CommonCard>
+            </Box>
+        </FormikProvider>
     );
 }
 

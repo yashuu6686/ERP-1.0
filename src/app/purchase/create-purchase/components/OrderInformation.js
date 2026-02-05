@@ -5,12 +5,15 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
+import { useFormikContext } from "formik";
 
 import Description from "@mui/icons-material/Description";
 import CalendarToday from "@mui/icons-material/CalendarToday";
 import LocalShipping from "@mui/icons-material/LocalShipping";
 
-const OrderInformation = ({ data, onChange }) => {
+const OrderInformation = () => {
+    const { values, errors, touched, setFieldValue, handleBlur } = useFormikContext();
+
     return (
         <Card
             sx={{
@@ -34,8 +37,12 @@ const OrderInformation = ({ data, onChange }) => {
                             fullWidth
                             label="PO Number"
                             placeholder="PO-2024-001"
-                            value={data?.orderNumber || ""}
-                            onChange={(e) => onChange("orderNumber", e.target.value)}
+                            name="orderInfo.orderNumber"
+                            value={values.orderInfo.orderNumber}
+                            onChange={(e) => setFieldValue("orderInfo.orderNumber", e.target.value)}
+                            onBlur={handleBlur}
+                            error={touched.orderInfo?.orderNumber && Boolean(errors.orderInfo?.orderNumber)}
+                            helperText={touched.orderInfo?.orderNumber && errors.orderInfo?.orderNumber}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -58,8 +65,12 @@ const OrderInformation = ({ data, onChange }) => {
                             fullWidth
                             type="date"
                             label="Order Date"
-                            value={data?.orderDate || ""}
-                            onChange={(e) => onChange("orderDate", e.target.value)}
+                            name="orderInfo.orderDate"
+                            value={values.orderInfo.orderDate}
+                            onChange={(e) => setFieldValue("orderInfo.orderDate", e.target.value)}
+                            onBlur={handleBlur}
+                            error={touched.orderInfo?.orderDate && Boolean(errors.orderInfo?.orderDate)}
+                            helperText={touched.orderInfo?.orderDate && errors.orderInfo?.orderDate}
                             InputLabelProps={{ shrink: true }}
                             InputProps={{
                                 startAdornment: (
@@ -78,8 +89,12 @@ const OrderInformation = ({ data, onChange }) => {
                             fullWidth
                             type="date"
                             label="Expected Delivery"
-                            value={data?.expectedDelivery || ""}
-                            onChange={(e) => onChange("expectedDelivery", e.target.value)}
+                            name="orderInfo.expectedDelivery"
+                            value={values.orderInfo.expectedDelivery}
+                            onChange={(e) => setFieldValue("orderInfo.expectedDelivery", e.target.value)}
+                            onBlur={handleBlur}
+                            error={touched.orderInfo?.expectedDelivery && Boolean(errors.orderInfo?.expectedDelivery)}
+                            helperText={touched.orderInfo?.expectedDelivery && errors.orderInfo?.expectedDelivery}
                             InputLabelProps={{ shrink: true }}
                             InputProps={{
                                 startAdornment: (

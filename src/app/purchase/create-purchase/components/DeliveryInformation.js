@@ -6,8 +6,11 @@ import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import LocalShipping from "@mui/icons-material/LocalShipping";
+import { useFormikContext } from "formik";
 
-const DeliveryInformation = ({ data, onChange }) => {
+const DeliveryInformation = () => {
+    const { values, errors, touched, setFieldValue, handleBlur } = useFormikContext();
+
     return (
         <Card
             sx={{
@@ -37,11 +40,16 @@ const DeliveryInformation = ({ data, onChange }) => {
                             fullWidth
                             label="Invoice To"
                             placeholder="Company Name"
-
-                            value={data?.invoiceTo || ""}
-                            onChange={(e) => onChange("invoiceTo", e.target.value)}
+                            name="delivery.invoiceTo"
+                            value={values.delivery.invoiceTo}
+                            onChange={(e) => setFieldValue("delivery.invoiceTo", e.target.value)}
+                            onBlur={handleBlur}
+                            error={touched.delivery?.invoiceTo && Boolean(errors.delivery?.invoiceTo)}
+                            helperText={touched.delivery?.invoiceTo && errors.delivery?.invoiceTo}
                             sx={{
-                                background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                "& .MuiOutlinedInput-root": {
+                                    background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                }
                             }}
                         />
                     </Grid>
@@ -50,10 +58,16 @@ const DeliveryInformation = ({ data, onChange }) => {
                             fullWidth
                             label="Deliver To"
                             placeholder="Warehouse/Site"
-                            value={data?.deliverTo || ""}
-                            onChange={(e) => onChange("deliverTo", e.target.value)}
+                            name="delivery.deliverTo"
+                            value={values.delivery.deliverTo}
+                            onChange={(e) => setFieldValue("delivery.deliverTo", e.target.value)}
+                            onBlur={handleBlur}
+                            error={touched.delivery?.deliverTo && Boolean(errors.delivery?.deliverTo)}
+                            helperText={touched.delivery?.deliverTo && errors.delivery?.deliverTo}
                             sx={{
-                                background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                "& .MuiOutlinedInput-root": {
+                                    background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                }
                             }}
                         />
                     </Grid>
@@ -64,10 +78,16 @@ const DeliveryInformation = ({ data, onChange }) => {
                             placeholder="456 Delivery Lane"
                             multiline
                             rows={1}
-                            value={data?.deliveryAddress || ""}
-                            onChange={(e) => onChange("deliveryAddress", e.target.value)}
+                            name="delivery.deliveryAddress"
+                            value={values.delivery.deliveryAddress}
+                            onChange={(e) => setFieldValue("delivery.deliveryAddress", e.target.value)}
+                            onBlur={handleBlur}
+                            error={touched.delivery?.deliveryAddress && Boolean(errors.delivery?.deliveryAddress)}
+                            helperText={touched.delivery?.deliveryAddress && errors.delivery?.deliveryAddress}
                             sx={{
-                                background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                "& .MuiOutlinedInput-root": {
+                                    background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                }
                             }}
                         />
                     </Grid>
@@ -76,10 +96,16 @@ const DeliveryInformation = ({ data, onChange }) => {
                             fullWidth
                             label="Contact Person"
                             placeholder="Jane Smith"
-                            value={data?.contactPerson || ""}
-                            onChange={(e) => onChange("contactPerson", e.target.value)}
+                            name="delivery.contactPerson"
+                            value={values.delivery.contactPerson}
+                            onChange={(e) => setFieldValue("delivery.contactPerson", e.target.value)}
+                            onBlur={handleBlur}
+                            error={touched.delivery?.contactPerson && Boolean(errors.delivery?.contactPerson)}
+                            helperText={touched.delivery?.contactPerson && errors.delivery?.contactPerson}
                             sx={{
-                                background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                "& .MuiOutlinedInput-root": {
+                                    background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                }
                             }}
                         />
                     </Grid>
@@ -88,10 +114,16 @@ const DeliveryInformation = ({ data, onChange }) => {
                             fullWidth
                             label="Phone"
                             placeholder="+91 98765 43210"
-                            value={data?.phone || ""}
-                            onChange={(e) => onChange("phone", e.target.value)}
+                            name="delivery.phone"
+                            value={values.delivery.phone}
+                            onChange={(e) => setFieldValue("delivery.phone", e.target.value)}
+                            onBlur={handleBlur}
+                            error={touched.delivery?.phone && Boolean(errors.delivery?.phone)}
+                            helperText={touched.delivery?.phone && errors.delivery?.phone}
                             sx={{
-                                background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                "& .MuiOutlinedInput-root": {
+                                    background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                }
                             }}
                         />
                     </Grid>
@@ -100,10 +132,16 @@ const DeliveryInformation = ({ data, onChange }) => {
                             fullWidth
                             label="Email"
                             placeholder="delivery@company.com"
-                            value={data?.email || ""}
-                            onChange={(e) => onChange("email", e.target.value)}
+                            name="delivery.email"
+                            value={values.delivery.email}
+                            onChange={(e) => setFieldValue("delivery.email", e.target.value)}
+                            onBlur={handleBlur}
+                            error={touched.delivery?.email && Boolean(errors.delivery?.email)}
+                            helperText={touched.delivery?.email && errors.delivery?.email}
                             sx={{
-                                background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                "& .MuiOutlinedInput-root": {
+                                    background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                }
                             }}
                         />
                     </Grid>
