@@ -25,9 +25,9 @@ import Description from "@mui/icons-material/Description";
 import Inventory from "@mui/icons-material/Inventory";
 import ReceiptLong from "@mui/icons-material/ReceiptLong";
 import AssignmentTurnedIn from "@mui/icons-material/AssignmentTurnedIn";
-import CommonCard from "../../../components/CommonCard";
+import CommonCard from "../../../components/ui/CommonCard";
 import axiosInstance from "@/axios/axiosInstance";
-import Loader from "../../../components/Loader";
+import Loader from "../../../components/ui/Loader";
 import { useFormik, FormikProvider } from "formik";
 import * as Yup from "yup";
 

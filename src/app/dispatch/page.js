@@ -16,9 +16,9 @@ import {
   Download,
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
-import CommonCard from "../../components/CommonCard";
+import CommonCard from "../../components/ui/CommonCard";
 import DispatchMobileCard from "./components/DispatchMobileCard";
-import GlobalTable from "../../components/GlobalTable";
+import GlobalTable from "../../components/ui/GlobalTable";
 import axiosInstance from "@/axios/axiosInstance";
 
 // Static data removed, now fetching from API

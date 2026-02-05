@@ -11,7 +11,7 @@ import Save from "@mui/icons-material/Save";
 import ArrowBack from "@mui/icons-material/ArrowBack";
 import ArrowForward from "@mui/icons-material/ArrowForward";
 import { useRouter } from "next/navigation";
-import CommonCard from "../../../components/CommonCard";
+import CommonCard from "../../../components/ui/CommonCard";
 import ProductDetailsSection from "./components/ProductDetailsSection";
 import QualityCheckDetailsTable from "./components/QualityCheckDetailsTable";
 import InspectionSummarySection from "./components/InspectionSummarySection";

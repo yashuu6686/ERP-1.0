@@ -40,7 +40,7 @@ import Warning from "@mui/icons-material/Warning";
 import ProductionQuantityLimits from "@mui/icons-material/ProductionQuantityLimits";
 
 import axiosInstance from "@/axios/axiosInstance";
-import Loader from "@/components/Loader";
+import Loader from "@/components/ui/Loader";
 import DefectiveMaterialForm from "../components/DefectiveMaterialForm";
 
 const InfoItem = ({ icon: Icon, label, value, color = "#1e293b" }) => (

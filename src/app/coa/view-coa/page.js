@@ -24,7 +24,7 @@ import Science from "@mui/icons-material/Science";
 import VerifiedUser from "@mui/icons-material/VerifiedUser";
 
 import axiosInstance from "@/axios/axiosInstance";
-import Loader from "@/components/Loader";
+import Loader from "@/components/ui/Loader";
 
 const DetailRow = ({ label, value }) => (
     <Box sx={{ mb: 2 }}>

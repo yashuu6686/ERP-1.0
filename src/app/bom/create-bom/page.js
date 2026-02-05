@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Save from "@mui/icons-material/Save";
 import { useRouter } from "next/navigation";
-import CommonCard from "../../../components/CommonCard";
+import CommonCard from "../../../components/ui/CommonCard";
 import MaterialListSpecifications from "./components/MaterialListSpecifications";
 import BOMAuthorization from "./components/BOMAuthorization";
 import axiosInstance from "../../../axios/axiosInstance";

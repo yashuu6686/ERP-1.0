@@ -9,10 +9,10 @@ import Visibility from "@mui/icons-material/Visibility";
 import Edit from "@mui/icons-material/Edit";
 import Download from "@mui/icons-material/Download";
 import { useRouter } from "next/navigation";
-import CommonCard from "../../components/CommonCard";
-import GlobalTable from "../../components/GlobalTable";
+import CommonCard from "../../components/ui/CommonCard";
+import GlobalTable from "../../components/ui/GlobalTable";
 import axiosInstance from "@/axios/axiosInstance";
-import Loader from "../../components/Loader";
+import Loader from "../../components/ui/Loader";
 
 export default function IncomingInspection() {
   const router = useRouter();

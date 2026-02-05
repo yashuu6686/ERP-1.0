@@ -12,12 +12,12 @@ import {
   IconButton,
 } from "@mui/material";
 import { Warning, Visibility, Edit, Delete } from "@mui/icons-material";
-import CommonCard from "../../components/CommonCard";
+import CommonCard from "../../components/ui/CommonCard";
 import AddRejectedGoodsDialog from "./components/AddRejectedGoodsDialog";
 import RejectedGoodsMobileCard from "./components/RejectedGoodsMobileCard";
-import GlobalTable from "../../components/GlobalTable";
+import GlobalTable from "../../components/ui/GlobalTable";
 import axiosInstance from "@/axios/axiosInstance";
-import Loader from "../../components/Loader";
+import Loader from "../../components/ui/Loader";
 
 const getStatusColor = (status) => {
   switch (status) {

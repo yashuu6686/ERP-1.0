@@ -7,7 +7,7 @@ import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 
 import Save from "@mui/icons-material/Save";
-import CommonCard from "../../../components/CommonCard";
+import CommonCard from "../../../components/ui/CommonCard";
 import OrderInformationSection from "./components/OrderInformationSection";
 import FullKitSection from "./components/FullKitSection";
 import SingleProductSection from "./components/SingleProductSection";

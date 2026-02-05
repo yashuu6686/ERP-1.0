@@ -6,7 +6,7 @@ import { ArrowBack, CheckCircle, LocalShipping, Schedule, Cancel } from "@mui/ic
 
 import axiosInstance from "@/axios/axiosInstance";
 import { useAuth } from "@/context/AuthContext";
-import Loader from "@/components/Loader";
+import Loader from "@/components/ui/Loader";
 
 // Import modular components
 import DispatchHeaderActions from "./components/DispatchHeaderActions";
@@ -133,7 +133,7 @@ function ViewDispatchContent() {
                     />
 
                     <Grid container spacing={2}>
-                        <Grid  size={{ xs: 12, lg: 9 }}>
+                        <Grid size={{ xs: 12, lg: 9 }}>
                             <DispatchManifest
                                 shipmentInfo={shipmentInfo}
                                 customer={customer}
@@ -142,7 +142,7 @@ function ViewDispatchContent() {
                                 getStatusChip={getStatusChip}
                             />
                         </Grid>
-                        <Grid  size={{ xs: 12, lg: 3 }}>
+                        <Grid size={{ xs: 12, lg: 3 }}>
                             <DispatchSidebar
                                 shipmentInfo={shipmentInfo}
                                 items={items}

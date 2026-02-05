@@ -15,9 +15,9 @@ import CustomerDeliveryCard from "./components/CustomerDeliveryCard";
 import ProductDetailsTable from "./components/ProductDetailsTable";
 import PackagingApprovalsCard from "./components/PackagingApprovalsCard";
 import { useRouter, useSearchParams } from "next/navigation";
-import CommonCard from "../../../components/CommonCard";
+import CommonCard from "../../../components/ui/CommonCard";
 import axiosInstance from "@/axios/axiosInstance";
-import Loader from "../../../components/Loader";
+import Loader from "../../../components/ui/Loader";
 import { useAuth } from "@/context/AuthContext";
 import NotificationService from "@/services/NotificationService";
 
