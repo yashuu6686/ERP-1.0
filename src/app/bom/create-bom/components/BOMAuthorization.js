@@ -8,7 +8,7 @@ import TextField from "@mui/material/TextField";
 
 import FactCheck from "@mui/icons-material/FactCheck";
 
-const BOMAuthorization = ({ reviewedBy, approvedBy, onUpdate }) => {
+const BOMAuthorization = ({ reviewedBy, approvedBy, onUpdate, errors = {}, touched = {}, onBlur }) => {
     const textFieldStyle = {
         "& .MuiOutlinedInput-root": {
             bgcolor: "white",
@@ -55,6 +55,11 @@ const BOMAuthorization = ({ reviewedBy, approvedBy, onUpdate }) => {
                             sx={textFieldStyle}
                             value={reviewedBy}
                             onChange={(e) => onUpdate("reviewedBy", e.target.value)}
+                            onBlur={onBlur}
+                            name="auth.reviewedBy"
+                            error={touched.reviewedBy && Boolean(errors.reviewedBy)}
+                            helperText={touched.reviewedBy && errors.reviewedBy}
+                            required
                         />
                     </Grid>
                     <Grid item size={{ xs: 12, sm: 6, md: 6 }}>
@@ -66,6 +71,11 @@ const BOMAuthorization = ({ reviewedBy, approvedBy, onUpdate }) => {
                             sx={textFieldStyle}
                             value={approvedBy}
                             onChange={(e) => onUpdate("approvedBy", e.target.value)}
+                            onBlur={onBlur}
+                            name="auth.approvedBy"
+                            error={touched.approvedBy && Boolean(errors.approvedBy)}
+                            helperText={touched.approvedBy && errors.approvedBy}
+                            required
                         />
                     </Grid>
                 </Grid>

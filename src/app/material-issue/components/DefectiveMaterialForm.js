@@ -15,14 +15,67 @@ import Add from "@mui/icons-material/Add";
 import { useEffect } from "react";
 import axiosInstance from "../../../axios/axiosInstance";
 
+import { useFormik, FieldArray, FormikProvider } from "formik";
+import * as Yup from "yup";
+
 export default function DefectiveMaterialForm({ request, onClose }) {
-    const [returnDate, setReturnDate] = useState(new Date().toISOString().split("T")[0]);
-    const [items, setItems] = useState([
-        { itemName: "", quantity: "", reason: "", serialNumbers: "", partNo: "" }
-    ]);
     const [submitting, setSubmitting] = useState(false);
     const [bomMaterials, setBomMaterials] = useState([]);
     const [loadingBOM, setLoadingBOM] = useState(false);
+
+    const validationSchema = Yup.object().shape({
+        returnDate: Yup.date().required("Return Date is required"),
+        items: Yup.array().of(
+            Yup.object().shape({
+                itemName: Yup.string().required("Item Name is required"),
+                quantity: Yup.number()
+                    .typeError("Must be a number")
+                    .positive("Qty must be positive")
+                    .required("Quantity is required"),
+                reason: Yup.string().required("Reason is required"),
+                serialNumbers: Yup.string().required("Serial Numbers is required"),
+                partNo: Yup.string().required("Part No is required"),
+            })
+        ).min(1, "At least one item is required"),
+    });
+
+    const formik = useFormik({
+        initialValues: {
+            returnDate: new Date().toISOString().split("T")[0],
+            items: [{ itemName: "", quantity: "", reason: "", serialNumbers: "", partNo: "" }],
+        },
+        validationSchema: validationSchema,
+        onSubmit: async (values) => {
+            try {
+                setSubmitting(true);
+                const payload = values.items.map(item => ({
+                    rejectionId: `RET-${Math.floor(Math.random() * 10000)}`,
+                    sourceType: "Production Request",
+                    sourceRef: request.requestNo,
+                    product: request.productName || request.product,
+                    goods: item.itemName,
+                    qty: Number(item.quantity),
+                    date: values.returnDate,
+                    reason: item.reason,
+                    serialNumbers: item.serialNumbers,
+                    partNo: item.partNo,
+                    status: "total",
+                    severity: "medium"
+                }));
+
+                const requests = payload.map(p => axiosInstance.post("/defective-returns", p));
+                await Promise.all(requests);
+
+                alert("Defective return submitted successfully!");
+                onClose(true);
+            } catch (error) {
+                console.error("Error submitting defective return:", error);
+                alert("Failed to submit defective return.");
+            } finally {
+                setSubmitting(false);
+            }
+        },
+    });
 
     useEffect(() => {
         const fetchBOMDetails = async () => {
@@ -32,27 +85,21 @@ export default function DefectiveMaterialForm({ request, onClose }) {
                 const bomNum = (request?.bomNumber || request?.bom || "").toString().trim();
                 const prodName = (request?.productName || request?.product || "").toString().trim();
 
-                console.log(`DefectiveForm: Searching for BOM "${bomNum}" (Prod: "${prodName}")`);
-
-                // 1. Try fetching directly by ID if available
                 if (request?.bomId) {
                     try {
                         const response = await axiosInstance.get(`/bom/${request.bomId}`);
                         if (response.data && response.data.materials) {
                             activeBom = response.data;
-                            console.log("DefectiveForm: Found BOM via ID");
                         }
                     } catch (e) {
                         console.warn("DefectiveForm: ID fetch failed, falling back...");
                     }
                 }
 
-                // 2. Try matching by Number (Exact or Fuzzy)
                 if (!activeBom && (bomNum || prodName)) {
                     const response = await axiosInstance.get("/bom");
                     const allBoms = Array.isArray(response.data) ? response.data : [];
 
-                    // Match by number first
                     if (bomNum) {
                         activeBom = allBoms.find(b =>
                             (b.number && b.number.toString().trim().toLowerCase() === bomNum.toLowerCase()) ||
@@ -60,7 +107,6 @@ export default function DefectiveMaterialForm({ request, onClose }) {
                         );
                     }
 
-                    // If still no match, match by product name as a last resort
                     if (!activeBom && prodName) {
                         activeBom = allBoms.find(b =>
                             b.productName && b.productName.toString().trim().toLowerCase() === prodName.toLowerCase()
@@ -69,10 +115,8 @@ export default function DefectiveMaterialForm({ request, onClose }) {
                 }
 
                 if (activeBom && Array.isArray(activeBom.materials)) {
-                    console.log(">>> DEFECTIVE FORM: LOADED BOM DATA:", activeBom);
                     setBomMaterials(activeBom.materials);
                 } else {
-                    console.warn("DefectiveForm: Could not find matching BOM with materials");
                     setBomMaterials([]);
                 }
             } catch (error) {
@@ -86,67 +130,30 @@ export default function DefectiveMaterialForm({ request, onClose }) {
     }, [request]);
 
     const handleAddItem = () => {
-        setItems([...items, { itemName: "", quantity: "", reason: "", serialNumbers: "", partNo: "" }]);
+        formik.setFieldValue("items", [
+            ...formik.values.items,
+            { itemName: "", quantity: "", reason: "", serialNumbers: "", partNo: "" }
+        ]);
     };
 
     const handleRemoveItem = (index) => {
-        setItems(items.filter((_, i) => i !== index));
-    };
-
-    const handleItemChange = (index, field, value) => {
-        const newItems = [...items];
-        newItems[index][field] = value;
-
-        // If Item Name is selected, auto-fill part number if found
-        if (field === "itemName") {
-            const material = bomMaterials.find(m => {
-                const mName = (m.materialName || m.description || m.itemName || m.material || m.label || "").toString().trim();
-                return mName === value;
-            });
-            if (material) {
-                newItems[index].partNo = material.scanboPartNumber || material.scanboPartNo || material.partNo || material.partNumber || "";
-            }
+        if (formik.values.items.length > 1) {
+            const newItems = formik.values.items.filter((_, i) => i !== index);
+            formik.setFieldValue("items", newItems);
         }
-
-        setItems(newItems);
     };
 
-    const handleSubmit = async () => {
-        try {
-            setSubmitting(true);
-
-            // Construct payload for /rejected-goods
-            // Based on previous structure: rejectionId, sourceType, sourceRef, goods, qty, date, reason, status
-            const payload = items.map(item => ({
-                rejectionId: `RET-${Math.floor(Math.random() * 10000)}`,
-                sourceType: "Production Request",
-                sourceRef: request.requestNo,
-                product: request.productName || request.product,
-                goods: item.itemName,
-                qty: Number(item.quantity),
-                date: returnDate,
-                reason: item.reason,
-                serialNumbers: item.serialNumbers,
-                partNo: item.partNo, // Storing linked part number
-                status: "total",
-                severity: "medium"
-            }));
-
-            // Post each item (JSON Server typically handles array POSTs differently, but here we might need individual posts or an endpoint that handles it)
-            // For simplicity and matching JSON Server expectations, we'll post individually or as a single record if the server supports it.
-            // Usually, we create one record per return or one per line item.
-            // Mockup shows RET-001 has specific items. Let's create individual entries.
-
-            const requests = payload.map(p => axiosInstance.post("/defective-returns", p));
-            await Promise.all(requests);
-
-            alert("Defective return submitted successfully!");
-            onClose(true);
-        } catch (error) {
-            console.error("Error submitting defective return:", error);
-            alert("Failed to submit defective return.");
-        } finally {
-            setSubmitting(false);
+    const handleItemNameChange = (index, value) => {
+        formik.setFieldValue(`items[${index}].itemName`, value);
+        const material = bomMaterials.find(m => {
+            const mName = (m.materialName || m.description || m.itemName || m.material || m.label || "").toString().trim();
+            return mName === value;
+        });
+        if (material) {
+            formik.setFieldValue(
+                `items[${index}].partNo`,
+                material.scanboPartNumber || material.scanboPartNo || material.partNo || material.partNumber || ""
+            );
         }
     };
 
@@ -158,15 +165,20 @@ export default function DefectiveMaterialForm({ request, onClose }) {
 
             <Box sx={{ mb: 4 }}>
                 <Typography variant="caption" sx={{ fontWeight: 700, color: "text.secondary", mb: 1, display: "block" }}>
-                    Return Date
+                    Return Date <span style={{ color: 'red' }}>*</span>
                 </Typography>
                 <TextField
                     fullWidth
                     size="small"
                     type="date"
-                    value={returnDate}
-                    onChange={(e) => setReturnDate(e.target.value)}
+                    name="returnDate"
+                    value={formik.values.returnDate}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.returnDate && Boolean(formik.errors.returnDate)}
+                    helperText={formik.touched.returnDate && formik.errors.returnDate}
                     sx={{ bgcolor: "#fff" }}
+                    required
                 />
             </Box>
 
@@ -191,19 +203,26 @@ export default function DefectiveMaterialForm({ request, onClose }) {
                     </Button>
                 </Box>
 
-                {items.map((item, index) => (
-                    <Box key={index} sx={{ mb: index !== items.length - 1 ? 4 : 0 }}>
+                {formik.values.items.map((item, index) => (
+                    <Box key={index} sx={{ mb: index !== formik.values.items.length - 1 ? 4 : 0 }}>
                         <Grid container spacing={2}>
                             <Grid item xs={12} md={6}>
                                 <Typography variant="caption" sx={{ fontWeight: 600, color: "#64748b", mb: 0.5, display: "block" }}>
-                                    Item Name
+                                    Item Name <span style={{ color: 'red' }}>*</span>
                                 </Typography>
-                                <FormControl fullWidth size="small">
+                                <FormControl
+                                    fullWidth
+                                    size="small"
+                                    error={formik.touched.items?.[index]?.itemName && Boolean(formik.errors.items?.[index]?.itemName)}
+                                >
                                     <Select
+                                        name={`items[${index}].itemName`}
                                         value={item.itemName}
-                                        onChange={(e) => handleItemChange(index, "itemName", e.target.value)}
+                                        onChange={(e) => handleItemNameChange(index, e.target.value)}
+                                        onBlur={formik.handleBlur}
                                         displayEmpty
                                         disabled={loadingBOM}
+                                        required
                                     >
                                         <MenuItem value="" disabled>
                                             {loadingBOM ? "Loading items..." : "Select Item"}
@@ -228,52 +247,72 @@ export default function DefectiveMaterialForm({ request, onClose }) {
                                             );
                                         })}
                                     </Select>
+                                    {formik.touched.items?.[index]?.itemName && formik.errors.items?.[index]?.itemName && (
+                                        <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>
+                                            {formik.errors.items[index].itemName}
+                                        </Typography>
+                                    )}
                                 </FormControl>
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <Typography variant="caption" sx={{ fontWeight: 600, color: "#64748b", mb: 0.5, display: "block" }}>
-                                    Defective Quantity
+                                    Defective Quantity <span style={{ color: 'red' }}>*</span>
                                 </Typography>
                                 <TextField
                                     fullWidth
                                     size="small"
                                     type="number"
+                                    name={`items[${index}].quantity`}
                                     value={item.quantity}
-                                    onChange={(e) => handleItemChange(index, "quantity", e.target.value)}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.items?.[index]?.quantity && Boolean(formik.errors.items?.[index]?.quantity)}
+                                    helperText={formik.touched.items?.[index]?.quantity && formik.errors.items?.[index]?.quantity}
+                                    required
                                 />
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <Typography variant="caption" sx={{ fontWeight: 600, color: "#64748b", mb: 0.5, display: "block" }}>
-                                    Reason for Defect
+                                    Reason for Defect <span style={{ color: 'red' }}>*</span>
                                 </Typography>
                                 <TextField
                                     fullWidth
                                     size="small"
+                                    name={`items[${index}].reason`}
                                     value={item.reason}
-                                    onChange={(e) => handleItemChange(index, "reason", e.target.value)}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.items?.[index]?.reason && Boolean(formik.errors.items?.[index]?.reason)}
+                                    helperText={formik.touched.items?.[index]?.reason && formik.errors.items?.[index]?.reason}
+                                    required
                                 />
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <Typography variant="caption" sx={{ fontWeight: 600, color: "#64748b", mb: 0.5, display: "block" }}>
-                                    Serial Numbers
+                                    Serial Numbers <span style={{ color: 'red' }}>*</span>
                                 </Typography>
                                 <TextField
                                     fullWidth
                                     size="small"
                                     placeholder="Comma separated"
+                                    name={`items[${index}].serialNumbers`}
                                     value={item.serialNumbers}
-                                    onChange={(e) => handleItemChange(index, "serialNumbers", e.target.value)}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.items?.[index]?.serialNumbers && Boolean(formik.errors.items?.[index]?.serialNumbers)}
+                                    helperText={formik.touched.items?.[index]?.serialNumbers && formik.errors.items?.[index]?.serialNumbers}
+                                    required
                                 />
                             </Grid>
                         </Grid>
-                        {items.length > 1 && (
+                        {formik.values.items.length > 1 && (
                             <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 1 }}>
                                 <IconButton color="error" size="small" onClick={() => handleRemoveItem(index)}>
                                     <Delete fontSize="small" />
                                 </IconButton>
                             </Box>
                         )}
-                        {index !== items.length - 1 && <Divider sx={{ mt: 3 }} />}
+                        {index !== formik.values.items.length - 1 && <Divider sx={{ mt: 3 }} />}
                     </Box>
                 ))}
             </Box>
@@ -288,7 +327,7 @@ export default function DefectiveMaterialForm({ request, onClose }) {
                 </Button>
                 <Button
                     variant="contained"
-                    onClick={handleSubmit}
+                    onClick={formik.handleSubmit}
                     disabled={submitting}
                     sx={{
                         textTransform: "none",

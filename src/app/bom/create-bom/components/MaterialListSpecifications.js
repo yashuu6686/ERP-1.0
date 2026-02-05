@@ -16,7 +16,7 @@ import Add from "@mui/icons-material/Add";
 import Build from "@mui/icons-material/Build";
 import Delete from "@mui/icons-material/Delete";
 
-const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate }) => {
+const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate, errors = [], touched = [], onBlur }) => {
     const textFieldStyle = {
         "& .MuiOutlinedInput-root": {
             bgcolor: "white",
@@ -95,7 +95,7 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate }) =>
                                 Part Number
                             </TableCell>
                             <TableCell
-                            align="center"
+                                align="center"
                                 sx={{
                                     fontWeight: 700,
                                     bgcolor: "#f8fafc",
@@ -108,7 +108,7 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate }) =>
                                 Supplier Part
                             </TableCell>
                             <TableCell
-                             align="center"
+                                align="center"
                                 sx={{
                                     fontWeight: 700,
                                     bgcolor: "#f8fafc",
@@ -121,7 +121,7 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate }) =>
                                 Qty
                             </TableCell>
                             <TableCell
-                            align="center"
+                                align="center"
                                 sx={{
                                     fontWeight: 700,
                                     bgcolor: "#f8fafc",
@@ -134,7 +134,7 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate }) =>
                                 Material Name
                             </TableCell>
                             <TableCell
-                             align="center"
+                                align="center"
                                 sx={{
                                     fontWeight: 700,
                                     bgcolor: "#f8fafc",
@@ -147,7 +147,7 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate }) =>
                                 Manufacturer
                             </TableCell>
                             <TableCell
-                             align="center"
+                                align="center"
                                 sx={{
                                     fontWeight: 700,
                                     bgcolor: "#f8fafc",
@@ -180,7 +180,7 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate }) =>
                                 key={material.id}
                                 sx={{ "&:hover": { bgcolor: "#f8f9fa" } }}
                             >
-                                <TableCell  align="center" sx={{ py: 0.2, fontSize: "0.75rem" }}>
+                                <TableCell align="center" sx={{ py: 0.2, fontSize: "0.75rem" }}>
                                     {index + 1}
                                 </TableCell>
                                 <TableCell sx={{ py: 0.2 }}>
@@ -191,6 +191,11 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate }) =>
                                         onChange={(e) =>
                                             onUpdate(material.id, "scanboPartNumber", e.target.value)
                                         }
+                                        onBlur={onBlur}
+                                        name={`materials[${index}].scanboPartNumber`}
+                                        error={touched[index]?.scanboPartNumber && Boolean(errors[index]?.scanboPartNumber)}
+                                        helperText={touched[index]?.scanboPartNumber && errors[index]?.scanboPartNumber}
+                                        required
                                         sx={{
                                             ...textFieldStyle,
                                             "& .MuiInputBase-input": { py: 0.5, fontSize: "0.75rem" },
@@ -205,6 +210,11 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate }) =>
                                         onChange={(e) =>
                                             onUpdate(material.id, "supplierPartNumber", e.target.value)
                                         }
+                                        onBlur={onBlur}
+                                        name={`materials[${index}].supplierPartNumber`}
+                                        error={touched[index]?.supplierPartNumber && Boolean(errors[index]?.supplierPartNumber)}
+                                        helperText={touched[index]?.supplierPartNumber && errors[index]?.supplierPartNumber}
+                                        required
                                         sx={{
                                             ...textFieldStyle,
                                             "& .MuiInputBase-input": { py: 0.5, fontSize: "0.75rem" },
@@ -219,6 +229,11 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate }) =>
                                         onChange={(e) =>
                                             onUpdate(material.id, "quantity", e.target.value)
                                         }
+                                        onBlur={onBlur}
+                                        name={`materials[${index}].quantity`}
+                                        error={touched[index]?.quantity && Boolean(errors[index]?.quantity)}
+                                        helperText={touched[index]?.quantity && errors[index]?.quantity}
+                                        required
                                         sx={{
                                             ...textFieldStyle,
                                             "& .MuiInputBase-input": { py: 0.5, fontSize: "0.75rem" },
@@ -233,6 +248,11 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate }) =>
                                         onChange={(e) =>
                                             onUpdate(material.id, "materialName", e.target.value)
                                         }
+                                        onBlur={onBlur}
+                                        name={`materials[${index}].materialName`}
+                                        error={touched[index]?.materialName && Boolean(errors[index]?.materialName)}
+                                        helperText={touched[index]?.materialName && errors[index]?.materialName}
+                                        required
                                         sx={{
                                             ...textFieldStyle,
                                             "& .MuiInputBase-input": { py: 0.5, fontSize: "0.75rem" },
@@ -247,6 +267,11 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate }) =>
                                         onChange={(e) =>
                                             onUpdate(material.id, "manufacturerName", e.target.value)
                                         }
+                                        onBlur={onBlur}
+                                        name={`materials[${index}].manufacturerName`}
+                                        error={touched[index]?.manufacturerName && Boolean(errors[index]?.manufacturerName)}
+                                        helperText={touched[index]?.manufacturerName && errors[index]?.manufacturerName}
+                                        required
                                         sx={{
                                             ...textFieldStyle,
                                             "& .MuiInputBase-input": { py: 0.5, fontSize: "0.75rem" },
@@ -263,6 +288,11 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate }) =>
                                         onChange={(e) =>
                                             onUpdate(material.id, "technicalDetails", e.target.value)
                                         }
+                                        onBlur={onBlur}
+                                        name={`materials[${index}].technicalDetails`}
+                                        error={touched[index]?.technicalDetails && Boolean(errors[index]?.technicalDetails)}
+                                        helperText={touched[index]?.technicalDetails && errors[index]?.technicalDetails}
+                                        required
                                         sx={{
                                             ...textFieldStyle,
                                             "& .MuiInputBase-input": { py: 0.5, fontSize: "0.75rem" },

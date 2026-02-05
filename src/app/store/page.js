@@ -11,6 +11,8 @@ import GlobalTable from "../../components/GlobalTable";
 import AddMaterialDialog from "./components/AddMaterialDialog";
 import axiosInstance from "../../axios/axiosInstance";
 import Loader from "../../components/Loader";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 export default function Store() {
   const [tab, setTab] = useState(0);
@@ -18,21 +20,56 @@ export default function Store() {
   const tabEndpoints = ["/store", "/it-goods", "/finish-goods", "/other-goods"];
 
   const [search, setSearch] = useState("");
-
   const [openDialog, setOpenDialog] = useState(false);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({
-    name: "",
-    code: "",
-    category: "",
-    available: "",
-    minimum: "",
-    unit: "",
-    location: "",
-  });
 
   const router = useRouter();
+
+  const validationSchema = Yup.object({
+    name: Yup.string().required("Material Name is required"),
+    code: Yup.string().required("Material Code is required"),
+    category: Yup.string().required("Category is required"),
+    available: Yup.number().typeError("Must be a number").min(0, "Cannot be negative").required("Available Quantity is required"),
+    minimum: Yup.number().typeError("Must be a number").min(0, "Cannot be negative").required("Minimum Stock Level is required"),
+    unit: Yup.string().required("Unit is required"),
+    location: Yup.string().required("Storage Location is required"),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      code: "",
+      category: "",
+      available: "",
+      minimum: "",
+      unit: "",
+      location: "",
+    },
+    validationSchema: validationSchema,
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        const endpoint = values.category || "/store";
+        const payload = {
+          ...values,
+          available: Number(values.available) || 0,
+          minimum: Number(values.minimum) || 0,
+          updated: new Date().toISOString().split("T")[0]
+        };
+
+        const response = await axiosInstance.post(endpoint, payload);
+        if (response.status === 201 || response.status === 200) {
+          alert("Material added successfully!");
+          setOpenDialog(false);
+          resetForm();
+          fetchData();
+        }
+      } catch (error) {
+        console.error("Error saving material:", error);
+        alert("Failed to save material.");
+      }
+    },
+  });
 
   const fetchData = React.useCallback(async () => {
     try {
@@ -58,41 +95,6 @@ export default function Store() {
       (m.name || m.itemName || "").toLowerCase().includes(search.toLowerCase()) ||
       (m.code || m.id || "").toLowerCase().includes(search.toLowerCase())
   );
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSave = async () => {
-    try {
-      const endpoint = form.category || "/store";
-      const payload = {
-        ...form,
-        available: Number(form.available) || 0,
-        minimum: Number(form.minimum) || 0,
-        updated: new Date().toISOString().split("T")[0]
-      };
-
-      const response = await axiosInstance.post(endpoint, payload);
-      if (response.status === 201 || response.status === 200) {
-        alert("Material added successfully!");
-        setOpenDialog(false);
-        setForm({
-          name: "",
-          code: "",
-          category: "",
-          available: "",
-          minimum: "",
-          unit: "",
-          location: "",
-        });
-        fetchData();
-      }
-    } catch (error) {
-      console.error("Error saving material:", error);
-      alert("Failed to save material.");
-    }
-  };
 
   const columns = [
     {
@@ -182,7 +184,7 @@ export default function Store() {
         title={tabLabels[tab]}
         addText={`Add ${tabLabels[tab].replace(/s$/, "")}`}
         onAdd={() => {
-          setForm({ ...form, category: tabEndpoints[tab] });
+          formik.setFieldValue("category", tabEndpoints[tab]);
           setOpenDialog(true);
         }}
         searchPlaceholder={`Search ${tabLabels[tab]}`}
@@ -199,10 +201,11 @@ export default function Store() {
 
         <AddMaterialDialog
           open={openDialog}
-          handleClose={() => setOpenDialog(false)}
-          form={form}
-          handleChange={handleChange}
-          handleSave={handleSave}
+          handleClose={() => {
+            setOpenDialog(false);
+            formik.resetForm();
+          }}
+          formik={formik}
         />
       </CommonCard>
     </Box>

@@ -7,6 +7,7 @@ import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Save from "@mui/icons-material/Save";
+import Clear from "@mui/icons-material/Clear";
 import { useRouter } from "next/navigation";
 import axiosInstance from "../../../axios/axiosInstance";
 import { useEffect } from "react";
@@ -14,8 +15,14 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
+import OutlinedInput from "@mui/material/OutlinedInput";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useAuth } from "@/context/AuthContext";
+
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 export default function CreateMaterialRequest({ onClose }) {
   const { user } = useAuth();
@@ -26,15 +33,109 @@ export default function CreateMaterialRequest({ onClose }) {
   const [availableBoms, setAvailableBoms] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
-  const [form, setForm] = useState({
-    productName: "",
-    bomNumber: "",
-    requiredQty: "",
-    startDate: "",
-    endDate: "",
-    requestedBy: "",
-    approvedBy: "",
-    description: "",
+  const validationSchema = Yup.object().shape({
+    productName: Yup.string().required("Product Name is required"),
+    bomNumber: Yup.string().required("BOM Number is required"),
+    requiredQty: Yup.number()
+      .typeError("Must be a number")
+      .positive("Qty must be positive")
+      .required("Required Quantity is required"),
+    startDate: Yup.date().required("Start Date is required"),
+    endDate: Yup.date()
+      .min(Yup.ref("startDate"), "End date cannot be before start date")
+      .required("End Date is required"),
+    requestedBy: Yup.string().required("Requested By is required"),
+    approvedBy: user?.role === "admin" ? Yup.string().required("Approved By is required") : Yup.string(),
+    description: Yup.string(),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      productName: "",
+      bomNumber: "",
+      requiredQty: "",
+      startDate: "",
+      endDate: "",
+      requestedBy: "",
+      approvedBy: "",
+      description: "",
+    },
+    validationSchema: validationSchema,
+    onSubmit: async (values) => {
+      try {
+        setSubmitting(true);
+
+        // 1. Find the full BOM object to get its materials
+        const selectedBom = boms.find((b) => b.number === values.bomNumber);
+        if (!selectedBom || !selectedBom.materials) {
+          throw new Error("BOM details not found or materials list is empty.");
+        }
+
+        // 2. Fetch current store items to find matches
+        const storeResponse = await axiosInstance.get("/store");
+        const storeItems = storeResponse.data;
+
+        // 3. Prepare inventory updates
+        const requestQty = Number(values.requiredQty);
+        const updates = [];
+
+        for (const material of selectedBom.materials) {
+          const bomMaterialQty = Number(material.qty || 0);
+          if (bomMaterialQty === 0) continue;
+
+          const totalNeeded = bomMaterialQty * requestQty;
+          const partNo = material.scanboPartNo || material.scanboPartNumber;
+
+          // Find matching item in store
+          const storeItem = storeItems.find((item) => (item.code || item.id) === partNo);
+
+          if (storeItem) {
+            const currentAvailable = Number(storeItem.available || 0);
+            const updatedItem = {
+              ...storeItem,
+              available: Math.max(0, currentAvailable - totalNeeded),
+              updated: new Date().toISOString().split("T")[0],
+            };
+
+            // Store the update promise
+            updates.push(axiosInstance.put(`/store/${storeItem.id}`, updatedItem));
+          } else {
+            console.warn(`Material ${partNo} not found in store inventory.`);
+          }
+        }
+
+        // 4. Execute all inventory updates
+        if (updates.length > 0) {
+          try {
+            await Promise.all(updates);
+          } catch (updateError) {
+            throw new Error(`Failed to update store inventory: ${updateError.message}`);
+          }
+        }
+
+        // 5. Finally, create the material issue request
+        const payload = {
+          ...values,
+          bomId: selectedBom.id,
+          requestNo: `MIR-${new Date().getFullYear()}-${Math.floor(Math.random() * 1000)
+            .toString()
+            .padStart(3, "0")}`,
+          status: "Pending",
+          createdAt: new Date().toISOString(),
+        };
+
+        await axiosInstance.post("/material-issue", payload);
+
+        alert("Material request submitted and store inventory updated successfully!");
+        if (onClose) onClose();
+        else router.push("/material-issue");
+      } catch (error) {
+        console.error("Error processing material request:", error);
+        alert(error.message || "Failed to process request.");
+      } finally {
+        setSubmitting(false);
+      }
+    },
   });
 
   useEffect(() => {
@@ -45,7 +146,7 @@ export default function CreateMaterialRequest({ onClose }) {
         setBoms(bomData);
 
         // Extract unique products
-        const uniqueProducts = [...new Set(bomData.map(b => b.productName).filter(p => p))];
+        const uniqueProducts = [...new Set(bomData.map((b) => b.productName).filter((p) => p))];
         setProducts(uniqueProducts);
       } catch (error) {
         console.error("Error fetching BOMs:", error);
@@ -56,100 +157,16 @@ export default function CreateMaterialRequest({ onClose }) {
     fetchBoms();
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+  const handleProductChange = (e) => {
+    const value = e.target.value;
+    formik.setFieldValue("productName", value);
 
-    if (name === "productName") {
-      const filtered = boms.filter(b => b.productName === value);
-      setAvailableBoms(filtered);
-      // Auto-select the first BOM number found for this product
-      const firstBom = filtered.length > 0 ? filtered[0].number : "";
-      setForm(prev => ({ ...prev, bomNumber: firstBom }));
-    }
-  };
+    const filtered = boms.filter((b) => b.productName === value);
+    setAvailableBoms(filtered);
 
-  const handleSubmit = async () => {
-    try {
-      if (!form.productName || !form.bomNumber || !form.requiredQty) {
-        alert("Please fill in Product, BOM, and Quantity");
-        return;
-      }
-
-      setSubmitting(true);
-
-      // 1. Find the full BOM object to get its materials
-      const selectedBom = boms.find(b => b.number === form.bomNumber);
-      if (!selectedBom || !selectedBom.materials) {
-        throw new Error("BOM details not found or materials list is empty.");
-      }
-
-      // 2. Fetch current store items to find matches
-      const storeResponse = await axiosInstance.get("/store");
-      const storeItems = storeResponse.data;
-
-      // 3. Prepare inventory updates
-      const requestQty = Number(form.requiredQty);
-      const updates = [];
-
-      for (const material of selectedBom.materials) {
-        const bomMaterialQty = Number(material.qty || 0);
-        if (bomMaterialQty === 0) continue;
-
-        const totalNeeded = bomMaterialQty * requestQty;
-        const partNo = material.scanboPartNo || material.scanboPartNumber;
-
-        // Find matching item in store
-        const storeItem = storeItems.find(item => (item.code || item.id) === partNo);
-
-        if (storeItem) {
-          const currentAvailable = Number(storeItem.available || 0);
-          const updatedItem = {
-            ...storeItem,
-            available: Math.max(0, currentAvailable - totalNeeded),
-            updated: new Date().toISOString().split("T")[0]
-          };
-
-          // Store the update promise
-          updates.push(axiosInstance.put(`/store/${storeItem.id}`, updatedItem));
-        } else {
-          console.warn(`Material ${partNo} not found in store inventory.`);
-        }
-      }
-
-      // 4. Execute all inventory updates
-      if (updates.length > 0) {
-        try {
-          await Promise.all(updates);
-        } catch (updateError) {
-          throw new Error(`Failed to update store inventory: ${updateError.message}`);
-        }
-      }
-
-      // 5. Finally, create the material issue request
-      const payload = {
-        ...form,
-        bomId: selectedBom.id, // Save the actual BOM ID for direct fetching later
-        requestNo: `MIR-${new Date().getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
-        status: "Pending",
-        createdAt: new Date().toISOString()
-      };
-
-      try {
-        await axiosInstance.post("/material-issue", payload);
-      } catch (postError) {
-        throw new Error(`Inventory updated, but failed to save issue request: ${postError.message}. Check if /material-issue endpoint exists.`);
-      }
-
-      alert("Material request submitted and store inventory updated successfully!");
-      if (onClose) onClose();
-      else router.push("/material-issue");
-    } catch (error) {
-      console.error("Error processing material request:", error);
-      alert(error.message || "Failed to process request and update inventory.");
-    } finally {
-      setSubmitting(false);
-    }
+    // Auto-select the first BOM number found for this product
+    const firstBom = filtered.length > 0 ? filtered[0].number : "";
+    formik.setFieldValue("bomNumber", firstBom);
   };
 
   return (
@@ -164,15 +181,42 @@ export default function CreateMaterialRequest({ onClose }) {
 
       {/* Form */}
       <Grid container spacing={3}>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <FormControl fullWidth size="small">
-            <InputLabel>Product Name</InputLabel>
+        <Grid size={{ xs: 12, md: 6 }} >
+          <FormControl
+            fullWidth
+            size="small"
+            error={formik.touched.productName && Boolean(formik.errors.productName)}
+          >
+            <InputLabel required>Product Name</InputLabel>
             <Select
               name="productName"
-              value={form.productName}
+              value={formik.values.productName}
               label="Product Name"
-              onChange={handleChange}
+              onChange={handleProductChange}
+              onBlur={formik.handleBlur}
               disabled={loadingBoms}
+              input={
+                <OutlinedInput
+                  label="Product Name"
+                  endAdornment={
+                    formik.values.productName && (
+                      <InputAdornment position="end" sx={{ position: 'absolute', right: 28, zIndex: 1 }}>
+                        <IconButton
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            formik.setFieldValue("productName", "");
+                            formik.setFieldValue("bomNumber", "");
+                          }}
+                          sx={{ p: 0.5 }}
+                        >
+                          <Clear sx={{ fontSize: 18 }} />
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }
+                />
+              }
               sx={{
                 bgcolor: "#fff",
                 transition: "all 0.2s",
@@ -183,6 +227,11 @@ export default function CreateMaterialRequest({ onClose }) {
                 <MenuItem key={idx} value={p}>{p}</MenuItem>
               ))}
             </Select>
+            {formik.touched.productName && formik.errors.productName && (
+              <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>
+                {formik.errors.productName}
+              </Typography>
+            )}
           </FormControl>
         </Grid>
 
@@ -192,10 +241,14 @@ export default function CreateMaterialRequest({ onClose }) {
             size="small"
             label="BOM Number"
             name="bomNumber"
-            value={form.bomNumber}
+            value={formik.values.bomNumber}
+            onBlur={formik.handleBlur}
+            error={formik.touched.bomNumber && Boolean(formik.errors.bomNumber)}
+            helperText={formik.touched.bomNumber && formik.errors.bomNumber}
             InputProps={{
               readOnly: true,
             }}
+            required
             placeholder="Select product first"
             sx={{
               bgcolor: "#f8fafc",
@@ -214,8 +267,12 @@ export default function CreateMaterialRequest({ onClose }) {
             type="number"
             label="Required Quantity"
             name="requiredQty"
-            value={form.requiredQty}
-            onChange={handleChange}
+            value={formik.values.requiredQty}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.requiredQty && Boolean(formik.errors.requiredQty)}
+            helperText={formik.touched.requiredQty && formik.errors.requiredQty}
+            required
             sx={{
               bgcolor: "#fff",
               transition: "all 0.2s",
@@ -232,8 +289,12 @@ export default function CreateMaterialRequest({ onClose }) {
             label="Start Date"
             InputLabelProps={{ shrink: true }}
             name="startDate"
-            value={form.startDate}
-            onChange={handleChange}
+            value={formik.values.startDate}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.startDate && Boolean(formik.errors.startDate)}
+            helperText={formik.touched.startDate && formik.errors.startDate}
+            required
             sx={{
               bgcolor: "#fff",
               transition: "all 0.2s",
@@ -250,8 +311,12 @@ export default function CreateMaterialRequest({ onClose }) {
             label="End Date"
             InputLabelProps={{ shrink: true }}
             name="endDate"
-            value={form.endDate}
-            onChange={handleChange}
+            value={formik.values.endDate}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.endDate && Boolean(formik.errors.endDate)}
+            helperText={formik.touched.endDate && formik.errors.endDate}
+            required
             sx={{
               bgcolor: "#fff",
               transition: "all 0.2s",
@@ -266,11 +331,15 @@ export default function CreateMaterialRequest({ onClose }) {
             size="small"
             label="Requested By"
             name="requestedBy"
-            value={form.requestedBy}
-            onChange={handleChange}
+            value={formik.values.requestedBy}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.requestedBy && Boolean(formik.errors.requestedBy)}
+            helperText={formik.touched.requestedBy && formik.errors.requestedBy}
+            required
             sx={{
               bgcolor: "#fff",
-              transition: "#fff",
+              transition: "all 0.2s",
               "&:hover": { transform: "translateY(-1px)" }
             }}
           />
@@ -283,8 +352,12 @@ export default function CreateMaterialRequest({ onClose }) {
               size="small"
               label="Approved By"
               name="approvedBy"
-              value={form.approvedBy}
-              onChange={handleChange}
+              value={formik.values.approvedBy}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.approvedBy && Boolean(formik.errors.approvedBy)}
+              helperText={formik.touched.approvedBy && formik.errors.approvedBy}
+              required
               sx={{
                 bgcolor: "#fff",
                 transition: "all 0.2s",
@@ -302,8 +375,9 @@ export default function CreateMaterialRequest({ onClose }) {
             rows={3}
             label="Additional Instructions / Notes"
             name="description"
-            value={form.description}
-            onChange={handleChange}
+            value={formik.values.description}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
             placeholder="Enter any specific handling requirements or project notes..."
             sx={{
               bgcolor: "#fff",
@@ -333,7 +407,7 @@ export default function CreateMaterialRequest({ onClose }) {
         <Button
           variant="contained"
           startIcon={submitting ? <CircularProgress size={20} color="inherit" /> : <Save />}
-          onClick={handleSubmit}
+          onClick={formik.handleSubmit}
           disabled={submitting || loadingBoms}
           sx={{
             textTransform: "none",
