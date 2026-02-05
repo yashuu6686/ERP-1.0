@@ -206,7 +206,8 @@ export default function QualityCheckForm() {
   // Re-validate schema when activeStep or observationColumns changes
   useEffect(() => {
     formik.validateForm();
-  }, [activeStep, observationColumns, user?.role, formik]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeStep, observationColumns, user?.role]);
 
   useEffect(() => {
     const fetchMaterialRequests = async () => {

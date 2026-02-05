@@ -143,7 +143,8 @@ function SOPFormContent() {
         if (id) {
             fetchSopDetails();
         }
-    }, [id, formik]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id]);
 
     const handleNext = async () => {
         const errors = await formik.validateForm();

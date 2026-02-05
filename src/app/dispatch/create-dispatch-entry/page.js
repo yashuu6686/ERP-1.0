@@ -192,7 +192,8 @@ function CreateDispatchEntryContent() {
       };
       fetchDispatch();
     }
-  }, [id, formik]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const handleOrderSelect = (order) => {
     if (!order) return;

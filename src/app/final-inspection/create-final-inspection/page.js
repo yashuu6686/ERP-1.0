@@ -209,7 +209,8 @@ function FinalInspectionFormContent() {
     if (id) {
       fetchInspection();
     }
-  }, [id, formik]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const handleNext = async () => {
     const errors = await formik.validateForm();

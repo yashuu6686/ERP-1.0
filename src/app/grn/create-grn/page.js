@@ -150,7 +150,8 @@ function CreateGRNContent() {
         if (isEditMode) {
             fetchGRNDetails();
         }
-    }, [id, isEditMode, formik]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id, isEditMode]);
 
     const handlePOChange = (event, newValue) => {
         setSelectedPO(newValue);
