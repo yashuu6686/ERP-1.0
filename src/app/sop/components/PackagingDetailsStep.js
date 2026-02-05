@@ -38,7 +38,7 @@ const packagingSteps = [
     { step: 14, components: "Final Check", verificationCriteria: "Review checklist" },
 ];
 
-export default function PackagingDetailsStep({ formData, handleInputChange, handleStepResultChange }) {
+export default function PackagingDetailsStep({ formik }) {
     const textFieldStyle = {
         "& .MuiOutlinedInput-root": {
             transition: "all 0.3s ease",
@@ -73,6 +73,30 @@ export default function PackagingDetailsStep({ formData, handleInputChange, hand
         // boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.07)",
     };
 
+    React.useEffect(() => {
+        // Initialize default values for components and criteria if not present
+        const results = { ...formik.values.packagingResults };
+        let updated = false;
+        packagingSteps.forEach((step, idx) => {
+            if (!results[idx]) {
+                results[idx] = { verificationCriteria: step.verificationCriteria, expected: "", status: "", remarks: "" };
+                updated = true;
+            } else {
+                if (!results[idx].verificationCriteria) { results[idx].verificationCriteria = step.verificationCriteria; updated = true; }
+            }
+        });
+        if (updated) {
+            formik.setFieldValue('packagingResults', results);
+        }
+    }, []); // Run once on mount
+
+    const handleStepChange = (idx, field, value) => {
+        const results = { ...formik.values.packagingResults };
+        if (!results[idx]) results[idx] = {};
+        results[idx][field] = value;
+        formik.setFieldValue('packagingResults', results);
+    };
+
     return (
         <Fade in={true} timeout={500}>
             <Card sx={{ mb: 4, borderRadius: 3, ...glassStyle, overflow: "hidden" }}>
@@ -104,15 +128,19 @@ export default function PackagingDetailsStep({ formData, handleInputChange, hand
                                     <TableCell sx={{ fontWeight: 500 }}>{row.components}</TableCell>
                                     <TableCell>
                                         <TextField
-                                            size="small" fullWidth defaultValue={row.verificationCriteria}
-                                            onChange={(e) => handleStepResultChange('packagingResults', idx, 'verificationCriteria', e.target.value)}
+                                            size="small" fullWidth
+                                            value={formik.values.packagingResults?.[idx]?.verificationCriteria || row.verificationCriteria}
+                                            onChange={(e) => handleStepChange(idx, 'verificationCriteria', e.target.value)}
                                             variant="standard"
                                         />
                                     </TableCell>
                                     <TableCell>
                                         <TextField
-                                            size="small" fullWidth defaultValue={row.expected}
-                                            onChange={(e) => handleStepResultChange('packagingResults', idx, 'expected', e.target.value)}
+                                            size="small" fullWidth
+                                            required
+                                            value={formik.values.packagingResults?.[idx]?.expected || ""}
+                                            onChange={(e) => handleStepChange(idx, 'expected', e.target.value)}
+                                            error={formik.touched.packagingResults && formik.errors.packagingResults && !formik.values.packagingResults?.[idx]?.expected}
                                             variant="standard"
                                         />
                                     </TableCell>
@@ -122,8 +150,8 @@ export default function PackagingDetailsStep({ formData, handleInputChange, hand
                                             fullWidth
                                             variant="standard"
                                             displayEmpty
-                                            defaultValue=""
-                                            onChange={(e) => handleStepResultChange('packagingResults', idx, 'status', e.target.value)}
+                                            value={formik.values.packagingResults?.[idx]?.status || ""}
+                                            onChange={(e) => handleStepChange(idx, 'status', e.target.value)}
                                             sx={{
                                                 fontSize: "0.875rem",
                                                 "& .MuiSelect-select": { py: 0.5 }
@@ -139,7 +167,8 @@ export default function PackagingDetailsStep({ formData, handleInputChange, hand
                                     <TableCell>
                                         <TextField
                                             size="small" fullWidth placeholder="Notes..."
-                                            onChange={(e) => handleStepResultChange('packagingResults', idx, 'remarks', e.target.value)}
+                                            value={formik.values.packagingResults?.[idx]?.remarks || ""}
+                                            onChange={(e) => handleStepChange(idx, 'remarks', e.target.value)}
                                             variant="standard"
                                         />
                                     </TableCell>
@@ -156,17 +185,27 @@ export default function PackagingDetailsStep({ formData, handleInputChange, hand
                         <Grid size={{ xs: 12, sm: 6 }}>
                             <TextField
                                 fullWidth label="Packed By" size="small"
-                                value={formData.packedBy}
-                                onChange={(e) => handleInputChange("packedBy", e.target.value)}
+                                name="packedBy"
+                                value={formik.values.packedBy}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.packedBy && Boolean(formik.errors.packedBy)}
+                                helperText={formik.touched.packedBy && formik.errors.packedBy}
                                 sx={textFieldStyle}
+                                required
                             />
                         </Grid>
                         <Grid size={{ xs: 12, sm: 6 }}>
                             <TextField
                                 fullWidth label="Checked By" size="small"
-                                value={formData.checkedBy}
-                                onChange={(e) => handleInputChange("checkedBy", e.target.value)}
+                                name="checkedBy"
+                                value={formik.values.checkedBy}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.checkedBy && Boolean(formik.errors.checkedBy)}
+                                helperText={formik.touched.checkedBy && formik.errors.checkedBy}
                                 sx={textFieldStyle}
+                                required
                             />
                         </Grid>
                     </Grid>

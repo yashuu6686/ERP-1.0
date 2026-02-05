@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
@@ -8,7 +9,9 @@ import TextField from "@mui/material/TextField";
 
 import LocalShipping from "@mui/icons-material/LocalShipping";
 
-const DeliveryInformationSection = ({ formData = {}, lockedFields = {}, onChange }) => {
+const DeliveryInformationSection = ({ formik, lockedFields = {} }) => {
+    const { values, setFieldValue, touched, errors } = formik;
+
     return (
         <Card
             elevation={0}
@@ -41,10 +44,14 @@ const DeliveryInformationSection = ({ formData = {}, lockedFields = {}, onChange
                             fullWidth
                             label="Delivery Address"
                             size="small"
-                            value={formData.deliveryAddress || ""}
-                            onChange={(e) => onChange?.("deliveryAddress", e.target.value)}
+                            value={values.delivery.deliveryAddress || ""}
+                            onChange={(e) => setFieldValue("delivery.deliveryAddress", e.target.value)}
+                            onBlur={() => formik.setFieldTouched("delivery.deliveryAddress", true)}
+                            error={touched.delivery?.deliveryAddress && Boolean(errors.delivery?.deliveryAddress)}
+                            helperText={touched.delivery?.deliveryAddress && errors.delivery?.deliveryAddress}
                             InputProps={{ readOnly: !!lockedFields.deliveryAddress }}
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: lockedFields.deliveryAddress ? "#f1f5f9" : "white" } }}
+                            required
                         />
                     </Grid>
                     <Grid item xs={12} size={{ xs: 12 }}>
@@ -52,10 +59,14 @@ const DeliveryInformationSection = ({ formData = {}, lockedFields = {}, onChange
                             fullWidth
                             label="Contact Person"
                             size="small"
-                            value={formData.contactPerson || ""}
-                            onChange={(e) => onChange?.("contactPerson", e.target.value)}
+                            value={values.delivery.contactPerson || ""}
+                            onChange={(e) => setFieldValue("delivery.contactPerson", e.target.value)}
+                            onBlur={() => formik.setFieldTouched("delivery.contactPerson", true)}
+                            error={touched.delivery?.contactPerson && Boolean(errors.delivery?.contactPerson)}
+                            helperText={touched.delivery?.contactPerson && errors.delivery?.contactPerson}
                             InputProps={{ readOnly: !!lockedFields.contactPerson }}
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: lockedFields.contactPerson ? "#f1f5f9" : "white" } }}
+                            required
                         />
                     </Grid>
                     <Grid item xs={12} size={{ xs: 12 }}>
@@ -63,10 +74,14 @@ const DeliveryInformationSection = ({ formData = {}, lockedFields = {}, onChange
                             fullWidth
                             label="Phone"
                             size="small"
-                            value={formData.phone || ""}
-                            onChange={(e) => onChange?.("phone", e.target.value)}
+                            value={values.delivery.phone || ""}
+                            onChange={(e) => setFieldValue("delivery.phone", e.target.value)}
+                            onBlur={() => formik.setFieldTouched("delivery.phone", true)}
+                            error={touched.delivery?.phone && Boolean(errors.delivery?.phone)}
+                            helperText={touched.delivery?.phone && errors.delivery?.phone}
                             InputProps={{ readOnly: !!lockedFields.phone }}
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: lockedFields.phone ? "#f1f5f9" : "white" } }}
+                            required
                         />
                     </Grid>
                 </Grid>

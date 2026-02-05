@@ -28,12 +28,64 @@ import NotificationService from "@/services/NotificationService";
 import { ArrowBack } from "@mui/icons-material";
 import InspectionSummary from "@/components/inspection/InspectionSummary";
 import { Grid } from "@mui/material";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 const steps = [
   "General Information",
   "Observations",
   "Quality Details & Checklist",
   "Final Approval",
+];
+
+// Validation Schema
+const validationSchema = [
+  // Step 0: General Information
+  Yup.object({
+    productName: Yup.string().required("Product Name is required"),
+    inspectionStdNo: Yup.string().required("Inspection Std No. is required"),
+    quantity: Yup.number().required("Quantity is required").positive().integer(),
+    date: Yup.date().required("Date is required"),
+    inspectionNo: Yup.string().required("Inspection No. is required"),
+    serialFrom: Yup.string().required("Serial From is required"),
+    serialTo: Yup.string().required("Serial To is required"),
+  }),
+  // Step 1: Observations
+  Yup.object({
+    observations: Yup.array().of(
+      Yup.object({
+        parameter: Yup.string().required("Parameter is required"),
+        specification: Yup.string().required("Specification is required"),
+        method: Yup.string().required("Method is required"),
+        observation: Yup.string().required("Observation is required"),
+        // remarks is optional as per request
+      })
+    ).min(1, "At least one observation is required")
+  }),
+  // Step 2: Quality Details & Checklist
+  Yup.object({
+    problemReport: Yup.string(),
+    aqd: Yup.string(),
+    qualityFile: Yup.mixed().test("fileRequired", "Quality Proof/File is required when Problem Report or AQD is Yes", function (value) {
+      const { problemReport, aqd } = this.parent;
+      if (problemReport === "yes" || aqd === "yes") {
+        return !!value;
+      }
+      return true;
+    }),
+    checklist: Yup.object({
+      labelAttached: Yup.boolean(),
+      packagingProof: Yup.boolean(),
+      finalTestDone: Yup.boolean(),
+    }).test("checklist-required", "At least one checklist item must be checked", (value) => {
+      return value.labelAttached || value.packagingProof || value.finalTestDone;
+    })
+  }),
+  // Step 3: Final Approval
+  Yup.object({
+    updatedBySignature: Yup.string().required("Updated By is required"),
+    approvedBy: Yup.string().required("Approved By is required"),
+  }),
 ];
 
 function FinalInspectionFormContent() {
@@ -43,58 +95,100 @@ function FinalInspectionFormContent() {
   const id = searchParams.get("id");
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    inspectionStatus: "Approved", // Default status
-    inspectionNo: "",
-    productName: "",
-    inspectionStdNo: "",
-    quantity: "",
-    date: new Date().toISOString().split("T")[0],
-    serialFrom: "",
-    serialTo: "",
-    totalChecked: "",
-    approved: "",
-    rejected: "",
-    result: "Pass",
-    remarks: "",
-    approvedBy: "",
-    approvalDate: new Date().toISOString().split("T")[0],
-    updatedBySignature: "",
-    updatedByDate: new Date().toISOString().split("T")[0],
-    problemReport: "no",
-    problemDescription: "",
-    problemActionTaken: "",
-    aqd: "no",
-    aqdDescription: "",
-    actionItemsDescription: "",
-    actionItemsFinishDate: "",
-    checklist: {
-      labelAttached: false,
-      packagingProof: false,
-      finalTestDone: false,
-    },
-    observationColumns: [{ id: "observation", label: "Observation" }],
-    observations: [
-      {
-        id: 1,
-        parameter: "",
-        specification: "",
-        method: "",
-        observation: "",
-        remarks: "",
+
+  const formik = useFormik({
+    initialValues: {
+      inspectionStatus: "Approved",
+      inspectionNo: "",
+      productName: "",
+      inspectionStdNo: "",
+      quantity: "",
+      date: new Date().toISOString().split("T")[0],
+      serialFrom: "",
+      serialTo: "",
+      totalChecked: "",
+      approved: "",
+      rejected: "",
+      result: "Pass",
+      remarks: "",
+      approvedBy: "",
+      approvalDate: new Date().toISOString().split("T")[0],
+      updatedBySignature: "",
+      updatedByDate: new Date().toISOString().split("T")[0],
+      problemReport: "no",
+      problemDescription: "",
+      problemActionTaken: "",
+      aqd: "no",
+      aqdDescription: "",
+      actionItemsDescription: "",
+      actionItemsFinishDate: "",
+      qualityFile: null,
+      checklist: {
+        labelAttached: false,
+        packagingProof: false,
+        finalTestDone: false,
       },
-    ],
+      observationColumns: [{ id: "observation", label: "Observation" }],
+      observations: [
+        {
+          id: 1,
+          parameter: "",
+          specification: "",
+          method: "",
+          observation: "",
+          remarks: "",
+        },
+      ],
+    },
+    validationSchema: validationSchema[activeStep],
+    enableReinitialize: true,
+    onSubmit: async (values) => {
+      try {
+        setLoading(true);
+        const isHR = user?.role === 'hr';
+        const status = isHR ? "Pending Approval" : "Approved";
+
+        const payload = {
+          ...values,
+          inspectionStatus: status,
+          inspectionNo: values.inspectionNo || `FIN-INS-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+        };
+
+        let response;
+        if (id) {
+          response = await axiosInstance.put(`/final-inspections/${id}`, payload);
+        } else {
+          response = await axiosInstance.post("/final-inspections", payload);
+        }
+
+        if (isHR && (response.status === 201 || response.status === 200)) {
+          await NotificationService.createNotification({
+            title: "Final Inspection Approval Required",
+            message: `HR ${user.name} has submitted a final inspection for ${values.productName || 'a product'} (Report: ${payload.inspectionNo}).`,
+            targetRole: "admin",
+            type: "final_inspection_approval",
+            link: `/final-inspection/view-final-inspection?id=${id || response.data.id}`,
+            inspectionId: id || response.data.id
+          });
+        }
+
+        alert(`Inspection ${id ? "Updated" : "Submitted"} Successfully!`);
+        router.push("/final-inspection");
+      } catch (error) {
+        console.error("Error saving inspection:", error);
+        alert("Failed to save inspection.");
+      } finally {
+        setLoading(false);
+      }
+    },
   });
 
   const addObservationColumn = () => {
-    const newColId = `observation_${formData.observationColumns.length + 1}`;
-    const newColLabel = `Obs ${formData.observationColumns.length + 1}`;
+    const newColId = `observation_${formik.values.observationColumns.length + 1}`;
+    const newColLabel = `Obs ${formik.values.observationColumns.length + 1}`;
 
-    setFormData(prev => ({
-      ...prev,
-      observationColumns: [...prev.observationColumns, { id: newColId, label: newColLabel }],
-      observations: prev.observations.map(obs => ({ ...obs, [newColId]: "" }))
-    }));
+    formik.setFieldValue("observationColumns", [...formik.values.observationColumns, { id: newColId, label: newColLabel }]);
+    formik.setFieldValue("observations", formik.values.observations.map(obs => ({ ...obs, [newColId]: "" })));
   };
 
   useEffect(() => {
@@ -103,7 +197,7 @@ function FinalInspectionFormContent() {
         setLoading(true);
         const response = await axiosInstance.get(`/final-inspections/${id}`);
         if (response.data) {
-          setFormData(response.data);
+          formik.setValues(response.data);
         }
       } catch (error) {
         console.error("Error fetching inspection:", error);
@@ -117,16 +211,18 @@ function FinalInspectionFormContent() {
     }
   }, [id]);
 
-  const setObservations = (obs) => {
-    setFormData(prev => ({ ...prev, observations: obs }));
-  };
-
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  const handleNext = async () => {
+    const errors = await formik.validateForm();
+    if (Object.keys(errors).length === 0) {
+      setActiveStep((prev) => prev + 1);
+    } else {
+      formik.setTouched(
+        Object.keys(errors).reduce((acc, key) => {
+          acc[key] = true;
+          return acc;
+        }, {})
+      );
+    }
   };
 
   const handleBack = () => {
@@ -134,8 +230,8 @@ function FinalInspectionFormContent() {
   };
 
   const addObservation = () => {
-    setObservations([
-      ...formData.observations,
+    formik.setFieldValue("observations", [
+      ...formik.values.observations,
       {
         id: Date.now(),
         parameter: "",
@@ -148,14 +244,14 @@ function FinalInspectionFormContent() {
   };
 
   const removeObservation = (id) => {
-    if (formData.observations.length > 1) {
-      setObservations(formData.observations.filter((obs) => obs.id !== id));
+    if (formik.values.observations.length > 1) {
+      formik.setFieldValue("observations", formik.values.observations.filter((obs) => obs.id !== id));
     }
   };
 
   const handleObservationChange = (id, field, value) => {
-    setObservations(
-      formData.observations.map((obs) =>
+    formik.setFieldValue("observations",
+      formik.values.observations.map((obs) =>
         obs.id === id ? { ...obs, [field]: value } : obs
       )
     );
@@ -204,16 +300,18 @@ function FinalInspectionFormContent() {
   const getStepContent = (step) => {
     switch (step) {
       case 0:
-        return <ProductInformationSection formData={formData} onChange={handleInputChange} />;
+        return <ProductInformationSection formik={formik} />;
       case 1:
         return (
           <InspectionObservations
-            observations={formData.observations}
-            observationColumns={formData.observationColumns}
+            observations={formik.values.observations}
+            observationColumns={formik.values.observationColumns}
             onAdd={addObservation}
             onAddColumn={addObservationColumn}
             onRemove={removeObservation}
             onChange={handleObservationChange}
+            errors={formik.errors.observations}
+            touched={formik.touched.observations}
             icon={Assignment}
           />
         );
@@ -221,20 +319,18 @@ function FinalInspectionFormContent() {
         return (
           <>
             <ProblemReportAQDSection
-              formData={formData}
-              onChange={handleInputChange}
+              formik={formik}
             />
             <Box sx={{ mt: 3 }}>
               <ActionChecklistSection
-                formData={formData}
-                onChange={handleInputChange}
+                formik={formik}
               />
             </Box>
             {user?.role === 'admin' && (
               <Box sx={{ mt: 3 }}>
                 <ApprovalCommentsSection
-                  value={formData.remarks}
-                  onChange={(val) => handleInputChange("remarks", val)}
+                  value={formik.values.remarks}
+                  onChange={(val) => formik.setFieldValue("remarks", val)}
                 />
               </Box>
             )}
@@ -246,18 +342,18 @@ function FinalInspectionFormContent() {
             <Grid container spacing={2}>
               <Grid size={{ xs: 12, md: user?.role === 'admin' ? 12 : 8 }}>
                 <InspectionSummary
-                  summaryData={formData}
-                  onChange={handleInputChange}
+                  summaryData={formik.values}
+                  onChange={(field, val) => formik.setFieldValue(field, val)}
                 />
               </Grid>
 
               <Grid size={{ xs: 12, md: user?.role === 'admin' ? 12 : 4 }}>
                 <SignaturesApprovalSection
                   approvalData={{
-                    updatedByName: formData.updatedBySignature,
-                    updatedByDate: formData.updatedByDate,
-                    approvedByName: formData.approvedBy,
-                    approvedByDate: formData.approvalDate
+                    updatedByName: formik.values.updatedBySignature,
+                    updatedByDate: formik.values.updatedByDate,
+                    approvedByName: formik.values.approvedBy,
+                    approvedByDate: formik.values.approvalDate
                   }}
                   onChange={(section, field, value) => {
                     const mapping = {
@@ -266,7 +362,7 @@ function FinalInspectionFormContent() {
                     };
                     const targetField = mapping[section]?.[field];
                     if (targetField) {
-                      handleInputChange(targetField, value);
+                      formik.setFieldValue(targetField, value);
                     }
                   }}
                 />
@@ -365,7 +461,7 @@ function FinalInspectionFormContent() {
                   textTransform: "none",
                   boxShadow: "0 4px 12px rgba(17, 114, 186, 0.2)",
                 }}
-                onClick={handleSave}
+                onClick={formik.handleSubmit}
               >
                 {id ? "Update Inspection" : "Complete Verification"}
               </Button>

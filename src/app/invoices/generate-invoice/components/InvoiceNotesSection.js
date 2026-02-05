@@ -8,7 +8,9 @@ import TextField from "@mui/material/TextField";
 
 import LocalOffer from "@mui/icons-material/LocalOffer";
 
-const InvoiceNotesSection = ({ formData = {}, onChange }) => {
+const InvoiceNotesSection = ({ formik }) => {
+    const { values, setFieldValue } = formik;
+
     return (
         <Card
             elevation={0}
@@ -41,8 +43,8 @@ const InvoiceNotesSection = ({ formData = {}, onChange }) => {
                             fullWidth
                             label="Terms & Conditions"
                             size="small"
-                            value={formData.termsAndConditions || ""}
-                            onChange={(e) => onChange?.("termsAndConditions", e.target.value)}
+                            value={values.notes.termsAndConditions || ""}
+                            onChange={(e) => setFieldValue("notes.termsAndConditions", e.target.value)}
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
                         />
                     </Grid>
@@ -51,12 +53,11 @@ const InvoiceNotesSection = ({ formData = {}, onChange }) => {
                             fullWidth
                             label="Additional Notes"
                             size="small"
-                            value={formData.additionalNotes || ""}
-                            onChange={(e) => onChange?.("additionalNotes", e.target.value)}
+                            value={values.notes.additionalNotes || ""}
+                            onChange={(e) => setFieldValue("notes.additionalNotes", e.target.value)}
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
                         />
                     </Grid>
-
                 </Grid>
             </CardContent>
         </Card>

@@ -11,7 +11,8 @@ import {
 } from "@mui/material";
 import { AssignmentTurnedIn, CheckCircle } from "@mui/icons-material";
 
-export default function ReviewSummaryStep({ formData }) {
+export default function ReviewSummaryStep({ formik }) {
+    const formData = formik.values;
     const cardHeaderStyle = {
         background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
         color: "white",
@@ -39,7 +40,7 @@ export default function ReviewSummaryStep({ formData }) {
                             <AssignmentTurnedIn />
                             <Typography variant="h6" color="white" fontWeight={700}>Review Summary</Typography>
                         </Box>
-                        <Chip label="Ready to Save" sx={{ color: "#1172ba",bgcolor:"white" }} size="small" />
+                        <Chip label="Ready to Save" sx={{ color: "#1172ba", bgcolor: "white" }} size="small" />
                     </Box>
                     <CardContent sx={{ p: 4 }}>
                         <Grid container spacing={4}>

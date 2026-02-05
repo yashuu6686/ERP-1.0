@@ -12,12 +12,31 @@ import Checkbox from "@mui/material/Checkbox";
 import Edit from "@mui/icons-material/Edit";
 import CheckCircle from "@mui/icons-material/CheckCircle";
 
-const ActionChecklistSection = ({ formData = {}, onChange }) => {
+import CloudUpload from "@mui/icons-material/CloudUpload";
+import Close from "@mui/icons-material/Close";
+import IconButton from "@mui/material/IconButton";
+import Button from "@mui/material/Button";
+import { Divider } from "@mui/material";
+
+const ActionChecklistSection = ({ formik }) => {
+    const { values, setFieldValue, touched, errors } = formik;
+
     const handleChecklistChange = (field) => {
-        onChange("checklist", {
-            ...formData.checklist,
-            [field]: !formData.checklist?.[field]
+        setFieldValue("checklist", {
+            ...values.checklist,
+            [field]: !values.checklist?.[field]
         });
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setFieldValue("qualityFile", file);
+        }
+    };
+
+    const removeFile = () => {
+        setFieldValue("qualityFile", null);
     };
 
     return (
@@ -50,11 +69,13 @@ const ActionChecklistSection = ({ formData = {}, onChange }) => {
                         <TextField
                             fullWidth
                             label="Action Items Description"
+                            name="actionItemsDescription"
                             multiline
                             rows={3}
                             size="small"
-                            value={formData.actionItemsDescription || ""}
-                            onChange={(e) => onChange("actionItemsDescription", e.target.value)}
+                            value={values.actionItemsDescription || ""}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                             sx={{
                                 mb: 3,
                                 "& .MuiOutlinedInput-root": { backgroundColor: "white" },
@@ -63,11 +84,13 @@ const ActionChecklistSection = ({ formData = {}, onChange }) => {
                         <TextField
                             fullWidth
                             label="Finish Date"
+                            name="actionItemsFinishDate"
                             type="date"
                             InputLabelProps={{ shrink: true }}
                             size="small"
-                            value={formData.actionItemsFinishDate || ""}
-                            onChange={(e) => onChange("actionItemsFinishDate", e.target.value)}
+                            value={values.actionItemsFinishDate || ""}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                             sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
                         />
                     </CardContent>
@@ -101,7 +124,7 @@ const ActionChecklistSection = ({ formData = {}, onChange }) => {
                         </Typography>
                     </Box>
                     <CardContent sx={{ p: 3, bgcolor: "#f8fafc" }}>
-                        <Box sx={{ display: "grid", gap: 1 }}>
+                        <Box sx={{ display: "grid", gap: 1, mb: 3 }}>
                             {[
                                 { label: "Label attached?", field: "labelAttached" },
                                 { label: "Packaging proof attached?", field: "packagingProof" },
@@ -125,7 +148,7 @@ const ActionChecklistSection = ({ formData = {}, onChange }) => {
                                             <Checkbox
                                                 size="small"
                                                 color="primary"
-                                                checked={!!formData.checklist?.[item.field]}
+                                                checked={!!values.checklist?.[item.field]}
                                                 onChange={() => handleChecklistChange(item.field)}
                                             />
                                         }

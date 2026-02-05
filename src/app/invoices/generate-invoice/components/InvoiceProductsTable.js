@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
@@ -17,7 +18,33 @@ import Add from "@mui/icons-material/Add";
 import Delete from "@mui/icons-material/Delete";
 import Inventory from "@mui/icons-material/Inventory";
 
-const InvoiceProductsTable = ({ products, lockedProductIds = [], onProductChange }) => {
+const InvoiceProductsTable = ({ formik, lockedProductIds = [], onProductChange }) => {
+    const { values, setFieldValue, errors, touched } = formik;
+    const products = values.items;
+
+    const addItem = () => {
+        const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+        setFieldValue("items", [
+            ...products,
+            {
+                id: newId,
+                name: "",
+                hsnSac: "",
+                qty: "",
+                price: "",
+                taxPercent: 18,
+                taxAmount: 0,
+                total: 0,
+            }
+        ]);
+    };
+
+    const removeItem = (id) => {
+        if (products.length > 1) {
+            setFieldValue("items", products.filter(p => !lockedProductIds.includes(p.id) || p.id !== id));
+        }
+    };
+
     return (
         <Card
             elevation={0}
@@ -44,6 +71,19 @@ const InvoiceProductsTable = ({ products, lockedProductIds = [], onProductChange
                         Products in Order
                     </Typography>
                 </Box>
+                <Button
+                    variant="contained"
+                    size="small"
+                    startIcon={<Add />}
+                    onClick={addItem}
+                    sx={{
+                        bgcolor: "white",
+                        color: "#1172ba",
+                        textTransform: "none",
+                    }}
+                >
+                    Add Item
+                </Button>
             </Box>
 
             <TableContainer sx={{ bgcolor: "#f8fafc" }}>
@@ -58,15 +98,18 @@ const InvoiceProductsTable = ({ products, lockedProductIds = [], onProductChange
                             <TableCell align="center" sx={{ fontWeight: 500 }}> Tax % </TableCell>
                             <TableCell align="center" sx={{ fontWeight: 500 }}> Tax </TableCell>
                             <TableCell align="center" sx={{ fontWeight: 500 }}> Total </TableCell>
+                            <TableCell align="center" sx={{ fontWeight: 500 }}> Action </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {products.map((product, index) => {
                             const isItemFromOrder = lockedProductIds.includes(product.id);
+                            const itemErrors = errors.items?.[index] || {};
+                            const itemTouched = touched.items?.[index] || {};
 
                             return (
                                 <TableRow key={product.id}>
-                                    <TableCell>{index + 1}</TableCell>
+                                    <TableCell align="center">{index + 1}</TableCell>
                                     <TableCell>
                                         <TextField
                                             size="small"
@@ -74,6 +117,8 @@ const InvoiceProductsTable = ({ products, lockedProductIds = [], onProductChange
                                             fullWidth
                                             value={product.name || ""}
                                             onChange={(e) => onProductChange?.(product.id, "name", e.target.value)}
+                                            error={itemTouched.name && Boolean(itemErrors.name)}
+                                            helperText={itemTouched.name && itemErrors.name}
                                             InputProps={{ readOnly: isItemFromOrder }}
                                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: isItemFromOrder ? "#f1f5f9" : "white" } }}
                                         />
@@ -95,6 +140,7 @@ const InvoiceProductsTable = ({ products, lockedProductIds = [], onProductChange
                                             type="number"
                                             value={product.qty || ""}
                                             onChange={(e) => onProductChange?.(product.id, "qty", e.target.value)}
+                                            error={itemTouched.qty && Boolean(itemErrors.qty)}
                                             InputProps={{ readOnly: isItemFromOrder }}
                                             sx={{
                                                 width: 80,
@@ -109,6 +155,7 @@ const InvoiceProductsTable = ({ products, lockedProductIds = [], onProductChange
                                             type="number"
                                             value={product.price || ""}
                                             onChange={(e) => onProductChange?.(product.id, "price", e.target.value)}
+                                            error={itemTouched.price && Boolean(itemErrors.price)}
                                             sx={{
                                                 width: 100,
                                                 "& .MuiOutlinedInput-root": { bgcolor: "white" },
@@ -128,14 +175,26 @@ const InvoiceProductsTable = ({ products, lockedProductIds = [], onProductChange
                                             }}
                                         />
                                     </TableCell>
-                                    <TableCell>₹{product.taxAmount}</TableCell>
-                                    <TableCell sx={{ fontWeight: 600 }}>₹{product.total}</TableCell>
+                                    <TableCell align="center">₹{parseFloat(product.taxAmount || 0).toFixed(2)}</TableCell>
+                                    <TableCell align="center" sx={{ fontWeight: 600 }}>₹{parseFloat(product.total || 0).toFixed(2)}</TableCell>
+                                    <TableCell align="center">
+                                        {!isItemFromOrder && (
+                                            <IconButton color="error" size="small" onClick={() => removeItem(product.id)}>
+                                                <Delete fontSize="small" />
+                                            </IconButton>
+                                        )}
+                                    </TableCell>
                                 </TableRow>
                             );
                         })}
                     </TableBody>
                 </Table>
             </TableContainer>
+            {typeof errors.items === 'string' && (
+                <Box sx={{ p: 2 }}>
+                    <Typography color="error" variant="caption">{errors.items}</Typography>
+                </Box>
+            )}
         </Card>
     );
 };

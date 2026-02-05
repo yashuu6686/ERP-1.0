@@ -8,7 +8,9 @@ import TextField from "@mui/material/TextField";
 
 import Inventory from "@mui/icons-material/Inventory";
 
-const ProductInformationSection = ({ formData = {}, onChange }) => {
+const ProductInformationSection = ({ formik }) => {
+    const { values, handleChange, handleBlur, touched, errors } = formik;
+
     return (
         <Card
             elevation={0}
@@ -40,87 +42,122 @@ const ProductInformationSection = ({ formData = {}, onChange }) => {
                         <TextField
                             fullWidth
                             label="Product Name"
+                            name="productName"
                             size="small"
-                            value={formData.productName || ""}
-                            onChange={(e) => onChange("productName", e.target.value)}
+                            value={values.productName || ""}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            error={touched.productName && Boolean(errors.productName)}
+                            helperText={touched.productName && errors.productName}
                             sx={{
                                 "& .MuiOutlinedInput-root": { backgroundColor: "white" },
                             }}
+                            required
                         />
                     </Grid>
                     <Grid size={{ xs: 12, md: 3 }}>
                         <TextField
                             fullWidth
                             label="Inspection Std No."
+                            name="inspectionStdNo"
                             size="small"
-                            value={formData.inspectionStdNo || ""}
-                            onChange={(e) => onChange("inspectionStdNo", e.target.value)}
+                            value={values.inspectionStdNo || ""}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            error={touched.inspectionStdNo && Boolean(errors.inspectionStdNo)}
+                            helperText={touched.inspectionStdNo && errors.inspectionStdNo}
                             sx={{
                                 "& .MuiOutlinedInput-root": { backgroundColor: "white" },
                             }}
+                            required
                         />
                     </Grid>
                     <Grid size={{ xs: 12, md: 3 }}>
                         <TextField
                             fullWidth
                             label="Quantity"
+                            name="quantity"
                             type="number"
                             size="small"
-                            value={formData.quantity || ""}
-                            onChange={(e) => onChange("quantity", e.target.value)}
+                            value={values.quantity || ""}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            error={touched.quantity && Boolean(errors.quantity)}
+                            helperText={touched.quantity && errors.quantity}
                             sx={{
                                 "& .MuiOutlinedInput-root": { backgroundColor: "white" },
                             }}
+                            required
                         />
                     </Grid>
                     <Grid size={{ xs: 12, md: 3 }}>
                         <TextField
                             fullWidth
                             label="Check Date"
+                            name="date"
                             type="date"
                             InputLabelProps={{ shrink: true }}
                             size="small"
-                            value={formData.date || ""}
-                            onChange={(e) => onChange("date", e.target.value)}
+                            value={values.date || ""}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            error={touched.date && Boolean(errors.date)}
+                            helperText={touched.date && errors.date}
                             sx={{
                                 "& .MuiOutlinedInput-root": { backgroundColor: "white" },
                             }}
+                            required
                         />
                     </Grid>
                     <Grid size={{ xs: 12, md: 4 }}>
                         <TextField
                             fullWidth
                             label="Inspection No."
+                            name="inspectionNo"
                             size="small"
-                            value={formData.inspectionNo || ""}
-                            onChange={(e) => onChange("inspectionNo", e.target.value)}
+                            value={values.inspectionNo || ""}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            error={touched.inspectionNo && Boolean(errors.inspectionNo)}
+                            helperText={touched.inspectionNo && errors.inspectionNo}
                             sx={{
                                 "& .MuiOutlinedInput-root": { backgroundColor: "white" },
                             }}
+                            required
                         />
                     </Grid>
                     <Grid size={{ xs: 12, md: 4 }}>
                         <TextField
                             fullWidth
                             label="Serial From"
+                            name="serialFrom"
                             size="small"
-                            value={formData.serialFrom || ""}
-                            onChange={(e) => onChange("serialFrom", e.target.value)}
+                            value={values.serialFrom || ""}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            error={touched.serialFrom && Boolean(errors.serialFrom)}
+                            helperText={touched.serialFrom && errors.serialFrom}
                             sx={{
                                 "& .MuiOutlinedInput-root": { backgroundColor: "white" },
                             }}
+                            required
                         />
                     </Grid>
                     <Grid size={{ xs: 12, md: 4 }}>
                         <TextField
                             fullWidth
                             label="Serial To"
+                            name="serialTo"
                             size="small"
-                            value={formData.serialTo || ""}
-                            onChange={(e) => onChange("serialTo", e.target.value)}
+                            value={values.serialTo || ""}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            error={touched.serialTo && Boolean(errors.serialTo)}
+                            helperText={touched.serialTo && errors.serialTo}
                             sx={{
                                 "& .MuiOutlinedInput-root": { backgroundColor: "white" },
                             }}
+                            required
                         />
                     </Grid>
                 </Grid>

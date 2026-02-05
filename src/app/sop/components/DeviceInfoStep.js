@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { Devices, HelpOutline, CalendarToday } from "@mui/icons-material";
 
-export default function DeviceInfoStep({ formData, handleInputChange }) {
+export default function DeviceInfoStep({ formik }) {
     const textFieldStyle = {
         "& .MuiOutlinedInput-root": {
             transition: "all 0.3s ease",
@@ -46,7 +46,6 @@ export default function DeviceInfoStep({ formData, handleInputChange }) {
         background: "rgba(255, 255, 255, 0.7)",
         backdropFilter: "blur(10px)",
         border: "1px solid rgba(255, 255, 255, 0.3)",
-        // boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.07)",
     };
 
     return (
@@ -67,21 +66,31 @@ export default function DeviceInfoStep({ formData, handleInputChange }) {
                             <TextField
                                 fullWidth
                                 label="Device ID"
+                                name="deviceId"
                                 placeholder="e.g. SN-8821"
-                                value={formData.deviceId}
-                                onChange={(e) => handleInputChange("deviceId", e.target.value)}
+                                value={formik.values.deviceId}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.deviceId && Boolean(formik.errors.deviceId)}
+                                helperText={formik.touched.deviceId && formik.errors.deviceId}
                                 sx={textFieldStyle}
+                                required
                             />
                         </Grid>
                         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                             <TextField
                                 fullWidth
                                 label="Date"
+                                name="date"
                                 type="date"
-                                value={formData.date}
-                                onChange={(e) => handleInputChange("date", e.target.value)}
+                                value={formik.values.date}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.date && Boolean(formik.errors.date)}
+                                helperText={formik.touched.date && formik.errors.date}
                                 InputLabelProps={{ shrink: true }}
                                 sx={textFieldStyle}
+                                required
                                 InputProps={{
                                     startAdornment: (
                                         <InputAdornment position="start">
@@ -95,17 +104,24 @@ export default function DeviceInfoStep({ formData, handleInputChange }) {
                             <TextField
                                 fullWidth
                                 label="Company Name"
-                                value={formData.companyName}
-                                onChange={(e) => handleInputChange("companyName", e.target.value)}
+                                name="companyName"
+                                value={formik.values.companyName}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.companyName && Boolean(formik.errors.companyName)}
+                                helperText={formik.touched.companyName && formik.errors.companyName}
                                 sx={textFieldStyle}
+                                required
                             />
                         </Grid>
                         <Grid size={{ xs: 12, md: 8 }}>
                             <TextField
                                 fullWidth
                                 label="Company Address"
-                                value={formData.companyAddress}
-                                onChange={(e) => handleInputChange("companyAddress", e.target.value)}
+                                name="companyAddress"
+                                value={formik.values.companyAddress}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
                                 sx={textFieldStyle}
                             />
                         </Grid>
