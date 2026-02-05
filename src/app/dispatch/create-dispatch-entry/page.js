@@ -1,5 +1,7 @@
 "use client";
 import React, { useState, useEffect, Suspense } from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import {
   Box,
   Button,
@@ -25,8 +27,11 @@ function CreateDispatchEntryContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
 
-  // Form state
-  const [formData, setFormData] = useState({
+  const [orders, setOrders] = useState([]);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const initialValues = {
     companyName: "Scanbo Engineering Pvt. Ltd.",
     officeAddress: "Mumbai, Maharashtra, India",
     email: "info@scanbo.com",
@@ -45,18 +50,99 @@ function CreateDispatchEntryContent() {
     packedBy: "",
     approvedBy: "",
     accountingBy: "",
+    products: [{ name: "", quantity: "" }],
+  };
+
+  const validationSchema = Yup.object().shape({
+    dispatchNo: Yup.string().required("Dispatch No is required"),
+    dispatchDate: Yup.date().required("Dispatch Date is required"),
+    trackingNumber: Yup.string().required("Tracking Number is required"),
+    customerName: Yup.string().required("Customer Name is required"),
+    deliveryAddress: Yup.string().required("Delivery Address is required"),
+    contactPerson: Yup.string().required("Contact Person is required"),
+    contactNo: Yup.string().required("Contact No is required"),
+    deliveryDate: Yup.date().required("Delivery Date is required"),
+    courierCompany: Yup.string().required("Courier Company is required"),
+    salesPlatform: Yup.string().required("Sales Platform is required"),
+    packedBy: Yup.string().required("Packed By is required"),
+    products: Yup.array().of(
+      Yup.object().shape({
+        name: Yup.string()
+          .required("Product name is required")
+          .matches(/^[a-zA-Z\s]+$/, "Product name must only contain characters"),
+        quantity: Yup.number().required("Quantity is required").positive("Quantity must be positive"),
+      })
+    ),
   });
 
-  const [products, setProducts] = useState([
-    { name: "", quantity: "" },
-  ]);
-  const [orders, setOrders] = useState([]);
-  const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
+  const formik = useFormik({
+    initialValues,
+    validationSchema,
+    enableReinitialize: true,
+    onSubmit: async (values) => {
+      try {
+        setLoading(true);
+        const isHR = user?.role === 'hr';
+        const status = isHR ? "Pending Approval" : "Shipped";
+
+        const payload = {
+          shipmentInfo: {
+            dispatchNo: values.dispatchNo,
+            trackingNumber: values.trackingNumber,
+            shippingDate: values.dispatchDate,
+            expectedDelivery: values.deliveryDate,
+            carrier: values.courierCompany,
+            platform: values.salesPlatform,
+          },
+          customer: {
+            companyName: values.customerName,
+            contactPerson: values.contactPerson,
+            address: values.deliveryAddress,
+            phone: values.contactNo,
+            email: values.email,
+          },
+          items: values.products.map(p => ({
+            name: p.name,
+            qty: parseInt(p.quantity),
+            serialNo: "-",
+            weight: "-"
+          })),
+          status: status,
+          packedBy: values.packedBy,
+          approvedBy: values.approvedBy,
+          accountingBy: values.accountingBy,
+        };
+
+        let response;
+        if (id) {
+          response = await axiosInstance.put(`/dispatches/${id}`, payload);
+        } else {
+          response = await axiosInstance.post("/dispatches", payload);
+        }
+
+        if (isHR && (response.status === 201 || response.status === 200)) {
+          await NotificationService.createNotification({
+            title: "Dispatch Approval Required",
+            message: `HR ${user.name} has submitted a dispatch entry for ${values.customerName || 'a customer'} (Dispatch: ${values.dispatchNo}).`,
+            targetRole: "admin",
+            type: "dispatch_approval",
+            link: `/dispatch/view-dispatch?id=${id || response.data.id}`,
+            inspectionId: id || response.data.id
+          });
+        }
+
+        alert(`Dispatch Entry ${id ? "Updated" : "Saved"} Successfully!`);
+        router.push("/dispatch");
+      } catch (error) {
+        console.error("Save Error:", error);
+        alert("Failed to save dispatch entry.");
+      } finally {
+        setLoading(false);
+      }
+    }
+  });
 
   useEffect(() => {
-    // Fetch orders for the autocomplete
     const fetchOrders = async () => {
       try {
         const response = await axiosInstance.get("/orders");
@@ -74,7 +160,7 @@ function CreateDispatchEntryContent() {
           const response = await axiosInstance.get(`/dispatches/${id}`);
           const data = response.data;
 
-          setFormData({
+          formik.setValues({
             companyName: data.customer?.companyName || "Scanbo Engineering Pvt. Ltd.",
             officeAddress: data.customer?.address || "Mumbai, Maharashtra, India",
             email: data.customer?.email || "info@scanbo.com",
@@ -93,14 +179,10 @@ function CreateDispatchEntryContent() {
             packedBy: data.packedBy || "",
             approvedBy: data.approvedBy || "",
             accountingBy: data.accountingBy || "",
+            products: data.items && data.items.length > 0
+              ? data.items.map(item => ({ name: item.name || "", quantity: item.qty || "" }))
+              : [{ name: "", quantity: "" }],
           });
-
-          if (data.items && data.items.length > 0) {
-            setProducts(data.items.map(item => ({
-              name: item.name || "",
-              quantity: item.qty || ""
-            })));
-          }
         } catch (error) {
           console.error("Failed to fetch dispatch:", error);
           alert("Failed to load dispatch data.");
@@ -112,54 +194,24 @@ function CreateDispatchEntryContent() {
     }
   }, [id]);
 
-  const handleChange = (field, value) => {
-    setFormData({ ...formData, [field]: value });
-    if (errors[field]) {
-      setErrors({ ...errors, [field]: false });
-    }
-  };
-
   const handleOrderSelect = (order) => {
     if (!order) return;
 
-    setFormData(prev => ({
-      ...prev,
+    formik.setValues({
+      ...formik.values,
       customerName: order.customerName || "",
-      // If order has email/contact, map them here. Assuming standard structure:
       contactPerson: order.contactPerson || "",
       email: order.email || "",
       contactNo: order.phone || "",
       deliveryAddress: order.address || "",
       referenceNo: order.orderId || order.orderNo || "",
-      // Map other fields if available in order object
-    }));
-
-    // Map products from order if they exist
-    if (order.products && Array.isArray(order.products)) {
-      setProducts(order.products.map(p => ({
-        name: p.productName || p.name || "",
-        quantity: p.quantity || ""
-      })));
-    }
-  };
-
-  const handleProductChange = (index, field, value) => {
-    const updated = [...products];
-    updated[index][field] = value;
-    setProducts(updated);
-    if (errors[`product_${index}_${field}`]) {
-      setErrors({ ...errors, [`product_${index}_${field}`]: false });
-    }
-  };
-
-  const addProduct = () => {
-    setProducts([...products, { name: "", quantity: "" }]);
-  };
-
-  const removeProduct = (index) => {
-    if (products.length > 1) {
-      setProducts(products.filter((_, i) => i !== index));
-    }
+      products: order.products && Array.isArray(order.products)
+        ? order.products.map(p => ({
+          name: p.productName || p.name || "",
+          quantity: p.quantity || ""
+        }))
+        : formik.values.products,
+    });
   };
 
   const handleFileUpload = (e) => {
@@ -171,103 +223,6 @@ function CreateDispatchEntryContent() {
     setUploadedFiles(uploadedFiles.filter((_, i) => i !== index));
   };
 
-  const handleSave = async () => {
-    const newErrors = {};
-
-    const requiredFields = [
-      "dispatchNo",
-      "dispatchDate",
-      "trackingNumber",
-      "customerName",
-      "deliveryAddress",
-      "contactPerson",
-      "contactNo",
-      "deliveryDate",
-      "courierCompany",
-      "salesPlatform",
-    ];
-
-    requiredFields.forEach((field) => {
-      if (!formData[field] || (typeof formData[field] === 'string' && formData[field].trim() === "")) {
-        newErrors[field] = true;
-      }
-    });
-
-    products.forEach((product, index) => {
-      if (!product.name || product.name.trim() === "") {
-        newErrors[`product_${index}_name`] = true;
-      }
-      if (!product.quantity || String(product.quantity).trim() === "") {
-        newErrors[`product_${index}_quantity`] = true;
-      }
-    });
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const isHR = user?.role === 'hr';
-      const status = isHR ? "Pending Approval" : "Shipped";
-
-      const payload = {
-        shipmentInfo: {
-          dispatchNo: formData.dispatchNo,
-          trackingNumber: formData.trackingNumber,
-          shippingDate: formData.dispatchDate,
-          expectedDelivery: formData.deliveryDate,
-          carrier: formData.courierCompany,
-          platform: formData.salesPlatform,
-        },
-        customer: {
-          companyName: formData.customerName,
-          contactPerson: formData.contactPerson,
-          address: formData.deliveryAddress,
-          phone: formData.contactNo,
-          email: formData.email,
-        },
-        items: products.map(p => ({
-          name: p.name,
-          qty: parseInt(p.quantity),
-          serialNo: "-",
-          weight: "-"
-        })),
-        status: status,
-        packedBy: formData.packedBy,
-        approvedBy: formData.approvedBy,
-        accountingBy: formData.accountingBy,
-      };
-
-      let response;
-      if (id) {
-        response = await axiosInstance.put(`/dispatches/${id}`, payload);
-      } else {
-        response = await axiosInstance.post("/dispatches", payload);
-      }
-
-      if (isHR && (response.status === 201 || response.status === 200)) {
-        await NotificationService.createNotification({
-          title: "Dispatch Approval Required",
-          message: `HR ${user.name} has submitted a dispatch entry for ${formData.customerName || 'a customer'} (Dispatch: ${formData.dispatchNo}).`,
-          targetRole: "admin",
-          type: "dispatch_approval",
-          link: `/dispatch/view-dispatch?id=${id || response.data.id}`,
-          inspectionId: id || response.data.id
-        });
-      }
-
-      alert(`Dispatch Entry ${id ? "Updated" : "Saved"} Successfully!`);
-      router.push("/dispatch");
-    } catch (error) {
-      console.error("Save Error:", error);
-      alert("Failed to save dispatch entry.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   if (loading) return <Loader fullPage message={id ? "Updating Dispatch..." : "Saving Dispatch..."} />;
 
   return (
@@ -276,28 +231,18 @@ function CreateDispatchEntryContent() {
         <Box sx={{ p: 1 }}>
           <CompanyInfoCard />
           <DispatchInfoCard
-            formData={formData}
-            handleChange={handleChange}
-            errors={errors}
+            formik={formik}
             orders={orders}
             onOrderSelect={handleOrderSelect}
           />
           <CustomerDeliveryCard
-            formData={formData}
-            handleChange={handleChange}
-            errors={errors}
+            formik={formik}
           />
           <ProductDetailsTable
-            products={products}
-            handleProductChange={handleProductChange}
-            addProduct={addProduct}
-            removeProduct={removeProduct}
-            errors={errors}
+            formik={formik}
           />
           <PackagingApprovalsCard
-            formData={formData}
-            handleChange={handleChange}
-            errors={errors}
+            formik={formik}
             uploadedFiles={uploadedFiles}
             handleFileUpload={handleFileUpload}
             removeFile={removeFile}
@@ -307,7 +252,7 @@ function CreateDispatchEntryContent() {
               variant="contained"
               size="large"
               startIcon={<Save />}
-              onClick={handleSave}
+              onClick={formik.handleSubmit}
               sx={{
                 px: 6,
                 py: 1.5,

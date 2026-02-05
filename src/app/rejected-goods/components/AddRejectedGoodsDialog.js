@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
     Dialog,
     DialogTitle,
@@ -8,16 +8,53 @@ import {
     TextField,
     Button,
 } from "@mui/material";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+
+const validationSchema = Yup.object().shape({
+    rejectionId: Yup.string().required("Rejection ID is required"),
+    sourceType: Yup.string().required("Source Type is required"),
+    sourceReference: Yup.string().required("Source Reference is required"),
+    date: Yup.date().required("Date is required"),
+    rejectedGoods: Yup.string()
+        .required("Rejected Goods is required")
+        .matches(/^[a-zA-Z\s]+$/, "Rejected Goods must only contain characters"),
+    rejectedQty: Yup.number()
+        .required("Quantity is required")
+        .positive("Quantity must be positive")
+        .integer("Quantity must be an integer"),
+    reason: Yup.string().required("Reason is required"),
+    rejectedBy: Yup.string()
+        .required("Rejected By is required")
+        .matches(/^[a-zA-Z\s]+$/, "Rejected By must only contain characters"),
+});
 
 export default function AddRejectedGoodsDialog({
     open,
     onClose,
     form,
-    onChange,
     onSubmit,
     mode = "add", // 'add' | 'edit' | 'view'
 }) {
     const isView = mode === "view";
+
+    const formik = useFormik({
+        initialValues: {
+            rejectionId: form.rejectionId || "",
+            sourceType: form.sourceType || "GRN",
+            sourceReference: form.sourceReference || "",
+            date: form.date || "",
+            rejectedGoods: form.rejectedGoods || "",
+            rejectedQty: form.rejectedQty || "",
+            reason: form.reason || "",
+            rejectedBy: form.rejectedBy || "",
+        },
+        validationSchema: validationSchema,
+        enableReinitialize: true,
+        onSubmit: (values) => {
+            onSubmit(values);
+        },
+    });
 
     const getTitle = () => {
         if (mode === "add") return "Add Rejected Items";
@@ -25,8 +62,19 @@ export default function AddRejectedGoodsDialog({
         return "View Rejected Item";
     };
 
+    const handleClose = () => {
+        formik.resetForm();
+        onClose();
+    };
+
+    const handleCharacterOnlyChange = (e) => {
+        const { name, value } = e.target;
+        const filteredValue = value.replace(/[^a-zA-Z\s]/g, "");
+        formik.setFieldValue(name, filteredValue);
+    };
+
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+        <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
             <DialogTitle sx={{ fontWeight: 700 }}>{getTitle()}</DialogTitle>
             <DialogContent dividers>
                 <Grid container spacing={2}>
@@ -35,10 +83,13 @@ export default function AddRejectedGoodsDialog({
                             fullWidth
                             label="Rejection ID"
                             name="rejectionId"
-                            value={form.rejectionId}
-                            onChange={onChange}
+                            value={formik.values.rejectionId}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.rejectionId && Boolean(formik.errors.rejectionId)}
+                            helperText={formik.touched.rejectionId && formik.errors.rejectionId}
                             size="small"
-                            disabled={isView || mode === "edit"} // ID usually fixed
+                            disabled={isView || mode === "edit"}
                         />
                     </Grid>
                     <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
@@ -46,8 +97,11 @@ export default function AddRejectedGoodsDialog({
                             fullWidth
                             label="Source Type"
                             name="sourceType"
-                            value={form.sourceType}
-                            onChange={onChange}
+                            value={formik.values.sourceType}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.sourceType && Boolean(formik.errors.sourceType)}
+                            helperText={formik.touched.sourceType && formik.errors.sourceType}
                             size="small"
                             disabled={isView}
                         />
@@ -57,8 +111,11 @@ export default function AddRejectedGoodsDialog({
                             fullWidth
                             label="Source Reference"
                             name="sourceReference"
-                            value={form.sourceReference}
-                            onChange={onChange}
+                            value={formik.values.sourceReference}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.sourceReference && Boolean(formik.errors.sourceReference)}
+                            helperText={formik.touched.sourceReference && formik.errors.sourceReference}
                             size="small"
                             disabled={isView}
                         />
@@ -70,8 +127,11 @@ export default function AddRejectedGoodsDialog({
                             label="Date"
                             name="date"
                             InputLabelProps={{ shrink: true }}
-                            value={form.date}
-                            onChange={onChange}
+                            value={formik.values.date}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.date && Boolean(formik.errors.date)}
+                            helperText={formik.touched.date && formik.errors.date}
                             size="small"
                             disabled={isView}
                         />
@@ -81,8 +141,11 @@ export default function AddRejectedGoodsDialog({
                             fullWidth
                             label="Rejected Goods"
                             name="rejectedGoods"
-                            value={form.rejectedGoods}
-                            onChange={onChange}
+                            value={formik.values.rejectedGoods}
+                            onChange={handleCharacterOnlyChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.rejectedGoods && Boolean(formik.errors.rejectedGoods)}
+                            helperText={formik.touched.rejectedGoods && formik.errors.rejectedGoods}
                             size="small"
                             disabled={isView}
                         />
@@ -93,8 +156,11 @@ export default function AddRejectedGoodsDialog({
                             type="number"
                             label="Rejected Quantity"
                             name="rejectedQty"
-                            value={form.rejectedQty}
-                            onChange={onChange}
+                            value={formik.values.rejectedQty}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.rejectedQty && Boolean(formik.errors.rejectedQty)}
+                            helperText={formik.touched.rejectedQty && formik.errors.rejectedQty}
                             size="small"
                             disabled={isView}
                         />
@@ -104,8 +170,11 @@ export default function AddRejectedGoodsDialog({
                             fullWidth
                             label="Rejection Reason"
                             name="reason"
-                            value={form.reason}
-                            onChange={onChange}
+                            value={formik.values.reason}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.reason && Boolean(formik.errors.reason)}
+                            helperText={formik.touched.reason && formik.errors.reason}
                             size="small"
                             disabled={isView}
                         />
@@ -115,8 +184,11 @@ export default function AddRejectedGoodsDialog({
                             fullWidth
                             label="Rejected By"
                             name="rejectedBy"
-                            value={form.rejectedBy}
-                            onChange={onChange}
+                            value={formik.values.rejectedBy}
+                            onChange={handleCharacterOnlyChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.rejectedBy && Boolean(formik.errors.rejectedBy)}
+                            helperText={formik.touched.rejectedBy && formik.errors.rejectedBy}
                             size="small"
                             disabled={isView}
                         />
@@ -124,13 +196,13 @@ export default function AddRejectedGoodsDialog({
                 </Grid>
             </DialogContent>
             <DialogActions sx={{ p: 2 }}>
-                <Button onClick={onClose} sx={{ textTransform: "none" }}>
+                <Button onClick={handleClose} sx={{ textTransform: "none" }}>
                     {isView ? "Close" : "Cancel"}
                 </Button>
                 {!isView && (
                     <Button
                         variant="contained"
-                        onClick={onSubmit}
+                        onClick={formik.handleSubmit}
                         sx={{
                             backgroundColor: "#1172ba",
                             fontWeight: 600,
@@ -146,3 +218,4 @@ export default function AddRejectedGoodsDialog({
         </Dialog>
     );
 }
+

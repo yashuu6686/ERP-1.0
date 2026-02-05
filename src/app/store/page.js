@@ -14,7 +14,11 @@ import Loader from "../../components/Loader";
 
 export default function Store() {
   const [tab, setTab] = useState(0);
+  const tabLabels = ["Raw Materials", "IT Items", "Finished Products", "Other Items"];
+  const tabEndpoints = ["/store", "/it-goods", "/finish-goods", "/other-goods"];
+
   const [search, setSearch] = useState("");
+
   const [openDialog, setOpenDialog] = useState(false);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -31,10 +35,10 @@ export default function Store() {
   const router = useRouter();
 
   const fetchData = React.useCallback(async () => {
-    const endpoints = ["/store", "/it-goods", "/finish-goods", "/other-goods"];
     try {
       setLoading(true);
-      const response = await axiosInstance.get(endpoints[tab]);
+      const response = await axiosInstance.get(tabEndpoints[tab]);
+
       setData(response.data);
     } catch (error) {
       console.error("Error fetching store data:", error);
@@ -147,6 +151,7 @@ export default function Store() {
       align: "center",
       render: (row) => row.location || "-",
     },
+
     {
       label: "Last Updated",
       align: "center",
@@ -174,10 +179,13 @@ export default function Store() {
   return (
     <Box>
       <CommonCard
-        title="Store"
-        addText="Add Material"
-        onAdd={() => setOpenDialog(true)}
-        searchPlaceholder="Search Materials"
+        title={tabLabels[tab]}
+        addText={`Add ${tabLabels[tab].replace(/s$/, "")}`}
+        onAdd={() => {
+          setForm({ ...form, category: tabEndpoints[tab] });
+          setOpenDialog(true);
+        }}
+        searchPlaceholder={`Search ${tabLabels[tab]}`}
         searchValue={search}
         onSearchChange={(e) => setSearch(e.target.value)}
       >

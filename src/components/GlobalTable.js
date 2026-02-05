@@ -47,14 +47,11 @@ const GlobalTable = ({
                 component={Paper}
                 elevation={0}
                 sx={{
-                    // border: "1px solid var(--border-default)",
-                    // borderRadius: "var(--card-radius)",
                     overflowX: "auto",
                     width: "100%",
                     maxWidth: "100%",
                     display: "block",
                     mb: 2,
-                    // Custom Scrollbar Styles
                     "&::-webkit-scrollbar": {
                         height: "8px",
                         width: "8px",

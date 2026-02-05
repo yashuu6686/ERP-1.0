@@ -19,13 +19,11 @@ import Layers from "@mui/icons-material/Layers";
 import People from "@mui/icons-material/People";
 import Receipt from "@mui/icons-material/Receipt";
 import Verified from "@mui/icons-material/Verified";
-import Science from "@mui/icons-material/Science";
 import Description from "@mui/icons-material/Description";
 import LocalShipping from "@mui/icons-material/LocalShipping";
 import Cancel from "@mui/icons-material/Cancel";
-import NavigateNext from "@mui/icons-material/NavigateNext";
 import Logout from "@mui/icons-material/Logout";
-import { Breadcrumbs, Link as MuiLink, Typography as MuiTypography, IconButton, useMediaQuery, useTheme } from "@mui/material";
+import { Link as MuiLink, Typography as MuiTypography, useMediaQuery, useTheme, Tooltip } from "@mui/material";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
@@ -95,10 +93,7 @@ export default function Sidebar({ children }) {
     }
   };
 
-  // Prevent hydration mismatch/flicker by assuming desktop on first render if that's the default
-  // or just waiting for mount to apply responsive variants.
   const drawerVariant = hasMounted ? (isLargeScreen ? "persistent" : "temporary") : "persistent";
-  // On large screens, drawer is always open (either full or mini). On small screens, use isSidebarOpen.
   const drawerOpen = hasMounted ? (isLargeScreen ? true : isSidebarOpen) : true;
 
   if (pathname === "/login") {
@@ -112,7 +107,7 @@ export default function Sidebar({ children }) {
         open={drawerOpen}
         onClose={handleDrawerToggle}
         ModalProps={{
-          keepMounted: true, // Better open performance on mobile.
+          keepMounted: true,
         }}
         sx={{
           width: isLargeScreen ? (isSidebarOpen ? DRAWER_WIDTH : MINI_DRAWER_WIDTH) : (isSidebarOpen ? DRAWER_WIDTH : 0),
@@ -184,106 +179,122 @@ export default function Sidebar({ children }) {
               pathname?.startsWith(item.path + "/");
 
             return (
-              <Link key={index} href={item.path} passHref legacyBehavior>
-                <ListItemButton
-                  selected={isActive}
-                  onClick={handleListItemClick}
-                  sx={{
-                    position: 'relative',
-                    '&::before': isActive ? {
-                      content: '""',
-                      position: 'absolute',
-                      left: 0,
-                      top: '15%',
-                      height: '70%',
-                      width: '4px',
-                      backgroundColor: 'var(--brand-primary)',
-                      borderRadius: '0 4px 4px 0',
-                    } : {}
-                  }}
-                  style={{
-                    borderRadius: "8px",
-                    marginBottom: "4px",
-                    padding: isSidebarOpen ? "10px 12px" : "10px 0",
-                    backgroundColor: isActive ? "var(--brand-soft)" : "transparent",
-                    color: isActive ? "var(--brand-primary)" : "var(--text-primary)",
-                    justifyContent: isSidebarOpen ? 'initial' : 'center',
-                    minHeight: isSidebarOpen ? 'auto' : '48px'
-                  }}
-                >
-                  <Box
-                    style={{
-                      marginRight: isSidebarOpen ? "12px" : "0px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: 'center',
-                      color: isActive ? "var(--brand-primary)" : "rgb(17, 114, 186)",
+              <Tooltip
+                key={index}
+                title={!isSidebarOpen ? item.text : ""}
+                placement="right"
+                arrow
+                enterDelay={100}
+              >
+                <Box sx={{ width: '100%' }}>
+                  <ListItemButton
+                    component={Link}
+                    href={item.path}
+                    selected={isActive}
+                    onClick={handleListItemClick}
+                    sx={{
+                      position: 'relative',
+                      borderRadius: "8px",
+                      marginBottom: "4px",
+                      padding: isSidebarOpen ? "10px 12px" : "10px 0",
+                      backgroundColor: isActive ? "var(--brand-soft)" : "transparent",
+                      color: isActive ? "var(--brand-primary)" : "var(--text-primary)",
+                      justifyContent: isSidebarOpen ? 'initial' : 'center',
+                      minHeight: isSidebarOpen ? 'auto' : '48px',
+                      '&::before': isActive ? {
+                        content: '""',
+                        position: 'absolute',
+                        left: 0,
+                        top: '15%',
+                        height: '70%',
+                        width: '4px',
+                        backgroundColor: 'var(--brand-primary)',
+                        borderRadius: '0 4px 4px 0',
+                      } : {}
                     }}
                   >
-                    {React.cloneElement(item.icon, { fontSize: "small" })}
-                  </Box>
-
-                  {isSidebarOpen && (
-                    <ListItemText
-                      primary={item.text}
-                      primaryTypographyProps={{
-                        fontSize: "var(--size-body)",
-                        fontWeight: isActive ? 600 : 500,
-                        fontFamily: "var(--font-manrope)",
-                        noWrap: false,
-                        style: {
-                          lineHeight: 1.2,
-                          whiteSpace: 'normal',
-                          wordBreak: 'break-word'
-                        }
+                    <Box
+                      style={{
+                        marginRight: isSidebarOpen ? "12px" : "0px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: 'center',
+                        color: isActive ? "var(--brand-primary)" : "rgb(17, 114, 186)",
                       }}
-                    />
-                  )}
-                </ListItemButton>
-              </Link>
+                    >
+                      {React.cloneElement(item.icon, { fontSize: "small" })}
+                    </Box>
+
+                    {isSidebarOpen && (
+                      <ListItemText
+                        primary={item.text}
+                        primaryTypographyProps={{
+                          fontSize: "var(--size-body)",
+                          fontWeight: isActive ? 600 : 500,
+                          fontFamily: "var(--font-manrope)",
+                          noWrap: false,
+                          style: {
+                            lineHeight: 1.2,
+                            whiteSpace: 'normal',
+                            wordBreak: 'break-word'
+                          }
+                        }}
+                      />
+                    )}
+                  </ListItemButton>
+                </Box>
+              </Tooltip>
             );
           })}
 
           {/* Logout Button at Bottom */}
           <Divider sx={{ borderColor: "var(--border-default)", my: 1 }} />
-          <ListItemButton
-            onClick={logout}
-            sx={{
-              borderRadius: "8px",
-              marginBottom: "4px",
-              padding: isSidebarOpen ? "10px 12px" : "10px 0",
-              backgroundColor: "transparent",
-              // color: "var(--text-primary)",
-              justifyContent: isSidebarOpen ? 'initial' : 'center',
-              minHeight: isSidebarOpen ? 'auto' : '48px',
-              "&:hover": {
-                backgroundColor: "var(--brand-soft)",
-              }
-            }}
+          <Tooltip
+            title={!isSidebarOpen ? "Logout" : ""}
+            placement="right"
+            arrow
+            enterDelay={100}
           >
-            <Box
-              style={{
-                marginRight: isSidebarOpen ? "12px" : "0px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: 'center',
-                color: "rgb(17, 114, 186)",
-              }}
-            >
-              <Logout fontSize="small" />
-            </Box>
-
-            {isSidebarOpen && (
-              <ListItemText
-                primary="Logout"
-                primaryTypographyProps={{
-                  fontSize: "var(--size-body)",
-                  fontWeight: 600,
-                  fontFamily: "var(--font-manrope)",
+            <Box sx={{ width: '100%' }}>
+              <ListItemButton
+                onClick={logout}
+                sx={{
+                  borderRadius: "8px",
+                  marginBottom: "4px",
+                  padding: isSidebarOpen ? "10px 12px" : "10px 0",
+                  backgroundColor: "transparent",
+                  justifyContent: isSidebarOpen ? 'initial' : 'center',
+                  minHeight: isSidebarOpen ? 'auto' : '48px',
+                  "&:hover": {
+                    backgroundColor: "var(--brand-soft)",
+                  }
                 }}
-              />
-            )}
-          </ListItemButton>
+              >
+                <Box
+                  style={{
+                    marginRight: isSidebarOpen ? "12px" : "0px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: 'center',
+                    color: "rgb(17, 114, 186)",
+                  }}
+                >
+                  <Logout fontSize="small" />
+                </Box>
+
+                {isSidebarOpen && (
+                  <ListItemText
+                    primary="Logout"
+                    primaryTypographyProps={{
+                      fontSize: "var(--size-body)",
+                      fontWeight: 600,
+                      fontFamily: "var(--font-manrope)",
+                    }}
+                  />
+                )}
+              </ListItemButton>
+            </Box>
+          </Tooltip>
         </List>
 
       </Drawer>
@@ -298,7 +309,6 @@ export default function Sidebar({ children }) {
           height: '100vh',
           overflowY: 'auto',
           position: 'relative',
-          // ml: isLargeScreen ? (isSidebarOpen ? `${DRAWER_WIDTH}px` : `${MINI_DRAWER_WIDTH}px`) : 0,
           transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,

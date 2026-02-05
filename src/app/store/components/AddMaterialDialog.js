@@ -10,12 +10,22 @@ import Button from "@mui/material/Button";
 import Save from "@mui/icons-material/Save";
 
 const AddMaterialDialog = ({ open, handleClose, form, handleChange, handleSave }) => {
+    const getLabel = () => {
+        const mapping = {
+            "/store": "Raw Material",
+            "/it-goods": "IT Item",
+            "/finish-goods": "Finished Product",
+            "/other-goods": "Other Good"
+        };
+        return mapping[form.category] || "Material";
+    };
+
     return (
         <Dialog open={open} onClose={handleClose} fullWidth>
-            <DialogTitle sx={{ fontWeight: 700 }}>Add Raw Material</DialogTitle>
+            <DialogTitle sx={{ fontWeight: 700 }}>Add {getLabel()}</DialogTitle>
             <DialogContent dividers>
                 <Grid container spacing={2}>
-                    <Grid size={{ xs: 12, sm: 6 }}>
+                    <Grid item size={{ xs: 12, sm: 6 }}>
                         <TextField
                             select
                             fullWidth
@@ -31,7 +41,7 @@ const AddMaterialDialog = ({ open, handleClose, form, handleChange, handleSave }
                             <MenuItem value="/other-goods">Other Goods</MenuItem>
                         </TextField>
                     </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
+                    <Grid item size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             label="Material Name"
@@ -41,7 +51,7 @@ const AddMaterialDialog = ({ open, handleClose, form, handleChange, handleSave }
                             size="small"
                         />
                     </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
+                    <Grid item size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             label="Material Code"
@@ -51,7 +61,7 @@ const AddMaterialDialog = ({ open, handleClose, form, handleChange, handleSave }
                             size="small"
                         />
                     </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
+                    <Grid item size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             type="number"
@@ -62,7 +72,7 @@ const AddMaterialDialog = ({ open, handleClose, form, handleChange, handleSave }
                             onChange={handleChange}
                         />
                     </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
+                    <Grid item size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             size="small"
@@ -73,7 +83,7 @@ const AddMaterialDialog = ({ open, handleClose, form, handleChange, handleSave }
                             onChange={handleChange}
                         />
                     </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
+                    <Grid item size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             size="small"
@@ -83,7 +93,7 @@ const AddMaterialDialog = ({ open, handleClose, form, handleChange, handleSave }
                             onChange={handleChange}
                         />
                     </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
+                    <Grid item size={{ xs: 12, sm: 6 }}>
                         <TextField
                             fullWidth
                             size="small"
@@ -111,7 +121,7 @@ const AddMaterialDialog = ({ open, handleClose, form, handleChange, handleSave }
                         "&:hover": { backgroundColor: "#0d5a94" },
                     }}
                 >
-                    Save Material
+                    Save {getLabel()}
                 </Button>
             </DialogActions>
         </Dialog>

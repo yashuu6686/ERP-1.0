@@ -13,8 +13,15 @@ import {
 import { Description, CloudUpload } from "@mui/icons-material";
 import { useAuth } from "@/context/AuthContext";
 
-export default function PackagingApprovalsCard({ formData, handleChange, errors, uploadedFiles, handleFileUpload, removeFile }) {
+export default function PackagingApprovalsCard({ formik, uploadedFiles, handleFileUpload, removeFile }) {
     const { user } = useAuth();
+
+    const handleCharacterOnlyChange = (e) => {
+        const { name, value } = e.target;
+        const filteredValue = value.replace(/[^a-zA-Z\s]/g, "");
+        formik.setFieldValue(name, filteredValue);
+    };
+
     return (
         <Card sx={{ mb: 4, borderRadius: 2 }}>
             <Box
@@ -37,15 +44,22 @@ export default function PackagingApprovalsCard({ formData, handleChange, errors,
                     <Grid size={{ xs: 12, md: 4 }}>
                         <TextField
                             fullWidth
+                            name="packedBy"
                             label="Packed By"
                             multiline
                             rows={2}
                             placeholder="Name, Sign & Date"
-                            value={formData.packedBy}
-                            onChange={(e) => handleChange("packedBy", e.target.value)}
+                            value={formik.values.packedBy}
+                            onChange={handleCharacterOnlyChange}
+                            onBlur={formik.handleBlur}
                             required
-                            error={errors.packedBy}
-                            sx={{ bgcolor: "white" }}
+                            error={formik.touched.packedBy && Boolean(formik.errors.packedBy)}
+                            helperText={formik.touched.packedBy && formik.errors.packedBy}
+                            sx={{
+                                "& .MuiOutlinedInput-root": {
+                                    background: "linear-gradient(135deg, #F8FAFC, #F1F5F9)",
+                                }
+                            }}
                         />
                     </Grid>
                     {user?.role === 'admin' && (
@@ -53,28 +67,34 @@ export default function PackagingApprovalsCard({ formData, handleChange, errors,
                             <Grid size={{ xs: 12, md: 4 }}>
                                 <TextField
                                     fullWidth
+                                    name="approvedBy"
                                     label="Approved By"
                                     multiline
                                     rows={2}
                                     placeholder="Name, Sign & Date"
-                                    value={formData.approvedBy}
-                                    onChange={(e) => handleChange("approvedBy", e.target.value)}
+                                    value={formik.values.approvedBy}
+                                    onChange={handleCharacterOnlyChange}
+                                    onBlur={formik.handleBlur}
                                     required
-                                    error={errors.approvedBy}
+                                    error={formik.touched.approvedBy && Boolean(formik.errors.approvedBy)}
+                                    helperText={formik.touched.approvedBy && formik.errors.approvedBy}
                                     sx={{ bgcolor: "white" }}
                                 />
                             </Grid>
                             <Grid size={{ xs: 12, md: 4 }}>
                                 <TextField
                                     fullWidth
+                                    name="accountingBy"
                                     label="Accounting By"
                                     multiline
                                     rows={2}
                                     placeholder="Name, Sign & Date"
-                                    value={formData.accountingBy}
-                                    onChange={(e) => handleChange("accountingBy", e.target.value)}
+                                    value={formik.values.accountingBy}
+                                    onChange={handleCharacterOnlyChange}
+                                    onBlur={formik.handleBlur}
                                     required
-                                    error={errors.accountingBy}
+                                    error={formik.touched.accountingBy && Boolean(formik.errors.accountingBy)}
+                                    helperText={formik.touched.accountingBy && formik.errors.accountingBy}
                                     sx={{ bgcolor: "white" }}
                                 />
                             </Grid>

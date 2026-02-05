@@ -9,7 +9,13 @@ import {
 } from "@mui/material";
 import { Business, LocalShipping } from "@mui/icons-material";
 
-export default function CustomerDeliveryCard({ formData, handleChange, errors }) {
+export default function CustomerDeliveryCard({ formik }) {
+    const handleCharacterOnlyChange = (e) => {
+        const { name, value } = e.target;
+        const filteredValue = value.replace(/[^a-zA-Z\s]/g, "");
+        formik.setFieldValue(name, filteredValue);
+    };
+
     return (
         <Grid container spacing={3} sx={{ mb: 4 }}>
             {/* Customer */}
@@ -40,12 +46,17 @@ export default function CustomerDeliveryCard({ formData, handleChange, errors })
                             <Grid size={{ xs: 12 }}>
                                 <TextField
                                     fullWidth
-                                    value={formData.customerName}
-                                    onChange={(e) => handleChange("customerName", e.target.value)}
+                                    name="customerName"
+                                    value={formik.values.customerName}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
                                     required
-                                    error={errors.customerName}
+                                    error={formik.touched.customerName && Boolean(formik.errors.customerName)}
+                                    helperText={formik.touched.customerName && formik.errors.customerName}
                                     sx={{
-                                        background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                        "& .MuiOutlinedInput-root": {
+                                            background: "linear-gradient(135deg, #F8FAFC, #F1F5F9)",
+                                        }
                                     }}
                                     label="Customer/Organisation"
                                     placeholder="Enter customer name"
@@ -54,44 +65,59 @@ export default function CustomerDeliveryCard({ formData, handleChange, errors })
                             <Grid size={{ xs: 12, sm: 6 }}>
                                 <TextField
                                     fullWidth
-                                    value={formData.contactPerson}
-                                    onChange={(e) => handleChange("contactPerson", e.target.value)}
+                                    name="contactPerson"
+                                    value={formik.values.contactPerson}
+                                    onChange={handleCharacterOnlyChange}
+                                    onBlur={formik.handleBlur}
                                     required
-                                    error={errors.contactPerson}
+                                    error={formik.touched.contactPerson && Boolean(formik.errors.contactPerson)}
+                                    helperText={formik.touched.contactPerson && formik.errors.contactPerson}
                                     label="Contact Person"
                                     placeholder="Contact name"
                                     sx={{
-                                        background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                        "& .MuiOutlinedInput-root": {
+                                            background: "linear-gradient(135deg, #F8FAFC, #F1F5F9)",
+                                        }
                                     }}
                                 />
                             </Grid>
                             <Grid size={{ xs: 12, sm: 6 }}>
                                 <TextField
                                     fullWidth
-                                    value={formData.contactNo}
-                                    onChange={(e) => handleChange("contactNo", e.target.value)}
+                                    name="contactNo"
+                                    value={formik.values.contactNo}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
                                     required
-                                    error={errors.contactNo}
+                                    error={formik.touched.contactNo && Boolean(formik.errors.contactNo)}
+                                    helperText={formik.touched.contactNo && formik.errors.contactNo}
                                     label="Contact No."
                                     placeholder="+91 98765 43210"
                                     sx={{
-                                        background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                        "& .MuiOutlinedInput-root": {
+                                            background: "linear-gradient(135deg, #F8FAFC, #F1F5F9)",
+                                        }
                                     }}
                                 />
                             </Grid>
                             <Grid size={{ xs: 12 }}>
                                 <TextField
                                     fullWidth
-                                    value={formData.deliveryAddress}
-                                    onChange={(e) => handleChange("deliveryAddress", e.target.value)}
+                                    name="deliveryAddress"
+                                    value={formik.values.deliveryAddress}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
                                     required
-                                    error={errors.deliveryAddress}
+                                    error={formik.touched.deliveryAddress && Boolean(formik.errors.deliveryAddress)}
+                                    helperText={formik.touched.deliveryAddress && formik.errors.deliveryAddress}
                                     label="Delivery Address"
                                     placeholder="Enter complete delivery address"
                                     multiline
                                     rows={2}
                                     sx={{
-                                        background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                        "& .MuiOutlinedInput-root": {
+                                            background: "linear-gradient(135deg, #F8FAFC, #F1F5F9)",
+                                        }
                                     }}
                                 />
                             </Grid>
@@ -119,7 +145,7 @@ export default function CustomerDeliveryCard({ formData, handleChange, errors })
                         }}
                     >
                         <LocalShipping />
-                        <Typography variant="h6" fontWeight={600}>
+                        <Typography variant="h6" color="white" fontWeight={600}>
                             Delivery Details
                         </Typography>
                     </Box>
@@ -129,56 +155,76 @@ export default function CustomerDeliveryCard({ formData, handleChange, errors })
                                 <TextField
                                     fullWidth
                                     type="date"
-                                    value={formData.deliveryDate}
-                                    onChange={(e) => handleChange("deliveryDate", e.target.value)}
+                                    name="deliveryDate"
+                                    value={formik.values.deliveryDate}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
                                     required
-                                    error={errors.deliveryDate}
+                                    error={formik.touched.deliveryDate && Boolean(formik.errors.deliveryDate)}
+                                    helperText={formik.touched.deliveryDate && formik.errors.deliveryDate}
                                     label="Delivery Date"
                                     InputLabelProps={{ shrink: true }}
                                     sx={{
-                                        background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                        "& .MuiOutlinedInput-root": {
+                                            background: "linear-gradient(135deg, #F8FAFC, #F1F5F9)",
+                                        }
                                     }}
                                 />
                             </Grid>
                             <Grid item xs={6} size={{ xs: 6 }}>
                                 <TextField
                                     fullWidth
-                                    value={formData.courierCompany}
-                                    onChange={(e) => handleChange("courierCompany", e.target.value)}
+                                    name="courierCompany"
+                                    value={formik.values.courierCompany}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
                                     required
-                                    error={errors.courierCompany}
+                                    error={formik.touched.courierCompany && Boolean(formik.errors.courierCompany)}
+                                    helperText={formik.touched.courierCompany && formik.errors.courierCompany}
                                     label="Courier Company"
                                     placeholder="e.g., Blue Dart"
                                     sx={{
-                                        background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                        "& .MuiOutlinedInput-root": {
+                                            background: "linear-gradient(135deg, #F8FAFC, #F1F5F9)",
+                                        }
                                     }}
                                 />
                             </Grid>
                             <Grid item xs={6} size={{ xs: 6 }}>
                                 <TextField
                                     fullWidth
-                                    value={formData.referenceNo}
-                                    onChange={(e) => handleChange("referenceNo", e.target.value)}
+                                    name="referenceNo"
+                                    value={formik.values.referenceNo}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
                                     required
-                                    error={errors.referenceNo}
+                                    error={formik.touched.referenceNo && Boolean(formik.errors.referenceNo)}
+                                    helperText={formik.touched.referenceNo && formik.errors.referenceNo}
                                     label="Reference No."
                                     placeholder="Internal reference"
                                     sx={{
-                                        background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                        "& .MuiOutlinedInput-root": {
+                                            background: "linear-gradient(135deg, #F8FAFC, #F1F5F9)",
+                                        }
                                     }}
                                 />
                             </Grid>
                             <Grid item xs={6} size={{ xs: 6 }}>
                                 <TextField
                                     fullWidth
-                                    value={formData.salesPlatform}
-                                    onChange={(e) => handleChange("salesPlatform", e.target.value)}
+                                    name="salesPlatform"
+                                    value={formik.values.salesPlatform}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
                                     required
-                                    error={errors.salesPlatform}
+                                    error={formik.touched.salesPlatform && Boolean(formik.errors.salesPlatform)}
+                                    helperText={formik.touched.salesPlatform && formik.errors.salesPlatform}
                                     label="Sales Platform"
                                     placeholder="Direct Sales / Online"
                                     sx={{
-                                        background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                        "& .MuiOutlinedInput-root": {
+                                            background: "linear-gradient(135deg, #F8FAFC, #F1F5F9)",
+                                        }
                                     }}
                                 />
                             </Grid>
