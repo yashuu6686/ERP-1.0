@@ -206,7 +206,7 @@ export default function QualityCheckForm() {
   // Re-validate schema when activeStep or observationColumns changes
   useEffect(() => {
     formik.validateForm();
-  }, [activeStep, observationColumns, user?.role]);
+  }, [activeStep, observationColumns, user?.role, formik]);
 
   useEffect(() => {
     const fetchMaterialRequests = async () => {

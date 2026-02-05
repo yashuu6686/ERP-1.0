@@ -10,16 +10,20 @@ import { Lock } from "@mui/icons-material";
  * Global route protection component
  * Automatically protects all routes based on menuConfig
  */
+// Public routes that don't require authentication
+const publicRoutes = ['/login', '/register'];
+
+// Routes that don't require permission checks (accessible to all authenticated users)
+const openRoutes = ['/', '/profile'];
+
+/**
+ * Global route protection component
+ * Automatically protects all routes based on menuConfig
+ */
 export function RouteGuard({ children }) {
     const { user } = useAuth();
-    const router = useRouter();
     const pathname = usePathname();
-
-    // Public routes that don't require authentication
-    const publicRoutes = ['/login', '/register'];
-
-    // Routes that don't require permission checks (accessible to all authenticated users)
-    const openRoutes = ['/', '/profile'];
+    const router = useRouter();
 
     // Check if user has permission for current route
     const hasPermission = () => {
@@ -52,7 +56,7 @@ export function RouteGuard({ children }) {
         if (!user && !publicRoutes.includes(pathname)) {
             router.push("/login");
         }
-    }, [user, pathname, router]);
+    }, [user, pathname, router, publicRoutes]);
 
     // If no user yet and not on public route, show nothing (will redirect)
     if (!user && !publicRoutes.includes(pathname)) {
@@ -88,7 +92,7 @@ export function RouteGuard({ children }) {
                         Access Denied
                     </Typography>
                     <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                        You don't have permission to access this page. Please contact your administrator if you believe this is an error.
+                        You don&apos;t have permission to access this page. Please contact your administrator if you believe this is an error.
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                         Your role: <strong>{user.role}</strong>

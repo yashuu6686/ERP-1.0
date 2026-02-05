@@ -62,7 +62,7 @@ export function withAuth(Component, requiredPermission) {
                             Access Denied
                         </Typography>
                         <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                            You don't have permission to access this page. Please contact your administrator if you believe this is an error.
+                            You don&apos;t have permission to access this page. Please contact your administrator if you believe this is an error.
                         </Typography>
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
                             Your role: <strong>{user.role}</strong>

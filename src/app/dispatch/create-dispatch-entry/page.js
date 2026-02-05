@@ -192,7 +192,7 @@ function CreateDispatchEntryContent() {
       };
       fetchDispatch();
     }
-  }, [id]);
+  }, [id, formik]);
 
   const handleOrderSelect = (order) => {
     if (!order) return;

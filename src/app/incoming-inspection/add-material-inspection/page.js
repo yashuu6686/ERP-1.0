@@ -167,7 +167,7 @@ function MaterialInspectionFormContent() {
   // Re-validate schema when activeStep or user.role or observationColumns changes
   useEffect(() => {
     formik.setValues(formik.values);
-  }, [activeStep, user?.role, observationColumns]);
+  }, [activeStep, user?.role, observationColumns, formik]);
 
   useEffect(() => {
     const fetchPendingGRNs = async (currentGrnNumber = null) => {
@@ -238,7 +238,7 @@ function MaterialInspectionFormContent() {
       fetchInspectionData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, isEditMode]);
+  }, [id, isEditMode, formik]);
 
   const handleGRNChange = (event, newValue) => {
     setSelectedGRN(newValue);

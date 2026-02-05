@@ -128,9 +128,9 @@ export default function Sidebar({ children }) {
               width: '100%'
             }}>
               {isSidebarOpen ? (
-                <img src="/logo.png" alt="Logo" style={{ width: '80px', height: '100px', objectFit: 'contain', cursor: "pointer" }} onClick={() => router.push("/")} />
+                <Image src="/logo.png" alt="Logo" width={80} height={100} style={{ objectFit: 'contain', cursor: "pointer" }} onClick={() => router.push("/")} />
               ) : (
-                <img src="/logo.png" alt="Logo" style={{ width: '40px', height: '40px', objectFit: 'contain', cursor: "pointer" }} onClick={() => router.push("/")} />
+                <Image src="/logo.png" alt="Logo" width={40} height={40} style={{ objectFit: 'contain', cursor: "pointer" }} onClick={() => router.push("/")} />
               )}
             </Box>
 

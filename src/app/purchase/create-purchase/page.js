@@ -201,7 +201,7 @@ function CreatePurchaseOrderContent() {
       const poNum = `PO-${year}${month}${day}-${random}`;
       formik.setFieldValue("orderInfo.orderNumber", poNum);
     }
-  }, [id, isEditMode]);
+  }, [id, isEditMode, formik, router]);
 
   if (loading) {
     return <Loader fullPage message="Loading Purchase Order Details..." />;
