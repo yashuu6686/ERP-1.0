@@ -201,7 +201,6 @@ const TopNavbar = ({ onToggleSidebar }) => {
                     }}
                 >
                     <Avatar
-                        src="/doctor-avatar.png" // Placeholder or actual image path
                         sx={{
                             width: 40,
                             height: 40,
@@ -209,7 +208,7 @@ const TopNavbar = ({ onToggleSidebar }) => {
                             bgcolor: "#257cd3ff"
                         }}
                     >
-                        SP
+                        {user?.name?.charAt(0) || "U"}
                     </Avatar>
 
                     <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>

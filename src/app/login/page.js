@@ -86,7 +86,7 @@ export default function LoginPage() {
                     }}
                 >
                     <Box sx={{ mb: 4, display: "flex", flexDirection: "column", alignItems: "center" }}>
-                        <Image src="/Scanbo_logo_new.png" alt="Scanbo Logo" width={100} height={100} priority />
+                        <img src="/logo.png" alt="Scanbo Logo" style={{ width: '100px', height: '100px', objectFit: 'contain' }} />
                         <Typography variant="h5" fontWeight={800} color="#1e293b" sx={{ mt: 2, letterSpacing: -0.5 }}>
                             Welcome Back
                         </Typography>

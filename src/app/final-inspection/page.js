@@ -56,17 +56,17 @@ export default function FinalQualityCheck() {
     {
       label: "Total Checked",
       align: "center",
-      accessor: "totalChecked",
+      accessor: "quantity",
     },
     {
       label: "Approved",
       align: "center",
-      accessor: "approved",
+      accessor: "acceptedQuantity",
     },
     {
       label: "Rejected",
       align: "center",
-      accessor: "rejected",
+      accessor: "rejectedQuantity",
     },
     {
       label: "Result",
