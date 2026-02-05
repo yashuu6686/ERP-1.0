@@ -58,6 +58,7 @@ import {
 } from "@mui/icons-material";
 import CommonCard from "../../components/ui/CommonCard";
 import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 // Professional Corporate Palette - Mapped to Brand Variables
 const COLORS = {
@@ -142,7 +143,8 @@ const getRoleData = (role) => {
 };
 
 const ProfilePage = () => {
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
+    const router = useRouter();
     const [activeTab, setActiveTab] = useState(0);
     const [selectedRole, setSelectedRole] = useState("Admin");
 
@@ -194,7 +196,36 @@ const ProfilePage = () => {
                         </FormControl>
                     </Box>
                     <Stack direction="row" spacing={1}>
-                        <Button startIcon={<Share />} sx={{ color: COLORS.secondary, textTransform: "none", fontWeight: 600 }}>Share</Button>
+                        {user?.role === 'admin' && (
+                            <>
+                                <Button
+                                    startIcon={<Settings />}
+                                    onClick={() => router.push('/settings/roles')}
+                                    sx={{
+                                        color: COLORS.secondary,
+                                        textTransform: "none",
+                                        fontWeight: 600,
+                                        border: `1px solid ${COLORS.border}`,
+                                        "&:hover": { bgcolor: COLORS.bg }
+                                    }}
+                                >
+                                    Role Management
+                                </Button>
+                                <Button
+                                    startIcon={<Person />}
+                                    onClick={() => router.push('/settings/users')}
+                                    sx={{
+                                        color: COLORS.secondary,
+                                        textTransform: "none",
+                                        fontWeight: 600,
+                                        border: `1px solid ${COLORS.border}`,
+                                        "&:hover": { bgcolor: COLORS.bg }
+                                    }}
+                                >
+                                    User Management
+                                </Button>
+                            </>
+                        )}
                         <Button variant="contained" disableElevation startIcon={<Edit />} sx={{ bgcolor: COLORS.primary, "&:hover": { bgcolor: COLORS.accent }, textTransform: "none", fontWeight: 700, px: 3 }}>
                             Edit Profile
                         </Button>

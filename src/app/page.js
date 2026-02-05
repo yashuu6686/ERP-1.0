@@ -26,6 +26,7 @@ import {
   Schedule
 } from "@mui/icons-material";
 import { useAuth } from "@/context/AuthContext";
+import { MENU_ITEMS } from "@/config/menuConfig";
 
 // --- Components ---
 
@@ -136,31 +137,49 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const router = useRouter();
 
-  const procurementFlow = [
+  // Helper function to check if user has access to a path
+  const hasAccess = (path) => {
+    if (!user) return false;
+    if (user.role === 'admin' || user.permissions?.includes('all')) return true;
+
+    // Find the menu item that matches this path
+    const menuItem = MENU_ITEMS.find(item => item.path === path);
+    if (!menuItem) return true; // If not in menu config, allow access
+
+    return user.permissions?.includes(menuItem.key);
+  };
+
+  const allProcurementFlow = [
     { title: "Purchase Orders", icon: <ShoppingCart />, path: "/purchase" },
     { title: "Goods Receipt Note", icon: <Inventory />, path: "/grn" },
     { title: "Incoming Quality", icon: <Verified />, path: "/incoming-inspection" },
     { title: "Store Inventory", icon: <Store />, path: "/store" },
   ];
 
-  const productionFlow = [
+  const allProductionFlow = [
     { title: "Material Issue", icon: <CallSplit />, path: "/material-issue" },
     { title: "Batch / BOM", icon: <Layers />, path: "/batch" },
     { title: "Production QC", icon: <Factory />, path: "/production-inspection" },
     { title: "Final Inspection", icon: <CheckCircle />, path: "/final-inspection" },
   ];
 
-  const salesFlow = [
+  const allSalesFlow = [
     { title: "Customer Orders", icon: <Assignment />, path: "/orders" },
     { title: "Dispatch Planning", icon: <LocalShipping />, path: "/dispatch" },
     { title: "Invoices", icon: <Receipt />, path: "/invoices" },
   ];
 
-  const otherModules = [
+  const allOtherModules = [
     { title: "Standard Operating Procedures", icon: <Description />, path: "/sop", color: "#64748b" },
     { title: "Certificates of Analysis", icon: <Description />, path: "/coa", color: "#8b5cf6" },
     { title: "Rejected Goods", icon: <Cancel />, path: "/rejected-goods", color: "#ef4444" },
   ];
+
+  // Filter based on user permissions
+  const procurementFlow = allProcurementFlow.filter(item => hasAccess(item.path));
+  const productionFlow = allProductionFlow.filter(item => hasAccess(item.path));
+  const salesFlow = allSalesFlow.filter(item => hasAccess(item.path));
+  const otherModules = allOtherModules.filter(item => hasAccess(item.path));
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1600, mx: "auto" }}>
@@ -174,6 +193,51 @@ export default function DashboardPage() {
           <Typography variant="body1" color="text.secondary">
             Overview of your manufacturing workflows and metrics.
           </Typography>
+          {user && (
+            <Box sx={{ mt: 1.5, display: "flex", gap: 2, alignItems: "center" }}>
+              <Paper
+                elevation={0}
+                sx={{
+                  px: 2,
+                  py: 0.75,
+                  bgcolor: "#f0f9ff",
+                  border: "1px solid #bae6fd",
+                  borderRadius: 2,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 1
+                }}
+              >
+                <Verified sx={{ fontSize: 18, color: "#0284c7" }} />
+                <Typography variant="body2" fontWeight={600} sx={{ color: "#0c4a6e" }}>
+                  Role: {user.role || 'User'}
+                </Typography>
+              </Paper>
+              {user.permissions && (
+                <Paper
+                  elevation={0}
+                  sx={{
+                    px: 2,
+                    py: 0.75,
+                    bgcolor: "#f0fdf4",
+                    border: "1px solid #bbf7d0",
+                    borderRadius: 2,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 1
+                  }}
+                >
+                  <CheckCircle sx={{ fontSize: 18, color: "#16a34a" }} />
+                  <Typography variant="body2" fontWeight={600} sx={{ color: "#14532d" }}>
+                    {user.permissions.includes('all') || user.role === 'admin'
+                      ? 'Full Access to All Modules'
+                      : `Access to ${user.permissions.length} Module${user.permissions.length !== 1 ? 's' : ''}`
+                    }
+                  </Typography>
+                </Paper>
+              )}
+            </Box>
+          )}
         </Box>
         <Box sx={{ display: "flex", gap: 2 }}>
           <Button
@@ -236,10 +300,18 @@ export default function DashboardPage() {
       </Grid>
 
       {/* Workflows */}
-      <WorkflowSection title="Procurement & Inward Flow" steps={procurementFlow} color="#2563eb" />
-      <WorkflowSection title="Production & Quality Flow" steps={productionFlow} color="#059669" />
-      <WorkflowSection title="Sales & Fulfillment Flow" steps={salesFlow} color="#d97706" />
-      <WorkflowSection title="Other Modules" steps={otherModules} color="#64748b" />
+      {procurementFlow.length > 0 && (
+        <WorkflowSection title="Procurement & Inward Flow" steps={procurementFlow} color="#2563eb" />
+      )}
+      {productionFlow.length > 0 && (
+        <WorkflowSection title="Production & Quality Flow" steps={productionFlow} color="#059669" />
+      )}
+      {salesFlow.length > 0 && (
+        <WorkflowSection title="Sales & Fulfillment Flow" steps={salesFlow} color="#d97706" />
+      )}
+      {otherModules.length > 0 && (
+        <WorkflowSection title="Other Modules" steps={otherModules} color="#64748b" />
+      )}
 
 
     </Box>

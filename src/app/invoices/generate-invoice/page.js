@@ -210,7 +210,7 @@ function InvoiceGeneratorContent() {
     if (id) {
       fetchInvoice();
     }
-  }, [id]);
+  }, [id, formik]);
 
   const handleOrderChange = async (orderId) => {
     setSelectedOrderId(orderId);

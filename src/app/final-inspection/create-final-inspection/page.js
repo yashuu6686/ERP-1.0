@@ -209,7 +209,7 @@ function FinalInspectionFormContent() {
     if (id) {
       fetchInspection();
     }
-  }, [id]);
+  }, [id, formik]);
 
   const handleNext = async () => {
     const errors = await formik.validateForm();

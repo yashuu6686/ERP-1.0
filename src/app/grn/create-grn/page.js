@@ -136,21 +136,21 @@ function CreateGRNContent() {
             }
         };
 
+        const fetchPendingPOs = async () => {
+            try {
+                const response = await axiosInstance.get("/purachase");
+                const pending = (response.data || []).filter(po => po.status === "Pending");
+                setPendingPOs(pending);
+            } catch (error) {
+                console.error("Error fetching POs:", error);
+            }
+        };
+
         fetchPendingPOs();
         if (isEditMode) {
             fetchGRNDetails();
         }
-    }, [id, isEditMode]);
-
-    const fetchPendingPOs = async () => {
-        try {
-            const response = await axiosInstance.get("/purachase");
-            const pending = (response.data || []).filter(po => po.status === "Pending");
-            setPendingPOs(pending);
-        } catch (error) {
-            console.error("Error fetching POs:", error);
-        }
-    };
+    }, [id, isEditMode, formik]);
 
     const handlePOChange = (event, newValue) => {
         setSelectedPO(newValue);

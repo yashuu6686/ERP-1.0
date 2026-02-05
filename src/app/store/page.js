@@ -14,10 +14,11 @@ import Loader from "../../components/ui/Loader";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
+const tabEndpoints = ["/store", "/it-goods", "/finish-goods", "/other-goods"];
+
 export default function Store() {
   const [tab, setTab] = useState(0);
   const tabLabels = ["Raw Materials", "IT Items", "Finished Products", "Other Items"];
-  const tabEndpoints = ["/store", "/it-goods", "/finish-goods", "/other-goods"];
 
   const [search, setSearch] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
@@ -82,7 +83,7 @@ export default function Store() {
     } finally {
       setLoading(false);
     }
-  }, [tab]);
+  }, [tab, tabEndpoints]);
 
   useEffect(() => {
     fetchData();

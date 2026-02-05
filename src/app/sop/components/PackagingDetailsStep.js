@@ -88,7 +88,7 @@ export default function PackagingDetailsStep({ formik }) {
         if (updated) {
             formik.setFieldValue('packagingResults', results);
         }
-    }, []); // Run once on mount
+    }, [formik, packagingSteps]); // Run once on mount
 
     const handleStepChange = (idx, field, value) => {
         const results = { ...formik.values.packagingResults };

@@ -143,7 +143,7 @@ function SOPFormContent() {
         if (id) {
             fetchSopDetails();
         }
-    }, [id]);
+    }, [id, formik]);
 
     const handleNext = async () => {
         const errors = await formik.validateForm();
