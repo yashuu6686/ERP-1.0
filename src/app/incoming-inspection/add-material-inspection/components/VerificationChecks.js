@@ -8,10 +8,11 @@ import FormLabel from "@mui/material/FormLabel";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
+import FormHelperText from "@mui/material/FormHelperText";
 
 import VerifiedIcon from "@mui/icons-material/Verified";
 
-const VerificationChecks = ({ data = {}, onChange }) => {
+const VerificationChecks = ({ data = {}, onChange, errors = {}, touched = {}, onBlur }) => {
     return (
         <Card
             elevation={0}
@@ -45,7 +46,7 @@ const VerificationChecks = ({ data = {}, onChange }) => {
                         gap: 4,
                     }}
                 >
-                    <FormControl>
+                    <FormControl error={touched.toolsUsed && Boolean(errors.toolsUsed)}>
                         <FormLabel sx={{ fontWeight: 600, mb: 1, fontSize: "0.9rem" }}>
                             Inspection Tools Used
                         </FormLabel>
@@ -54,13 +55,16 @@ const VerificationChecks = ({ data = {}, onChange }) => {
                             value={data.toolsUsed || ""}
                             onChange={(e) => onChange("toolsUsed", e.target.value)}
                         >
-                            <FormControlLabel value="yes" control={<Radio size="small" />} label="Yes" />
-                            <FormControlLabel value="no" control={<Radio size="small" />} label="No" />
-                            <FormControlLabel value="n/a" control={<Radio size="small" />} label="N/A" />
+                            <FormControlLabel value="yes" control={<Radio size="small" onBlur={onBlur} name="materialData.toolsUsed" />} label="Yes" />
+                            <FormControlLabel value="no" control={<Radio size="small" onBlur={onBlur} name="materialData.toolsUsed" />} label="No" />
+                            <FormControlLabel value="n/a" control={<Radio size="small" onBlur={onBlur} name="materialData.toolsUsed" />} label="N/A" />
                         </RadioGroup>
+                        {touched.toolsUsed && errors.toolsUsed && (
+                            <FormHelperText>{errors.toolsUsed}</FormHelperText>
+                        )}
                     </FormControl>
 
-                    <FormControl>
+                    <FormControl error={touched.sdsAvailable && Boolean(errors.sdsAvailable)}>
                         <FormLabel sx={{ fontWeight: 600, mb: 1, fontSize: "0.9rem" }}>
                             SDS Available
                         </FormLabel>
@@ -69,13 +73,16 @@ const VerificationChecks = ({ data = {}, onChange }) => {
                             value={data.sdsAvailable || ""}
                             onChange={(e) => onChange("sdsAvailable", e.target.value)}
                         >
-                            <FormControlLabel value="yes" control={<Radio size="small" />} label="Yes" />
-                            <FormControlLabel value="no" control={<Radio size="small" />} label="No" />
-                            <FormControlLabel value="n/a" control={<Radio size="small" />} label="N/A" />
+                            <FormControlLabel value="yes" control={<Radio size="small" onBlur={onBlur} name="materialData.sdsAvailable" />} label="Yes" />
+                            <FormControlLabel value="no" control={<Radio size="small" onBlur={onBlur} name="materialData.sdsAvailable" />} label="No" />
+                            <FormControlLabel value="n/a" control={<Radio size="small" onBlur={onBlur} name="materialData.sdsAvailable" />} label="N/A" />
                         </RadioGroup>
+                        {touched.sdsAvailable && errors.sdsAvailable && (
+                            <FormHelperText>{errors.sdsAvailable}</FormHelperText>
+                        )}
                     </FormControl>
 
-                    <FormControl>
+                    <FormControl error={touched.qualityCertificate && Boolean(errors.qualityCertificate)}>
                         <FormLabel sx={{ fontWeight: 600, mb: 1, fontSize: "0.9rem" }}>
                             Quality Certificate
                         </FormLabel>
@@ -84,10 +91,13 @@ const VerificationChecks = ({ data = {}, onChange }) => {
                             value={data.qualityCertificate || ""}
                             onChange={(e) => onChange("qualityCertificate", e.target.value)}
                         >
-                            <FormControlLabel value="yes" control={<Radio size="small" />} label="Yes" />
-                            <FormControlLabel value="no" control={<Radio size="small" />} label="No" />
-                            <FormControlLabel value="n/a" control={<Radio size="small" />} label="N/A" />
+                            <FormControlLabel value="yes" control={<Radio size="small" onBlur={onBlur} name="materialData.qualityCertificate" />} label="Yes" />
+                            <FormControlLabel value="no" control={<Radio size="small" onBlur={onBlur} name="materialData.qualityCertificate" />} label="No" />
+                            <FormControlLabel value="n/a" control={<Radio size="small" onBlur={onBlur} name="materialData.qualityCertificate" />} label="N/A" />
                         </RadioGroup>
+                        {touched.qualityCertificate && errors.qualityCertificate && (
+                            <FormHelperText>{errors.qualityCertificate}</FormHelperText>
+                        )}
                     </FormControl>
                 </Box>
             </CardContent>

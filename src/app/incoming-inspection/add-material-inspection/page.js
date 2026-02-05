@@ -7,6 +7,7 @@ import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
 
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import SaveIcon from "@mui/icons-material/Save";
@@ -23,7 +24,8 @@ import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/Loader";
 import { useAuth } from "@/context/AuthContext";
 import NotificationService from "@/services/NotificationService";
-import { Grid } from "@mui/material";
+import { useFormik, FormikProvider } from "formik";
+import * as Yup from "yup";
 
 const steps = [
   "Material Information & Verification",
@@ -31,6 +33,7 @@ const steps = [
   "Summary & Approval",
 ];
 
+// Validation Schemas for each step
 function MaterialInspectionFormContent() {
   const { user } = useAuth();
   const [activeStep, setActiveStep] = useState(0);
@@ -42,59 +45,135 @@ function MaterialInspectionFormContent() {
   const id = searchParams.get("id");
   const isEditMode = !!id;
 
-  const [materialData, setMaterialData] = useState({
-    grnNumber: "",
-    poNumber: "",
-    materialName: "",
-    receivedDate: "",
-    invoiceNumber: "",
-    lotNumber: "",
-    inspectionStandardNumber: "",
-    supplierName: "",
-    lotQuantity: "",
-    equipmentId: "",
-    sampleSize: "",
-    inspectionReportNumber: "",
-    inspectionDate: new Date().toISOString().split("T")[0],
-    inspectionStandard: "",
-    toolsUsed: "",
-    sdsAvailable: "",
-    qualityCertificate: "",
-  });
-
-  const [observations, setObservations] = useState([
-    {
-      id: 1,
-      parameter: "",
-      specification: "",
-      method: "",
-      observation: "",
-      remarks: "",
-    },
-  ]);
   const [observationColumns, setObservationColumns] = useState([
     { id: "observation", label: "Observation" },
   ]);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [summaryData, setSummaryData] = useState({
-    acceptedQuantity: "",
-    rejectedQuantity: "",
-    holdScrapQuantity: "",
-    other: "",
-    comments: "",
+
+  // Validation Schemas for each step
+  const getValidationSchema = (step, userRole) => {
+    const schemas = [
+      Yup.object().shape({
+        materialData: Yup.object().shape({
+          grnNumber: Yup.string().required("GRN Number is required"),
+          materialName: Yup.string().required("Material Name is required"),
+          poNumber: Yup.string().required("PO Number is required"),
+          receivedDate: Yup.date().required("Received Date is required").typeError("Invalid date"),
+          invoiceNumber: Yup.string().required("Invoice Number is required"),
+          lotNumber: Yup.string().required("Lot Number is required"),
+          inspectionStandardNumber: Yup.string().required("Inspection Standard Number is required"),
+          supplierName: Yup.string().required("Supplier Name is required"),
+          lotQuantity: Yup.number().typeError("Must be a number").positive("Lot Quantity must be greater than 0").required("Lot Quantity is required"),
+          sampleSize: Yup.number().typeError("Must be a number").positive("Sample Size must be greater than 0").required("Sample Size is required"),
+          inspectionReportNumber: Yup.string().required("Report Number is required"),
+          inspectionDate: Yup.date().required("Inspection Date is required").typeError("Invalid date"),
+          inspectionStandard: Yup.string().required("Inspection Standard is required"),
+          equipmentId: Yup.string().required("Equipment ID is required"),
+          toolsUsed: Yup.string().required("Please select if tools were used"),
+          sdsAvailable: Yup.string().required("Please select SDS availability"),
+          qualityCertificate: Yup.string().required("Please select Quality Certificate availability"),
+        }),
+      }),
+      Yup.object().shape({
+        observations: Yup.array().of(
+          Yup.lazy(() => {
+            const shape = {
+              parameter: Yup.string().required("Parameter is required"),
+              specification: Yup.string().required("Specification is required"),
+              method: Yup.string().required("Method is required"),
+              remarks: Yup.string(),
+            };
+            // Dynamically require all visible observation columns
+            observationColumns.forEach((col) => {
+              shape[col.id] = Yup.string().required("Observation is required");
+            });
+            return Yup.object().shape(shape);
+          })
+        ).min(1, "At least one observation is required"),
+      }),
+      Yup.object().shape({
+        summaryData: Yup.object().shape({
+          acceptedQuantity: Yup.number().typeError("Must be a number").min(0, "Cannot be negative").required("Accepted Quantity is required"),
+          rejectedQuantity: Yup.number().typeError("Must be a number").min(0, "Cannot be negative").required("Rejected Quantity is required"),
+          holdScrapQuantity: Yup.number().typeError("Must be a number").min(0, "Cannot be negative").required("Hold/Scrap Quantity is required"),
+          other: Yup.number().typeError("Must be a number").min(0, "Cannot be negative").required("Other Quantity is required"),
+          comments: Yup.string().required("Comments are required"),
+        }),
+        approvalData: Yup.object().shape({
+          updatedByName: Yup.string().required("Updated By name is required"),
+          updatedByDate: Yup.date().required("Update date is required").typeError("Invalid date"),
+          approvedByName: userRole === 'admin'
+            ? Yup.string().required("Approved By name is required")
+            : Yup.string().nullable(),
+          approvedByDate: userRole === 'admin'
+            ? Yup.date().required("Approval date is required").typeError("Invalid date")
+            : Yup.date().nullable(),
+        })
+      }),
+    ];
+    return schemas[step];
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      materialData: {
+        grnNumber: "",
+        poNumber: "",
+        materialName: "",
+        receivedDate: "",
+        invoiceNumber: "",
+        lotNumber: "",
+        inspectionStandardNumber: "",
+        supplierName: "",
+        lotQuantity: "",
+        equipmentId: "",
+        sampleSize: "",
+        inspectionReportNumber: "",
+        inspectionDate: new Date().toISOString().split("T")[0],
+        inspectionStandard: "",
+        toolsUsed: "",
+        sdsAvailable: "",
+        qualityCertificate: "",
+      },
+      observations: [
+        {
+          id: 1,
+          parameter: "",
+          specification: "",
+          method: "",
+          observation: "",
+          remarks: "",
+        },
+      ],
+      summaryData: {
+        acceptedQuantity: "",
+        rejectedQuantity: "",
+        holdScrapQuantity: "",
+        other: "",
+        comments: "",
+      },
+      approvalData: {
+        updatedByName: "",
+        updatedByDate: "",
+        approvedByName: "",
+        approvedByDate: "",
+      },
+    },
+    validationSchema: getValidationSchema(activeStep, user?.role),
+    onSubmit: async (values) => {
+      await handleSubmit(values);
+    },
   });
-  const [approvalData, setApprovalData] = useState({
-    updatedByName: "",
-    updatedByDate: "",
-    approvedByName: "",
-    approvedByDate: "",
-  });
+
+  // Re-validate schema when activeStep or user.role or observationColumns changes
+  useEffect(() => {
+    formik.setValues(formik.values);
+  }, [activeStep, user?.role, observationColumns]);
 
   useEffect(() => {
     const fetchPendingGRNs = async (currentGrnNumber = null) => {
       try {
         const response = await axiosInstance.get("/grn");
-        const targetGrn = currentGrnNumber || materialData.grnNumber;
+        const targetGrn = currentGrnNumber || formik.values.materialData.grnNumber;
         const pending = (response.data || []).filter(g =>
           g.inspectionStatus === "Pending" || (isEditMode && targetGrn === g.grnNumber)
         );
@@ -110,14 +189,12 @@ function MaterialInspectionFormContent() {
         const response = await axiosInstance.get(`/incoming-inspection/${id}`);
         const data = response.data;
         if (data) {
-          // 1. Fetch all GRNs to find the matching one
           const grnResponse = await axiosInstance.get("/grn");
           const allGRNs = grnResponse.data || [];
           const matchingGRN = allGRNs.find(g => g.grnNumber === data.materialData.grnNumber);
 
           if (matchingGRN) setSelectedGRN(matchingGRN);
 
-          // 2. Flatten and merge data, using matchingGRN as a fallback for missing fields
           const materialDataLoaded = {
             ...data.materialData,
             poNumber: data.materialData.poNumber || matchingGRN?.poNumber || "",
@@ -126,12 +203,13 @@ function MaterialInspectionFormContent() {
             ...(data.materialData.verificationChecks || {})
           };
 
-          setMaterialData(materialDataLoaded);
-          setObservations(data.observations || []);
-          setSummaryData(data.summaryData);
-          setApprovalData(data.approvalData);
+          formik.setValues({
+            materialData: materialDataLoaded,
+            observations: data.observations || [],
+            summaryData: data.summaryData,
+            approvalData: data.approvalData,
+          });
 
-          // Update observation columns if dynamic ones exist
           if (data.observations?.length > 0) {
             const firstObs = data.observations[0];
             const dynamicKeys = Object.keys(firstObs).filter(k => k.startsWith("observation_"));
@@ -141,13 +219,10 @@ function MaterialInspectionFormContent() {
                 label: `Observation ${k.split("_")[1]}`
               }));
               const allCols = [{ id: "observation", label: "Observation" }, ...newCols];
-              // Remove duplicates just in case
               const uniqueCols = Array.from(new Map(allCols.map(c => [c.id, c])).values());
               setObservationColumns(uniqueCols);
             }
           }
-
-          // Re-fetch pending GRNs lists for the dropdown
           fetchPendingGRNs(data.materialData.grnNumber);
         }
       } catch (error) {
@@ -173,8 +248,8 @@ function MaterialInspectionFormContent() {
       const random = String(Math.floor(Math.random() * 1000)).padStart(3, '0');
       const reportNum = `IRN-${year}${month}-${random}`;
 
-      setMaterialData({
-        ...materialData,
+      formik.setFieldValue("materialData", {
+        ...formik.values.materialData,
         grnNumber: newValue.grnNumber || "",
         poNumber: newValue.poNumber || "",
         materialName: newValue.items?.[0]?.name || "",
@@ -185,8 +260,8 @@ function MaterialInspectionFormContent() {
         inspectionReportNumber: reportNum,
       });
     } else {
-      setMaterialData({
-        ...materialData,
+      formik.setFieldValue("materialData", {
+        ...formik.values.materialData,
         grnNumber: "",
         poNumber: "",
         materialName: "",
@@ -200,10 +275,29 @@ function MaterialInspectionFormContent() {
   };
 
   const handleMaterialDataChange = (field, value) => {
-    setMaterialData(prev => ({ ...prev, [field]: value }));
+    formik.setFieldValue(`materialData.${field}`, value);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    const errors = await formik.validateForm();
+
+    // Check if there are errors in the current section
+    const currentStepErrors = Object.keys(errors).some(key => {
+      if (activeStep === 0) return key === 'materialData';
+      if (activeStep === 1) return key === 'observations';
+      if (activeStep === 2) return key === 'summaryData' || key === 'approvalData';
+      return false;
+    });
+
+    if (currentStepErrors) {
+      formik.setTouched({
+        materialData: activeStep === 0 ? Object.fromEntries(Object.keys(formik.values.materialData).map(k => [k, true])) : formik.touched.materialData,
+        observations: activeStep === 1 ? formik.values.observations.map(obs => Object.fromEntries(Object.keys(obs).map(k => [k, true]))) : formik.touched.observations,
+        summaryData: activeStep === 2 ? Object.fromEntries(Object.keys(formik.values.summaryData).map(k => [k, true])) : formik.touched.summaryData,
+        approvalData: activeStep === 2 ? Object.fromEntries(Object.keys(formik.values.approvalData).map(k => [k, true])) : formik.touched.approvalData,
+      });
+      return;
+    }
     setActiveStep((prevStep) => prevStep + 1);
   };
 
@@ -212,31 +306,32 @@ function MaterialInspectionFormContent() {
   };
 
   const handleSummaryChange = (field, value) => {
-    setSummaryData((prev) => ({ ...prev, [field]: value }));
+    formik.setFieldValue(`summaryData.${field}`, value);
   };
 
   const handleApprovalChange = (section, field, value) => {
     const key = `${section}${field.charAt(0).toUpperCase() + field.slice(1)}`;
-    setApprovalData((prev) => ({ ...prev, [key]: value }));
+    formik.setFieldValue(`approvalData.${key}`, value);
   };
 
   const addObservation = () => {
     const nextId =
-      observations.length > 0
-        ? Math.max(...observations.map((o) => o.id)) + 1
+      formik.values.observations.length > 0
+        ? Math.max(...formik.values.observations.map((o) => o.id)) + 1
         : 1;
     const newObservation = {
       id: nextId,
       parameter: "",
       specification: "",
       method: "",
+      observation: "",
       remarks: "",
     };
     observationColumns.forEach((col) => {
       newObservation[col.id] = "";
     });
 
-    setObservations([...observations, newObservation]);
+    formik.setFieldValue("observations", [...formik.values.observations, newObservation]);
   };
 
   const addObservationColumn = () => {
@@ -248,29 +343,40 @@ function MaterialInspectionFormContent() {
     ]);
   };
 
+  const removeObservationColumn = (colId) => {
+    if (observationColumns.length > 1) {
+      setObservationColumns(observationColumns.filter((col) => col.id !== colId));
+      // Also clean up data in formik values if needed, 
+      // though Yup lazy schema handles existence checks.
+      const updatedObservations = formik.values.observations.map(obs => {
+        const newObs = { ...obs };
+        delete newObs[colId];
+        return newObs;
+      });
+      formik.setFieldValue("observations", updatedObservations);
+    }
+  };
+
   const removeObservation = (id) => {
-    if (observations.length > 1) {
-      setObservations(observations.filter((obs) => obs.id !== id));
+    if (formik.values.observations.length > 1) {
+      formik.setFieldValue("observations", formik.values.observations.filter((obs) => obs.id !== id));
     }
   };
 
   const handleObservationChange = (id, field, value) => {
-    setObservations(
-      observations.map((obs) =>
+    formik.setFieldValue("observations",
+      formik.values.observations.map((obs) =>
         obs.id === id ? { ...obs, [field]: value } : obs
       )
     );
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (values) => {
     try {
       setLoading(true);
       const isHR = user?.role === 'hr';
       const inspectionData = {
-        materialData,
-        observations,
-        summaryData,
-        approvalData,
+        ...values,
         inspectionStatus: isHR ? "Pending Approval" : "Approved",
         grnId: selectedGRN?.id,
       };
@@ -284,7 +390,7 @@ function MaterialInspectionFormContent() {
         if (user?.role === 'hr') {
           await NotificationService.createNotification({
             title: "Inspection Approval Required",
-            message: `HR ${user.name} has submitted an inspection for ${materialData.materialName} (Report: ${materialData.inspectionReportNumber}).`,
+            message: `HR ${user.name} has submitted an inspection for ${values.materialData.materialName} (Report: ${values.materialData.inspectionReportNumber}).`,
             targetRole: "admin",
             type: "inspection_approval",
             link: `/incoming-inspection/view-inspection?id=${isEditMode ? id : response.data.id}`,
@@ -292,39 +398,36 @@ function MaterialInspectionFormContent() {
           });
         }
         // Automatic Rejection Record Integration
-        const rejQty = parseInt(summaryData.rejectedQuantity) || 0;
+        const rejQty = parseInt(values.summaryData.rejectedQuantity) || 0;
         if (rejQty > 0) {
           try {
             // Prepare rejection payload
             const rejectionPayload = {
-              rejectionId: materialData.inspectionReportNumber,
+              rejectionId: values.materialData.inspectionReportNumber,
               sourceType: "Incoming Inspection",
-              sourceRef: materialData.grnNumber,
-              goods: materialData.materialName,
+              sourceRef: values.materialData.grnNumber,
+              goods: values.materialData.materialName,
               qty: rejQty,
-              date: materialData.inspectionDate,
-              reason: summaryData.comments || "Rejected during incoming inspection",
+              date: values.materialData.inspectionDate,
+              reason: values.summaryData.comments || "Rejected during incoming inspection",
               status: "total", // Default to Pending
               severity: "medium", // Default
-              rejectedBy: approvalData.updatedByName || "Automated",
+              rejectedBy: values.approvalData.updatedByName || "Automated",
             };
 
             // Check if a rejection record already exists for this inspection report
-            const existingRejResponse = await axiosInstance.get(`/rejected-goods?rejectionId=${materialData.inspectionReportNumber}`);
+            const existingRejResponse = await axiosInstance.get(`/rejected-goods?rejectionId=${values.materialData.inspectionReportNumber}`);
             const existingRej = existingRejResponse.data?.[0];
 
             if (existingRej) {
               // Update existing rejection
               await axiosInstance.put(`/rejected-goods/${existingRej.id}`, rejectionPayload);
-              // console.log("Rejection record updated.");
             } else {
               // Create new rejection
               await axiosInstance.post("/rejected-goods", rejectionPayload);
-              // console.log("Rejection record created.");
             }
           } catch (rejError) {
             console.error("Failed to manage rejection record:", rejError);
-            // We don't alert here to not interrupt the main flow, just log it.
           }
         }
 
@@ -340,9 +443,9 @@ function MaterialInspectionFormContent() {
           }
         }
 
-        // --- NEW: Update Store Inventory Logic ---
+        // Update Store Inventory Logic
         try {
-          const acceptedQty = Number(summaryData.acceptedQuantity) || 0;
+          const acceptedQty = Number(values.summaryData.acceptedQuantity) || 0;
           if (acceptedQty > 0) {
             const storeEndpoints = ["/store", "/it-goods", "/finish-goods", "/other-goods"];
             let isMaterialFoundAcrossTabs = false;
@@ -353,8 +456,8 @@ function MaterialInspectionFormContent() {
 
               // Find matching material by name (case insensitive)
               const existingItem = storeItems.find(item =>
-                (item.name || item.itemName || "").toLowerCase() === materialData.materialName.toLowerCase() ||
-                (item.code || item.id || "").toLowerCase() === materialData.grnNumber.toLowerCase()
+                (item.name || item.itemName || "").toLowerCase() === values.materialData.materialName.toLowerCase() ||
+                (item.code || item.id || "").toLowerCase() === values.materialData.grnNumber.toLowerCase()
               );
 
               if (existingItem) {
@@ -368,7 +471,6 @@ function MaterialInspectionFormContent() {
 
                 await axiosInstance.put(`${endpoint}/${existingItem.id}`, updatedItem);
                 isMaterialFoundAcrossTabs = true;
-                console.log(`Updated stock for ${materialData.materialName} in ${endpoint}`);
                 break;
               }
             }
@@ -376,21 +478,19 @@ function MaterialInspectionFormContent() {
             // If material was not found in any existing tab, add it to 'Other Goods'
             if (!isMaterialFoundAcrossTabs) {
               const newOtherItem = {
-                name: materialData.materialName,
-                code: materialData.grnNumber || `MAT-${Math.floor(Math.random() * 1000)}`,
+                name: values.materialData.materialName,
+                code: values.materialData.grnNumber || `MAT-${Math.floor(Math.random() * 1000)}`,
                 category: "Other Goods",
                 available: acceptedQty,
                 minimum: 10,
                 updated: new Date().toISOString().split("T")[0]
               };
               await axiosInstance.post("/other-goods", newOtherItem);
-              console.log(`Added new material ${materialData.materialName} to Other Goods`);
             }
           }
         } catch (storeError) {
           console.error("Failed to sync with store inventory:", storeError);
         }
-        // ------------------------------------------
 
         alert(`Inspection ${isEditMode ? "Updated" : "Submitted"} Successfully!`);
         router.push("/incoming-inspection");
@@ -410,44 +510,60 @@ function MaterialInspectionFormContent() {
           <>
             <MaterialInformation
               isEditMode={isEditMode}
-              data={materialData}
+              data={formik.values.materialData}
               onChange={handleMaterialDataChange}
               pendingGRNs={pendingGRNs}
               selectedGRN={selectedGRN}
               onGRNChange={handleGRNChange}
+              errors={formik.errors.materialData}
+              touched={formik.touched.materialData}
+              onBlur={formik.handleBlur}
             />
             <VerificationChecks
-              data={materialData}
+              data={formik.values.materialData}
               onChange={handleMaterialDataChange}
+              errors={formik.errors.materialData}
+              touched={formik.touched.materialData}
+              onBlur={formik.handleBlur}
             />
           </>
         );
       case 1:
         return (
           <InspectionObservations
-            observations={observations}
+            observations={formik.values.observations}
             observationColumns={observationColumns}
             onAdd={addObservation}
             onAddColumn={addObservationColumn}
+            onRemoveColumn={removeObservationColumn}
             onRemove={removeObservation}
             onChange={handleObservationChange}
             icon={ScienceIcon}
+            errors={formik.errors.observations}
+            touched={formik.touched.observations}
+            onBlur={formik.handleBlur}
           />
         );
       case 2:
         return (
           <>
             <Grid container spacing={2}>
-              <Grid size={{ xs: 12, md: user?.role === 'admin' ? 12 : 8 }}>
+              <Grid item xs={12} md={user?.role === 'admin' ? 12 : 8}>
                 <InspectionSummary
-                  summaryData={summaryData}
+                  summaryData={formik.values.summaryData}
                   onChange={handleSummaryChange}
+                  errors={formik.errors.summaryData}
+                  touched={formik.touched.summaryData}
+                  onBlur={formik.handleBlur}
                 />
               </Grid>
-              <Grid size={{ xs: 12, md: user?.role === 'admin' ? 12 : 4 }}>
+              <Grid item xs={12} md={user?.role === 'admin' ? 12 : 4}>
                 <InspectionApproval
-                  approvalData={approvalData}
+                  approvalData={formik.values.approvalData}
                   onChange={handleApprovalChange}
+                  errors={formik.errors.approvalData}
+                  touched={formik.touched.approvalData}
+                  onBlur={formik.handleBlur}
                 />
               </Grid>
             </Grid>
@@ -458,110 +574,114 @@ function MaterialInspectionFormContent() {
     }
   };
 
+  if (loading) return <Loader fullPage message="Processing Inspection..." />;
+
   return (
-    <Box>
-      <CommonCard title={isEditMode ? "Edit Material Inspection" : "Add Material Inspection"}>
-        <Box sx={{ p: 1 }}>
-          {/* Stepper */}
-          <Stepper
-            activeStep={activeStep}
-            alternativeLabel
-            sx={{
-              mb: 4,
-              "& .MuiStepLabel-label": {
-                fontWeight: 500,
-              },
-              "& .MuiStepLabel-label.Mui-active": {
-                color: "#1172ba",
-                fontWeight: 600,
-              },
-              "& .MuiStepLabel-label.Mui-completed": {
-                color: "#1172ba",
-                fontWeight: 600,
-              },
-              "& .MuiStepIcon-root.Mui-active": {
-                color: "#1172ba",
-              },
-              "& .MuiStepIcon-root.Mui-completed": {
-                color: "#1172ba",
-              },
-            }}
-          >
-            {steps.map((label) => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-
-          {/* Step Content */}
-          <Box>{renderStepContent(activeStep)}</Box>
-
-          {/* Navigation Buttons */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mt: 4,
-              pt: 3,
-              borderTop: "1px solid #e2e8f0",
-            }}
-          >
-            <Button
-              variant="outlined"
-              startIcon={<ArrowBack />}
-              onClick={handleBack}
-              disabled={activeStep === 0}
+    <FormikProvider value={formik}>
+      <Box>
+        <CommonCard title={isEditMode ? "Edit Material Inspection" : "Add Material Inspection"}>
+          <Box sx={{ p: 1 }}>
+            {/* Stepper */}
+            <Stepper
+              activeStep={activeStep}
+              alternativeLabel
               sx={{
-                borderRadius: 2,
-                textTransform: "none",
-                fontWeight: 600,
-                visibility: activeStep === 0 ? "hidden" : "visible",
+                mb: 4,
+                "& .MuiStepLabel-label": {
+                  fontWeight: 500,
+                },
+                "& .MuiStepLabel-label.Mui-active": {
+                  color: "#1172ba",
+                  fontWeight: 600,
+                },
+                "& .MuiStepLabel-label.Mui-completed": {
+                  color: "#1172ba",
+                  fontWeight: 600,
+                },
+                "& .MuiStepIcon-root.Mui-active": {
+                  color: "#1172ba",
+                },
+                "& .MuiStepIcon-root.Mui-completed": {
+                  color: "#1172ba",
+                },
               }}
             >
-              Previous
-            </Button>
+              {steps.map((label) => (
+                <Step key={label}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
 
-            <Box sx={{ display: "flex", gap: 2 }}>
-              {activeStep === steps.length - 1 ? (
-                <Button
-                  variant="contained"
-                  size="large"
-                  startIcon={<CheckCircleIcon />}
-                  onClick={handleSubmit}
-                  sx={{
-                    borderRadius: 2,
-                    textTransform: "none",
-                    fontWeight: 600,
-                    backgroundColor: "#1172ba",
-                    "&:hover": { backgroundColor: "#0d5a94" },
-                  }}
-                >
-                  {isEditMode ? "Update Inspection" : "Submit Inspection"}
-                </Button>
-              ) : (
-                <Button
-                  variant="contained"
-                  size="large"
-                  endIcon={<ArrowForward />}
-                  onClick={handleNext}
-                  sx={{
-                    borderRadius: 2,
-                    textTransform: "none",
-                    fontWeight: 600,
-                    backgroundColor: "#1172ba",
-                    "&:hover": { backgroundColor: "#0d5a94" },
-                  }}
-                >
-                  Next
-                </Button>
-              )}
+            {/* Step Content */}
+            <Box>{renderStepContent(activeStep)}</Box>
+
+            {/* Navigation Buttons */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mt: 4,
+                pt: 3,
+                borderTop: "1px solid #e2e8f0",
+              }}
+            >
+              <Button
+                variant="outlined"
+                startIcon={<ArrowBack />}
+                onClick={handleBack}
+                disabled={activeStep === 0}
+                sx={{
+                  borderRadius: 2,
+                  textTransform: "none",
+                  fontWeight: 600,
+                  visibility: activeStep === 0 ? "hidden" : "visible",
+                }}
+              >
+                Previous
+              </Button>
+
+              <Box sx={{ display: "flex", gap: 2 }}>
+                {activeStep === steps.length - 1 ? (
+                  <Button
+                    variant="contained"
+                    size="large"
+                    startIcon={<CheckCircleIcon />}
+                    onClick={formik.handleSubmit}
+                    sx={{
+                      borderRadius: 2,
+                      textTransform: "none",
+                      fontWeight: 600,
+                      backgroundColor: "#1172ba",
+                      "&:hover": { backgroundColor: "#0d5a94" },
+                    }}
+                  >
+                    {isEditMode ? "Update Inspection" : "Submit Inspection"}
+                  </Button>
+                ) : (
+                  <Button
+                    variant="contained"
+                    size="large"
+                    endIcon={<ArrowForward />}
+                    onClick={handleNext}
+                    sx={{
+                      borderRadius: 2,
+                      textTransform: "none",
+                      fontWeight: 600,
+                      backgroundColor: "#1172ba",
+                      "&:hover": { backgroundColor: "#0d5a94" },
+                    }}
+                  >
+                    Next
+                  </Button>
+                )}
+              </Box>
             </Box>
           </Box>
-        </Box>
-      </CommonCard>
-    </Box>
+        </CommonCard>
+      </Box>
+    </FormikProvider>
   );
 }
 

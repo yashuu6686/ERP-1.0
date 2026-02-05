@@ -201,3 +201,16 @@ p {
   color: var(--text-muted);
   font-size: var(--size-caption);
 }
+
+/* Chrome, Safari, Edge, Opera - Hide Number Spinners */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox - Hide Number Spinners */
+input[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}

@@ -10,11 +10,8 @@ import {
 import { FactCheck } from '@mui/icons-material';
 import { useAuth } from '@/context/AuthContext';
 
-const InspectionApproval = ({ approvalData, onChange }) => {
+const InspectionApproval = ({ approvalData, onChange, errors = {}, touched = {}, onBlur }) => {
     const { user } = useAuth();
-
-    // Support both prop patterns if needed, but prefer formData
-    const data = approvalData || {};
 
     const handleChange = (section, field) => (event) => {
         onChange?.(section, field, event.target.value);
@@ -61,8 +58,13 @@ const InspectionApproval = ({ approvalData, onChange }) => {
                                         fullWidth
                                         size="small"
                                         placeholder="Enter your name"
+                                        name="approvalData.updatedByName"
                                         value={approvalData?.updatedByName || ''}
                                         onChange={handleChange('updatedBy', 'name')}
+                                        onBlur={onBlur}
+                                        required
+                                        error={touched.updatedByName && Boolean(errors.updatedByName)}
+                                        helperText={touched.updatedByName && errors.updatedByName}
                                     />
                                 </Grid>
                                 <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
@@ -74,8 +76,13 @@ const InspectionApproval = ({ approvalData, onChange }) => {
                                         size="small"
                                         type="date"
                                         InputLabelProps={{ shrink: true }}
+                                        name="approvalData.updatedByDate"
                                         value={approvalData?.updatedByDate || ''}
                                         onChange={handleChange('updatedBy', 'date')}
+                                        onBlur={onBlur}
+                                        required
+                                        error={touched.updatedByDate && Boolean(errors.updatedByDate)}
+                                        helperText={touched.updatedByDate && errors.updatedByDate}
                                     />
                                 </Grid>
                             </Grid>
@@ -97,8 +104,13 @@ const InspectionApproval = ({ approvalData, onChange }) => {
                                             fullWidth
                                             size="small"
                                             placeholder="Enter your name"
+                                            name="approvalData.approvedByName"
                                             value={approvalData?.approvedByName || ''}
                                             onChange={handleChange('approvedBy', 'name')}
+                                            onBlur={onBlur}
+                                            required
+                                            error={touched.approvedByName && Boolean(errors.approvedByName)}
+                                            helperText={touched.approvedByName && errors.approvedByName}
                                         />
                                     </Grid>
                                     <Grid item xs={12} md={12} size={{ xs: 12, md: 6 }}>
@@ -110,8 +122,13 @@ const InspectionApproval = ({ approvalData, onChange }) => {
                                             size="small"
                                             type="date"
                                             InputLabelProps={{ shrink: true }}
+                                            name="approvalData.approvedByDate"
                                             value={approvalData?.approvedByDate || ''}
                                             onChange={handleChange('approvedBy', 'date')}
+                                            onBlur={onBlur}
+                                            required
+                                            error={touched.approvedByDate && Boolean(errors.approvedByDate)}
+                                            helperText={touched.approvedByDate && errors.approvedByDate}
                                         />
                                     </Grid>
                                 </Grid>

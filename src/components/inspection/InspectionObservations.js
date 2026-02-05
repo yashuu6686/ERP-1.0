@@ -20,9 +20,13 @@ const InspectionObservations = ({
     observationColumns = [{ id: 'observation', label: 'Observation' }],
     onAdd,
     onAddColumn = () => { },
+    onRemoveColumn = () => { },
     onRemove,
     onChange,
-    icon: Icon = null
+    icon: Icon = null,
+    errors = [],
+    touched = [],
+    onBlur = () => { }
 }) => {
     return (
         <Card
@@ -95,7 +99,19 @@ const InspectionObservations = ({
                             <TableCell align="center" sx={{ fontWeight: 500 }}>Method</TableCell>
                             {observationColumns.map((col) => (
                                 <TableCell key={col.id} align="center" sx={{ fontWeight: 500 }}>
-                                    {col.label}
+                                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
+                                        {col.label}
+                                        {col.id !== 'observation' && (
+                                            <IconButton
+                                                size="small"
+                                                color="error"
+                                                onClick={() => onRemoveColumn(col.id)}
+                                                sx={{ p: 0.5 }}
+                                            >
+                                                <DeleteIcon sx={{ fontSize: 16 }} />
+                                            </IconButton>
+                                        )}
+                                    </Box>
                                 </TableCell>
                             ))}
                             <TableCell align="center" sx={{ fontWeight: 500 }}>Remarks</TableCell>
@@ -103,68 +119,98 @@ const InspectionObservations = ({
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {observations?.map((obs, index) => (
-                            <TableRow key={obs.id}>
-                                <TableCell>{index + 1}</TableCell>
-                                <TableCell>
-                                    <TextField
-                                        fullWidth
-                                        size="small"
-                                        value={obs.parameter || ''}
-                                        onChange={(e) => onChange(obs.id, 'parameter', e.target.value)}
-                                        sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <TextField
-                                        fullWidth
-                                        size="small"
-                                        value={obs.specification || ''}
-                                        onChange={(e) => onChange(obs.id, 'specification', e.target.value)}
-                                        sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <TextField
-                                        fullWidth
-                                        size="small"
-                                        value={obs.method || ''}
-                                        onChange={(e) => onChange(obs.id, 'method', e.target.value)}
-                                        sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
-                                    />
-                                </TableCell>
-                                {observationColumns.map((col) => (
-                                    <TableCell key={col.id}>
+                        {observations?.map((obs, index) => {
+                            const rowError = Array.isArray(errors) ? errors[index] : null;
+                            const rowTouched = Array.isArray(touched) ? touched[index] : null;
+
+                            return (
+                                <TableRow key={obs.id}>
+                                    <TableCell>{index + 1}</TableCell>
+                                    <TableCell>
                                         <TextField
                                             fullWidth
                                             size="small"
-                                            value={obs[col.id] || ''}
-                                            onChange={(e) => onChange(obs.id, col.id, e.target.value)}
+                                            required
+                                            name={`observations[${index}].parameter`}
+                                            value={obs.parameter || ''}
+                                            onChange={(e) => onChange(obs.id, 'parameter', e.target.value)}
+                                            onBlur={onBlur}
+                                            error={rowTouched?.parameter && Boolean(rowError?.parameter)}
+                                            helperText={rowTouched?.parameter && rowError?.parameter}
                                             sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
                                         />
                                     </TableCell>
-                                ))}
-                                <TableCell>
-                                    <TextField
-                                        fullWidth
-                                        size="small"
-                                        value={obs.remarks || ''}
-                                        onChange={(e) => onChange(obs.id, 'remarks', e.target.value)}
-                                        sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <IconButton
-                                        color="error"
-                                        size="small"
-                                        onClick={() => onRemove(obs.id)}
-                                        disabled={observations.length === 1}
-                                    >
-                                        <DeleteIcon fontSize="small" />
-                                    </IconButton>
-                                </TableCell>
-                            </TableRow>
-                        ))}
+                                    <TableCell>
+                                        <TextField
+                                            fullWidth
+                                            size="small"
+                                            required
+                                            name={`observations[${index}].specification`}
+                                            value={obs.specification || ''}
+                                            onChange={(e) => onChange(obs.id, 'specification', e.target.value)}
+                                            onBlur={onBlur}
+                                            error={rowTouched?.specification && Boolean(rowError?.specification)}
+                                            helperText={rowTouched?.specification && rowError?.specification}
+                                            sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        <TextField
+                                            fullWidth
+                                            size="small"
+                                            required
+                                            name={`observations[${index}].method`}
+                                            value={obs.method || ''}
+                                            onChange={(e) => onChange(obs.id, 'method', e.target.value)}
+                                            onBlur={onBlur}
+                                            error={rowTouched?.method && Boolean(rowError?.method)}
+                                            helperText={rowTouched?.method && rowError?.method}
+                                            sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
+                                        />
+                                    </TableCell>
+                                    {observationColumns.map((col) => (
+                                        <TableCell key={col.id}>
+                                            <TextField
+                                                fullWidth
+                                                size="small"
+                                                required
+                                                name={`observations[${index}].${col.id}`}
+                                                value={obs[col.id] || ''}
+                                                onChange={(e) => onChange(obs.id, col.id, e.target.value)}
+                                                onBlur={onBlur}
+                                                error={rowTouched?.[col.id] && Boolean(rowError?.[col.id])}
+                                                helperText={rowTouched?.[col.id] && rowError?.[col.id]}
+                                                sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
+                                            />
+                                        </TableCell>
+                                    ))}
+                                    <TableCell>
+                                        <TextField
+                                            fullWidth
+                                            size="small"
+                                            required
+                                            name={`observations[${index}].remarks`}
+                                            value={obs.remarks || ''}
+                                            onChange={(e) => onChange(obs.id, 'remarks', e.target.value)}
+                                            onBlur={onBlur}
+                                            error={rowTouched?.remarks && Boolean(rowError?.remarks)}
+                                            helperText={rowTouched?.remarks && rowError?.remarks}
+                                            sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        <IconButton
+                                            color="error"
+                                            size="small"
+                                            onClick={() => onRemove(obs.id)}
+                                            disabled={observations.length === 1}
+                                        >
+                                            <DeleteIcon fontSize="small" />
+                                        </IconButton>
+                                    </TableCell>
+                                </TableRow>
+                            );
+                        })}
                     </TableBody>
                 </Table>
             </TableContainer>

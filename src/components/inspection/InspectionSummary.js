@@ -8,16 +8,21 @@ import {
     CardContent,
 } from '@mui/material';
 
-const InspectionSummary = ({ summaryData, onChange }) => {
+const InspectionSummary = ({ summaryData, onChange, errors = {}, touched = {}, onBlur }) => {
     const handleChange = (field) => (event) => {
         onChange?.(field, event.target.value);
+    };
+
+    const handleNumberKeyDown = (e) => {
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+            e.preventDefault();
+        }
     };
 
     return (
         <Card
             elevation={0}
             sx={{
-                // marginBottom: 2,
                 borderRadius: 2,
                 border: '1px solid #e2e8f0',
                 overflow: 'hidden',
@@ -40,54 +45,82 @@ const InspectionSummary = ({ summaryData, onChange }) => {
             <CardContent sx={{ padding: 2, '&:last-child': { paddingBottom: 2 } }}>
                 <Grid container spacing={3} alignItems="center" sx={{ mb: 3 }}>
                     <Grid item xs={12} sm={6} md={3} size={{ xs: 12, sm: 6, md: 3 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1 }}>
                             <Typography variant="body2" sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>
                                 Accepted Quantity :
                             </Typography>
                             <TextField
                                 size="small"
-                                sx={{ width: '80px' }}
+                                sx={{ width: '120px' }}
+                                type="number"
+                                name="summaryData.acceptedQuantity"
                                 value={summaryData?.acceptedQuantity || ''}
                                 onChange={handleChange('acceptedQuantity')}
+                                onBlur={onBlur}
+                                onKeyDown={handleNumberKeyDown}
+                                required
+                                error={touched.acceptedQuantity && Boolean(errors.acceptedQuantity)}
+                                helperText={touched.acceptedQuantity && errors.acceptedQuantity}
                             />
                         </Box>
                     </Grid>
                     <Grid item xs={12} sm={6} md={3} size={{ xs: 12, sm: 6, md: 3 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1 }}>
                             <Typography variant="body2" sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>
                                 Rejected Quantity :
                             </Typography>
                             <TextField
                                 size="small"
-                                sx={{ width: '80px' }}
+                                sx={{ width: '120px' }}
+                                type="number"
+                                name="summaryData.rejectedQuantity"
                                 value={summaryData?.rejectedQuantity || ''}
                                 onChange={handleChange('rejectedQuantity')}
+                                onBlur={onBlur}
+                                onKeyDown={handleNumberKeyDown}
+                                required
+                                error={touched.rejectedQuantity && Boolean(errors.rejectedQuantity)}
+                                helperText={touched.rejectedQuantity && errors.rejectedQuantity}
                             />
                         </Box>
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} size={{ xs: 12, sm: 6, md: 4 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1 }}>
                             <Typography variant="body2" sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>
                                 Hold / Scrap Quantity :
                             </Typography>
                             <TextField
                                 size="small"
-                                sx={{ width: '80px' }}
+                                sx={{ width: '120px' }}
+                                type="number"
+                                name="summaryData.holdScrapQuantity"
                                 value={summaryData?.holdScrapQuantity || ''}
                                 onChange={handleChange('holdScrapQuantity')}
+                                onBlur={onBlur}
+                                onKeyDown={handleNumberKeyDown}
+                                required
+                                error={touched.holdScrapQuantity && Boolean(errors.holdScrapQuantity)}
+                                helperText={touched.holdScrapQuantity && errors.holdScrapQuantity}
                             />
                         </Box>
                     </Grid>
                     <Grid item xs={12} sm={6} md={2} size={{ xs: 12, sm: 6, md: 2 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1 }}>
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
                                 other:
                             </Typography>
                             <TextField
                                 size="small"
-                                sx={{ width: '80px' }}
+                                sx={{ width: '120px' }}
+                                type="number"
+                                name="summaryData.other"
                                 value={summaryData?.other || ''}
                                 onChange={handleChange('other')}
+                                onBlur={onBlur}
+                                onKeyDown={handleNumberKeyDown}
+                                required
+                                error={touched.other && Boolean(errors.other)}
+                                helperText={touched.other && errors.other}
                             />
                         </Box>
                     </Grid>
@@ -100,8 +133,13 @@ const InspectionSummary = ({ summaryData, onChange }) => {
                     multiline
                     rows={1}
                     variant="outlined"
+                    name="summaryData.comments"
                     value={summaryData?.comments || ''}
                     onChange={handleChange('comments')}
+                    onBlur={onBlur}
+                    required
+                    error={touched.comments && Boolean(errors.comments)}
+                    helperText={touched.comments && errors.comments}
                 />
             </CardContent>
         </Card>
