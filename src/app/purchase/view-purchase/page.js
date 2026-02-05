@@ -14,7 +14,7 @@ import Button from "@mui/material/Button";
 import axiosInstance from "@/axios/axiosInstance";
 import { useAuth } from "@/context/AuthContext";
 import NotificationService from "@/services/NotificationService";
-import Loader from "@/components/Loader";
+import Loader from "@/components/ui/Loader";
 
 // Extracted Components
 import PurchaseViewHeader from "./components/PurchaseViewHeader";

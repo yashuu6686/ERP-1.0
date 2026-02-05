@@ -3,12 +3,12 @@ import React, { useState, useEffect } from "react";
 import { Box, Chip, IconButton, Tooltip, Typography } from "@mui/material";
 import { Download, Edit, Visibility } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
-import CommonCard from "../../components/CommonCard";
-import GlobalTable from "../../components/GlobalTable";
+import CommonCard from "../../components/ui/CommonCard";
+import GlobalTable from "../../components/ui/GlobalTable";
 import EditIcon from '@mui/icons-material/Edit';
 
 import axiosInstance from "../../axios/axiosInstance";
-import Loader from "../../components/Loader";
+import Loader from "../../components/ui/Loader";
 
 export default function CustomerOrders() {
   const router = useRouter();

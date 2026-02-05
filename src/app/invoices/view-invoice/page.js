@@ -13,7 +13,7 @@ import CheckCircle from "@mui/icons-material/CheckCircle";
 import Schedule from "@mui/icons-material/Schedule";
 
 
-import Loader from "../../../components/Loader";
+import Loader from "../../../components/ui/Loader";
 import axiosInstance from "@/axios/axiosInstance";
 import InvoiceHeaderActions from "./components/InvoiceHeaderActions";
 import InvoiceDocument from "./components/InvoiceDocument";

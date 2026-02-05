@@ -5,7 +5,7 @@ import { Box, Container, Grid, Fade, Typography, Button } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 
 import axiosInstance from "@/axios/axiosInstance";
-import Loader from "@/components/Loader";
+import Loader from "@/components/ui/Loader";
 import { useAuth } from "@/context/AuthContext";
 
 // Import modular components

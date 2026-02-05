@@ -13,9 +13,9 @@ import Edit from "@mui/icons-material/Edit";
 import Visibility from "@mui/icons-material/Visibility";
 import FilterList from "@mui/icons-material/FilterList";
 import { useRouter } from "next/navigation";
-import CommonCard from "../../components/CommonCard";
-import GlobalTable from "../../components/GlobalTable";
-import Loader from "../../components/Loader";
+import CommonCard from "../../components/ui/CommonCard";
+import GlobalTable from "../../components/ui/GlobalTable";
+import Loader from "../../components/ui/Loader";
 import axiosInstance from "@/axios/axiosInstance";
 
 export default function PurchaseOrderTable() {

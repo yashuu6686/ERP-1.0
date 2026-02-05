@@ -3,13 +3,13 @@ import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Box, Button } from "@mui/material";
 import { Save, ArrowBack } from "@mui/icons-material";
-import CommonCard from "../../../components/CommonCard";
+import CommonCard from "../../../components/ui/CommonCard";
 import CertificateDetailsCard from "../components/CertificateDetailsCard";
 import ProductDetailsCard from "../components/ProductDetailsCard";
 import TestResultsCard from "../components/TestResultsCard";
 import AuthorizationCard from "../components/AuthorizationCard";
 import axiosInstance from "@/axios/axiosInstance";
-import Loader from "@/components/Loader";
+import Loader from "@/components/ui/Loader";
 
 function COAFormContent() {
     const router = useRouter();

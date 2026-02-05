@@ -4,11 +4,11 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Save from "@mui/icons-material/Save";
 import { useRouter, useSearchParams } from "next/navigation";
-import CommonCard from "../../../components/CommonCard";
+import CommonCard from "../../../components/ui/CommonCard";
 import MaterialListSpecifications from "../create-bom/components/MaterialListSpecifications";
 import BOMAuthorization from "../create-bom/components/BOMAuthorization";
 import axiosInstance from "../../../axios/axiosInstance";
-import Loader from "@/components/Loader";
+import Loader from "@/components/ui/Loader";
 import { TextField, Grid } from "@mui/material";
 
 function EditBOMContent() {

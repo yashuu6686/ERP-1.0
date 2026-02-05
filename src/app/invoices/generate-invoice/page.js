@@ -9,7 +9,7 @@ import * as Yup from "yup";
 
 import Save from "@mui/icons-material/Save";
 import Close from "@mui/icons-material/Close";
-import CommonCard from "../../../components/CommonCard";
+import CommonCard from "../../../components/ui/CommonCard";
 import InvoiceDetailsSection from "./components/InvoiceDetailsSection";
 import CustomerInformationSection from "./components/CustomerInformationSection";
 import DeliveryInformationSection from "./components/DeliveryInformationSection";
@@ -17,7 +17,7 @@ import InvoiceProductsTable from "./components/InvoiceProductsTable";
 import InvoiceNotesSection from "./components/InvoiceNotesSection";
 import InvoiceSummarySection from "./components/InvoiceSummarySection";
 import axiosInstance from "@/axios/axiosInstance";
-import Loader from "@/components/Loader";
+import Loader from "@/components/ui/Loader";
 
 const validationSchema = Yup.object({
   invoiceInfo: Yup.object({

@@ -56,7 +56,7 @@ import {
     Analytics,
     Logout
 } from "@mui/icons-material";
-import CommonCard from "../../components/CommonCard";
+import CommonCard from "../../components/ui/CommonCard";
 import { useAuth } from "@/context/AuthContext";
 
 // Professional Corporate Palette - Mapped to Brand Variables

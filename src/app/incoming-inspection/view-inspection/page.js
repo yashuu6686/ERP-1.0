@@ -13,7 +13,7 @@ import { ArrowBack } from "@mui/icons-material";
 
 import { useAuth } from "@/context/AuthContext";
 import axiosInstance from "@/axios/axiosInstance";
-import Loader from "@/components/Loader";
+import Loader from "@/components/ui/Loader";
 
 // Extracted Components
 import InspectionViewHeader from "./components/InspectionViewHeader";

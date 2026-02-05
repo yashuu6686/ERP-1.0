@@ -35,7 +35,7 @@ import CalendarMonth from "@mui/icons-material/CalendarMonth";
 import Person from "@mui/icons-material/Person";
 
 import axiosInstance from "@/axios/axiosInstance";
-import Loader from "../../../components/Loader";
+import Loader from "../../../components/ui/Loader";
 import { Suspense, useEffect, useState } from "react";
 
 const InfoItem = ({ icon: Icon, label, value, color = "#1e293b" }) => (

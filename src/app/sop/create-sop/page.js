@@ -13,14 +13,14 @@ import {
     Save,
     ArrowBack,
 } from "@mui/icons-material";
-import CommonCard from "../../../components/CommonCard";
+import CommonCard from "../../../components/ui/CommonCard";
 import DeviceInfoStep from "../components/DeviceInfoStep";
 import TestingProcessStep from "../components/TestingProcessStep";
 import PackagingDetailsStep from "../components/PackagingDetailsStep";
 import ReviewSummaryStep from "../components/ReviewSummaryStep";
 import { useRouter, useSearchParams } from "next/navigation";
 import axiosInstance from "@/axios/axiosInstance";
-import Loader from "@/components/Loader";
+import Loader from "@/components/ui/Loader";
 import { Suspense } from "react";
 import { useAuth } from "@/context/AuthContext";
 import NotificationService from "@/services/NotificationService";

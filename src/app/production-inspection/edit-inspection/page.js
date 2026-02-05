@@ -11,13 +11,13 @@ import Save from "@mui/icons-material/Save";
 import ArrowBack from "@mui/icons-material/ArrowBack";
 import ArrowForward from "@mui/icons-material/ArrowForward";
 import { useRouter, useSearchParams } from "next/navigation";
-import CommonCard from "../../../components/CommonCard";
+import CommonCard from "../../../components/ui/CommonCard";
 import ProductDetailsSection from "../after-production-quality-check/components/ProductDetailsSection";
 import QualityCheckDetailsTable from "../after-production-quality-check/components/QualityCheckDetailsTable";
 import InspectionSummarySection from "../after-production-quality-check/components/InspectionSummarySection";
 import InspectionApproval from "@/components/inspection/InspectionApproval";
 import axiosInstance from "../../../axios/axiosInstance";
-import Loader from "@/components/Loader";
+import Loader from "@/components/ui/Loader";
 
 const steps = [
     "Product Details",

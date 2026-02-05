@@ -41,7 +41,7 @@ import ReportProblem from "@mui/icons-material/ReportProblem";
 import Info from "@mui/icons-material/Info";
 
 import axiosInstance from "@/axios/axiosInstance";
-import Loader from "@/components/Loader";
+import Loader from "@/components/ui/Loader";
 import { useAuth } from "@/context/AuthContext";
 
 import InspectionHeaderActions from "./components/InspectionHeaderActions";

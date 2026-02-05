@@ -7,8 +7,8 @@ import IconButton from "@mui/material/IconButton";
 import Visibility from "@mui/icons-material/Visibility";
 import Edit from "@mui/icons-material/Edit";
 import { useRouter } from "next/navigation";
-import CommonCard from "../../components/CommonCard";
-import GlobalTable from "../../components/GlobalTable";
+import CommonCard from "../../components/ui/CommonCard";
+import GlobalTable from "../../components/ui/GlobalTable";
 import axiosInstance from "../../axios/axiosInstance";
 
 export default function Batch() {

@@ -42,7 +42,7 @@ import Rule from "@mui/icons-material/Rule";
 import FactCheck from "@mui/icons-material/FactCheck";
 
 import axiosInstance from "@/axios/axiosInstance";
-import Loader from "@/components/Loader";
+import Loader from "@/components/ui/Loader";
 import { useAuth } from "@/context/AuthContext";
 import Schedule from "@mui/icons-material/Schedule";
 
