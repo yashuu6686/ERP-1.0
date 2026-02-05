@@ -43,7 +43,7 @@ const deviceTestingSteps = [
     { step: 19, task: "Final Check", parameter: "Review checklist", methodology: "All components included" },
 ];
 
-export default function TestingProcessStep({ formData, handleInputChange, handleStepResultChange }) {
+export default function TestingProcessStep({ formik }) {
     const textFieldStyle = {
         "& .MuiOutlinedInput-root": {
             transition: "all 0.3s ease",
@@ -80,15 +80,28 @@ export default function TestingProcessStep({ formData, handleInputChange, handle
 
     React.useEffect(() => {
         // Initialize default values for parameters and methodology if not present
+        const results = { ...formik.values.testingResults };
+        let updated = false;
         deviceTestingSteps.forEach((step, idx) => {
-            if (!formData.testingResults?.[idx]?.parameter) {
-                handleStepResultChange('testingResults', idx, 'parameter', step.parameter);
-            }
-            if (!formData.testingResults?.[idx]?.methodology) {
-                handleStepResultChange('testingResults', idx, 'methodology', step.methodology);
+            if (!results[idx]) {
+                results[idx] = { parameter: step.parameter, methodology: step.methodology, expected: "", status: "", remarks: "" };
+                updated = true;
+            } else {
+                if (!results[idx].parameter) { results[idx].parameter = step.parameter; updated = true; }
+                if (!results[idx].methodology) { results[idx].methodology = step.methodology; updated = true; }
             }
         });
+        if (updated) {
+            formik.setFieldValue('testingResults', results);
+        }
     }, []); // Run once on mount
+
+    const handleStepChange = (idx, field, value) => {
+        const results = { ...formik.values.testingResults };
+        if (!results[idx]) results[idx] = {};
+        results[idx][field] = value;
+        formik.setFieldValue('testingResults', results);
+    };
 
     return (
         <Fade in={true} timeout={500}>
@@ -124,8 +137,8 @@ export default function TestingProcessStep({ formData, handleInputChange, handle
                                         <TextField
                                             size="small"
                                             fullWidth
-                                            defaultValue={row.parameter}
-                                            onChange={(e) => handleStepResultChange('testingResults', idx, 'parameter', e.target.value)}
+                                            value={formik.values.testingResults?.[idx]?.parameter || row.parameter}
+                                            onChange={(e) => handleStepChange(idx, 'parameter', e.target.value)}
                                             variant="standard"
                                         />
                                     </TableCell>
@@ -133,8 +146,8 @@ export default function TestingProcessStep({ formData, handleInputChange, handle
                                         <TextField
                                             size="small"
                                             fullWidth
-                                            defaultValue={row.methodology}
-                                            onChange={(e) => handleStepResultChange('testingResults', idx, 'methodology', e.target.value)}
+                                            value={formik.values.testingResults?.[idx]?.methodology || row.methodology}
+                                            onChange={(e) => handleStepChange(idx, 'methodology', e.target.value)}
                                             variant="standard"
                                         />
                                     </TableCell>
@@ -142,7 +155,10 @@ export default function TestingProcessStep({ formData, handleInputChange, handle
                                         <TextField
                                             size="small"
                                             fullWidth
-                                            onChange={(e) => handleStepResultChange('testingResults', idx, 'expected', e.target.value)}
+                                            required
+                                            value={formik.values.testingResults?.[idx]?.expected || ""}
+                                            onChange={(e) => handleStepChange(idx, 'expected', e.target.value)}
+                                            error={formik.touched.testingResults && formik.errors.testingResults && !formik.values.testingResults?.[idx]?.expected}
                                             variant="standard"
                                         />
                                     </TableCell>
@@ -152,8 +168,8 @@ export default function TestingProcessStep({ formData, handleInputChange, handle
                                             fullWidth
                                             variant="standard"
                                             displayEmpty
-                                            defaultValue=""
-                                            onChange={(e) => handleStepResultChange('testingResults', idx, 'status', e.target.value)}
+                                            value={formik.values.testingResults?.[idx]?.status || ""}
+                                            onChange={(e) => handleStepChange(idx, 'status', e.target.value)}
                                             sx={{
                                                 fontSize: "0.875rem",
                                                 "& .MuiSelect-select": { py: 0.5 }
@@ -171,7 +187,8 @@ export default function TestingProcessStep({ formData, handleInputChange, handle
                                             size="small"
                                             fullWidth
                                             placeholder="Notes..."
-                                            onChange={(e) => handleStepResultChange('testingResults', idx, 'remarks', e.target.value)}
+                                            value={formik.values.testingResults?.[idx]?.remarks || ""}
+                                            onChange={(e) => handleStepChange(idx, 'remarks', e.target.value)}
                                             variant="standard"
                                         />
                                     </TableCell>
@@ -188,32 +205,46 @@ export default function TestingProcessStep({ formData, handleInputChange, handle
                         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                             <TextField
                                 fullWidth label="Testing By" size="small"
-                                value={formData.testingBy}
-                                onChange={(e) => handleInputChange("testingBy", e.target.value)}
+                                name="testingBy"
+                                value={formik.values.testingBy}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.testingBy && Boolean(formik.errors.testingBy)}
+                                helperText={formik.touched.testingBy && formik.errors.testingBy}
                                 sx={textFieldStyle}
+                                required
                             />
                         </Grid>
                         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                             <TextField
                                 fullWidth label="Verified By" size="small"
-                                value={formData.verifiedBy}
-                                onChange={(e) => handleInputChange("verifiedBy", e.target.value)}
+                                name="verifiedBy"
+                                value={formik.values.verifiedBy}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.verifiedBy && Boolean(formik.errors.verifiedBy)}
+                                helperText={formik.touched.verifiedBy && formik.errors.verifiedBy}
                                 sx={textFieldStyle}
+                                required
                             />
                         </Grid>
                         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                             <TextField
                                 fullWidth label="Testing Date" size="small" type="date"
-                                value={formData.testingDate}
-                                onChange={(e) => handleInputChange("testingDate", e.target.value)}
+                                name="testingDate"
+                                value={formik.values.testingDate}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
                                 InputLabelProps={{ shrink: true }} sx={textFieldStyle}
                             />
                         </Grid>
                         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                             <TextField
                                 fullWidth label="Verified Date" size="small" type="date"
-                                value={formData.verifiedDate}
-                                onChange={(e) => handleInputChange("verifiedDate", e.target.value)}
+                                name="verifiedDate"
+                                value={formik.values.verifiedDate}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
                                 InputLabelProps={{ shrink: true }} sx={textFieldStyle}
                             />
                         </Grid>

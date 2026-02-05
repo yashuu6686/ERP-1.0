@@ -10,7 +10,11 @@ import Remove from "@mui/icons-material/Remove";
 import Add from "@mui/icons-material/Add";
 import ListAlt from "@mui/icons-material/ListAlt";
 
-const FullKitSection = ({ kitQty, setKitQty, additionalProducts }) => {
+const FullKitSection = ({ formik }) => {
+    const { values, setFieldValue } = formik;
+    const kitQty = values.kitQty;
+    const additionalProducts = values.singleProducts;
+
     return (
         <Card
             sx={{
@@ -64,7 +68,7 @@ const FullKitSection = ({ kitQty, setKitQty, additionalProducts }) => {
                     </Box>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                         <IconButton
-                            onClick={() => setKitQty(Math.max(0, kitQty - 1))}
+                            onClick={() => setFieldValue("kitQty", Math.max(0, kitQty - 1))}
                             size="small"
                             sx={{ border: "1px solid #e2e8f0", bgcolor: "#f8fafc" }}
                         >
@@ -77,7 +81,7 @@ const FullKitSection = ({ kitQty, setKitQty, additionalProducts }) => {
                             {kitQty}
                         </Typography>
                         <IconButton
-                            onClick={() => setKitQty(kitQty + 1)}
+                            onClick={() => setFieldValue("kitQty", kitQty + 1)}
                             size="small"
                             sx={{
                                 border: "1px solid #e2e8f0",

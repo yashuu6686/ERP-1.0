@@ -16,12 +16,27 @@ import IconButton from "@mui/material/IconButton";
 import Add from "@mui/icons-material/Add";
 import Delete from "@mui/icons-material/Delete";
 
-const SingleProductSection = ({
-    products,
-    onAddProduct,
-    onRemoveProduct,
-    onUpdateProduct,
-}) => {
+const SingleProductSection = ({ formik }) => {
+    const { values, setFieldValue } = formik;
+    const products = values.singleProducts;
+
+    const onAddProduct = () => {
+        setFieldValue("singleProducts", [
+            ...products,
+            { id: Date.now(), name: "", quantity: "" },
+        ]);
+    };
+
+    const onRemoveProduct = (id) => {
+        if (products.length > 1) {
+            setFieldValue("singleProducts", products.filter((p) => p.id !== id));
+        }
+    };
+
+    const onUpdateProduct = (id, field, value) => {
+        setFieldValue("singleProducts", products.map((p) => (p.id === id ? { ...p, [field]: value } : p)));
+    };
+
     return (
         <Card
             sx={{
@@ -85,6 +100,7 @@ const SingleProductSection = ({
                                         onChange={(e) =>
                                             onUpdateProduct(product.id, "name", e.target.value)
                                         }
+                                        onBlur={formik.handleBlur}
                                         sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
                                     />
                                 </TableCell>
@@ -98,6 +114,7 @@ const SingleProductSection = ({
                                         onChange={(e) =>
                                             onUpdateProduct(product.id, "quantity", e.target.value)
                                         }
+                                        onBlur={formik.handleBlur}
                                         sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
                                     />
                                 </TableCell>
@@ -107,7 +124,7 @@ const SingleProductSection = ({
                                             size="small"
                                             color="error"
                                             onClick={() => onRemoveProduct(product.id)}
-                                            disabled={products.length === 1}
+                                            disabled={products.length === 0}
                                         >
                                             <Delete fontSize="small" />
                                         </IconButton>
@@ -115,6 +132,13 @@ const SingleProductSection = ({
                                 </TableCell>
                             </TableRow>
                         ))}
+                        {products.length === 0 && (
+                            <TableRow>
+                                <TableCell colSpan={4} align="center" sx={{ py: 3, color: 'text.secondary' }}>
+                                    No single products added.
+                                </TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>

@@ -12,10 +12,9 @@ import TextField from "@mui/material/TextField";
 import ReportProblem from "@mui/icons-material/ReportProblem";
 import Info from "@mui/icons-material/Info";
 
-const ProblemReportAQDSection = ({
-    formData = {},
-    onChange,
-}) => {
+const ProblemReportAQDSection = ({ formik }) => {
+    const { values, setFieldValue, touched, errors } = formik;
+
     return (
         <Grid container spacing={3} sx={{ mb: 4 }}>
             <Grid size={{ xs: 12, md: 6 }}>
@@ -49,8 +48,9 @@ const ProblemReportAQDSection = ({
                         </Box>
                         <RadioGroup
                             row
-                            value={formData.problemReport || "no"}
-                            onChange={(e) => onChange("problemReport", e.target.value)}
+                            name="problemReport"
+                            value={values.problemReport || "no"}
+                            onChange={(e) => setFieldValue("problemReport", e.target.value)}
                         >
                             <FormControlLabel
                                 value="yes"
@@ -81,17 +81,21 @@ const ProblemReportAQDSection = ({
                         </RadioGroup>
                     </Box>
                     <CardContent sx={{ p: 3, bgcolor: "#f8fafc" }}>
-                        {formData.problemReport === "yes" ? (
+                        {values.problemReport === "yes" ? (
                             <Grid container spacing={2}>
                                 <Grid size={{ xs: 12 }}>
                                     <TextField
                                         fullWidth
                                         label="Description"
+                                        name="problemDescription"
                                         multiline
                                         rows={2}
                                         size="small"
-                                        value={formData.problemDescription || ""}
-                                        onChange={(e) => onChange("problemDescription", e.target.value)}
+                                        value={values.problemDescription || ""}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        error={touched.problemDescription && Boolean(errors.problemDescription)}
+                                        helperText={touched.problemDescription && errors.problemDescription}
                                         sx={{
                                             "& .MuiOutlinedInput-root": {
                                                 backgroundColor: "white",
@@ -103,11 +107,13 @@ const ProblemReportAQDSection = ({
                                     <TextField
                                         fullWidth
                                         label="Action Taken"
+                                        name="problemActionTaken"
                                         multiline
                                         rows={2}
                                         size="small"
-                                        value={formData.problemActionTaken || ""}
-                                        onChange={(e) => onChange("problemActionTaken", e.target.value)}
+                                        value={values.problemActionTaken || ""}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
                                         sx={{
                                             "& .MuiOutlinedInput-root": {
                                                 backgroundColor: "white",
@@ -157,8 +163,9 @@ const ProblemReportAQDSection = ({
                         </Box>
                         <RadioGroup
                             row
-                            value={formData.aqd || "no"}
-                            onChange={(e) => onChange("aqd", e.target.value)}
+                            name="aqd"
+                            value={values.aqd || "no"}
+                            onChange={(e) => setFieldValue("aqd", e.target.value)}
                         >
                             <FormControlLabel
                                 value="yes"
@@ -189,15 +196,19 @@ const ProblemReportAQDSection = ({
                         </RadioGroup>
                     </Box>
                     <CardContent sx={{ p: 3, bgcolor: "#f8fafc" }}>
-                        {formData.aqd === "yes" ? (
+                        {values.aqd === "yes" ? (
                             <TextField
                                 fullWidth
                                 label="AQD Description"
+                                name="aqdDescription"
                                 multiline
                                 rows={4.5}
                                 size="small"
-                                value={formData.aqdDescription || ""}
-                                onChange={(e) => onChange("aqdDescription", e.target.value)}
+                                value={values.aqdDescription || ""}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={touched.aqdDescription && Boolean(errors.aqdDescription)}
+                                helperText={touched.aqdDescription && errors.aqdDescription}
                                 sx={{
                                     "& .MuiOutlinedInput-root": { backgroundColor: "white" },
                                 }}

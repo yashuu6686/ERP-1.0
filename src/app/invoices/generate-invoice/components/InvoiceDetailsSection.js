@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
@@ -9,7 +10,9 @@ import MenuItem from "@mui/material/MenuItem";
 
 import Receipt from "@mui/icons-material/Receipt";
 
-const InvoiceDetailsSection = ({ formData = {}, orders = [], selectedOrderId, onOrderChange, onChange }) => {
+const InvoiceDetailsSection = ({ formik, orders = [], selectedOrderId, onOrderChange }) => {
+    const { values, setFieldValue, touched, errors } = formik;
+
     return (
         <Card
             elevation={0}
@@ -45,13 +48,14 @@ const InvoiceDetailsSection = ({ formData = {}, orders = [], selectedOrderId, on
                             size="small"
                             value={selectedOrderId || ""}
                             onChange={(e) => onOrderChange?.(e.target.value)}
+                            onBlur={() => formik.setFieldTouched("invoiceInfo.orderNo", true)}
+                            error={touched.invoiceInfo?.orderNo && Boolean(errors.invoiceInfo?.orderNo)}
+                            helperText={touched.invoiceInfo?.orderNo && errors.invoiceInfo?.orderNo}
                             sx={{
                                 "& .MuiOutlinedInput-root": { bgcolor: "white" },
                             }}
+                            required
                         >
-                            {/* <MenuItem value="">
-                                <em>None</em>
-                            </MenuItem> */}
                             {orders.map((order) => (
                                 <MenuItem key={order.id} value={order.id}>
                                     {order.orderNo}
@@ -65,13 +69,18 @@ const InvoiceDetailsSection = ({ formData = {}, orders = [], selectedOrderId, on
                             label="Invoice No."
                             variant="outlined"
                             size="small"
-                            value={formData.invoiceNumber || ""}
-                            onChange={(e) => onChange?.("invoiceNumber", e.target.value)}
+                            placeholder="Auto-generated"
+                            value={values.invoiceInfo.invoiceNumber || ""}
+                            onChange={(e) => setFieldValue("invoiceInfo.invoiceNumber", e.target.value)}
+                            onBlur={() => formik.setFieldTouched("invoiceInfo.invoiceNumber", true)}
+                            error={touched.invoiceInfo?.invoiceNumber && Boolean(errors.invoiceInfo?.invoiceNumber)}
+                            helperText={touched.invoiceInfo?.invoiceNumber && errors.invoiceInfo?.invoiceNumber}
                             sx={{
                                 "& .MuiOutlinedInput-root": {
                                     bgcolor: "white",
                                 },
                             }}
+                            required
                         />
                     </Grid>
                     <Grid item xs={12} md={3} size={{ xs: 12, md: 3 }}>
@@ -81,12 +90,16 @@ const InvoiceDetailsSection = ({ formData = {}, orders = [], selectedOrderId, on
                             type="date"
                             variant="outlined"
                             size="small"
-                            value={formData.invoiceDate || ""}
-                            onChange={(e) => onChange?.("invoiceDate", e.target.value)}
+                            value={values.invoiceInfo.invoiceDate || ""}
+                            onChange={(e) => setFieldValue("invoiceInfo.invoiceDate", e.target.value)}
+                            onBlur={() => formik.setFieldTouched("invoiceInfo.invoiceDate", true)}
+                            error={touched.invoiceInfo?.invoiceDate && Boolean(errors.invoiceInfo?.invoiceDate)}
+                            helperText={touched.invoiceInfo?.invoiceDate && errors.invoiceInfo?.invoiceDate}
                             InputLabelProps={{ shrink: true }}
                             sx={{
                                 "& .MuiOutlinedInput-root": { bgcolor: "white" },
                             }}
+                            required
                         />
                     </Grid>
                     <Grid item xs={12} md={3} size={{ xs: 12, md: 3 }}>
@@ -96,12 +109,16 @@ const InvoiceDetailsSection = ({ formData = {}, orders = [], selectedOrderId, on
                             type="date"
                             variant="outlined"
                             size="small"
-                            value={formData.dueDate || ""}
-                            onChange={(e) => onChange?.("dueDate", e.target.value)}
+                            value={values.invoiceInfo.dueDate || ""}
+                            onChange={(e) => setFieldValue("invoiceInfo.dueDate", e.target.value)}
+                            onBlur={() => formik.setFieldTouched("invoiceInfo.dueDate", true)}
+                            error={touched.invoiceInfo?.dueDate && Boolean(errors.invoiceInfo?.dueDate)}
+                            helperText={touched.invoiceInfo?.dueDate && errors.invoiceInfo?.dueDate}
                             InputLabelProps={{ shrink: true }}
                             sx={{
                                 "& .MuiOutlinedInput-root": { bgcolor: "white" },
                             }}
+                            required
                         />
                     </Grid>
                 </Grid>

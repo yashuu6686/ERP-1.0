@@ -7,11 +7,15 @@ import Divider from "@mui/material/Divider";
 
 import Assessment from "@mui/icons-material/Assessment";
 
-const InvoiceSummarySection = ({ formData = {}, products = [] }) => {
+const InvoiceSummarySection = ({ formik }) => {
+    const { values } = formik;
+    const products = values.items;
+
     const subtotal = products.reduce((sum, p) => sum + ((parseFloat(p.qty) || 0) * (parseFloat(p.price) || 0)), 0);
     const tax = products.reduce((sum, p) => sum + (parseFloat(p.taxAmount) || 0), 0);
-    const discount = parseFloat(formData.discountAmount || formData.discount) || 0;
+    const discount = parseFloat(values.totals.discountAmount || values.totals.discount) || 0;
     const total = subtotal + tax - discount;
+
     return (
         <Card
             elevation={0}

@@ -8,7 +8,9 @@ import TextField from "@mui/material/TextField";
 
 import Assignment from "@mui/icons-material/Assignment";
 
-const OrderInformationSection = ({ formData, handleChange }) => {
+const OrderInformationSection = ({ formik }) => {
+    const { values, handleChange, handleBlur, touched, errors } = formik;
+
     return (
         <Card
             elevation={0}
@@ -36,17 +38,18 @@ const OrderInformationSection = ({ formData, handleChange }) => {
             <CardContent sx={{ p: 3, bgcolor: "#f8fafc" }}>
                 <Grid container spacing={3}>
                     {[
-                        { label: "Order Number", name: "orderNo", placeholder: "ORD-2024-001" },
-                        { label: "Customer Name", name: "customerName", placeholder: "Enter customer name" },
-                        { label: "Order Date", name: "orderDate", type: "date" },
-                        { label: "Contact Number", name: "contact", placeholder: "Enter contact number" },
+                        { label: "Order Number", name: "orderNo", placeholder: "ORD-2024-001", required: true },
+                        { label: "Customer Name", name: "customerName", placeholder: "Enter customer name", required: true },
+                        { label: "Order Date", name: "orderDate", type: "date", required: true },
+                        { label: "Contact Number", name: "contact", placeholder: "Enter contact number", required: true },
                         {
                             label: "Customer Address",
                             name: "address",
                             placeholder: "Enter address",
                             fullWidth: true,
+                            required: true,
                         },
-                        { label: "Delivery Date", name: "deliveryDate", type: "date" },
+                        { label: "Delivery Date", name: "deliveryDate", type: "date", required: true },
                     ].map((field, i) => (
                         <Grid
                             item
@@ -60,12 +63,16 @@ const OrderInformationSection = ({ formData, handleChange }) => {
                                 fullWidth
                                 label={field.label}
                                 name={field.name}
-                                value={formData[field.name] || ""}
+                                value={values[field.name] || ""}
                                 onChange={handleChange}
+                                onBlur={handleBlur}
+                                error={touched[field.name] && Boolean(errors[field.name])}
+                                helperText={touched[field.name] && errors[field.name]}
                                 placeholder={field.placeholder}
                                 type={field.type || "text"}
                                 variant="outlined"
                                 size="small"
+                                required={field.required}
                                 InputLabelProps={field.type === "date" ? { shrink: true } : {}}
                                 sx={{
                                     "& .MuiOutlinedInput-root": {

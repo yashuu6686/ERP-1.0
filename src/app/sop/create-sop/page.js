@@ -18,15 +18,44 @@ import DeviceInfoStep from "../components/DeviceInfoStep";
 import TestingProcessStep from "../components/TestingProcessStep";
 import PackagingDetailsStep from "../components/PackagingDetailsStep";
 import ReviewSummaryStep from "../components/ReviewSummaryStep";
-
 import { useRouter, useSearchParams } from "next/navigation";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/Loader";
 import { Suspense } from "react";
 import { useAuth } from "@/context/AuthContext";
 import NotificationService from "@/services/NotificationService";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 const steps = ["Device Info", "Testing Process", "Packaging", "Review & Save"];
+
+// Validation Schema
+const validationSchema = [
+    // Step 0: Device Info
+    Yup.object({
+        deviceId: Yup.string().required("Device ID is required"),
+        date: Yup.date().required("Date is required"),
+        companyName: Yup.string().required("Company Name is required"),
+    }),
+    // Step 1: Testing Process
+    Yup.object({
+        testingBy: Yup.string().required("Testing By is required"),
+        verifiedBy: Yup.string().required("Verified By is required"),
+        testingResults: Yup.object().test('expected-results', 'Expected results are required for all steps', (value) => {
+            if (!value) return true;
+            return Object.values(value).every(step => step.expected && step.expected.trim() !== "");
+        })
+    }),
+    // Step 2: Packaging Details
+    Yup.object({
+        packedBy: Yup.string().required("Packed By is required"),
+        checkedBy: Yup.string().required("Checked By is required"),
+        packagingResults: Yup.object().test('expected-results', 'Expected results are required for all components', (value) => {
+            if (!value) return true;
+            return Object.values(value).every(step => step.expected && step.expected.trim() !== "");
+        })
+    }),
+];
 
 function SOPFormContent() {
     const router = useRouter();
@@ -35,21 +64,65 @@ function SOPFormContent() {
     const id = searchParams.get("id");
     const [activeStep, setActiveStep] = useState(0);
     const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState({
-        deviceId: "",
-        date: new Date().toISOString().split('T')[0],
-        companyName: "",
-        companyAddress: "",
-        assistedBy: "",
-        doneBy: "",
-        testingBy: "",
-        testingDate: new Date().toISOString().split('T')[0],
-        verifiedBy: "",
-        verifiedDate: new Date().toISOString().split('T')[0],
-        packedBy: "",
-        checkedBy: "",
-        testingResults: {},
-        packagingResults: {},
+
+    const formik = useFormik({
+        initialValues: {
+            deviceId: "",
+            date: new Date().toISOString().split('T')[0],
+            companyName: "",
+            companyAddress: "",
+            assistedBy: "",
+            doneBy: "",
+            testingBy: "",
+            testingDate: new Date().toISOString().split('T')[0],
+            verifiedBy: "",
+            verifiedDate: new Date().toISOString().split('T')[0],
+            packedBy: "",
+            checkedBy: "",
+            testingResults: {},
+            packagingResults: {},
+        },
+        validationSchema: validationSchema[activeStep],
+        enableReinitialize: true,
+        onSubmit: async (values) => {
+            try {
+                setLoading(true);
+                const isHR = user?.role === 'hr';
+                const status = isHR ? "Pending Approval" : "Completed";
+
+                const payload = {
+                    ...values,
+                    sopNumber: values.sopNumber || `SOP-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+                    status: status,
+                };
+
+                let response;
+                if (id) {
+                    response = await axiosInstance.put(`/sops/${id}`, payload);
+                } else {
+                    response = await axiosInstance.post("/sops", payload);
+                }
+
+                if (isHR && (response.status === 201 || response.status === 200)) {
+                    await NotificationService.createNotification({
+                        title: "SOP Approval Required",
+                        message: `HR ${user.name} has submitted an SOP for ${values.deviceId || 'a device'} (Report: ${payload.sopNumber}).`,
+                        targetRole: "admin",
+                        type: "sop_approval",
+                        link: `/sop/view-sop?id=${id || response.data.id}`,
+                        inspectionId: id || response.data.id
+                    });
+                }
+
+                alert(`SOP ${id ? "Updated" : "Saved"} Successfully!`);
+                router.push("/sop");
+            } catch (error) {
+                console.error("Error saving SOP:", error);
+                alert("Failed to save SOP.");
+            } finally {
+                setLoading(false);
+            }
+        },
     });
 
     useEffect(() => {
@@ -58,7 +131,7 @@ function SOPFormContent() {
                 setLoading(true);
                 const response = await axiosInstance.get(`/sops/${id}`);
                 if (response.data) {
-                    setFormData(response.data);
+                    formik.setValues(response.data);
                 }
             } catch (error) {
                 console.error("Error fetching SOP details:", error);
@@ -72,76 +145,32 @@ function SOPFormContent() {
         }
     }, [id]);
 
-    const handleInputChange = (field, value) => {
-        setFormData((prev) => ({ ...prev, [field]: value }));
-    };
-
-    const handleStepResultChange = (section, stepIndex, field, value) => {
-        setFormData(prev => ({
-            ...prev,
-            [section]: {
-                ...prev[section],
-                [stepIndex]: {
-                    ...prev[section][stepIndex],
-                    [field]: value
-                }
-            }
-        }));
-    };
-
-    const handleNext = () => setActiveStep((prev) => prev + 1);
-    const handleBack = () => setActiveStep((prev) => prev - 1);
-
-    const handleSave = async () => {
-        try {
-            setLoading(true);
-            const isHR = user?.role === 'hr';
-            const status = isHR ? "Pending Approval" : "Completed";
-
-            const payload = {
-                ...formData,
-                sopNumber: formData.sopNumber || `SOP-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
-                status: status,
-            };
-
-            let response;
-            if (id) {
-                response = await axiosInstance.put(`/sops/${id}`, payload);
-            } else {
-                response = await axiosInstance.post("/sops", payload);
-            }
-
-            if (isHR && (response.status === 201 || response.status === 200)) {
-                await NotificationService.createNotification({
-                    title: "SOP Approval Required",
-                    message: `HR ${user.name} has submitted an SOP for ${formData.deviceId || 'a device'} (Report: ${payload.sopNumber}).`,
-                    targetRole: "admin",
-                    type: "sop_approval",
-                    link: `/sop/view-sop?id=${id || response.data.id}`,
-                    inspectionId: id || response.data.id
-                });
-            }
-
-            alert(`SOP ${id ? "Updated" : "Saved"} Successfully!`);
-            router.push("/sop");
-        } catch (error) {
-            console.error("Error saving SOP:", error);
-            alert("Failed to save SOP.");
-        } finally {
-            setLoading(false);
+    const handleNext = async () => {
+        const errors = await formik.validateForm();
+        if (Object.keys(errors).length === 0) {
+            setActiveStep((prev) => prev + 1);
+        } else {
+            // Mark all fields as touched to show errors
+            formik.setTouched(
+                Object.keys(errors).reduce((acc, key) => {
+                    acc[key] = true;
+                    return acc;
+                }, {})
+            );
         }
     };
+    const handleBack = () => setActiveStep((prev) => prev - 1);
 
     const getStepContent = (step) => {
         switch (step) {
             case 0:
-                return <DeviceInfoStep formData={formData} handleInputChange={handleInputChange} />;
+                return <DeviceInfoStep formik={formik} />;
             case 1:
-                return <TestingProcessStep formData={formData} handleInputChange={handleInputChange} handleStepResultChange={handleStepResultChange} />;
+                return <TestingProcessStep formik={formik} />;
             case 2:
-                return <PackagingDetailsStep formData={formData} handleInputChange={handleInputChange} handleStepResultChange={handleStepResultChange} />;
+                return <PackagingDetailsStep formik={formik} />;
             case 3:
-                return <ReviewSummaryStep formData={formData} />;
+                return <ReviewSummaryStep formik={formik} />;
             default: return "Unknown step";
         }
     };
@@ -198,7 +227,7 @@ function SOPFormContent() {
                         {activeStep === steps.length - 1 ? (
                             <Button
                                 variant="contained"
-                                onClick={handleSave}
+                                onClick={formik.handleSubmit}
                                 startIcon={<Save />}
                                 sx={{
                                     borderRadius: 2,

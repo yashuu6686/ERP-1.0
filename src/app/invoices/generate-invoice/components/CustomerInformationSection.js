@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
@@ -8,7 +9,9 @@ import TextField from "@mui/material/TextField";
 
 import Person from "@mui/icons-material/Person";
 
-const CustomerInformationSection = ({ formData = {}, lockedFields = {}, onChange }) => {
+const CustomerInformationSection = ({ formik, lockedFields = {} }) => {
+    const { values, setFieldValue, touched, errors } = formik;
+
     return (
         <Card
             elevation={0}
@@ -41,10 +44,14 @@ const CustomerInformationSection = ({ formData = {}, lockedFields = {}, onChange
                             fullWidth
                             label="Customer Name"
                             size="small"
-                            value={formData.companyName || ""}
-                            onChange={(e) => onChange?.("companyName", e.target.value)}
+                            value={values.customer.companyName || ""}
+                            onChange={(e) => setFieldValue("customer.companyName", e.target.value)}
+                            onBlur={() => formik.setFieldTouched("customer.companyName", true)}
+                            error={touched.customer?.companyName && Boolean(errors.customer?.companyName)}
+                            helperText={touched.customer?.companyName && errors.customer?.companyName}
                             InputProps={{ readOnly: !!lockedFields.companyName }}
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: lockedFields.companyName ? "#f1f5f9" : "white" } }}
+                            required
                         />
                     </Grid>
                     <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
@@ -52,10 +59,14 @@ const CustomerInformationSection = ({ formData = {}, lockedFields = {}, onChange
                             fullWidth
                             label="Organization"
                             size="small"
-                            value={formData.organization || ""}
-                            onChange={(e) => onChange?.("organization", e.target.value)}
+                            value={values.customer.organization || ""}
+                            onChange={(e) => setFieldValue("customer.organization", e.target.value)}
+                            onBlur={() => formik.setFieldTouched("customer.organization", true)}
+                            error={touched.customer?.organization && Boolean(errors.customer?.organization)}
+                            helperText={touched.customer?.organization && errors.customer?.organization}
                             InputProps={{ readOnly: !!lockedFields.organization }}
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: lockedFields.organization ? "#f1f5f9" : "white" } }}
+                            required
                         />
                     </Grid>
                     <Grid item xs={12} size={{ xs: 12 }}>
@@ -63,10 +74,14 @@ const CustomerInformationSection = ({ formData = {}, lockedFields = {}, onChange
                             fullWidth
                             label="Address"
                             size="small"
-                            value={formData.address || ""}
-                            onChange={(e) => onChange?.("address", e.target.value)}
+                            value={values.customer.address || ""}
+                            onChange={(e) => setFieldValue("customer.address", e.target.value)}
+                            onBlur={() => formik.setFieldTouched("customer.address", true)}
+                            error={touched.customer?.address && Boolean(errors.customer?.address)}
+                            helperText={touched.customer?.address && errors.customer?.address}
                             InputProps={{ readOnly: !!lockedFields.address }}
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: lockedFields.address ? "#f1f5f9" : "white" } }}
+                            required
                         />
                     </Grid>
                     <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
@@ -74,10 +89,14 @@ const CustomerInformationSection = ({ formData = {}, lockedFields = {}, onChange
                             fullWidth
                             label="Contact No."
                             size="small"
-                            value={formData.contact || ""}
-                            onChange={(e) => onChange?.("contact", e.target.value)}
+                            value={values.customer.contact || ""}
+                            onChange={(e) => setFieldValue("customer.contact", e.target.value)}
+                            onBlur={() => formik.setFieldTouched("customer.contact", true)}
+                            error={touched.customer?.contact && Boolean(errors.customer?.contact)}
+                            helperText={touched.customer?.contact && errors.customer?.contact}
                             InputProps={{ readOnly: !!lockedFields.contact }}
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: lockedFields.contact ? "#f1f5f9" : "white" } }}
+                            required
                         />
                     </Grid>
                     <Grid item xs={12} sm={6} size={{ xs: 12, sm: 6 }}>
@@ -85,8 +104,8 @@ const CustomerInformationSection = ({ formData = {}, lockedFields = {}, onChange
                             fullWidth
                             label="Drug Licence"
                             size="small"
-                            value={formData.drugLicence || ""}
-                            onChange={(e) => onChange?.("drugLicence", e.target.value)}
+                            value={values.customer.drugLicence || ""}
+                            onChange={(e) => setFieldValue("customer.drugLicence", e.target.value)}
                             InputProps={{ readOnly: !!lockedFields.drugLicence }}
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: lockedFields.drugLicence ? "#f1f5f9" : "white" } }}
                         />
