@@ -22,40 +22,40 @@ import { useAuth } from "@/context/AuthContext";
 
 const validationSchema = Yup.object().shape({
   orderInfo: Yup.object().shape({
-    orderNumber: Yup.string().required("Required"),
-    orderDate: Yup.date().required("Required"),
-    expectedDelivery: Yup.date().required("Required"),
+    orderNumber: Yup.string().required("Order Number is required"),
+    orderDate: Yup.date().required("Order Date is required"),
+    expectedDelivery: Yup.date().required("Expected Delivery Date is required"),
   }),
   supplier: Yup.object().shape({
-    companyName: Yup.string().required("Required"),
-    contactPerson: Yup.string().required("Required"),
-    address: Yup.string().required("Required"),
-    email: Yup.string().email("Invalid email").required("Required"),
-    phone: Yup.string().required("Required"),
-    pan: Yup.string().required("Required"),
-    gstin: Yup.string().required("Required"),
+    companyName: Yup.string().required("Company Name is required"),
+    contactPerson: Yup.string().required("Contact Person is required"),
+    address: Yup.string().required("Address is required"),
+    email: Yup.string().email("Invalid email address").required("Supplier Email is required"),
+    phone: Yup.string().required("Supplier Phone is required"),
+    pan: Yup.string().required("PAN Number is required"),
+    gstin: Yup.string().required("GSTIN is required"),
   }),
   delivery: Yup.object().shape({
-    invoiceTo: Yup.string().required("Required"),
-    deliverTo: Yup.string().required("Required"),
-    deliveryAddress: Yup.string().required("Required"),
-    contactPerson: Yup.string().required("Required"),
-    phone: Yup.string().required("Required"),
-    email: Yup.string().email("Invalid email").required("Required"),
+    invoiceTo: Yup.string().required("Invoice To is required"),
+    deliverTo: Yup.string().required("Deliver To is required"),
+    deliveryAddress: Yup.string().required("Delivery Address is required"),
+    contactPerson: Yup.string().required("Delivery Contact Person is required"),
+    phone: Yup.string().required("Delivery Phone is required"),
+    email: Yup.string().email("Invalid email address").required("Delivery Email is required"),
   }),
   items: Yup.array()
     .of(
       Yup.object().shape({
-        name: Yup.string().required("Required"),
-        qty: Yup.number().positive("Must be > 0").required("Required"),
-        price: Yup.number().min(0, "Must be >= 0").required("Required"),
+        name: Yup.string().required("Item Name is required"),
+        qty: Yup.number().positive("Quantity must be greater than 0").required("Quantity is required"),
+        price: Yup.number().min(0, "Price must be non-negative").required("Price is required"),
       })
     )
-    .min(1, "At least one item required"),
-  discount: Yup.number().min(0, "Invalid").default(0),
-  taxRate: Yup.number().min(0, "Invalid").required("Required").default(18),
-  shippingCharges: Yup.number().min(0, "Invalid").default(0),
-  otherDiscount: Yup.number().min(0, "Invalid").default(0),
+    .min(1, "At least one item is required"),
+  discount: Yup.number().min(0, "Discount cannot be negative").default(0),
+  taxRate: Yup.number().min(0, "Tax Rate cannot be negative").required("Tax Rate is required").default(18),
+  shippingCharges: Yup.number().min(0, "Shipping charges cannot be negative").default(0),
+  otherDiscount: Yup.number().min(0, "Other discount cannot be negative").default(0),
 });
 
 function CreatePurchaseOrderContent() {
