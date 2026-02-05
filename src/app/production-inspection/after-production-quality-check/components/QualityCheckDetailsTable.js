@@ -17,7 +17,16 @@ import Add from "@mui/icons-material/Add";
 import Delete from "@mui/icons-material/Delete";
 import FactCheck from "@mui/icons-material/FactCheck";
 
-const QualityCheckDetailsTable = ({ data, onAdd, onDelete, onChange }) => {
+const QualityCheckDetailsTable = ({
+    data,
+    onAddRow,
+    onDelete,
+    onChange,
+    formik,
+    observationColumns = [{ id: 'observation', label: 'Observation' }],
+    onAddColumn,
+    onRemoveColumn
+}) => {
     return (
         <Card
             elevation={0}
@@ -43,20 +52,37 @@ const QualityCheckDetailsTable = ({ data, onAdd, onDelete, onChange }) => {
                         Quality Check Details
                     </Typography>
                 </Box>
-                <Button
-                    variant="contained"
-                    size="small"
-                    startIcon={<Add />}
-                    onClick={onAdd}
-                    sx={{
-                        bgcolor: "#fff",
-                        color: "#1172ba",
-                        "&:hover": { bgcolor: "#f0f9ff" },
-                        textTransform: "none",
-                    }}
-                >
-                    Add Observation
-                </Button>
+                <Box sx={{ display: "flex", gap: 2 }}>
+                    <Button
+                        variant="outlined"
+                        size="small"
+                        startIcon={<Add />}
+                        onClick={onAddColumn}
+                        sx={{
+                            bgcolor: "rgba(255, 255, 255, 0.1)",
+                            color: "#fff",
+                            borderColor: "transparent",
+                            "&:hover": { bgcolor: "rgba(255, 255, 255, 0.2)", borderColor: "transparent" },
+                            textTransform: "none",
+                        }}
+                    >
+                        Add Observation
+                    </Button>
+                    <Button
+                        variant="contained"
+                        size="small"
+                        startIcon={<Add />}
+                        onClick={onAddRow}
+                        sx={{
+                            bgcolor: "#fff",
+                            color: "#1172ba",
+                            "&:hover": { bgcolor: "#f0f9ff" },
+                            textTransform: "none",
+                        }}
+                    >
+                        Add Row
+                    </Button>
+                </Box>
             </Box>
 
             <CardContent sx={{ p: 0 }}>
@@ -78,9 +104,23 @@ const QualityCheckDetailsTable = ({ data, onAdd, onDelete, onChange }) => {
                                 <TableCell align="center" sx={{ fontWeight: 500, p: 2 }}>
                                     Method
                                 </TableCell>
-                                <TableCell align="center" sx={{ fontWeight: 500, p: 2 }}>
-                                    Observation
-                                </TableCell>
+                                {observationColumns.map((col) => (
+                                    <TableCell key={col.id} align="center" sx={{ fontWeight: 500, p: 2 }}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
+                                            {col.label}
+                                            {col.id !== 'observation' && (
+                                                <IconButton
+                                                    size="small"
+                                                    color="error"
+                                                    onClick={() => onRemoveColumn(col.id)}
+                                                    sx={{ p: 0.5 }}
+                                                >
+                                                    <Delete sx={{ fontSize: 16 }} />
+                                                </IconButton>
+                                            )}
+                                        </Box>
+                                    </TableCell>
+                                ))}
                                 <TableCell align="center" sx={{ fontWeight: 500, p: 2 }}>
                                     Remarks
                                 </TableCell>
@@ -103,10 +143,15 @@ const QualityCheckDetailsTable = ({ data, onAdd, onDelete, onChange }) => {
                                             fullWidth
                                             size="small"
                                             placeholder="Enter Parameters"
+                                            name={`checkDetails[${index}].parameters`}
                                             value={row.parameters}
                                             onChange={(e) =>
                                                 onChange(row.id, "parameters", e.target.value)
                                             }
+                                            onBlur={formik.handleBlur}
+                                            error={formik.touched.checkDetails?.[index]?.parameters && Boolean(formik.errors.checkDetails?.[index]?.parameters)}
+                                            helperText={formik.touched.checkDetails?.[index]?.parameters && formik.errors.checkDetails?.[index]?.parameters}
+                                            required
                                         />
                                     </TableCell>
                                     <TableCell align="center" sx={{ p: 1 }}>
@@ -114,10 +159,15 @@ const QualityCheckDetailsTable = ({ data, onAdd, onDelete, onChange }) => {
                                             fullWidth
                                             size="small"
                                             placeholder="Enter Specification"
+                                            name={`checkDetails[${index}].specification`}
                                             value={row.specification}
                                             onChange={(e) =>
                                                 onChange(row.id, "specification", e.target.value)
                                             }
+                                            onBlur={formik.handleBlur}
+                                            error={formik.touched.checkDetails?.[index]?.specification && Boolean(formik.errors.checkDetails?.[index]?.specification)}
+                                            helperText={formik.touched.checkDetails?.[index]?.specification && formik.errors.checkDetails?.[index]?.specification}
+                                            required
                                         />
                                     </TableCell>
                                     <TableCell align="center" sx={{ p: 1 }}>
@@ -125,28 +175,42 @@ const QualityCheckDetailsTable = ({ data, onAdd, onDelete, onChange }) => {
                                             fullWidth
                                             size="small"
                                             placeholder="Method"
+                                            name={`checkDetails[${index}].method`}
                                             value={row.method}
                                             onChange={(e) => onChange(row.id, "method", e.target.value)}
+                                            onBlur={formik.handleBlur}
+                                            error={formik.touched.checkDetails?.[index]?.method && Boolean(formik.errors.checkDetails?.[index]?.method)}
+                                            helperText={formik.touched.checkDetails?.[index]?.method && formik.errors.checkDetails?.[index]?.method}
+                                            required
                                         />
                                     </TableCell>
-                                    <TableCell align="center" sx={{ p: 1 }}>
-                                        <TextField
-                                            fullWidth
-                                            size="small"
-                                            placeholder="Observation"
-                                            value={row.observation}
-                                            onChange={(e) =>
-                                                onChange(row.id, "observation", e.target.value)
-                                            }
-                                        />
-                                    </TableCell>
+                                    {observationColumns.map((col) => (
+                                        <TableCell key={col.id} align="center" sx={{ p: 1 }}>
+                                            <TextField
+                                                fullWidth
+                                                size="small"
+                                                placeholder={col.label}
+                                                name={`checkDetails[${index}].${col.id}`}
+                                                value={row[col.id] || ''}
+                                                onChange={(e) =>
+                                                    onChange(row.id, col.id, e.target.value)
+                                                }
+                                                onBlur={formik.handleBlur}
+                                                error={formik.touched.checkDetails?.[index]?.[col.id] && Boolean(formik.errors.checkDetails?.[index]?.[col.id])}
+                                                helperText={formik.touched.checkDetails?.[index]?.[col.id] && formik.errors.checkDetails?.[index]?.[col.id]}
+                                                required
+                                            />
+                                        </TableCell>
+                                    ))}
                                     <TableCell align="center" sx={{ p: 1 }}>
                                         <TextField
                                             fullWidth
                                             size="small"
                                             placeholder="Remarks"
+                                            name={`checkDetails[${index}].remarks`}
                                             value={row.remarks}
                                             onChange={(e) => onChange(row.id, "remarks", e.target.value)}
+                                            onBlur={formik.handleBlur}
                                         />
                                     </TableCell>
                                     <TableCell align="center" sx={{ p: 1, textAlign: "center" }}>

@@ -12,8 +12,11 @@ import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import Clear from "@mui/icons-material/Clear";
 
-const ProductDetailsSection = ({ data, onChange, materialRequests = [], onRequestChange, isEdit = false }) => {
+const ProductDetailsSection = ({ data, onChange, materialRequests = [], onRequestChange, isEdit = false, formik }) => {
     return (
         <Card
             elevation={0}
@@ -42,13 +45,36 @@ const ProductDetailsSection = ({ data, onChange, materialRequests = [], onReques
             <CardContent sx={{ padding: 3 }}>
                 <Grid container spacing={3}>
                     <Grid item size={{ xs: 12, sm: 6, md: 2.4 }}>
-                        <FormControl fullWidth size="small">
+                        <FormControl
+                            fullWidth
+                            size="small"
+                            error={formik.touched.materialRequestNo && Boolean(formik.errors.materialRequestNo)}
+                        >
                             <InputLabel>Material Request No.</InputLabel>
                             <Select
                                 value={data.materialRequestNo || ""}
                                 label="Material Request No."
                                 onChange={(e) => onRequestChange(e.target.value)}
+                                onBlur={formik.handleBlur}
+                                name="materialRequestNo"
                                 disabled={isEdit}
+                                endAdornment={
+                                    data.materialRequestNo && !isEdit && (
+                                        <InputAdornment position="end" sx={{ mr: 2 }}>
+                                            <IconButton
+                                                size="small"
+                                                onClick={(e) => {
+                                                    // Prevent the select menu from opening
+                                                    e.stopPropagation();
+                                                    onRequestChange("");
+                                                }}
+                                                edge="end"
+                                            >
+                                                <Clear fontSize="small" />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    )
+                                }
                             >
                                 {materialRequests.map((req) => (
                                     <MenuItem key={req.id} value={req.requestNo}>
@@ -64,9 +90,14 @@ const ProductDetailsSection = ({ data, onChange, materialRequests = [], onReques
                             label="Product Name"
                             variant="outlined"
                             size="small"
+                            name="productName"
                             value={data.productName}
                             onChange={(e) => onChange("productName", e.target.value)}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.productName && Boolean(formik.errors.productName)}
+                            helperText={formik.touched.productName && formik.errors.productName}
                             disabled={!!data.materialRequestNo}
+                            required
                         />
                     </Grid>
                     <Grid item size={{ xs: 12, sm: 6, md: 2.4 }}>
@@ -75,8 +106,13 @@ const ProductDetailsSection = ({ data, onChange, materialRequests = [], onReques
                             label="Quality Standard No."
                             variant="outlined"
                             size="small"
+                            name="qualityStandard"
                             value={data.qualityStandard}
                             onChange={(e) => onChange("qualityStandard", e.target.value)}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.qualityStandard && Boolean(formik.errors.qualityStandard)}
+                            helperText={formik.touched.qualityStandard && formik.errors.qualityStandard}
+                            required
                         />
                     </Grid>
                     <Grid item size={{ xs: 12, sm: 6, md: 2.4 }}>
@@ -86,9 +122,14 @@ const ProductDetailsSection = ({ data, onChange, materialRequests = [], onReques
                             variant="outlined"
                             size="small"
                             type="number"
+                            name="checkedQuantity"
                             value={data.checkedQuantity}
                             onChange={(e) => onChange("checkedQuantity", e.target.value)}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.checkedQuantity && Boolean(formik.errors.checkedQuantity)}
+                            helperText={formik.touched.checkedQuantity && formik.errors.checkedQuantity}
                             disabled={!!data.materialRequestNo}
+                            required
                         />
                     </Grid>
                     <Grid item size={{ xs: 12, sm: 6, md: 2.4 }}>
@@ -99,8 +140,13 @@ const ProductDetailsSection = ({ data, onChange, materialRequests = [], onReques
                             size="small"
                             type="date"
                             InputLabelProps={{ shrink: true }}
+                            name="inspectionDate"
                             value={data.inspectionDate}
                             onChange={(e) => onChange("inspectionDate", e.target.value)}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.inspectionDate && Boolean(formik.errors.inspectionDate)}
+                            helperText={formik.touched.inspectionDate && formik.errors.inspectionDate}
+                            required
                         />
                     </Grid>
                     <Grid item size={{ xs: 12, sm: 6, md: 2.4 }}>
@@ -109,8 +155,13 @@ const ProductDetailsSection = ({ data, onChange, materialRequests = [], onReques
                             label="Check Number"
                             variant="outlined"
                             size="small"
+                            name="checkNumber"
                             value={data.checkNumber}
                             onChange={(e) => onChange("checkNumber", e.target.value)}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.checkNumber && Boolean(formik.errors.checkNumber)}
+                            helperText={formik.touched.checkNumber && formik.errors.checkNumber}
+                            required
                         />
                     </Grid>
                 </Grid>
