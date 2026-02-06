@@ -13,10 +13,12 @@ import axiosInstance from "../../axios/axiosInstance";
 import Loader from "../../components/ui/Loader";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { useAuth } from "@/context/AuthContext";
 
 const tabEndpoints = ["/store", "/it-goods", "/finish-goods", "/other-goods"];
 
 export default function Store() {
+  const { checkPermission } = useAuth();
   const [tab, setTab] = useState(0);
   const tabLabels = ["Raw Materials", "IT Items", "Finished Products", "Other Items"];
 
@@ -26,6 +28,9 @@ export default function Store() {
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
+
+  const canCreate = checkPermission('store', 'create');
+  const canView = checkPermission('store', 'view');
 
   const validationSchema = Yup.object({
     name: Yup.string().required("Material Name is required"),
@@ -164,17 +169,21 @@ export default function Store() {
       label: "Actions",
       align: "center",
       render: (row) => (
-        <IconButton
-          size="small"
-          onClick={() => router.push(`/store/${encodeURIComponent(row.id || row.code)}`)}
-          sx={{
-            color: "rgb(17, 114, 186)",
-            bgcolor: "#f1f5f9",
-            "&:hover": { bgcolor: "#e2e8f0" },
-          }}
-        >
-          <Visibility fontSize="small" />
-        </IconButton>
+        <>
+          {canView && (
+            <IconButton
+              size="small"
+              onClick={() => router.push(`/store/${encodeURIComponent(row.id || row.code)}`)}
+              sx={{
+                color: "rgb(17, 114, 186)",
+                bgcolor: "#f1f5f9",
+                "&:hover": { bgcolor: "#e2e8f0" },
+              }}
+            >
+              <Visibility fontSize="small" />
+            </IconButton>
+          )}
+        </>
       ),
     },
   ];
@@ -183,11 +192,11 @@ export default function Store() {
     <Box>
       <CommonCard
         title={tabLabels[tab]}
-        addText={`Add ${tabLabels[tab].replace(/s$/, "")}`}
-        onAdd={() => {
+        addText={canCreate ? `Add ${tabLabels[tab].replace(/s$/, "")}` : null}
+        onAdd={canCreate ? () => {
           formik.setFieldValue("category", tabEndpoints[tab]);
           setOpenDialog(true);
-        }}
+        } : null}
         searchPlaceholder={`Search ${tabLabels[tab]}`}
         searchValue={search}
         onSearchChange={(e) => setSearch(e.target.value)}

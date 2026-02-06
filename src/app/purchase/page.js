@@ -17,11 +17,17 @@ import CommonCard from "../../components/ui/CommonCard";
 import GlobalTable from "../../components/ui/GlobalTable";
 import Loader from "../../components/ui/Loader";
 import axiosInstance from "@/axios/axiosInstance";
+import { useAuth } from "@/context/AuthContext";
 
 export default function PurchaseOrderTable() {
   const router = useRouter();
+  const { checkPermission } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const canCreate = checkPermission('purchase', 'create');
+  const canEdit = checkPermission('purchase', 'edit');
+  const canView = checkPermission('purchase', 'view');
 
   useEffect(() => {
     fetchOrders();
@@ -197,30 +203,34 @@ export default function PurchaseOrderTable() {
       align: "center",
       render: (row) => (
         <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
-          <IconButton
-            size="small"
-            onClick={() => router.push(`/purchase/view-purchase?id=${row.id}`)}
-            sx={{
-              color: "rgb(17, 114, 186)",
-              bgcolor: "#f1f5f9",
-              "&:hover": { bgcolor: "#e2e8f0" }
-            }}
-          >
-            <Visibility fontSize="small" />
-          </IconButton>
-          <IconButton
-            size="small"
-            onClick={() => router.push(`/purchase/create-purchase?id=${row.id}`)}
-            disabled={row.status === "Completed"}
-            sx={{
-              color: "rgb(17, 114, 186)",
-              bgcolor: "#f1f5f9",
-              "&:hover": { bgcolor: "#e2e8f0" },
-              "&.Mui-disabled": { bgcolor: "#f8fafc", color: "#cbd5e1" }
-            }}
-          >
-            <Edit sx={{ fontSize: 16 }} />
-          </IconButton>
+          {canView && (
+            <IconButton
+              size="small"
+              onClick={() => router.push(`/purchase/view-purchase?id=${row.id}`)}
+              sx={{
+                color: "rgb(17, 114, 186)",
+                bgcolor: "#f1f5f9",
+                "&:hover": { bgcolor: "#e2e8f0" }
+              }}
+            >
+              <Visibility fontSize="small" />
+            </IconButton>
+          )}
+          {canEdit && (
+            <IconButton
+              size="small"
+              onClick={() => router.push(`/purchase/create-purchase?id=${row.id}`)}
+              disabled={row.status === "Completed"}
+              sx={{
+                color: "rgb(17, 114, 186)",
+                bgcolor: "#f1f5f9",
+                "&:hover": { bgcolor: "#e2e8f0" },
+                "&.Mui-disabled": { bgcolor: "#f8fafc", color: "#cbd5e1" }
+              }}
+            >
+              <Edit sx={{ fontSize: 16 }} />
+            </IconButton>
+          )}
         </Box>
       ),
     },
@@ -230,8 +240,8 @@ export default function PurchaseOrderTable() {
     <Box>
       <CommonCard
         title="Purchase Orders"
-        addText="Create Purchase Order"
-        onAdd={() => router.push("purchase/create-purchase")}
+        addText={canCreate ? "Create Purchase Order" : null}
+        onAdd={canCreate ? () => router.push("purchase/create-purchase") : null}
         searchPlaceholder="Search PO, Vendor, Item..."
         searchValue={searchTerm}
         onSearchChange={(e) => setSearchTerm(e.target.value)}

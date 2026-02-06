@@ -7,21 +7,6 @@ import ListItemText from "@mui/material/ListItemText";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
-import Home from "@mui/icons-material/Home";
-import ShoppingCart from "@mui/icons-material/ShoppingCart";
-import Inventory from "@mui/icons-material/Inventory";
-import Assignment from "@mui/icons-material/Assignment";
-import Store from "@mui/icons-material/Store";
-import Build from "@mui/icons-material/Build";
-import Send from "@mui/icons-material/Send";
-import CheckCircle from "@mui/icons-material/CheckCircle";
-import Layers from "@mui/icons-material/Layers";
-import People from "@mui/icons-material/People";
-import Receipt from "@mui/icons-material/Receipt";
-import Verified from "@mui/icons-material/Verified";
-import Description from "@mui/icons-material/Description";
-import LocalShipping from "@mui/icons-material/LocalShipping";
-import Cancel from "@mui/icons-material/Cancel";
 import Logout from "@mui/icons-material/Logout";
 import { Link as MuiLink, Typography as MuiTypography, useMediaQuery, useTheme, Tooltip } from "@mui/material";
 import { useRouter, usePathname } from "next/navigation";
@@ -38,16 +23,12 @@ const DRAWER_WIDTH = 264;
 const MINI_DRAWER_WIDTH = 56;
 
 export default function Sidebar({ children }) {
-  const { user, logout } = useAuth();
+  const { user, logout, checkPermission } = useAuth();
 
   const menuItems = React.useMemo(() => {
     if (!user) return [];
-    // Admin access all by default to prevent lockout
-    if (user.role === 'admin' || (user.permissions && user.permissions.includes('all'))) {
-      return MENU_ITEMS;
-    }
-    return MENU_ITEMS.filter(item => user.permissions && user.permissions.includes(item.key));
-  }, [user]);
+    return MENU_ITEMS.filter(item => checkPermission(item.key, 'view'));
+  }, [user, checkPermission]);
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(true);
   const [hasMounted, setHasMounted] = React.useState(false);
 

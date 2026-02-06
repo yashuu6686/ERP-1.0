@@ -12,20 +12,21 @@ export const AuthProvider = ({ children }) => {
 
     // Fetch permissions for a given role
     const fetchPermissionsForRole = async (roleName) => {
+        if (!roleName) return {};
         try {
+            // Try searching by name exactly
             const roleResponse = await axiosInstance.get(`/roles?name=${roleName}`);
-            const roleData = roleResponse.data[0];
+            let roleData = roleResponse.data.find(r => r.name.toLowerCase() === roleName.toLowerCase());
 
             if (roleData && roleData.permissions) {
                 return roleData.permissions;
-            } else if (roleName === 'admin') {
-                // Fallback for admin if not in DB yet
-                return ['all'];
+            } else if (roleName.toLowerCase() === 'admin') {
+                return { all: true };
             }
-            return [];
+            return {};
         } catch (error) {
             console.error("Error fetching role permissions:", error);
-            return [];
+            return {};
         }
     };
 
@@ -35,11 +36,62 @@ export const AuthProvider = ({ children }) => {
         if (storedUser) {
             const parsedUser = JSON.parse(storedUser);
 
-            // Fetch fresh permissions from server based on stored role
-            fetchPermissionsForRole(parsedUser.role).then(permissions => {
-                setUser({ ...parsedUser, permissions });
-                setLoading(false);
-            });
+            const fetchFreshAuth = async () => {
+                try {
+                    // Fetch fresh user data to get latest additionalPermissions
+                    const userResponse = await axiosInstance.get(`/users/${parsedUser.id}`);
+                    const freshUser = userResponse.data;
+
+                    // Fetch fresh role permissions
+                    const roleToFetch = freshUser.role || freshUser.roleName;
+                    const rolePermissions = await fetchPermissionsForRole(roleToFetch);
+
+                    // DEEP MERGE inherited role permissions with individual user overrides
+                    const additional = freshUser.additionalPermissions || {};
+                    const merged = { ...rolePermissions };
+
+                    Object.keys(additional).forEach(mKey => {
+                        if (merged[mKey]) {
+                            merged[mKey] = { ...merged[mKey], ...additional[mKey] };
+                        } else {
+                            merged[mKey] = additional[mKey];
+                        }
+                    });
+
+                    // Update both state and localStorage with fresh data
+                    const updatedUser = {
+                        id: freshUser.id,
+                        name: freshUser.name,
+                        email: freshUser.email,
+                        role: freshUser.role || freshUser.roleName,
+                        roleId: freshUser.roleId,
+                        roleName: freshUser.roleName,
+                        permissions: merged
+                    };
+
+                    setUser(updatedUser);
+
+                    // Update stored basic info if changed
+                    localStorage.setItem("user", JSON.stringify({
+                        id: freshUser.id,
+                        name: freshUser.name,
+                        email: freshUser.email,
+                        role: freshUser.role || freshUser.roleName,
+                        roleId: freshUser.roleId,
+                        roleName: freshUser.roleName,
+                        additionalPermissions: freshUser.additionalPermissions || {}
+                    }));
+
+                    setLoading(false);
+                } catch (error) {
+                    console.error("Error refreshing auth state:", error);
+                    // If fetch fails, we might be offline or user deleted, log out for safety
+                    logout();
+                    setLoading(false);
+                }
+            };
+
+            fetchFreshAuth();
         } else {
             setLoading(false);
         }
@@ -53,15 +105,30 @@ export const AuthProvider = ({ children }) => {
 
             if (userData && userData.password === password) {
                 // Fetch permissions for the user's role from server
-                const permissions = await fetchPermissionsForRole(userData.role);
+                const roleToFetch = userData.role || userData.roleName;
+                const rolePermissions = await fetchPermissionsForRole(roleToFetch);
+
+                // DEEP MERGE inherited role permissions with individual user overrides
+                const additional = userData.additionalPermissions || {};
+                const merged = { ...rolePermissions };
+
+                Object.keys(additional).forEach(mKey => {
+                    if (merged[mKey]) {
+                        merged[mKey] = { ...merged[mKey], ...additional[mKey] };
+                    } else {
+                        merged[mKey] = additional[mKey];
+                    }
+                });
 
                 // Store user with permissions
                 const userWithPermissions = {
                     id: userData.id,
                     name: userData.name,
                     email: userData.email,
-                    role: userData.role,
-                    permissions
+                    role: userData.role || userData.roleName,
+                    roleId: userData.roleId,
+                    roleName: userData.roleName,
+                    permissions: merged
                 };
 
                 setUser(userWithPermissions);
@@ -72,7 +139,10 @@ export const AuthProvider = ({ children }) => {
                     id: userData.id,
                     name: userData.name,
                     email: userData.email,
-                    role: userData.role
+                    role: userData.role || userData.roleName,
+                    roleId: userData.roleId,
+                    roleName: userData.roleName,
+                    additionalPermissions: userData.additionalPermissions || {}
                 }));
 
                 // Set a cookie for the middleware to read
@@ -94,8 +164,33 @@ export const AuthProvider = ({ children }) => {
         router.push("/login");
     };
 
+    const checkPermission = (moduleKey, privilege = 'view') => {
+        if (!user) return false;
+
+        const userRole = (user.role || user.roleName || "").toLowerCase();
+        const perms = user.permissions || {};
+
+        // Admin always has access
+        if (userRole === 'admin' || perms.all === true || (Array.isArray(perms) && perms.includes('all'))) {
+            return true;
+        }
+
+        // Handle Array format (Legacy)
+        if (Array.isArray(perms)) {
+            return perms.includes(moduleKey) || perms.includes(`${moduleKey}:${privilege}`);
+        }
+
+        // Handle Object format (New)
+        // If they have create/edit, they implicitly have view (already handled in form logic, but good to have here too)
+        if (privilege === 'view') {
+            return perms[moduleKey]?.view === true || perms[moduleKey]?.create === true || perms[moduleKey]?.edit === true;
+        }
+
+        return perms[moduleKey]?.[privilege] === true;
+    };
+
     return (
-        <AuthContext.Provider value={{ user, loading, login, logout }}>
+        <AuthContext.Provider value={{ user, loading, login, logout, checkPermission }}>
             {children}
         </AuthContext.Provider>
     );

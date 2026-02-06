@@ -13,12 +13,18 @@ import CommonCard from "../../components/ui/CommonCard";
 import GlobalTable from "../../components/ui/GlobalTable";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "../../components/ui/Loader";
+import { useAuth } from "@/context/AuthContext";
 
 export default function GRNTable() {
   const router = useRouter();
+  const { checkPermission } = useAuth();
   const [search, setSearch] = useState("");
   const [grns, setGrns] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const canCreate = checkPermission('grn', 'create');
+  const canEdit = checkPermission('grn', 'edit');
+  const canView = checkPermission('grn', 'view');
 
   useEffect(() => {
     fetchGRNs();
@@ -130,30 +136,34 @@ export default function GRNTable() {
       align: "center",
       render: (row) => (
         <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
-          <IconButton
-            size="small"
-            onClick={() => router.push(`/grn/view-grn?id=${row.id}`)}
-            sx={{
-              color: "rgb(17, 114, 186)",
-              bgcolor: "#f1f5f9",
-              "&:hover": { bgcolor: "#e2e8f0" },
-            }}
-          >
-            <Visibility fontSize="small" />
-          </IconButton>
-          <IconButton
-            color="warning"
-            size="small"
-            onClick={() => router.push(`/grn/create-grn?id=${row.id}`)}
-            disabled={row.inspectionStatus === "Completed"}
-            sx={{
-              "&.Mui-disabled": {
-                color: "#cbd5e1"
-              }
-            }}
-          >
-            <Edit fontSize="small" />
-          </IconButton>
+          {canView && (
+            <IconButton
+              size="small"
+              onClick={() => router.push(`/grn/view-grn?id=${row.id}`)}
+              sx={{
+                color: "rgb(17, 114, 186)",
+                bgcolor: "#f1f5f9",
+                "&:hover": { bgcolor: "#e2e8f0" },
+              }}
+            >
+              <Visibility fontSize="small" />
+            </IconButton>
+          )}
+          {canEdit && (
+            <IconButton
+              color="warning"
+              size="small"
+              onClick={() => router.push(`/grn/create-grn?id=${row.id}`)}
+              disabled={row.inspectionStatus === "Completed"}
+              sx={{
+                "&.Mui-disabled": {
+                  color: "#cbd5e1"
+                }
+              }}
+            >
+              <Edit fontSize="small" />
+            </IconButton>
+          )}
         </Box>
       ),
     },
@@ -165,8 +175,8 @@ export default function GRNTable() {
     <Box>
       <CommonCard
         title="Goods Receipt Note (GRN)"
-        addText="Create GRN"
-        onAdd={() => router.push("/grn/create-grn")}
+        addText={canCreate ? "Create GRN" : null}
+        onAdd={canCreate ? () => router.push("/grn/create-grn") : null}
         searchPlaceholder="Search GRN, PO, Supplier..."
         searchValue={search}
         onSearchChange={(e) => setSearch(e.target.value)}

@@ -134,19 +134,18 @@ const WorkflowSection = ({ title, steps, color }) => (
 // --- Main Page ---
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { user, checkPermission } = useAuth();
   const router = useRouter();
 
   // Helper function to check if user has access to a path
   const hasAccess = (path) => {
     if (!user) return false;
-    if (user.role === 'admin' || user.permissions?.includes('all')) return true;
 
     // Find the menu item that matches this path
     const menuItem = MENU_ITEMS.find(item => item.path === path);
     if (!menuItem) return true; // If not in menu config, allow access
 
-    return user.permissions?.includes(menuItem.key);
+    return checkPermission(menuItem.key, 'view');
   };
 
   const allProcurementFlow = [
@@ -229,10 +228,15 @@ export default function DashboardPage() {
                 >
                   <CheckCircle sx={{ fontSize: 18, color: "#16a34a" }} />
                   <Typography variant="body2" fontWeight={600} sx={{ color: "#14532d" }}>
-                    {user.permissions.includes('all') || user.role === 'admin'
-                      ? 'Full Access to All Modules'
-                      : `Access to ${user.permissions.length} Module${user.permissions.length !== 1 ? 's' : ''}`
-                    }
+                    {(() => {
+                      const userRole = (user.role || user.roleName || "").toLowerCase();
+                      if (userRole === 'admin') return 'Full Access to All Modules';
+
+                      const accessibleModules = MENU_ITEMS.filter(item => checkPermission(item.key, 'view'));
+                      const count = accessibleModules.length;
+
+                      return `Access to ${count} Module${count !== 1 ? 's' : ''}`;
+                    })()}
                   </Typography>
                 </Paper>
               )}

@@ -13,12 +13,18 @@ import CommonCard from "../../components/ui/CommonCard";
 import GlobalTable from "../../components/ui/GlobalTable";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "../../components/ui/Loader";
+import { useAuth } from "@/context/AuthContext";
 
 export default function IncomingInspection() {
   const router = useRouter();
+  const { checkPermission } = useAuth();
   const [search, setSearch] = useState("");
   const [inspections, setInspections] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const canCreate = checkPermission('incoming_inspection', 'create');
+  const canEdit = checkPermission('incoming_inspection', 'edit');
+  const canView = checkPermission('incoming_inspection', 'view');
 
   useEffect(() => {
     fetchInspections();
@@ -149,24 +155,28 @@ export default function IncomingInspection() {
       align: "center",
       render: (row) => (
         <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
-          <IconButton
-            size="small"
-            onClick={() => router.push(`/incoming-inspection/view-inspection?id=${row.id}`)}
-            sx={{
-              color: "rgb(17, 114, 186)",
-              bgcolor: "#f1f5f9",
-              "&:hover": { bgcolor: "#e2e8f0" }
-            }}
-          >
-            <Visibility fontSize="small" />
-          </IconButton>
-          <IconButton
-            color="warning"
-            size="small"
-            onClick={() => router.push(`/incoming-inspection/add-material-inspection?id=${row.id}`)}
-          >
-            <Edit fontSize="small" />
-          </IconButton>
+          {canView && (
+            <IconButton
+              size="small"
+              onClick={() => router.push(`/incoming-inspection/view-inspection?id=${row.id}`)}
+              sx={{
+                color: "rgb(17, 114, 186)",
+                bgcolor: "#f1f5f9",
+                "&:hover": { bgcolor: "#e2e8f0" }
+              }}
+            >
+              <Visibility fontSize="small" />
+            </IconButton>
+          )}
+          {canEdit && (
+            <IconButton
+              color="warning"
+              size="small"
+              onClick={() => router.push(`/incoming-inspection/add-material-inspection?id=${row.id}`)}
+            >
+              <Edit fontSize="small" />
+            </IconButton>
+          )}
         </Box>
       ),
     },
@@ -178,8 +188,8 @@ export default function IncomingInspection() {
     <Box>
       <CommonCard
         title="Incoming Inspection"
-        addText="Add Material Inspection"
-        onAdd={() => router.push("/incoming-inspection/add-material-inspection")}
+        addText={canCreate ? "Add Material Inspection" : null}
+        onAdd={canCreate ? () => router.push("/incoming-inspection/add-material-inspection") : null}
         searchPlaceholder="Search GRN, Material, Supplier..."
         searchValue={search}
         onSearchChange={(e) => setSearch(e.target.value)}

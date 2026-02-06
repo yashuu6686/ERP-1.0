@@ -21,7 +21,7 @@ const openRoutes = ['/', '/profile'];
  * Automatically protects all routes based on menuConfig
  */
 export function RouteGuard({ children }) {
-    const { user, loading } = useAuth();
+    const { user, loading, checkPermission } = useAuth();
     const pathname = usePathname();
     const router = useRouter();
 
@@ -34,21 +34,29 @@ export function RouteGuard({ children }) {
 
         if (!user) return false;
 
-        // Admin or users with 'all' permission have full access
-        if (user.role === 'admin' || user.permissions?.includes('all')) {
-            return true;
-        }
-
         // Find the menu item that matches the current path
-        const menuItem = MENU_ITEMS.find(item => pathname.startsWith(item.path) && item.path !== '/');
+        // We find the most specific match first (longest path)
+        const menuItem = MENU_ITEMS
+            .filter(item => pathname.startsWith(item.path) && item.path !== '/')
+            .sort((a, b) => b.path.length - a.path.length)[0];
 
-        // If no menu item found, allow access (might be a sub-route)
+        // If no menu item found, allow access (might be a sub-route not in menu)
         if (!menuItem) {
             return true;
         }
 
-        // Check if user has the required permission
-        return user.permissions?.includes(menuItem.key);
+        // Determine required privilege based on sub-path
+        let requiredPrivilege = 'view';
+        if (pathname.includes('/add') || pathname.includes('/create')) {
+            requiredPrivilege = 'create';
+        } else if (pathname.includes('/edit') || pathname.includes('/modify')) {
+            requiredPrivilege = 'edit';
+        } else if (pathname.includes('/view')) {
+            requiredPrivilege = 'view';
+        }
+
+        // Use unified permission check logic
+        return checkPermission(menuItem.key, requiredPrivilege);
     };
 
     useEffect(() => {
