@@ -13,6 +13,7 @@ import Button from "@mui/material/Button";
 
 import axiosInstance from "@/axios/axiosInstance";
 import { useAuth } from "@/context/AuthContext";
+import { useNotification } from "@/context/NotificationContext";
 import NotificationService from "@/services/NotificationService";
 import Loader from "@/components/ui/Loader";
 
@@ -32,6 +33,7 @@ function ViewPurchaseOrderContent() {
     const [loading, setLoading] = useState(true);
 
     const { user } = useAuth();
+    const { showNotification } = useNotification();
 
 
 
@@ -43,7 +45,7 @@ function ViewPurchaseOrderContent() {
                 setOrder(response.data);
             } catch (error) {
                 console.error("Fetch Error:", error);
-                alert(`Failed to fetch purchase order details.`);
+                showNotification(`Failed to fetch purchase order details.`, "error");
             } finally {
                 setLoading(false);
             }

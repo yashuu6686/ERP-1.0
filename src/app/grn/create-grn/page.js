@@ -28,6 +28,8 @@ import AssignmentTurnedIn from "@mui/icons-material/AssignmentTurnedIn";
 import CommonCard from "../../../components/ui/CommonCard";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "../../../components/ui/Loader";
+import FormReviewDialog from "@/components/ui/FormReviewDialog";
+import { useNotification } from "@/context/NotificationContext";
 import { useFormik, FormikProvider } from "formik";
 import * as Yup from "yup";
 
@@ -78,8 +80,10 @@ function CreateGRNContent() {
     const isEditMode = !!id;
 
     const [loading, setLoading] = useState(false);
+    const [showPreview, setShowPreview] = useState(false);
     const [pendingPOs, setPendingPOs] = useState([]);
     const [selectedPO, setSelectedPO] = useState(null);
+    const { showNotification } = useNotification();
 
     const formik = useFormik({
         initialValues: {
@@ -93,35 +97,41 @@ function CreateGRNContent() {
             inspectionStatus: "Pending",
         },
         validationSchema,
-        onSubmit: async (values) => {
-            try {
-                setLoading(true);
-                const response = isEditMode
-                    ? await axiosInstance.put(`/grn/${id}`, values)
-                    : await axiosInstance.post("/grn", values);
-
-                if (response.status === 201 || response.status === 200) {
-                    if (selectedPO) {
-                        try {
-                            await axiosInstance.put(`/purachase/${selectedPO.id}`, {
-                                ...selectedPO,
-                                status: "Completed",
-                            });
-                        } catch (poError) {
-                            console.error("Failed to update PO status:", poError);
-                        }
-                    }
-                    alert(`GRN ${isEditMode ? "Updated" : "Created"} Successfully!`);
-                    router.push("/grn");
-                }
-            } catch (error) {
-                console.error("Save GRN Error:", error);
-                alert("Failed to save GRN.");
-            } finally {
-                setLoading(false);
-            }
+        onSubmit: async () => {
+            setShowPreview(true);
         },
     });
+
+    const handleFinalSubmit = async () => {
+        const values = formik.values;
+        try {
+            setLoading(true);
+            setShowPreview(false);
+            const response = isEditMode
+                ? await axiosInstance.put(`/grn/${id}`, values)
+                : await axiosInstance.post("/grn", values);
+
+            if (response.status === 201 || response.status === 200) {
+                if (selectedPO) {
+                    try {
+                        await axiosInstance.put(`/purachase/${selectedPO.id}`, {
+                            ...selectedPO,
+                            status: "Completed",
+                        });
+                    } catch (poError) {
+                        console.error("Failed to update PO status:", poError);
+                    }
+                }
+                showNotification(`GRN ${isEditMode ? "Updated" : "Created"} Successfully!`, "success");
+                router.push("/grn");
+            }
+        } catch (error) {
+            console.error("Save GRN Error:", error);
+            showNotification("Failed to save GRN.", "error");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         const fetchGRNDetails = async () => {
@@ -393,6 +403,78 @@ function CreateGRNContent() {
                         </Box>
                     </Box>
                 </CommonCard>
+
+                <FormReviewDialog
+                    open={showPreview}
+                    onClose={() => setShowPreview(false)}
+                    onConfirm={handleFinalSubmit}
+                    title="Review Goods Receipt Note"
+                    icon={<ReceiptLong />}
+                    headerInfo={{
+                        label1: "GRN NUMBER",
+                        value1: `#${formik.values.grnNumber}`,
+                        label2: "RECEIVED DATE",
+                        value2: formik.values.receivedDate
+                    }}
+                    confirmLabel={isEditMode ? "Update GRN" : "Confirm & Save GRN"}
+                >
+                    <Grid container spacing={3}>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Paper elevation={0} sx={{ p: 2, height: '100%', borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)' }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'var(--brand-primary)' }}>
+                                    <Description sx={{ fontSize: 18 }} />
+                                    <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Source Information</Typography>
+                                </Box>
+                                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'var(--text-primary)', fontFamily: 'var(--font-manrope)' }}>INV: {formik.values.invoiceNumber}</Typography>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
+                                    <Typography variant="body2" sx={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>PO Reference: <b style={{ color: 'var(--text-primary)' }}>{formik.values.poNumber}</b></Typography>
+                                    <Typography variant="body2" sx={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>Supplier: {formik.values.supplierName}</Typography>
+                                </Box>
+                            </Paper>
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Paper elevation={0} sx={{ p: 2, height: '100%', borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)' }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'var(--brand-primary)' }}>
+                                    <AssignmentTurnedIn sx={{ fontSize: 18 }} />
+                                    <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Receiving Details</Typography>
+                                </Box>
+                                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'var(--text-primary)', fontFamily: 'var(--font-manrope)' }}>Received By: {formik.values.receivedBy}</Typography>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
+                                    <Typography variant="body2" sx={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>Date: {formik.values.receivedDate}</Typography>
+                                    <Typography variant="body2" sx={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>Inspection: <b style={{ color: '#a16207' }}>{formik.values.inspectionStatus}</b></Typography>
+                                </Box>
+                            </Paper>
+                        </Grid>
+
+                        <Grid size={{ xs: 12 }}>
+                            <Paper elevation={0} sx={{ borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', overflow: 'hidden', bgcolor: 'var(--bg-surface)' }}>
+                                <Table size="small">
+                                    <TableHead sx={{ bgcolor: 'var(--bg-page)' }}>
+                                        <TableRow>
+                                            <TableCell sx={{ fontWeight: 700, py: 2, color: 'var(--text-secondary)' }}>MATERIAL DESCRIPTION</TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 700, py: 2, color: 'var(--text-secondary)' }}>ORD. QTY</TableCell>
+                                            <TableCell align="right" sx={{ fontWeight: 700, py: 2, color: 'var(--text-secondary)' }}>REC. QTY</TableCell>
+                                            <TableCell align="right" sx={{ fontWeight: 700, py: 2, color: 'var(--text-secondary)' }}>UNIT</TableCell>
+                                            <TableCell sx={{ fontWeight: 700, py: 2, color: 'var(--text-secondary)' }}>REMARK</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {formik.values.items.map((item, index) => (
+                                            <TableRow key={index} sx={{ '&:last-child td': { border: 0 } }}>
+                                                <TableCell sx={{ py: 2, fontWeight: 500 }}>{item.name}</TableCell>
+                                                <TableCell align="center">{item.orderedQty}</TableCell>
+                                                <TableCell align="right" sx={{ fontWeight: 700, color: 'var(--brand-primary)' }}>{item.receivedQty}</TableCell>
+                                                <TableCell align="right">{item.unit || "Nos"}</TableCell>
+                                                <TableCell sx={{ color: 'var(--text-secondary)', fontSize: '0.75rem' }}>{item.remark || "-"}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </Paper>
+                        </Grid>
+                    </Grid>
+                </FormReviewDialog>
             </Box>
         </FormikProvider>
     );
