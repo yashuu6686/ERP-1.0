@@ -9,6 +9,7 @@ import {
     Chip,
     Divider,
     Button,
+    IconButton,
     Paper,
     Stack,
     Container,
@@ -20,7 +21,10 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    Avatar
+
+    Avatar,
+    Select,
+    MenuItem
 } from "@mui/material";
 import {
     ArrowBack,
@@ -34,10 +38,14 @@ import {
     Description,
     VerifiedUser,
     CheckCircle,
-    Analytics
+    Analytics,
+    Visibility,
+    NavigateBefore,
+    NavigateNext
 } from "@mui/icons-material";
 import axiosInstance from "../../../axios/axiosInstance";
 import Loader from "../../../components/ui/Loader";
+import { expandSerialNumberRange } from "../../../lib/serialUtils";
 
 const InfoItem = ({ icon: Icon, label, value, color = "#1e293b" }) => (
     <Stack direction="row" spacing={2} alignItems="flex-start">
@@ -72,6 +80,8 @@ export default function BatchDetails() {
 
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState(null);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
     useEffect(() => {
         const fetchBatchDetails = async () => {
@@ -90,6 +100,13 @@ export default function BatchDetails() {
             fetchBatchDetails();
         }
     }, [id]);
+
+
+
+    const deviceList = React.useMemo(() => {
+        if (!data || !data.productSr) return [];
+        return expandSerialNumberRange(data.productSr, data.acceptedQty || 0);
+    }, [data]);
 
     if (loading) return <Loader fullPage message="Accessing Production Record..." />;
 
@@ -358,7 +375,7 @@ export default function BatchDetails() {
                                 </Paper>
 
                                 {/* System Tracking */}
-                                <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+                                {/* <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
                                     <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
                                         <VerifiedUser sx={{ color: '#1172ba', fontSize: 20 }} /> System Trace
                                     </Typography>
@@ -372,10 +389,159 @@ export default function BatchDetails() {
                                             <Typography variant="caption" fontWeight={900} color={status === "Ready" ? "#166534" : "#c2410c"}>{status?.toUpperCase()}</Typography>
                                         </Stack>
                                     </Stack>
-                                </Paper>
+                                </Paper> */}
                             </Stack>
                         </Grid>
                     </Grid>
+
+                    {/* Serialized Device Inventory */}
+                    <Box sx={{ mt: 4 }}>
+                        <Paper elevation={0} sx={{ p: 0, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff', overflow: 'hidden' }}>
+                            <Box sx={{ p: 3, borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(to right, #f8fafc, #fff)' }}>
+                                <Typography variant="subtitle1" fontWeight={800} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, color: '#0f172a' }}>
+                                    <VerifiedUser sx={{ color: '#1172ba', fontSize: 20 }} /> Serialized Device Inventory
+                                </Typography>
+                            </Box>
+
+                            <div>
+                                <Table size="small" stickyHeader>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell sx={{ fontWeight: 800, color: "#64748b", bgcolor: '#f8fafc' }}>Sr.No.</TableCell>
+                                            <TableCell sx={{ fontWeight: 800, color: "#64748b", bgcolor: '#f8fafc' }}>BATCH DATE</TableCell>
+                                            <TableCell sx={{ fontWeight: 800, color: "#64748b", bgcolor: '#f8fafc' }}>BATCH ID</TableCell>
+                                            <TableCell sx={{ fontWeight: 800, color: "#64748b", bgcolor: '#f8fafc' }}>SERIAL NO.</TableCell>
+                                            <TableCell sx={{ fontWeight: 800, color: "#64748b", bgcolor: '#f8fafc' }}>DEVICE</TableCell>
+                                            <TableCell sx={{ fontWeight: 800, color: "#64748b", bgcolor: '#f8fafc' }}>LOCATION</TableCell>
+                                            <TableCell sx={{ fontWeight: 800, color: "#64748b", bgcolor: '#f8fafc', textAlign: 'center' }}>ACTION</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {deviceList.length > 0 ? (
+                                            deviceList
+                                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                                .map((serial, idx) => (
+                                                    <TableRow key={serial} hover>
+                                                        <TableCell sx={{ color: "#94a3b8", fontWeight: 600, fontSize: '0.85rem' }}>{(page * rowsPerPage) + idx + 1}</TableCell>
+                                                        <TableCell sx={{ color: "#475569", fontWeight: 600, fontSize: '0.85rem' }}>
+                                                            {date ? new Date(date).toLocaleDateString("en-GB", {
+                                                                day: "2-digit",
+                                                                month: "short",
+                                                                year: "numeric"
+                                                            }) : "-"}
+                                                        </TableCell>
+                                                        <TableCell sx={{ color: "#475569", fontWeight: 700, fontSize: '0.85rem', fontFamily: 'monospace' }}>{batchNo || "-"}</TableCell>
+                                                        <TableCell sx={{ color: "#1172ba", fontWeight: 700, fontFamily: 'monospace', fontSize: '0.9rem' }}>{serial}</TableCell>
+                                                        <TableCell sx={{ color: "#475569", fontWeight: 600, fontSize: '0.85rem' }}>{requestNo || "Device"}</TableCell>
+                                                        <TableCell sx={{ color: "#166534", fontWeight: 600, fontSize: '0.8rem' }}>
+                                                            <Chip label="Finished Goods Store" size="small" sx={{ bgcolor: '#dcfce7', color: '#166534', fontWeight: 700, borderRadius: '6px', height: 24 }} />
+                                                        </TableCell>
+                                                        <TableCell align="center">
+                                                            <Tooltip title="View Device Details">
+                                                                <IconButton
+                                                                    size="small"
+                                                                    onClick={() => router.push(`/batch/${id}/${serial}`)}
+                                                                    sx={{ color: '#1172ba', bgcolor: 'rgba(17, 114, 186, 0.1)', '&:hover': { bgcolor: 'rgba(17, 114, 186, 0.2)' } }}
+                                                                >
+                                                                    <Visibility fontSize="small" />
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))
+                                        ) : (
+                                            <TableRow>
+                                                <TableCell colSpan={7} align="center" sx={{ py: 3, color: "#94a3b8", fontStyle: "italic" }}>
+                                                    No serialized devices found.
+                                                </TableCell>
+                                            </TableRow>
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+
+                            {/* Custom Pagination matching GlobalTable theme */}
+                            <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f1f5f9' }}>
+                                <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
+                                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                        <Typography sx={{ fontSize: "14px", color: "#64748b" }}>
+                                            Rows per page:
+                                        </Typography>
+                                        <Select
+                                            value={rowsPerPage}
+                                            onChange={(e) => {
+                                                setRowsPerPage(parseInt(e.target.value, 10));
+                                                setPage(0);
+                                            }}
+                                            variant="standard"
+                                            disableUnderline
+                                            sx={{
+                                                fontSize: "14px",
+                                                fontWeight: 500,
+                                                color: "#64748b",
+                                                "& .MuiSelect-select": { py: 0 },
+                                            }}
+                                        >
+                                            <MenuItem value={5}>5</MenuItem>
+                                            <MenuItem value={10}>10</MenuItem>
+                                            <MenuItem value={25}>25</MenuItem>
+                                            <MenuItem value={50}>50</MenuItem>
+                                        </Select>
+                                    </Box>
+
+                                    <Typography sx={{ fontSize: "14px", color: "#64748b" }}>
+                                        {`${page * rowsPerPage + 1}-${Math.min((page + 1) * rowsPerPage, deviceList.length)} of ${deviceList.length}`}
+                                    </Typography>
+                                </Box>
+
+                                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                                    <IconButton
+                                        disabled={page === 0}
+                                        onClick={() => setPage(page - 1)}
+                                        size="small"
+                                        sx={{ color: "#64748b" }}
+                                    >
+                                        <NavigateBefore fontSize="small" />
+                                    </IconButton>
+
+                                    {Array.from({ length: Math.ceil(deviceList.length / rowsPerPage) }, (_, i) => i).map((p) => (
+                                        <Box
+                                            key={p}
+                                            onClick={() => setPage(p)}
+                                            sx={{
+                                                minWidth: "32px",
+                                                height: "32px",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                borderRadius: "6px",
+                                                fontSize: "14px",
+                                                fontWeight: 600,
+                                                cursor: "pointer",
+                                                transition: "all 0.2s",
+                                                bgcolor: p === page ? "#1172ba" : "transparent",
+                                                color: p === page ? "#ffffff" : "#64748b",
+                                                "&:hover": {
+                                                    bgcolor: p === page ? "#1172ba" : "#f1f5f9",
+                                                },
+                                            }}
+                                        >
+                                            {p + 1}
+                                        </Box>
+                                    ))}
+
+                                    <IconButton
+                                        disabled={page >= Math.ceil(deviceList.length / rowsPerPage) - 1}
+                                        onClick={() => setPage(page + 1)}
+                                        size="small"
+                                        sx={{ color: "#64748b" }}
+                                    >
+                                        <NavigateNext fontSize="small" />
+                                    </IconButton>
+                                </Box>
+                            </Box>
+                        </Paper>
+                    </Box>
 
                     {/* Print Context Styles */}
                     <style dangerouslySetInnerHTML={{
@@ -390,6 +556,7 @@ export default function BatchDetails() {
                         }
                     `}} />
                 </Container>
+
             </Box>
         </Fade>
     );
