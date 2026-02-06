@@ -35,10 +35,7 @@ export default function AddUser() {
         <Box sx={{ p: '2px' }}>
             <Box sx={{ mb: 4 }}>
                 <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} sx={{ mb: 1 }}>
-                    <Link underline="hover" color="inherit" href="/" sx={{ fontSize: '0.8125rem', fontWeight: 500 }}>
-                        Dashboard
-                    </Link>
-                    <Link underline="hover" color="inherit" href="/settings/users" sx={{ fontSize: '0.8125rem', fontWeight: 500 }}>
+                    <Link underline="hover" color="inherit" onClick={() => router.push("/settings/users")} sx={{ fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer' }}>
                         User Management
                     </Link>
                     <Typography color="text.primary" sx={{ fontSize: '0.8125rem', fontWeight: 700 }}>
