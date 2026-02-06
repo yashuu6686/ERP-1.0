@@ -29,7 +29,7 @@ export default function DispatchHeaderActions({
                     "&:hover": { bgcolor: "#f1f5f9", borderColor: "#cbd5e1" },
                 }}
             >
-                Back to Dispatch
+                Back
             </Button>
 
             <Stack direction="row" spacing={1.5}>
@@ -75,7 +75,7 @@ export default function DispatchHeaderActions({
                             "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" },
                         }}
                     >
-                        Waybill
+                        Download
                     </Button>
                 </Tooltip>
                 <Tooltip title="Print Manifest">

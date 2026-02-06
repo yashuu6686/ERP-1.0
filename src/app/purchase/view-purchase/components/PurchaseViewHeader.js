@@ -1,6 +1,6 @@
 import React from "react";
 import { Stack, Button, Tooltip, Box } from "@mui/material";
-import { ArrowBack, Print, Edit, CheckCircle, Schedule, Cancel } from "@mui/icons-material";
+import { ArrowBack, Print, Edit, CheckCircle, Schedule, Cancel, Download } from "@mui/icons-material";
 
 const PurchaseViewHeader = ({
     router,
@@ -14,7 +14,7 @@ const PurchaseViewHeader = ({
         <Stack
             direction={{ xs: "column", sm: "row" }}
             justifyContent="space-between"
-            alignItems={{ xs: "fle  x-start", sm: "center" }}
+            alignItems={{ xs: "flex-start", sm: "center" }}
             spacing={2}
             sx={{ mb: 3 }}
             className="no-print"
@@ -54,6 +54,24 @@ const PurchaseViewHeader = ({
                         }}
                     >
                         Print
+                    </Button>
+                </Tooltip>
+
+                <Tooltip title="Download PDF">
+                    <Button
+                        variant="outlined"
+                        startIcon={<Download />}
+                        sx={{
+                            borderRadius: "12px",
+                            textTransform: "none",
+                            fontWeight: 600,
+                            color: "#475569",
+                            borderColor: "#e2e8f0",
+                            bgcolor: "white",
+                            "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" },
+                        }}
+                    >
+                        Download
                     </Button>
                 </Tooltip>
 

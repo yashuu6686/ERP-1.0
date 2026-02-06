@@ -7,6 +7,7 @@ import {
   useTheme,
   Chip,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 import {
   LocalShipping,
@@ -219,16 +220,18 @@ export default function DispatchDetails() {
           >
             <Edit fontSize="small" />
           </IconButton>
-          <IconButton
-            size="small"
-            sx={{
-              color: "#dc2626",
-              bgcolor: "#fef2f2",
-              "&:hover": { bgcolor: "#fee2e2" },
-            }}
-          >
-            <Delete fontSize="small" />
-          </IconButton>
+          <Tooltip title="Download Report">
+            <IconButton
+              size="small"
+              sx={{
+                color: "#0891b2",
+                bgcolor: "#ecfeff",
+                "&:hover": { bgcolor: "#cffafe" },
+              }}
+            >
+              <Download fontSize="small" />
+            </IconButton>
+          </Tooltip>
         </Box>
       ),
     },

@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
 
 import Download from "@mui/icons-material/Download";
 import Edit from "@mui/icons-material/Edit";
@@ -164,6 +165,18 @@ export default function GRNTable() {
               <Edit fontSize="small" />
             </IconButton>
           )}
+          <Tooltip title="Download Report">
+            <IconButton
+              size="small"
+              sx={{
+                color: "#0891b2",
+                bgcolor: "#ecfeff",
+                "&:hover": { bgcolor: "#cffafe" },
+              }}
+            >
+              <Download fontSize="small" />
+            </IconButton>
+          </Tooltip>
         </Box>
       ),
     },

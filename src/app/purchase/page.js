@@ -7,10 +7,12 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 
 import Edit from "@mui/icons-material/Edit";
 import Visibility from "@mui/icons-material/Visibility";
+import Download from "@mui/icons-material/Download";
 import FilterList from "@mui/icons-material/FilterList";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/ui/CommonCard";
@@ -231,6 +233,18 @@ export default function PurchaseOrderTable() {
               <Edit sx={{ fontSize: 16 }} />
             </IconButton>
           )}
+          <Tooltip title="Download Order">
+            <IconButton
+              size="small"
+              sx={{
+                color: "#0891b2",
+                bgcolor: "#ecfeff",
+                "&:hover": { bgcolor: "#cffafe" },
+              }}
+            >
+              <Download fontSize="small" />
+            </IconButton>
+          </Tooltip>
         </Box>
       ),
     },
@@ -276,6 +290,6 @@ export default function PurchaseOrderTable() {
           />
         )}
       </CommonCard>
-    </Box>
+    </Box >
   );
 }

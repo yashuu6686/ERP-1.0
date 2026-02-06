@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Stack, Button } from "@mui/material";
-import { ArrowBack, Cancel, CheckCircle, Print, Edit } from "@mui/icons-material";
+import { ArrowBack, Cancel, CheckCircle, Print, Edit, Download } from "@mui/icons-material";
 
 export default function InspectionHeaderActions({
     user,
@@ -66,15 +66,32 @@ export default function InspectionHeaderActions({
                     startIcon={<Print />}
                     onClick={onPrint}
                     sx={{
-                        borderRadius: "10px",
+                        borderRadius: "12px",
                         textTransform: "none",
-                        fontWeight: 700,
+                        fontWeight: 600,
                         color: "#475569",
                         borderColor: "#e2e8f0",
-                        bgcolor: "white"
+                        bgcolor: "white",
+                        "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" },
                     }}
                 >
                     Print
+                </Button>
+
+                <Button
+                    variant="outlined"
+                    startIcon={<Download />}
+                    sx={{
+                        borderRadius: "12px",
+                        textTransform: "none",
+                        fontWeight: 600,
+                        color: "#475569",
+                        borderColor: "#e2e8f0",
+                        bgcolor: "white",
+                        "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" },
+                    }}
+                >
+                    Download
                 </Button>
                 <Button
                     variant="contained"

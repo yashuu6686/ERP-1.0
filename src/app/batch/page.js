@@ -6,6 +6,8 @@ import IconButton from "@mui/material/IconButton";
 
 import Visibility from "@mui/icons-material/Visibility";
 import Edit from "@mui/icons-material/Edit";
+import Download from "@mui/icons-material/Download";
+import Tooltip from "@mui/material/Tooltip";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/ui/CommonCard";
 import GlobalTable from "../../components/ui/GlobalTable";
@@ -96,13 +98,25 @@ export default function Batch() {
           >
             <Visibility fontSize="small" />
           </IconButton>
-          <IconButton
+          <Tooltip title="Download Report">
+            <IconButton
+              size="small"
+              sx={{
+                color: "#0891b2",
+                bgcolor: "#ecfeff",
+                "&:hover": { bgcolor: "#cffafe" },
+              }}
+            >
+              <Download fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          {/* <IconButton
             color="warning"
             size="small"
             onClick={() => router.push(`/batch/edit-batch?id=${row.id}`)}
           >
             <Edit fontSize="small" />
-          </IconButton>
+          </IconButton> */}
         </Box>
       ),
     },

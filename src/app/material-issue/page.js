@@ -5,6 +5,7 @@ import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
+import Tooltip from "@mui/material/Tooltip";
 
 import Visibility from "@mui/icons-material/Visibility";
 import Edit from "@mui/icons-material/Edit";
@@ -140,6 +141,18 @@ export default function MaterialIssueRequests() {
           >
             <Visibility fontSize="small" />
           </IconButton>
+          <Tooltip title="Download Request">
+            <IconButton
+              size="small"
+              sx={{
+                color: "#0891b2",
+                bgcolor: "#ecfeff",
+                "&:hover": { bgcolor: "#cffafe" },
+              }}
+            >
+              <Download fontSize="small" />
+            </IconButton>
+          </Tooltip>
           <Button
             size="small"
             onClick={() => handleDefectiveClick(row)}

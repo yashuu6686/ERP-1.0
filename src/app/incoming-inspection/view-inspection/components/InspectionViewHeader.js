@@ -1,6 +1,6 @@
 import React from "react";
 import { Stack, Button, Tooltip } from "@mui/material";
-import { ArrowBack, Print, Edit, CheckCircle, Cancel } from "@mui/icons-material";
+import { ArrowBack, Print, Edit, CheckCircle, Cancel, Download } from "@mui/icons-material";
 
 const InspectionViewHeader = ({
     router,
@@ -54,6 +54,24 @@ const InspectionViewHeader = ({
                         }}
                     >
                         Print
+                    </Button>
+                </Tooltip>
+
+                <Tooltip title="Download PDF">
+                    <Button
+                        variant="outlined"
+                        startIcon={<Download />}
+                        sx={{
+                            borderRadius: "12px",
+                            textTransform: "none",
+                            fontWeight: 600,
+                            color: "#475569",
+                            borderColor: "#e2e8f0",
+                            bgcolor: "white",
+                            "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" },
+                        }}
+                    >
+                        Download
                     </Button>
                 </Tooltip>
 
