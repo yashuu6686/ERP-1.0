@@ -10,6 +10,14 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 
+    const logout = React.useCallback(() => {
+        setUser(null);
+        localStorage.removeItem("user");
+        // Clear the cookie
+        document.cookie = "user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
+        router.push("/login");
+    }, [router]);
+
     // Fetch permissions for a given role
     const fetchPermissionsForRole = async (roleName) => {
         if (!roleName) return {};
@@ -156,13 +164,6 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const logout = React.useCallback(() => {
-        setUser(null);
-        localStorage.removeItem("user");
-        // Clear the cookie
-        document.cookie = "user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
-        router.push("/login");
-    }, [router]);
 
     const checkPermission = (moduleKey, privilege = 'view') => {
         if (!user) return false;
