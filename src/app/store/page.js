@@ -88,7 +88,7 @@ export default function Store() {
     } finally {
       setLoading(false);
     }
-  }, [tab, tabEndpoints]);
+  }, [tab]);
 
   useEffect(() => {
     fetchData();

@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }) => {
         } else {
             setLoading(false);
         }
-    }, []);
+    }, [logout]);
 
     const login = async (loginId, password) => {
         try {
@@ -156,13 +156,13 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const logout = () => {
+    const logout = React.useCallback(() => {
         setUser(null);
         localStorage.removeItem("user");
         // Clear the cookie
         document.cookie = "user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
         router.push("/login");
-    };
+    }, [router]);
 
     const checkPermission = (moduleKey, privilege = 'view') => {
         if (!user) return false;
