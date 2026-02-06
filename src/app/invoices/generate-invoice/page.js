@@ -210,7 +210,8 @@ function InvoiceGeneratorContent() {
     if (id) {
       fetchInvoice();
     }
-  }, [id, formik]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const handleOrderChange = async (orderId) => {
     setSelectedOrderId(orderId);
