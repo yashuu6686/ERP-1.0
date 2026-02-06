@@ -21,7 +21,7 @@ const openRoutes = ['/', '/profile'];
  * Automatically protects all routes based on menuConfig
  */
 export function RouteGuard({ children }) {
-    const { user } = useAuth();
+    const { user, loading } = useAuth();
     const pathname = usePathname();
     const router = useRouter();
 
@@ -52,13 +52,21 @@ export function RouteGuard({ children }) {
     };
 
     useEffect(() => {
+        // Wait for auth to finish loading before making redirect decisions
+        if (loading) return;
+
         // Redirect to login if not authenticated and trying to access protected route
         if (!user && !publicRoutes.includes(pathname)) {
             router.push("/login");
         }
-    }, [user, pathname, router, publicRoutes]);
+    }, [user, loading, pathname, router]);
 
-    // If no user yet and not on public route, show nothing (will redirect)
+    // If still checking authentication, don't render anything to avoid flickering
+    if (loading && !publicRoutes.includes(pathname)) {
+        return null;
+    }
+
+    // If no user yet and not on public route, wait for redirect
     if (!user && !publicRoutes.includes(pathname)) {
         return null;
     }

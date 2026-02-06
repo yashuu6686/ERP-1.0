@@ -28,7 +28,31 @@ import Loader from "../../../components/ui/Loader";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
+const FLOWS = [
+    {
+        name: "Purchase Flow",
+        items: ["purchase", "grn", "incoming_inspection", "store"],
+        color: "var(--brand-primary)"
+    },
+    {
+        name: "Production Flow",
+        items: ["bom", "material_issue", "production_inspection", "batch"],
+        color: "var(--viz-2)"
+    },
+    {
+        name: "Sales Flow",
+        items: ["orders", "invoices", "final_inspection", "dispatch"],
+        color: "var(--viz-3)"
+    },
+    {
+        name: "General & Settings",
+        items: ["dashboard", "sop", "rejected_goods", "role_management", "user_management"],
+        color: "var(--viz-5)"
+    }
+];
+
 export default function RoleManagement() {
+
     const [roles, setRoles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState(false);
@@ -106,6 +130,17 @@ export default function RoleManagement() {
         const newPermissions = currentPermissions.includes(key)
             ? currentPermissions.filter((p) => p !== key)
             : [...currentPermissions, key];
+        formik.setFieldValue("permissions", newPermissions);
+    };
+
+    const handleFlowSelectAll = (flowItems, checked) => {
+        const currentPermissions = formik.values.permissions || [];
+        let newPermissions;
+        if (checked) {
+            newPermissions = Array.from(new Set([...currentPermissions, ...flowItems]));
+        } else {
+            newPermissions = currentPermissions.filter(p => !flowItems.includes(p));
+        }
         formik.setFieldValue("permissions", newPermissions);
     };
 
@@ -214,28 +249,131 @@ export default function RoleManagement() {
                             sx={{ mb: 1, borderBottom: '1px solid #eee', width: '100%', pb: 1 }}
                         />
 
-                        <FormGroup row>
-                            {MENU_ITEMS.map((item) => (
-                                <Box key={item.key} sx={{ width: "33%", p: 1 }}>
+                        {FLOWS.map((flow) => (
+                            <Box key={flow.name} sx={{
+                                mb: 3,
+                                borderRadius: '12px',
+                                border: '1px solid var(--border-default)',
+                                overflow: 'hidden',
+                                transition: 'all 0.3s ease',
+                                '&:hover': {
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                                    borderColor: flow.color
+                                }
+                            }}>
+                                <Box sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    bgcolor: '#f8fafc',
+                                    p: '10px 20px',
+                                    borderBottom: '1px solid var(--border-default)',
+                                    borderLeft: `4px solid ${flow.color}`
+                                }}>
+                                    <Typography variant="subtitle2" sx={{
+                                        fontWeight: 700,
+                                        color: 'var(--text-primary)',
+                                        fontFamily: 'var(--font-manrope)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 1
+                                    }}>
+                                        {flow.name}
+                                        <Typography component="span" sx={{
+                                            fontSize: '10px',
+                                            bgcolor: 'var(--brand-soft)',
+                                            color: flow.color,
+                                            px: 1,
+                                            borderRadius: '10px',
+                                            fontWeight: 800,
+                                            textTransform: 'uppercase'
+                                        }}>
+                                            {flow.items.length} Modules
+                                        </Typography>
+                                    </Typography>
                                     <FormControlLabel
                                         control={
                                             <Checkbox
-                                                checked={formik.values.permissions?.includes(item.key)}
-                                                onChange={() => handlePermissionChange(item.key)}
+                                                size="small"
+                                                sx={{ color: flow.color, '&.Mui-checked': { color: flow.color } }}
+                                                checked={flow.items.every(itemKey => formik.values.permissions?.includes(itemKey))}
+                                                indeterminate={
+                                                    flow.items.some(itemKey => formik.values.permissions?.includes(itemKey)) &&
+                                                    !flow.items.every(itemKey => formik.values.permissions?.includes(itemKey))
+                                                }
+                                                onChange={(e) => handleFlowSelectAll(flow.items, e.target.checked)}
                                             />
                                         }
-                                        label={
-                                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                                <Box sx={{ color: 'text.secondary', display: 'flex' }}>
-                                                    {React.cloneElement(item.icon, { fontSize: "small" })}
-                                                </Box>
-                                                {item.text}
-                                            </Box>
-                                        }
+                                        label={<Typography variant="caption" sx={{ fontWeight: 600, color: 'var(--text-secondary)' }}>Select All</Typography>}
+                                        sx={{ mr: 0 }}
                                     />
                                 </Box>
-                            ))}
-                        </FormGroup>
+                                <Box sx={{ p: 2, bgcolor: '#ffffff' }}>
+                                    <FormGroup row>
+                                        {flow.items.map((itemKey) => {
+                                            const item = MENU_ITEMS.find(m => m.key === itemKey);
+                                            if (!item) return null;
+                                            const isChecked = formik.values.permissions?.includes(item.key);
+                                            return (
+                                                <Box key={item.key} sx={{
+                                                    width: "33.33%",
+                                                    p: '4px 8px',
+                                                }}>
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        p: '4px 8px',
+                                                        borderRadius: '8px',
+                                                        transition: 'background 0.2s',
+                                                        bgcolor: isChecked ? 'var(--brand-soft)' : 'transparent',
+                                                        '&:hover': {
+                                                            bgcolor: isChecked ? 'var(--brand-soft)' : '#f9fafb',
+                                                        }
+                                                    }}>
+                                                        <Checkbox
+                                                            size="small"
+                                                            checked={isChecked}
+                                                            onChange={() => handlePermissionChange(item.key)}
+                                                            sx={{
+                                                                p: 0.5,
+                                                                color: 'var(--border-strong)',
+                                                                '&.Mui-checked': { color: 'var(--brand-primary)' }
+                                                            }}
+                                                        />
+                                                        <Box sx={{
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            gap: 1.5,
+                                                            ml: 1,
+                                                            cursor: 'pointer'
+                                                        }} onClick={() => handlePermissionChange(item.key)}>
+                                                            <Box sx={{
+                                                                color: isChecked ? 'var(--brand-primary)' : 'var(--text-muted)',
+                                                                display: 'flex',
+                                                                transition: 'color 0.2s'
+                                                            }}>
+                                                                {React.cloneElement(item.icon, { sx: { fontSize: 18 } })}
+                                                            </Box>
+                                                            <Typography sx={{
+                                                                fontSize: '0.8125rem',
+                                                                fontWeight: isChecked ? 600 : 500,
+                                                                color: isChecked ? 'var(--text-primary)' : 'var(--text-secondary)',
+                                                                transition: 'color 0.2s',
+                                                                whiteSpace: 'nowrap',
+                                                                overflow: 'hidden',
+                                                                textOverflow: 'ellipsis'
+                                                            }}>
+                                                                {item.text}
+                                                            </Typography>
+                                                        </Box>
+                                                    </Box>
+                                                </Box>
+                                            )
+                                        })}
+                                    </FormGroup>
+                                </Box>
+                            </Box>
+                        ))}
                     </DialogContent>
                     <DialogActions sx={{ p: 2 }}>
                         <Button onClick={handleClose} variant="outlined" sx={{ textTransform: "none" }}>
