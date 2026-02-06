@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
 
 import Visibility from "@mui/icons-material/Visibility";
 import Edit from "@mui/icons-material/Edit";
@@ -109,9 +110,18 @@ export default function BOMList() {
           >
             <Edit fontSize="small" />
           </IconButton>
-          <IconButton color="success" size="small">
-            <Download fontSize="small" />
-          </IconButton>
+          <Tooltip title="Download BOM">
+            <IconButton
+              size="small"
+              sx={{
+                color: "#0891b2",
+                bgcolor: "#ecfeff",
+                "&:hover": { bgcolor: "#cffafe" },
+              }}
+            >
+              <Download fontSize="small" />
+            </IconButton>
+          </Tooltip>
         </Box>
       ),
     },

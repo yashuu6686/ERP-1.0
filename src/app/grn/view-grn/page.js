@@ -19,15 +19,18 @@ import Container from "@mui/material/Container";
 import Fade from "@mui/material/Fade";
 import Tooltip from "@mui/material/Tooltip";
 
-import Download from "@mui/icons-material/Download";
-import ArrowBack from "@mui/icons-material/ArrowBack";
-import Edit from "@mui/icons-material/Edit";
-import Print from "@mui/icons-material/Print";
+import {
+    ArrowBack,
+    Print,
+    Edit,
+    CheckCircle,
+    Download,
+    Cancel,
+} from "@mui/icons-material";
 import Business from "@mui/icons-material/Business";
 import AssignmentTurnedIn from "@mui/icons-material/AssignmentTurnedIn";
 import LocalShipping from "@mui/icons-material/LocalShipping";
 import Description from "@mui/icons-material/Description";
-import CheckCircle from "@mui/icons-material/CheckCircle";
 import Schedule from "@mui/icons-material/Schedule";
 import Receipt from "@mui/icons-material/Receipt";
 import Inventory2 from "@mui/icons-material/Inventory2";
@@ -156,6 +159,24 @@ function ViewGRNContent() {
                                 }}
                             >
                                 Print
+                            </Button>
+                        </Tooltip>
+
+                        <Tooltip title="Download PDF">
+                            <Button
+                                variant="outlined"
+                                startIcon={<Download />}
+                                sx={{
+                                    borderRadius: "12px",
+                                    textTransform: "none",
+                                    fontWeight: 600,
+                                    color: "#475569",
+                                    borderColor: "#e2e8f0",
+                                    bgcolor: "white",
+                                    "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" },
+                                }}
+                            >
+                                Download
                             </Button>
                         </Tooltip>
                         <Button

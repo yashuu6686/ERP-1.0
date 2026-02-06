@@ -120,17 +120,19 @@ export default function COAListPage() {
           >
             <Edit fontSize="small" />
           </IconButton>
-          <IconButton
-            size="small"
-            onClick={() => window.print()}
-            sx={{
-              color: "#059669",
-              bgcolor: "#ecfdf5",
-              "&:hover": { bgcolor: "#d1fae5" },
-            }}
-          >
-            <Download fontSize="small" />
-          </IconButton>
+          <Tooltip title="Download COA">
+            <IconButton
+              size="small"
+              onClick={() => window.print()}
+              sx={{
+                color: "#0891b2",
+                bgcolor: "#ecfeff",
+                "&:hover": { bgcolor: "#cffafe" },
+              }}
+            >
+              <Download fontSize="small" />
+            </IconButton>
+          </Tooltip>
         </Box>
       ),
     },

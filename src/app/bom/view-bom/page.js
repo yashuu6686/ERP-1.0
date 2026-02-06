@@ -24,6 +24,7 @@ import Avatar from "@mui/material/Avatar";
 import ArrowBack from "@mui/icons-material/ArrowBack";
 import Edit from "@mui/icons-material/Edit";
 import Print from "@mui/icons-material/Print";
+import Download from "@mui/icons-material/Download";
 import Build from "@mui/icons-material/Build";
 import Inventory from "@mui/icons-material/Inventory";
 import VerifiedUser from "@mui/icons-material/VerifiedUser";
@@ -137,7 +138,7 @@ function ViewBOMContent() {
                             "&:hover": { bgcolor: "#f1f5f9", borderColor: "#cbd5e1" },
                         }}
                     >
-                        Back to Registry
+                        Back
                     </Button>
 
                     <Stack direction="row" spacing={1.5}>
@@ -157,6 +158,24 @@ function ViewBOMContent() {
                                 }}
                             >
                                 Print
+                            </Button>
+                        </Tooltip>
+
+                        <Tooltip title="Download BOM">
+                            <Button
+                                variant="outlined"
+                                startIcon={<Download />}
+                                sx={{
+                                    borderRadius: "12px",
+                                    textTransform: "none",
+                                    fontWeight: 600,
+                                    color: "#475569",
+                                    borderColor: "#e2e8f0",
+                                    bgcolor: "white",
+                                    "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" },
+                                }}
+                            >
+                                Download
                             </Button>
                         </Tooltip>
                         <Button

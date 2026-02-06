@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Stack, Button, Tooltip } from "@mui/material";
-import { ArrowBack, Cancel, CheckCircle, Print, Edit } from "@mui/icons-material";
+import { ArrowBack, Cancel, CheckCircle, Print, Edit, Download } from "@mui/icons-material";
 
 export default function SOPHeaderActions({
     user,
@@ -77,6 +77,24 @@ export default function SOPHeaderActions({
                         }}
                     >
                         Print
+                    </Button>
+                </Tooltip>
+
+                <Tooltip title="Download PDF">
+                    <Button
+                        variant="outlined"
+                        startIcon={<Download />}
+                        sx={{
+                            borderRadius: "12px",
+                            textTransform: "none",
+                            fontWeight: 600,
+                            color: "#475569",
+                            borderColor: "#e2e8f0",
+                            bgcolor: "white",
+                            "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" },
+                        }}
+                    >
+                        Download
                     </Button>
                 </Tooltip>
                 <Button

@@ -370,6 +370,7 @@ export default function OrderDetails() {
                                     </Stack>
 
                                     <Button
+                                    onClick={()=>router.push("/invoices/generate-invoice")}
                                         fullWidth
                                         variant="outlined"
                                         startIcon={<Receipt />}

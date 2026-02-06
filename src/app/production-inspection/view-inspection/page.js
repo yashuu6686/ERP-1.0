@@ -40,6 +40,7 @@ import Layers from "@mui/icons-material/Layers";
 import Science from "@mui/icons-material/Science";
 import Rule from "@mui/icons-material/Rule";
 import FactCheck from "@mui/icons-material/FactCheck";
+import Download from "@mui/icons-material/Download";
 
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/ui/Loader";
@@ -232,6 +233,24 @@ function ViewInspectionContent() {
                                     }}
                                 >
                                     Print
+                                </Button>
+                            </Tooltip>
+
+                            <Tooltip title="Download Report">
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<Download />}
+                                    sx={{
+                                        borderRadius: "12px",
+                                        textTransform: "none",
+                                        fontWeight: 600,
+                                        color: "#475569",
+                                        borderColor: "#e2e8f0",
+                                        bgcolor: "white",
+                                        "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" },
+                                    }}
+                                >
+                                    Download
                                 </Button>
                             </Tooltip>
                             <Button
