@@ -24,6 +24,7 @@ import { Grid } from "@mui/material";
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { generateSerialNumberRange, getLastSequenceNumber, getModelCode } from "../../../lib/serialUtils";
 
 const steps = [
   "Product Details",
@@ -169,15 +170,44 @@ export default function QualityCheckForm() {
 
         // Create Batch Entry
         try {
+          // Fetch existing batches to calculate sequence
+          const batchesResponse = await axiosInstance.get("/batches");
+          const allBatches = batchesResponse.data || [];
+
+          const batchDate = new Date();
+          const batchNo = `BAT-${batchDate.getFullYear()}-${Math.floor(Math.random() * 10000)}`;
+
+          // Calculate Serial Number Range
+          // 1. Get Model Code
+          const modelCode = getModelCode(values.productName);
+
+          // 2. Get Date YYMM
+          const yy = batchDate.getFullYear().toString().substring(2);
+          const mm = (batchDate.getMonth() + 1).toString().padStart(2, '0');
+          const yymm = `${yy}${mm}`;
+
+          // 3. Get Last Sequence
+          const lastSeq = getLastSequenceNumber(allBatches, modelCode, yymm);
+          const nextSeq = lastSeq + 1;
+
+          // 4. Generate Range
+          const productSr = generateSerialNumberRange(
+            values.productName,
+            batchNo,
+            batchDate,
+            nextSeq,
+            Number(values.acceptedQuantity)
+          );
+
           const batchData = {
-            batchNo: `BAT-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000)}`,
+            batchNo: batchNo,
             requestNo: values.materialRequestNo || "N/A",
             checkNo: values.checkNumber || "-",
-            productSr: "From 001 to " + (values.acceptedQuantity || "000"),
+            productSr: productSr,
             acceptedQty: values.acceptedQuantity || 0,
             status: "Ready",
             inspectionId: formData.id,
-            date: new Date().toISOString(),
+            date: batchDate.toISOString(),
             qualityCheck: values.checkDetails,
             summary: {
               acceptedQuantity: values.acceptedQuantity,
