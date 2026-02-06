@@ -23,6 +23,7 @@ import VerificationChecks from "./components/VerificationChecks";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/ui/Loader";
 import { useAuth } from "@/context/AuthContext";
+import { useNotification } from "@/context/NotificationContext";
 import NotificationService from "@/services/NotificationService";
 import { useFormik, FormikProvider } from "formik";
 import * as Yup from "yup";
@@ -41,6 +42,7 @@ function MaterialInspectionFormContent() {
   const [pendingGRNs, setPendingGRNs] = useState([]);
   const [selectedGRN, setSelectedGRN] = useState(null);
   const router = useRouter();
+  const { showNotification } = useNotification();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const isEditMode = !!id;
@@ -228,7 +230,7 @@ function MaterialInspectionFormContent() {
         }
       } catch (error) {
         console.error("Error fetching inspection data:", error);
-        alert("Failed to load inspection data.");
+        showNotification("Failed to load inspection data.", "error");
       } finally {
         setLoading(false);
       }
@@ -493,12 +495,12 @@ function MaterialInspectionFormContent() {
           console.error("Failed to sync with store inventory:", storeError);
         }
 
-        alert(`Inspection ${isEditMode ? "Updated" : "Submitted"} Successfully!`);
+        showNotification(`Inspection ${isEditMode ? "Updated" : "Submitted"} Successfully!`, "success");
         router.push("/incoming-inspection");
       }
     } catch (error) {
       console.error("Submission Error:", error);
-      alert("Failed to submit inspection.");
+      showNotification("Failed to submit inspection.", "error");
     } finally {
       setLoading(false);
     }

@@ -10,6 +10,7 @@ import { useFormikContext } from "formik";
 import Description from "@mui/icons-material/Description";
 import CalendarToday from "@mui/icons-material/CalendarToday";
 import LocalShipping from "@mui/icons-material/LocalShipping";
+import { Box } from "@mui/material";
 
 const OrderInformation = () => {
     const { values, errors, touched, setFieldValue, handleBlur } = useFormikContext();
@@ -18,19 +19,27 @@ const OrderInformation = () => {
         <Card
             sx={{
                 mb: 4,
-                background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
                 border: "1px solid #e9ecef",
                 borderRadius: 2,
+                overflow: "hidden"
             }}
         >
-            <CardContent>
-                <Typography
-                    variant="h6"
-                    fontWeight={600}
-                    sx={{ mb: 3, color: "#2d3748" }}
-                >
+            <Box
+                sx={{
+                    p: 2,
+                    background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
+                    color: "white",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.5,
+                }}
+            >
+                <Description />
+                <Typography variant="h6" fontWeight={600} color={"white"}>
                     Order Information
                 </Typography>
+            </Box>
+            <CardContent>
                 <Grid container spacing={3}>
                     <Grid size={{ xs: 12, md: 4 }}>
                         <TextField

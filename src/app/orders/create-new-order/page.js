@@ -14,6 +14,10 @@ import SingleProductSection from "./components/SingleProductSection";
 
 import { useRouter } from "next/navigation";
 import axiosInstance from "../../../axios/axiosInstance";
+import FormReviewDialog from "@/components/ui/FormReviewDialog";
+import { useNotification } from "@/context/NotificationContext";
+import { ShoppingCart, Person, Inventory, Assignment } from "@mui/icons-material";
+import { Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
 
 const validationSchema = Yup.object({
   orderNo: Yup.string().required("Order Number is required"),
@@ -26,6 +30,7 @@ const validationSchema = Yup.object({
 
 export default function CreateOrder() {
   const router = useRouter();
+  const { showNotification } = useNotification();
 
   const formik = useFormik({
     initialValues: {
@@ -41,76 +46,86 @@ export default function CreateOrder() {
       singleProducts: [],
     },
     validationSchema: validationSchema,
-    onSubmit: async (values) => {
-      const kitComponents = [
-        "Scanbo D8 Device",
-        "BP Cuffs",
-        "Large BP Cuff",
-        "Glucose Bottles",
-        "Lancet Pouch",
-        "Lancet Pen",
-        "USB Cable",
-        "Plastic Shield",
-        "Scanbo Jute Bag"
-      ];
-
-      const newOrder = {
-        ...values,
-        products: values.singleProducts.length,
-        kitQty: values.kitQty,
-        singleProducts: values.singleProducts.filter(p => p.name || p.quantity),
-        reference: values.reference || "REF-" + Math.floor(Math.random() * 1000),
-      };
-
-      try {
-        setLoading(true);
-        // 1. Save the order
-        await axiosInstance.post("/orders", newOrder);
-
-        // 2. Fetch store data to update quantities
-        const storeRes = await axiosInstance.get("/store");
-        const storeItems = storeRes.data;
-
-        // 3. Update store quantities for each kit component
-        const updatePromises = storeItems
-          .filter(item => kitComponents.includes(item.name))
-          .map(item => {
-            const newQty = Math.max(0, (item.available || 0) - values.kitQty);
-            return axiosInstance.patch(`/store/${item.id}`, {
-              available: newQty,
-              updated: new Date().toISOString().split('T')[0]
-            });
-          });
-
-        // Also handle additional products if they exist in store
-        const additionalUpdatePromises = values.singleProducts
-          .filter(p => p.name && p.quantity)
-          .map(p => {
-            const matchingStoreItem = storeItems.find(item => item.name.toLowerCase() === p.name.toLowerCase());
-            if (matchingStoreItem) {
-              const newQty = Math.max(0, (matchingStoreItem.available || 0) - Number(p.quantity));
-              return axiosInstance.patch(`/store/${matchingStoreItem.id}`, {
-                available: newQty,
-                updated: new Date().toISOString().split('T')[0]
-              });
-            }
-            return null;
-          })
-          .filter(promise => promise !== null);
-
-        await Promise.all([...updatePromises, ...additionalUpdatePromises]);
-
-        router.push("/orders");
-      } catch (error) {
-        console.error("Error saving order or updating store:", error);
-        alert("Failed to save order or update inventory");
-      } finally {
-        setLoading(false);
-      }
+    onSubmit: async () => {
+      setShowPreview(true);
     },
   });
 
   const [loading, setLoading] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+
+  const handleFinalSubmit = async () => {
+    const values = formik.values;
+    const kitComponents = [
+      "Scanbo D8 Device",
+      "BP Cuffs",
+      "Large BP Cuff",
+      "Glucose Bottles",
+      "Lancet Pouch",
+      "Lancet Pen",
+      "USB Cable",
+      "Plastic Shield",
+      "Scanbo Jute Bag"
+    ];
+
+    const newOrder = {
+      ...values,
+      products: values.singleProducts.length,
+      kitQty: values.kitQty,
+      singleProducts: values.singleProducts.filter(p => p.name || p.quantity),
+      reference: values.reference || "REF-" + Math.floor(Math.random() * 1000),
+    };
+
+    try {
+      setLoading(true);
+      setShowPreview(false);
+      // 1. Save the order
+      await axiosInstance.post("/orders", newOrder);
+
+      // 2. Fetch store data to update quantities
+      const storeRes = await axiosInstance.get("/store");
+      const storeItems = storeRes.data;
+
+      // 3. Update store quantities for each kit component
+      const updatePromises = storeItems
+        .filter(item => kitComponents.includes(item.name))
+        .map(item => {
+          const newQty = Math.max(0, (item.available || 0) - values.kitQty);
+          return axiosInstance.patch(`/store/${item.id}`, {
+            available: newQty,
+            updated: new Date().toISOString().split('T')[0]
+          });
+        });
+
+      // Also handle additional products if they exist in store
+      const additionalUpdatePromises = values.singleProducts
+        .filter(p => p.name && p.quantity)
+        .map(p => {
+          const matchingStoreItem = storeItems.find(item => item.name.toLowerCase() === p.name.toLowerCase());
+          if (matchingStoreItem) {
+            const newQty = Math.max(0, (matchingStoreItem.available || 0) - Number(p.quantity));
+            return axiosInstance.patch(`/store/${matchingStoreItem.id}`, {
+              available: newQty,
+              updated: new Date().toISOString().split('T')[0]
+            });
+          }
+          return null;
+        })
+        .filter(promise => promise !== null);
+
+      await Promise.all([...updatePromises, ...additionalUpdatePromises]);
+
+      showNotification("Order created and inventory updated successfully!", "success");
+      router.push("/orders");
+    } catch (error) {
+      console.error("Error saving order or updating store:", error);
+      showNotification("Failed to save order or update inventory", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
 
   if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</Box>;
 
@@ -165,6 +180,77 @@ export default function CreateOrder() {
           </Button>
         </Box>
       </Box>
+
+      {/* Global Review Dialog */}
+      <FormReviewDialog
+        open={showPreview}
+        onClose={() => setShowPreview(false)}
+        onConfirm={handleFinalSubmit}
+        title="Review New Order"
+        icon={<Assignment />}
+        headerInfo={{
+          label1: "ORDER NUMBER",
+          value1: `#${formik.values.orderNo}`,
+          label2: "ORDER DATE",
+          value2: formik.values.orderDate
+        }}
+        confirmLabel="Confirm & Create Order"
+      >
+        <Grid container spacing={3}>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Paper elevation={0} sx={{ p: 2, height: '100%', borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'var(--brand-primary)' }}>
+                <Person sx={{ fontSize: 18 }} />
+                <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Customer Details</Typography>
+              </Box>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'var(--text-primary)', fontFamily: 'var(--font-manrope)' }}>{formik.values.customerName}</Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
+                <Typography variant="body2" sx={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>Phone: {formik.values.contact}</Typography>
+                <Typography variant="body2" sx={{ color: 'var(--text-secondary)', mt: 0.5, lineHeight: 1.5, fontSize: '0.8125rem' }}>{formik.values.address}</Typography>
+              </Box>
+            </Paper>
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Paper elevation={0} sx={{ p: 2, height: '100%', borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'var(--brand-primary)' }}>
+                <ShoppingCart sx={{ fontSize: 18 }} />
+                <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Schedule</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                <Typography variant="body2" sx={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>Order Date: <b>{formik.values.orderDate}</b></Typography>
+                <Typography variant="body2" sx={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>Delivery Date: <b style={{ color: 'var(--brand-primary)' }}>{formik.values.deliveryDate}</b></Typography>
+              </Box>
+            </Paper>
+          </Grid>
+          <Grid size={{ xs: 12 }}>
+            <Paper elevation={0} sx={{ borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', overflow: 'hidden', bgcolor: 'var(--bg-surface)' }}>
+              <Table size="small">
+                <TableHead sx={{ bgcolor: 'var(--bg-page)' }}>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 700, py: 2, color: 'var(--text-secondary)' }}>COMPONENTS / PRODUCTS</TableCell>
+                    <TableCell align="center" sx={{ fontWeight: 700, py: 2, color: 'var(--text-secondary)' }}>CATEGORY</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 700, py: 2, color: 'var(--text-secondary)' }}>QUANTITY</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  <TableRow sx={{ '&:last-child td': { border: 0 } }}>
+                    <TableCell sx={{ whiteSpace: "pre-line", py: 2, fontWeight: 500 }}>Scanbo Full Kit (includes all standard components)</TableCell>
+                    <TableCell align="center" sx={{ color: 'var(--text-secondary)' }}>Full Kit</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 700 }}>{formik.values.kitQty}</TableCell>
+                  </TableRow>
+                  {formik.values.singleProducts.filter(p => p.name && p.quantity).map((p, idx) => (
+                    <TableRow key={idx} sx={{ '&:last-child td': { border: 0 } }}>
+                      <TableCell sx={{ py: 2, fontWeight: 500 }}>{p.name}</TableCell>
+                      <TableCell align="center" sx={{ color: 'var(--text-secondary)' }}>Additional</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 700 }}>{p.quantity}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Paper>
+          </Grid>
+        </Grid>
+      </FormReviewDialog>
     </CommonCard>
   );
 }

@@ -19,7 +19,9 @@ import Loader from "../../../components/ui/Loader";
 import axiosInstance from "@/axios/axiosInstance";
 import NotificationService from "@/services/NotificationService";
 import { useAuth } from "@/context/AuthContext";
+import { useNotification } from "@/context/NotificationContext";
 import { useRef } from "react";
+import PurchasePreviewDialog from "./components/PurchasePreviewDialog";
 
 const validationSchema = Yup.object().shape({
   orderInfo: Yup.object().shape({
@@ -71,7 +73,9 @@ function CreatePurchaseOrderContent() {
   const id = searchParams.get("id");
   const isEditMode = !!id;
   const { user } = useAuth();
+  const { showNotification } = useNotification();
   const [loading, setLoading] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   const formContainerRef = useRef(null);
 
   const handleKeyDown = (e) => {
@@ -88,7 +92,7 @@ function CreatePurchaseOrderContent() {
         e.target.type !== "button"
       ) {
         e.preventDefault();
-        const allFocusable = Array.from( 
+        const allFocusable = Array.from(
           formContainerRef.current.querySelectorAll("input, select, textarea")
         ).filter((el) => !el.disabled && el.tabIndex !== -1 && el.type !== "hidden" && !el.readOnly);
 
@@ -132,43 +136,53 @@ function CreatePurchaseOrderContent() {
       status: "Pending",
     },
     validationSchema,
-    onSubmit: async (values) => {
-      const calculation = calculateTotals(values);
-      const finalData = {
-        ...values,
-        totals: calculation.totals,
-        isEdited: isEditMode,
-        creatorId: user?.id,
-        creatorName: user?.name,
-        status: isEditMode ? values.status : "Pending",
-      };
-
-      try {
-        const response = isEditMode
-          ? await axiosInstance.put(`/purachase/${id}`, finalData)
-          : await axiosInstance.post(`/purachase`, finalData);
-
-        if (response.status === 200 || response.status === 201) {
-          if (!isEditMode) {
-            await NotificationService.createNotification({
-              title: "New PO for Approval",
-              message: `${user?.name} has created PO #${values.orderInfo.orderNumber}. Needs approval.`,
-              targetRole: "admin",
-              poId: response.data.id,
-              link: `/purchase/view-purchase?id=${response.data.id}`
-            });
-          }
-          alert(`Purchase Order ${isEditMode ? "Updated" : "Created"} Successfully!`);
-          router.push("/purchase");
-        } else {
-          alert("Failed to save data. Please try again.");
-        }
-      } catch (error) {
-        console.error("Save Error:", error);
-        alert("Error connecting to the server.");
-      }
+    onSubmit: async () => {
+      // Instead of immediate submit, show the preview
+      setShowPreview(true);
     },
   });
+
+  const handleFinalSubmit = async () => {
+    const values = formik.values;
+    const calculation = calculateTotals(values);
+    const finalData = {
+      ...values,
+      totals: calculation.totals,
+      isEdited: isEditMode,
+      creatorId: user?.id,
+      creatorName: user?.name,
+      status: isEditMode ? values.status : "Pending",
+    };
+
+    try {
+      setLoading(true);
+      setShowPreview(false);
+      const response = isEditMode
+        ? await axiosInstance.put(`/purachase/${id}`, finalData)
+        : await axiosInstance.post(`/purachase`, finalData);
+
+      if (response.status === 200 || response.status === 201) {
+        if (!isEditMode) {
+          await NotificationService.createNotification({
+            title: "New PO for Approval",
+            message: `${user?.name} has created PO #${values.orderInfo.orderNumber}. Needs approval.`,
+            targetRole: "admin",
+            poId: response.data.id,
+            link: `/purchase/view-purchase?id=${response.data.id}`,
+          });
+        }
+        showNotification(`Purchase Order ${isEditMode ? "Updated" : "Created"} Successfully!`, "success");
+        router.push("/purchase");
+      } else {
+        showNotification("Failed to save data. Please try again.", "error");
+      }
+    } catch (error) {
+      console.error("Save Error:", error);
+      showNotification("Error connecting to the server.", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const calculateTotals = (values) => {
     const subtotal = values.items.reduce((sum, i) => sum + (parseFloat(i.qty) || 0) * (parseFloat(i.price) || 0), 0);
@@ -198,7 +212,7 @@ function CreatePurchaseOrderContent() {
           const data = response.data;
           if (data) {
             if (data.status === "Completed") {
-              alert("This purchase order is completed and cannot be edited.");
+              showNotification("This purchase order is completed and cannot be edited.", "warning");
               router.push("/purchase");
               return;
             }
@@ -221,7 +235,7 @@ function CreatePurchaseOrderContent() {
           }
         } catch (error) {
           console.error("Fetch Error:", error);
-          alert("Failed to fetch purchase order data.");
+          showNotification("Failed to fetch purchase order data.", "error");
         } finally {
           setLoading(false);
         }
@@ -282,6 +296,15 @@ function CreatePurchaseOrderContent() {
             </Box>
           </Box>
         </CommonCard >
+
+        <PurchasePreviewDialog
+          open={showPreview}
+          onClose={() => setShowPreview(false)}
+          onConfirm={handleFinalSubmit}
+          data={formik.values}
+          totals={totals}
+          isEditMode={isEditMode}
+        />
       </Box >
     </FormikProvider>
   );

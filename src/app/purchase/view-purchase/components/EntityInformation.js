@@ -66,11 +66,14 @@ const EntityInformation = ({ supplier, delivery }) => {
 
             <AddressCard
                 title="Ship To / Delivery"
-                company={delivery.deliverTo}
+                company={delivery.invoiceTo}
                 address={delivery.deliveryAddress}
                 contact={delivery.contactPerson}
                 phone={delivery.phone}
                 email={delivery.email}
+                chips={[
+                    { label: "Deliver To", value: delivery.deliverTo, color: "#1172ba" }
+                ]}
             />
         </Grid>
     );

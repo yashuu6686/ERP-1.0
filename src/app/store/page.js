@@ -14,11 +14,13 @@ import Loader from "../../components/ui/Loader";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useAuth } from "@/context/AuthContext";
+import { useNotification } from "@/context/NotificationContext";
 
 const tabEndpoints = ["/store", "/it-goods", "/finish-goods", "/other-goods"];
 
 export default function Store() {
   const { checkPermission } = useAuth();
+  const { showNotification } = useNotification();
   const [tab, setTab] = useState(0);
   const tabLabels = ["Raw Materials", "IT Items", "Finished Products", "Other Items"];
 
@@ -65,14 +67,14 @@ export default function Store() {
 
         const response = await axiosInstance.post(endpoint, payload);
         if (response.status === 201 || response.status === 200) {
-          alert("Material added successfully!");
+          showNotification("Material added successfully!", "success");
           setOpenDialog(false);
           resetForm();
           fetchData();
         }
       } catch (error) {
         console.error("Error saving material:", error);
-        alert("Failed to save material.");
+        showNotification("Failed to save material.", "error");
       }
     },
   });

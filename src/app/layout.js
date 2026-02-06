@@ -14,17 +14,20 @@ export const metadata = {
 };
 
 import { AuthProvider } from "@/context/AuthContext";
+import { NotificationProvider } from "@/context/NotificationContext";
 import { RouteGuard } from "@/components/auth/RouteGuard";
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${manrope.variable} font-sans`}>
-        <AuthProvider>
-          <RouteGuard>
-            <Sidebar>{children}</Sidebar>
-          </RouteGuard>
-        </AuthProvider>
+        <NotificationProvider>
+          <AuthProvider>
+            <RouteGuard>
+              <Sidebar>{children}</Sidebar>
+            </RouteGuard>
+          </AuthProvider>
+        </NotificationProvider>
       </body>
     </html>
   );
