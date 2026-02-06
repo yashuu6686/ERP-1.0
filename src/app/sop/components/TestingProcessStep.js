@@ -94,7 +94,7 @@ export default function TestingProcessStep({ formik }) {
         if (updated) {
             formik.setFieldValue('testingResults', results);
         }
-    }, [formik, deviceTestingSteps]); // Run once on mount
+    }, [formik]); // Run once on mount
 
     const handleStepChange = (idx, field, value) => {
         const results = { ...formik.values.testingResults };
