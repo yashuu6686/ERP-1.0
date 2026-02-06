@@ -14,6 +14,7 @@ import DispatchInfoCard from "./components/DispatchInfoCard";
 import CustomerDeliveryCard from "./components/CustomerDeliveryCard";
 import ProductDetailsTable from "./components/ProductDetailsTable";
 import PackagingApprovalsCard from "./components/PackagingApprovalsCard";
+import DispatchPreviewDialog from "./components/DispatchPreviewDialog";
 import { useRouter, useSearchParams } from "next/navigation";
 import CommonCard from "../../../components/ui/CommonCard";
 import axiosInstance from "@/axios/axiosInstance";
@@ -30,6 +31,8 @@ function CreateDispatchEntryContent() {
   const [orders, setOrders] = useState([]);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [openPreview, setOpenPreview] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const initialValues = {
     companyName: "Scanbo Engineering Pvt. Ltd.",
@@ -79,68 +82,74 @@ function CreateDispatchEntryContent() {
     initialValues,
     validationSchema,
     enableReinitialize: true,
-    onSubmit: async (values) => {
-      try {
-        setLoading(true);
-        const isHR = user?.role === 'hr';
-        const status = isHR ? "Pending Approval" : "Shipped";
-
-        const payload = {
-          shipmentInfo: {
-            dispatchNo: values.dispatchNo,
-            trackingNumber: values.trackingNumber,
-            shippingDate: values.dispatchDate,
-            expectedDelivery: values.deliveryDate,
-            carrier: values.courierCompany,
-            platform: values.salesPlatform,
-          },
-          customer: {
-            companyName: values.customerName,
-            contactPerson: values.contactPerson,
-            address: values.deliveryAddress,
-            phone: values.contactNo,
-            email: values.email,
-          },
-          items: values.products.map(p => ({
-            name: p.name,
-            qty: parseInt(p.quantity),
-            serialNo: "-",
-            weight: "-"
-          })),
-          status: status,
-          packedBy: values.packedBy,
-          approvedBy: values.approvedBy,
-          accountingBy: values.accountingBy,
-        };
-
-        let response;
-        if (id) {
-          response = await axiosInstance.put(`/dispatches/${id}`, payload);
-        } else {
-          response = await axiosInstance.post("/dispatches", payload);
-        }
-
-        if (isHR && (response.status === 201 || response.status === 200)) {
-          await NotificationService.createNotification({
-            title: "Dispatch Approval Required",
-            message: `HR ${user.name} has submitted a dispatch entry for ${values.customerName || 'a customer'} (Dispatch: ${values.dispatchNo}).`,
-            targetRole: "admin",
-            type: "dispatch_approval",
-            link: `/dispatch/view-dispatch?id=${id || response.data.id}`,
-            inspectionId: id || response.data.id
-          });
-        }
-
-        alert(`Dispatch Entry ${id ? "Updated" : "Saved"} Successfully!`);
-        router.push("/dispatch");
-      } catch (error) {
-        console.error("Save Error:", error);
-        alert("Failed to save dispatch entry.");
-      } finally {
-        setLoading(false);
-      }
+    onSubmit: async () => {
+      setOpenPreview(true);
     }
   });
+
+  const handleActualSubmit = async () => {
+    try {
+      setSubmitting(true);
+      const values = formik.values;
+      const isHR = user?.role === 'hr';
+      const status = isHR ? "Pending Approval" : "Shipped";
+
+      const payload = {
+        shipmentInfo: {
+          dispatchNo: values.dispatchNo,
+          trackingNumber: values.trackingNumber,
+          shippingDate: values.dispatchDate,
+          expectedDelivery: values.deliveryDate,
+          carrier: values.courierCompany,
+          platform: values.salesPlatform,
+        },
+        customer: {
+          companyName: values.customerName,
+          contactPerson: values.contactPerson,
+          address: values.deliveryAddress,
+          phone: values.contactNo,
+          email: values.email,
+        },
+        items: values.products.map(p => ({
+          name: p.name,
+          qty: parseInt(p.quantity),
+          serialNo: "-",
+          weight: "-"
+        })),
+        status: status,
+        packedBy: values.packedBy,
+        approvedBy: values.approvedBy,
+        accountingBy: values.accountingBy,
+      };
+
+      let response;
+      if (id) {
+        response = await axiosInstance.put(`/dispatches/${id}`, payload);
+      } else {
+        response = await axiosInstance.post("/dispatches", payload);
+      }
+
+      if (isHR && (response.status === 201 || response.status === 200)) {
+        await NotificationService.createNotification({
+          title: "Dispatch Approval Required",
+          message: `HR ${user.name} has submitted a dispatch entry for ${values.customerName || 'a customer'} (Dispatch: ${values.dispatchNo}).`,
+          targetRole: "admin",
+          type: "dispatch_approval",
+          link: `/dispatch/view-dispatch?id=${id || response.data.id}`,
+          inspectionId: id || response.data.id
+        });
+      }
+
+      alert(`Dispatch Entry ${id ? "Updated" : "Saved"} Successfully!`);
+      setOpenPreview(false);
+      router.push("/dispatch");
+    } catch (error) {
+      console.error("Save Error:", error);
+      alert("Failed to save dispatch entry.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -268,6 +277,14 @@ function CreateDispatchEntryContent() {
               {id ? "Update Dispatch Entry" : "Save Dispatch Entry"}
             </Button>
           </Box>
+
+          <DispatchPreviewDialog
+            open={openPreview}
+            onClose={() => setOpenPreview(false)}
+            onConfirm={handleActualSubmit}
+            values={formik.values}
+            loading={submitting}
+          />
         </Box>
       </CommonCard>
     </Box>
