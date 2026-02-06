@@ -71,31 +71,11 @@ const DeliveryInformation = () => {
                             }}
                         />
                     </Grid>
-                    <Grid size={{ xs: 12 }}>
-                        <TextField
-                            fullWidth
-                            label="Delivery Address"
-                            placeholder="456 Delivery Lane"
-                            multiline
-                            rows={1}
-                            name="delivery.deliveryAddress"
-                            value={values.delivery.deliveryAddress}
-                            onChange={(e) => setFieldValue("delivery.deliveryAddress", e.target.value)}
-                            onBlur={handleBlur}
-                            error={touched.delivery?.deliveryAddress && Boolean(errors.delivery?.deliveryAddress)}
-                            helperText={touched.delivery?.deliveryAddress && errors.delivery?.deliveryAddress}
-                            sx={{
-                                "& .MuiOutlinedInput-root": {
-                                    background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
-                                }
-                            }}
-                        />
-                    </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
                         <TextField
                             fullWidth
-                            label="Contact Person"
-                            placeholder="Jane Smith"
+                            label="Recipient Name (At Delivery Site)"
+                            placeholder="Full name of person receiving"
                             name="delivery.contactPerson"
                             value={values.delivery.contactPerson}
                             onChange={(e) => setFieldValue("delivery.contactPerson", e.target.value)}
@@ -112,14 +92,23 @@ const DeliveryInformation = () => {
                     <Grid size={{ xs: 12, md: 6 }}>
                         <TextField
                             fullWidth
+                            type="number"
                             label="Phone"
-                            placeholder="+91 98765 43210"
+                            placeholder="9876543210"
                             name="delivery.phone"
                             value={values.delivery.phone}
                             onChange={(e) => setFieldValue("delivery.phone", e.target.value)}
+                            onKeyPress={(e) => {
+                                if (!/[0-9]/.test(e.key)) {
+                                    e.preventDefault();
+                                }
+                            }}
                             onBlur={handleBlur}
                             error={touched.delivery?.phone && Boolean(errors.delivery?.phone)}
                             helperText={touched.delivery?.phone && errors.delivery?.phone}
+                            InputProps={{
+                                inputMode: 'numeric'
+                            }}
                             sx={{
                                 "& .MuiOutlinedInput-root": {
                                     background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
@@ -138,6 +127,26 @@ const DeliveryInformation = () => {
                             onBlur={handleBlur}
                             error={touched.delivery?.email && Boolean(errors.delivery?.email)}
                             helperText={touched.delivery?.email && errors.delivery?.email}
+                            sx={{
+                                "& .MuiOutlinedInput-root": {
+                                    background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                }
+                            }}
+                        />
+                    </Grid>
+                    <Grid size={{ xs: 12 }}>
+                        <TextField
+                            fullWidth
+                            label="Delivery Address"
+                            placeholder="456 Delivery Lane"
+                            multiline
+                            minRows={2}
+                            name="delivery.deliveryAddress"
+                            value={values.delivery.deliveryAddress}
+                            onChange={(e) => setFieldValue("delivery.deliveryAddress", e.target.value)}
+                            onBlur={handleBlur}
+                            error={touched.delivery?.deliveryAddress && Boolean(errors.delivery?.deliveryAddress)}
+                            helperText={touched.delivery?.deliveryAddress && errors.delivery?.deliveryAddress}
                             sx={{
                                 "& .MuiOutlinedInput-root": {
                                     background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",

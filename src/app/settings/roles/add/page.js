@@ -39,7 +39,7 @@ export default function AddRole() {
                     Add New Role
                 </Typography>
                 <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} sx={{ color: 'var(--text-muted)' }}>
-                    <Link underline="hover" color="inherit" href="/settings/roles" sx={{ fontSize: '0.875rem', fontWeight: 500 }}>
+                    <Link underline="hover" color="inherit" onClick={() => router.push("/settings/roles")} sx={{ fontSize: '0.875rem', fontWeight: 500, cursor: 'pointer' }}>
                         Role Management
                     </Link>
                     <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--brand-primary)' }}>Add Role</Typography>

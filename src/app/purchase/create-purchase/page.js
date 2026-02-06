@@ -19,19 +19,23 @@ import Loader from "../../../components/ui/Loader";
 import axiosInstance from "@/axios/axiosInstance";
 import NotificationService from "@/services/NotificationService";
 import { useAuth } from "@/context/AuthContext";
+import { useRef } from "react";
 
 const validationSchema = Yup.object().shape({
   orderInfo: Yup.object().shape({
-    orderNumber: Yup.string().required("Order Number is required"),
+    orderNumber: Yup.number().typeError("PO Number must be a number").min(10000, "PO Number must be at least 5 digits").required("Order Number is required"),
     orderDate: Yup.date().required("Order Date is required"),
     expectedDelivery: Yup.date().required("Expected Delivery Date is required"),
   }),
   supplier: Yup.object().shape({
     companyName: Yup.string().required("Company Name is required"),
-    contactPerson: Yup.string().required("Contact Person is required"),
+    contactPerson: Yup.string().required("Supplier Representative Name is required"),
     address: Yup.string().required("Address is required"),
     email: Yup.string().email("Invalid email address").required("Supplier Email is required"),
-    phone: Yup.string().required("Supplier Phone is required"),
+    phone: Yup.number().typeError("Phone must be a number")
+      .min(1000000000, "Phone must be exactly 10 digits")
+      .max(9999999999, "Phone must be exactly 10 digits")
+      .required("Supplier Phone is required"),
     pan: Yup.string().required("PAN Number is required"),
     gstin: Yup.string().required("GSTIN is required"),
   }),
@@ -39,23 +43,26 @@ const validationSchema = Yup.object().shape({
     invoiceTo: Yup.string().required("Invoice To is required"),
     deliverTo: Yup.string().required("Deliver To is required"),
     deliveryAddress: Yup.string().required("Delivery Address is required"),
-    contactPerson: Yup.string().required("Delivery Contact Person is required"),
-    phone: Yup.string().required("Delivery Phone is required"),
+    contactPerson: Yup.string().required("Recipient Name is required"),
+    phone: Yup.number().typeError("Phone must be a number")
+      .min(1000000000, "Phone must be exactly 10 digits")
+      .max(9999999999, "Phone must be exactly 10 digits")
+      .required("Delivery Phone is required"),
     email: Yup.string().email("Invalid email address").required("Delivery Email is required"),
   }),
   items: Yup.array()
     .of(
       Yup.object().shape({
         name: Yup.string().required("Item Name is required"),
-        qty: Yup.number().positive("Quantity must be greater than 0").required("Quantity is required"),
-        price: Yup.number().min(0, "Price must be non-negative").required("Price is required"),
+        qty: Yup.number().typeError("Qty must be a number").positive("Quantity must be greater than 0").required("Quantity is required"),
+        price: Yup.number().typeError("Price must be a number").min(0, "Price must be non-negative").required("Price is required"),
       })
     )
     .min(1, "At least one item is required"),
-  discount: Yup.number().min(0, "Discount cannot be negative").default(0),
-  taxRate: Yup.number().min(0, "Tax Rate cannot be negative").required("Tax Rate is required").default(18),
-  shippingCharges: Yup.number().min(0, "Shipping charges cannot be negative").default(0),
-  otherDiscount: Yup.number().min(0, "Other discount cannot be negative").default(0),
+  discount: Yup.number().typeError("Must be a number").min(0, "Discount cannot be negative").default(0),
+  taxRate: Yup.number().typeError("Must be a number").min(0, "Tax Rate cannot be negative").required("Tax Rate is required").default(18),
+  shippingCharges: Yup.number().typeError("Must be a number").min(0, "Shipping charges cannot be negative").default(0),
+  otherDiscount: Yup.number().typeError("Must be a number").min(0, "Other discount cannot be negative").default(0),
 });
 
 function CreatePurchaseOrderContent() {
@@ -65,6 +72,33 @@ function CreatePurchaseOrderContent() {
   const isEditMode = !!id;
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+  const formContainerRef = useRef(null);
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      // If Shift + Enter is pressed in a textarea, allow a new line
+      if (e.target.tagName === "TEXTAREA" && e.shiftKey) {
+        return;
+      }
+
+      // Otherwise, prevent default (don't add new line) and move to next field
+      if (
+        (e.target.tagName === "INPUT" || e.target.tagName === "SELECT" || e.target.tagName === "TEXTAREA") &&
+        e.target.type !== "submit" &&
+        e.target.type !== "button"
+      ) {
+        e.preventDefault();
+        const allFocusable = Array.from( 
+          formContainerRef.current.querySelectorAll("input, select, textarea")
+        ).filter((el) => !el.disabled && el.tabIndex !== -1 && el.type !== "hidden" && !el.readOnly);
+
+        const currentIndex = allFocusable.indexOf(e.target);
+        if (currentIndex !== -1 && currentIndex < allFocusable.length - 1) {
+          allFocusable[currentIndex + 1].focus();
+        }
+      }
+    }
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -198,7 +232,8 @@ function CreatePurchaseOrderContent() {
       const month = String(new Date().getMonth() + 1).padStart(2, '0');
       const day = String(new Date().getDate()).padStart(2, '0');
       const random = String(Math.floor(Math.random() * 1000)).padStart(3, '0');
-      const poNum = `PO-${year}${month}${day}-${random}`;
+      // Using only numbers as per user's request for proper number validation
+      const poNum = `${year}${month}${day}${random}`;
       formik.setFieldValue("orderInfo.orderNumber", poNum);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -210,7 +245,7 @@ function CreatePurchaseOrderContent() {
 
   return (
     <FormikProvider value={formik}>
-      <Box>
+      <Box onKeyDown={handleKeyDown} ref={formContainerRef}>
         <CommonCard title={isEditMode ? "Edit Purchase Order" : "Create Purchase Order"}>
           <Box sx={{ p: 1 }}>
             <OrderInformation />

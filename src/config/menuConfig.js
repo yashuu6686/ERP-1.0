@@ -51,6 +51,7 @@ export const APP_MENU = [
             { text: "Customer Orders", icon: <People />, path: "/orders", key: "orders" },
             { text: "Invoices", icon: <Receipt />, path: "/invoices", key: "invoices" },
             { text: "Final Inspection", icon: <Verified />, path: "/final-inspection", key: "final_inspection" },
+            { text: "Standard Operating Procedures", icon: <Description />, path: "/sop", key: "sop" },
             { text: "Dispatch Details", icon: <LocalShipping />, path: "/dispatch", key: "dispatch" },
         ]
     },
@@ -58,7 +59,6 @@ export const APP_MENU = [
         name: "General & Settings",
         description: "Administration and general operations",
         items: [
-            { text: "Standard Operating Procedures", icon: <Description />, path: "/sop", key: "sop" },
             { text: "Rejected Goods", icon: <Cancel />, path: "/rejected-goods", key: "rejected_goods" },
             { text: "Role Management", icon: <Settings />, path: "/settings/roles", key: "role_management" },
             { text: "User Management", icon: <People />, path: "/settings/users", key: "user_management" },

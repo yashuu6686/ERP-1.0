@@ -56,34 +56,14 @@ const SupplierInformation = () => {
                     <Grid size={{ xs: 12, md: 6 }}>
                         <TextField
                             fullWidth
-                            label="Contact Person"
-                            placeholder="John Doe"
+                            label="Supplier Representative Name"
+                            placeholder="Full name of contact person"
                             name="supplier.contactPerson"
                             value={values.supplier.contactPerson}
                             onChange={(e) => setFieldValue("supplier.contactPerson", e.target.value)}
                             onBlur={handleBlur}
                             error={touched.supplier?.contactPerson && Boolean(errors.supplier?.contactPerson)}
                             helperText={touched.supplier?.contactPerson && errors.supplier?.contactPerson}
-                            sx={{
-                                "& .MuiOutlinedInput-root": {
-                                    background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
-                                }
-                            }}
-                        />
-                    </Grid>
-                    <Grid size={{ xs: 12 }}>
-                        <TextField
-                            fullWidth
-                            label="Address"
-                            placeholder="123 Business Street"
-                            multiline
-                            rows={1}
-                            name="supplier.address"
-                            value={values.supplier.address}
-                            onChange={(e) => setFieldValue("supplier.address", e.target.value)}
-                            onBlur={handleBlur}
-                            error={touched.supplier?.address && Boolean(errors.supplier?.address)}
-                            helperText={touched.supplier?.address && errors.supplier?.address}
                             sx={{
                                 "& .MuiOutlinedInput-root": {
                                     background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
@@ -112,14 +92,23 @@ const SupplierInformation = () => {
                     <Grid size={{ xs: 12, md: 6 }}>
                         <TextField
                             fullWidth
+                            type="number"
                             label="Phone"
-                            placeholder="+91 98765 43210"
+                            placeholder="9876543210"
                             name="supplier.phone"
                             value={values.supplier.phone}
                             onChange={(e) => setFieldValue("supplier.phone", e.target.value)}
+                            onKeyPress={(e) => {
+                                if (!/[0-9]/.test(e.key)) {
+                                    e.preventDefault();
+                                }
+                            }}
                             onBlur={handleBlur}
                             error={touched.supplier?.phone && Boolean(errors.supplier?.phone)}
                             helperText={touched.supplier?.phone && errors.supplier?.phone}
+                            InputProps={{
+                                inputMode: 'numeric'
+                            }}
                             sx={{
                                 "& .MuiOutlinedInput-root": {
                                     background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
@@ -156,6 +145,26 @@ const SupplierInformation = () => {
                             onBlur={handleBlur}
                             error={touched.supplier?.gstin && Boolean(errors.supplier?.gstin)}
                             helperText={touched.supplier?.gstin && errors.supplier?.gstin}
+                            sx={{
+                                "& .MuiOutlinedInput-root": {
+                                    background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+                                }
+                            }}
+                        />
+                    </Grid>
+                    <Grid size={{ xs: 12 }}>
+                        <TextField
+                            fullWidth
+                            label="Address"
+                            placeholder="123 Business Street"
+                            multiline
+                            minRows={2}
+                            name="supplier.address"
+                            value={values.supplier.address}
+                            onChange={(e) => setFieldValue("supplier.address", e.target.value)}
+                            onBlur={handleBlur}
+                            error={touched.supplier?.address && Boolean(errors.supplier?.address)}
+                            helperText={touched.supplier?.address && errors.supplier?.address}
                             sx={{
                                 "& .MuiOutlinedInput-root": {
                                     background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",

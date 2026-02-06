@@ -139,6 +139,8 @@ const ItemDetailsTable = () => {
                                 <TableCell align="center">
                                     <TextField
                                         fullWidth
+                                        multiline
+                                        minRows={1}
                                         placeholder="Enter item name..."
                                         name={`items.${i}.name`}
                                         value={item.name}

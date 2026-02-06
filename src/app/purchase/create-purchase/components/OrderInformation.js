@@ -35,15 +35,22 @@ const OrderInformation = () => {
                     <Grid size={{ xs: 12, md: 4 }}>
                         <TextField
                             fullWidth
+                            type="number"
                             label="PO Number"
-                            placeholder="PO-2024-001"
+                            placeholder="2024001"
                             name="orderInfo.orderNumber"
                             value={values.orderInfo.orderNumber}
                             onChange={(e) => setFieldValue("orderInfo.orderNumber", e.target.value)}
+                            onKeyPress={(e) => {
+                                if (!/[0-9]/.test(e.key)) {
+                                    e.preventDefault();
+                                }
+                            }}
                             onBlur={handleBlur}
                             error={touched.orderInfo?.orderNumber && Boolean(errors.orderInfo?.orderNumber)}
                             helperText={touched.orderInfo?.orderNumber && errors.orderInfo?.orderNumber}
                             InputProps={{
+                                inputMode: 'numeric',
                                 startAdornment: (
                                     <InputAdornment position="start">
                                         <Description sx={{ color: "#1172ba" }} />
