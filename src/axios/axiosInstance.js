@@ -1,6 +1,6 @@
 import axios from "axios";
 const axiosInstance = axios.create({
-    baseURL: "https://issue-deeper-tests-requires.trycloudflare.com",
+    baseURL: "https://jones-gis-continuously-investing.trycloudflare.com",
     headers: {
         "Content-Type": "application/json"
     },
