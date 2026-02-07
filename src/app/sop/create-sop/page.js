@@ -18,6 +18,7 @@ import DeviceInfoStep from "../components/DeviceInfoStep";
 import TestingProcessStep from "../components/TestingProcessStep";
 import PackagingDetailsStep from "../components/PackagingDetailsStep";
 import ReviewSummaryStep from "../components/ReviewSummaryStep";
+import SOPPreviewDialog from "../components/SOPPreviewDialog";
 import { useRouter, useSearchParams } from "next/navigation";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/ui/Loader";
@@ -64,6 +65,8 @@ function SOPFormContent() {
     const id = searchParams.get("id");
     const [activeStep, setActiveStep] = useState(0);
     const [loading, setLoading] = useState(false);
+    const [openPreview, setOpenPreview] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
 
     const formik = useFormik({
         initialValues: {
@@ -84,46 +87,52 @@ function SOPFormContent() {
         },
         validationSchema: validationSchema[activeStep],
         enableReinitialize: true,
-        onSubmit: async (values) => {
-            try {
-                setLoading(true);
-                const isHR = user?.role === 'hr';
-                const status = isHR ? "Pending Approval" : "Completed";
-
-                const payload = {
-                    ...values,
-                    sopNumber: values.sopNumber || `SOP-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
-                    status: status,
-                };
-
-                let response;
-                if (id) {
-                    response = await axiosInstance.put(`/sops/${id}`, payload);
-                } else {
-                    response = await axiosInstance.post("/sops", payload);
-                }
-
-                if (isHR && (response.status === 201 || response.status === 200)) {
-                    await NotificationService.createNotification({
-                        title: "SOP Approval Required",
-                        message: `HR ${user.name} has submitted an SOP for ${values.deviceId || 'a device'} (Report: ${payload.sopNumber}).`,
-                        targetRole: "admin",
-                        type: "sop_approval",
-                        link: `/sop/view-sop?id=${id || response.data.id}`,
-                        inspectionId: id || response.data.id
-                    });
-                }
-
-                alert(`SOP ${id ? "Updated" : "Saved"} Successfully!`);
-                router.push("/sop");
-            } catch (error) {
-                console.error("Error saving SOP:", error);
-                alert("Failed to save SOP.");
-            } finally {
-                setLoading(false);
-            }
+        onSubmit: async () => {
+            setOpenPreview(true);
         },
     });
+
+    const handleActualSubmit = async () => {
+        try {
+            setSubmitting(true);
+            const values = formik.values;
+            const isHR = user?.role === 'hr';
+            const status = isHR ? "Pending Approval" : "Completed";
+
+            const payload = {
+                ...values,
+                sopNumber: values.sopNumber || `SOP-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+                status: status,
+            };
+
+            let response;
+            if (id) {
+                response = await axiosInstance.put(`/sops/${id}`, payload);
+            } else {
+                response = await axiosInstance.post("/sops", payload);
+            }
+
+            if (isHR && (response.status === 201 || response.status === 200)) {
+                await NotificationService.createNotification({
+                    title: "SOP Approval Required",
+                    message: `HR ${user.name} has submitted an SOP for ${values.deviceId || 'a device'} (Report: ${payload.sopNumber}).`,
+                    targetRole: "admin",
+                    type: "sop_approval",
+                    link: `/sop/view-sop?id=${id || response.data.id}`,
+                    inspectionId: id || response.data.id
+                });
+            }
+
+            alert(`SOP ${id ? "Updated" : "Saved"} Successfully!`);
+            setOpenPreview(false);
+            router.push("/sop");
+        } catch (error) {
+            console.error("Error saving SOP:", error);
+            alert("Failed to save SOP.");
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     useEffect(() => {
         const fetchSopDetails = async () => {
@@ -260,6 +269,14 @@ function SOPFormContent() {
                     </Box>
                 </Box>
             </CommonCard>
+
+            <SOPPreviewDialog
+                open={openPreview}
+                onClose={() => setOpenPreview(false)}
+                onConfirm={handleActualSubmit}
+                values={formik.values}
+                loading={submitting}
+            />
         </Box>
     );
 }

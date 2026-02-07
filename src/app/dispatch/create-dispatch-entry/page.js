@@ -72,8 +72,6 @@ function CreateDispatchEntryContent() {
       Yup.object().shape({
         name: Yup.string()
           .required("Product name is required")
-          .matches(/^[a-zA-Z\s]+$/, "Product name must only contain characters"),
-        quantity: Yup.number().required("Quantity is required").positive("Quantity must be positive"),
       })
     ),
   });

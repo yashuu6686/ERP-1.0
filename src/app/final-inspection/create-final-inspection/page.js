@@ -21,6 +21,7 @@ import ProblemReportAQDSection from "./components/ProblemReportAQDSection";
 import ActionChecklistSection from "./components/ActionChecklistSection";
 import ApprovalCommentsSection from "./components/ApprovalCommentsSection";
 import SignaturesApprovalSection from "../../../components/inspection/InspectionApproval";
+import FinalInspectionPreviewDialog from "./components/FinalInspectionPreviewDialog";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/ui/Loader";
 import { useAuth } from "@/context/AuthContext";
@@ -95,6 +96,8 @@ function FinalInspectionFormContent() {
   const id = searchParams.get("id");
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [openPreview, setOpenPreview] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -142,46 +145,52 @@ function FinalInspectionFormContent() {
     },
     validationSchema: validationSchema[activeStep],
     enableReinitialize: true,
-    onSubmit: async (values) => {
-      try {
-        setLoading(true);
-        const isHR = user?.role === 'hr';
-        const status = isHR ? "Pending Approval" : "Approved";
-
-        const payload = {
-          ...values,
-          inspectionStatus: status,
-          inspectionNo: values.inspectionNo || `FIN-INS-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
-        };
-
-        let response;
-        if (id) {
-          response = await axiosInstance.put(`/final-inspections/${id}`, payload);
-        } else {
-          response = await axiosInstance.post("/final-inspections", payload);
-        }
-
-        if (isHR && (response.status === 201 || response.status === 200)) {
-          await NotificationService.createNotification({
-            title: "Final Inspection Approval Required",
-            message: `HR ${user.name} has submitted a final inspection for ${values.productName || 'a product'} (Report: ${payload.inspectionNo}).`,
-            targetRole: "admin",
-            type: "final_inspection_approval",
-            link: `/final-inspection/view-final-inspection?id=${id || response.data.id}`,
-            inspectionId: id || response.data.id
-          });
-        }
-
-        alert(`Inspection ${id ? "Updated" : "Submitted"} Successfully!`);
-        router.push("/final-inspection");
-      } catch (error) {
-        console.error("Error saving inspection:", error);
-        alert("Failed to save inspection.");
-      } finally {
-        setLoading(false);
-      }
+    onSubmit: async () => {
+      setOpenPreview(true);
     },
   });
+
+  const handleActualSubmit = async () => {
+    try {
+      setSubmitting(true);
+      const values = formik.values;
+      const isHR = user?.role === 'hr';
+      const status = isHR ? "Pending Approval" : "Approved";
+
+      const payload = {
+        ...values,
+        inspectionStatus: status,
+        inspectionNo: values.inspectionNo || `FIN-INS-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+      };
+
+      let response;
+      if (id) {
+        response = await axiosInstance.put(`/final-inspections/${id}`, payload);
+      } else {
+        response = await axiosInstance.post("/final-inspections", payload);
+      }
+
+      if (isHR && (response.status === 201 || response.status === 200)) {
+        await NotificationService.createNotification({
+          title: "Final Inspection Approval Required",
+          message: `HR ${user.name} has submitted a final inspection for ${values.productName || 'a product'} (Report: ${payload.inspectionNo}).`,
+          targetRole: "admin",
+          type: "final_inspection_approval",
+          link: `/final-inspection/view-final-inspection?id=${id || response.data.id}`,
+          inspectionId: id || response.data.id
+        });
+      }
+
+      alert(`Inspection ${id ? "Updated" : "Submitted"} Successfully!`);
+      setOpenPreview(false);
+      router.push("/final-inspection");
+    } catch (error) {
+      console.error("Error saving inspection:", error);
+      alert("Failed to save inspection.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const addObservationColumn = () => {
     const newColId = `observation_${formik.values.observationColumns.length + 1}`;
@@ -258,45 +267,6 @@ function FinalInspectionFormContent() {
     );
   };
 
-  const handleSave = async () => {
-    try {
-      setLoading(true);
-      const isHR = user?.role === 'hr';
-      const status = isHR ? "Pending Approval" : "Approved";
-
-      const payload = {
-        ...formData,
-        inspectionStatus: status,
-        inspectionNo: formData.inspectionNo || `FIN-INS-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
-      };
-
-      let response;
-      if (id) {
-        response = await axiosInstance.put(`/final-inspections/${id}`, payload);
-      } else {
-        response = await axiosInstance.post("/final-inspections", payload);
-      }
-
-      if (isHR && (response.status === 201 || response.status === 200)) {
-        await NotificationService.createNotification({
-          title: "Final Inspection Approval Required",
-          message: `HR ${user.name} has submitted a final inspection for ${formData.productName || 'a product'} (Report: ${payload.inspectionNo}).`,
-          targetRole: "admin",
-          type: "final_inspection_approval",
-          link: `/final-inspection/view-final-inspection?id=${id || response.data.id}`,
-          inspectionId: id || response.data.id
-        });
-      }
-
-      alert(`Inspection ${id ? "Updated" : "Submitted"} Successfully!`);
-      router.push("/final-inspection");
-    } catch (error) {
-      console.error("Error saving inspection:", error);
-      alert("Failed to save inspection.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const getStepContent = (step) => {
     switch (step) {
@@ -486,6 +456,13 @@ function FinalInspectionFormContent() {
           </Box>
         </Box>
       </Box>
+      <FinalInspectionPreviewDialog
+        open={openPreview}
+        onClose={() => setOpenPreview(false)}
+        onConfirm={handleActualSubmit}
+        values={formik.values}
+        loading={submitting}
+      />
     </CommonCard>
   );
 }

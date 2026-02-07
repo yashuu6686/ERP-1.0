@@ -1,204 +1,130 @@
 import React from "react";
+import FormReviewDialog from "@/components/ui/FormReviewDialog";
 import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Button,
+    LocalShipping,
+    Business,
+    Inventory,
+    Person,
+} from "@mui/icons-material";
+import {
     Box,
     Typography,
     Grid,
-    Divider,
+    Paper,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
     TableRow,
-    Paper,
-    IconButton,
+    Divider,
 } from "@mui/material";
-import {
-    Close,
-    CheckCircle,
-    LocalShipping,
-    Business,
-    Inventory,
-    Person,
-} from "@mui/icons-material";
-
-const PreviewSection = ({ icon: Icon, title, children }) => (
-    <Box sx={{ mb: 3 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-            <Box sx={{
-                p: 1,
-                borderRadius: "50%",
-                bgcolor: "rgba(17, 114, 186, 0.1)",
-                display: "flex",
-                color: "#1172ba"
-            }}>
-                <Icon fontSize="small" />
-            </Box>
-            <Typography variant="subtitle1" fontWeight={700} color="#1e293b">
-                {title}
-            </Typography>
-        </Box>
-        <Box sx={{ pl: 5.5 }}>
-            {children}
-        </Box>
-    </Box>
-);
-
-const DataItem = ({ label, value }) => (
-    <Box sx={{ mb: 1 }}>
-        <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            {label}
-        </Typography>
-        <Typography variant="body2" sx={{ color: "#1e293b", fontWeight: 500 }}>
-            {value || "N/A"}
-        </Typography>
-    </Box>
-);
 
 export default function DispatchPreviewDialog({ open, onClose, onConfirm, values, loading }) {
+    if (!values) return null;
+
     return (
-        <Dialog
+        <FormReviewDialog
             open={open}
             onClose={onClose}
-            maxWidth="md"
-            fullWidth
-            PaperProps={{
-                sx: { borderRadius: 3, overflow: "hidden" }
+            onConfirm={onConfirm}
+            title="Review & Confirm Dispatch Details"
+            icon={<LocalShipping />}
+            headerInfo={{
+                label1: "DISPATCH NO.",
+                value1: values.dispatchNo || "TBD",
+                label2: "DISPATCH DATE",
+                value2: values.dispatchDate || "N/A"
             }}
+            confirmLabel="Confirm & Ship"
+            loading={loading}
         >
-            <DialogTitle sx={{
-                m: 0,
-                p: 2,
-                bgcolor: "#f8fafc",
-                borderBottom: "1px solid #e2e8f0",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center"
-            }}>
-                <Typography variant="h6" fontWeight={700} color="#0f172a">
-                    Confirm Dispatch Details
-                </Typography>
-                <IconButton onClick={onClose} size="small" sx={{ color: "#64748b" }}>
-                    <Close />
-                </IconButton>
-            </DialogTitle>
-
-            <DialogContent sx={{ p: 4 }}>
-                <Typography variant="body2" color="#64748b" sx={{ mb: 4 }}>
-                    Please review the dispatch information below before finalizing the entry.
-                </Typography>
-
-                <Grid container spacing={2}>
-                    <Grid item xs={12} md={6}>
-                        <PreviewSection icon={LocalShipping} title="Dispatch Details">
-                            <Grid container spacing={2}>
-                                <Grid item xs={6}>
-                                    <DataItem label="Dispatch No" value={values.dispatchNo} />
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <DataItem label="Dispatch Date" value={values.dispatchDate} />
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <DataItem label="Tracking No" value={values.trackingNumber} />
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <DataItem label="Courier" value={values.courierCompany} />
-                                </Grid>
-                            </Grid>
-                        </PreviewSection>
-                    </Grid>
-
-                    <Grid item xs={12} md={6}>
-                        <PreviewSection icon={Business} title="Customer & Delivery">
-                            <DataItem label="Customer/Organisation" value={values.customerName} />
-                            <Grid container spacing={2}>
-                                <Grid item xs={6}>
-                                    <DataItem label="Contact Person" value={values.contactPerson} />
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <DataItem label="Phone" value={values.contactNo} />
-                                </Grid>
-                            </Grid>
-                            <DataItem label="Delivery Address" value={values.deliveryAddress} />
-                        </PreviewSection>
-                    </Grid>
+            <Grid container spacing={3}>
+                {/* Shipping & Customer Details */}
+                <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+                    <Paper elevation={0} sx={{ p: 2, height: '100%', borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'var(--brand-primary)' }}>
+                            <LocalShipping sx={{ fontSize: 18 }} />
+                            <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Shipping Information</Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                            <Box>
+                                <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>Tracking Number</Typography>
+                                <Typography variant="body2" sx={{ fontWeight: 600 }}>{values.trackingNumber || "N/A"}</Typography>
+                            </Box>
+                            <Box>
+                                <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>Carrier</Typography>
+                                <Typography variant="body2" sx={{ fontWeight: 600 }}>{values.courierCompany || "N/A"}</Typography>
+                            </Box>
+                            <Box>
+                                <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>Sales Platform</Typography>
+                                <Typography variant="body2" sx={{ fontWeight: 600 }}>{values.salesPlatform || "N/A"}</Typography>
+                            </Box>
+                        </Box>
+                    </Paper>
                 </Grid>
 
-                <Divider sx={{ my: 2 }} />
+                <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+                    <Paper elevation={0} sx={{ p: 2, height: '100%', borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'var(--brand-primary)' }}>
+                            <Business sx={{ fontSize: 18 }} />
+                            <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Customer & Delivery</Typography>
+                        </Box>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'var(--text-primary)', fontFamily: 'var(--font-manrope)' }}>{values.customerName}</Typography>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                            <Typography variant="body2" sx={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>Recipient: <b style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{values.contactPerson}</b></Typography>
+                            <Typography variant="body2" sx={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>Phone: {values.contactNo}</Typography>
+                            <Typography variant="body2" sx={{ color: 'var(--text-secondary)', mt: 0.5, lineHeight: 1.5, fontSize: '0.8125rem' }}>{values.deliveryAddress}</Typography>
+                        </Box>
+                    </Paper>
+                </Grid>
 
-                <PreviewSection icon={Inventory} title="Product Details">
-                    <TableContainer component={Paper} elevation={0} sx={{ border: "1px solid #e2e8f0", borderRadius: 2 }}>
+                {/* Items Table */}
+                <Grid item xs={12} size={{ xs: 12, md: 6 }}>
+                    <Paper elevation={0} sx={{ borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', overflow: 'hidden', bgcolor: 'var(--bg-surface)' }}>
                         <Table size="small">
-                            <TableHead>
-                                <TableRow sx={{ bgcolor: "#f8fafc" }}>
-                                    <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Product Name</TableCell>
-                                    <TableCell align="center" sx={{ fontWeight: 700, color: "#475569" }}>Quantity</TableCell>
+                            <TableHead sx={{ bgcolor: 'var(--bg-page)' }}>
+                                <TableRow>
+                                    <TableCell sx={{ fontWeight: 700, py: 2, color: 'var(--text-secondary)' }}>PRODUCT NAME</TableCell>
+                                    <TableCell align="center" sx={{ fontWeight: 700, py: 2, color: 'var(--text-secondary)' }}>QUANTITY</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {values.products.map((item, index) => (
-                                    <TableRow key={index}>
-                                        <TableCell sx={{ fontWeight: 500 }}>{item.name}</TableCell>
-                                        <TableCell align="center" sx={{ fontWeight: 500 }}>{item.quantity}</TableCell>
+                                    <TableRow key={index} sx={{ '&:last-child td': { border: 0 } }}>
+                                        <TableCell sx={{ py: 2, fontWeight: 500 }}>{item.name || "N/A"}</TableCell>
+                                        <TableCell align="center" sx={{ fontWeight: 700, color: 'var(--brand-primary)' }}>{item.quantity}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
-                    </TableContainer>
-                </PreviewSection>
+                    </Paper>
+                </Grid>
 
-                <Divider sx={{ my: 2 }} />
-
-                <PreviewSection icon={Person} title="Approvals">
-                    <Grid container spacing={2}>
-                        <Grid item xs={4}>
-                            <DataItem label="Packed By" value={values.packedBy} />
+                {/* Approvals Information */}
+                <Grid item xs={12} size={{ xs: 12, md: 6 }}>
+                    <Paper elevation={0} sx={{ p: 2, borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'var(--brand-primary)' }}>
+                            <Person sx={{ fontSize: 18 }} />
+                            <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Personnel & Approvals</Typography>
+                        </Box>
+                        <Grid container spacing={2}>
+                            <Grid item xs={4} size={{ xs: 4, md: 6 }}>
+                                <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>Packed By</Typography>
+                                <Typography variant="body2" sx={{ fontWeight: 600 }}>{values.packedBy || "N/A"}</Typography>
+                            </Grid>
+                            <Grid item xs={4} size={{ xs: 4, md: 6 }}>
+                                <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>Approved By</Typography>
+                                <Typography variant="body2" sx={{ fontWeight: 600 }}>{values.approvedBy || "N/A"}</Typography>
+                            </Grid>
+                            <Grid item xs={4} size={{ xs: 4, md: 6 }}>
+                                <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>Accounting By</Typography>
+                                <Typography variant="body2" sx={{ fontWeight: 600 }}>{values.accountingBy || "N/A"}</Typography>
+                            </Grid>
                         </Grid>
-                        <Grid item xs={4}>
-                            <DataItem label="Approved By" value={values.approvedBy} />
-                        </Grid>
-                        <Grid item xs={4}>
-                            <DataItem label="Accounting By" value={values.accountingBy} />
-                        </Grid>
-                    </Grid>
-                </PreviewSection>
-            </DialogContent>
-
-            <DialogActions sx={{ p: 3, bgcolor: "#f8fafc", borderTop: "1px solid #e2e8f0", gap: 2 }}>
-                <Button
-                    onClick={onClose}
-                    variant="outlined"
-                    sx={{
-                        borderRadius: 2,
-                        textTransform: "none",
-                        fontWeight: 600,
-                        px: 4
-                    }}
-                >
-                    Edit Details
-                </Button>
-                <Button
-                    onClick={onConfirm}
-                    variant="contained"
-                    disabled={loading}
-                    startIcon={<CheckCircle />}
-                    sx={{
-                        borderRadius: 2,
-                        textTransform: "none",
-                        fontWeight: 600,
-                        px: 4,
-                        bgcolor: "#1172ba",
-                        "&:hover": { bgcolor: "#0d5a94" }
-                    }}
-                >
-                    {loading ? "Confirming..." : "Confirm & Save"}
-                </Button>
-            </DialogActions>
-        </Dialog>
+                    </Paper>
+                </Grid>
+            </Grid>
+        </FormReviewDialog>
     );
 }
