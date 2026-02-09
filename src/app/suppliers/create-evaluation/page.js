@@ -1,0 +1,341 @@
+"use client";
+import React, { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import {
+    Box,
+    Button,
+    Stepper,
+    Step,
+    StepLabel,
+    Typography,
+    Divider,
+} from "@mui/material";
+import {
+    Save,
+    ArrowForward,
+    ArrowBack,
+} from "@mui/icons-material";
+import CommonCard from "../../../components/ui/CommonCard";
+import SupplierContactSection from "./components/SupplierContactSection";
+import SupplierFacilitiesSection from "./components/SupplierFacilitiesSection";
+import QuestionnaireSection from "./components/QuestionnaireSection";
+import ApprovalSection from "./components/ApprovalSection";
+import SupplierPreviewDialog from "./components/SupplierPreviewDialog";
+import axiosInstance from "@/axios/axiosInstance";
+import Loader from "@/components/ui/Loader";
+import { useNotification } from "@/context/NotificationContext";
+
+const steps = ["Supplier Information", "Facilities & Details", "Questionnaire", "Review & Approval"];
+
+const validationSchema = [
+    // Step 0: Supplier Information
+    Yup.object({
+        supplierName: Yup.string().required("Supplier name is required"),
+        address: Yup.string().required("Address is required"),
+        city: Yup.string().required("City is required"),
+        state: Yup.string().required("State is required"),
+        zipCode: Yup.string().required("Zip code is required"),
+        contactPerson: Yup.string().required("Contact person is required"),
+        title: Yup.string().required("Title is required"),
+        phone: Yup.string().required("Phone is required"),
+    }),
+    // Step 1: Facilities
+    Yup.object({
+        yearEstablished: Yup.string().required("Year established is required"),
+        totalSquareFootage: Yup.string().required("Total square footage is required"),
+        numberOfEmployees: Yup.number().required("Number of employees is required").positive(),
+        qaTitle: Yup.string().required("QA title is required"),
+        numberOfQAEmployees: Yup.number().required("Number of QA employees is required").positive(),
+        productServices: Yup.string().required("Product/Services description is required"),
+    }),
+    // Step 2: Questionnaire
+    Yup.object({}),
+    // Step 3: Approval
+    Yup.object({
+        completedBy: Yup.string().required("Completed by is required"),
+        completedByTitle: Yup.string().required("Title is required"),
+        completedDate: Yup.date().required("Date is required"),
+    }),
+];
+
+function SupplierEvaluationContent() {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const id = searchParams.get("id");
+    const { showNotification } = useNotification();
+
+    const [activeStep, setActiveStep] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [openPreview, setOpenPreview] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
+
+    const formik = useFormik({
+        initialValues: {
+            evaluationNo: "",
+            supplierName: "",
+            address: "",
+            city: "",
+            state: "",
+            zipCode: "",
+            contactPerson: "",
+            title: "",
+            phone: "",
+            yearEstablished: "",
+            totalSquareFootage: "",
+            numberOfEmployees: "",
+            qaTitle: "",
+            numberOfQAEmployees: "",
+            productServices: "",
+            questionnaire: {
+                q1: { answer: "", certificate: "", certCopy: false },
+                q2: { answer: "" },
+                q3: { answer: "" },
+                q4: { answer: "" },
+                q5: { answer: "" },
+                q6: { answer: "" },
+                q7: { answer: "" },
+                q8: { answer: "" },
+                q9: { answer: "" },
+                q10: { answer: "" },
+                q11: { answer: "" },
+                q12: { answer: "" },
+                q13: { answer: "" },
+                q14: { answer: "" },
+                q15: { answer: "" },
+                q16: { answer: "" },
+                q17: { answer: "" },
+                q18: { answer: "" },
+                q19: { answer: "" },
+                q20: { answer: "" },
+                q21: { answer: "" },
+                q22: { answer: "", description: "" },
+                q23: { answer: "" },
+                q24: { answer: "" },
+                q25: { answer: "" },
+                q26: { answer: "" },
+                q27: { answer: "" },
+            },
+            additionalComments: "",
+            completedBy: "",
+            completedByTitle: "",
+            completedDate: new Date().toISOString().split("T")[0],
+            supplierApproved: "",
+            approvalComments: "",
+            reviewedBy: "",
+            reviewedDate: "",
+            approvedBy: "",
+            approvedDate: "",
+            status: "Pending",
+            evaluationDate: new Date().toISOString().split("T")[0],
+        },
+        validationSchema: validationSchema[activeStep],
+        enableReinitialize: true,
+        onSubmit: async () => {
+            setOpenPreview(true);
+        },
+    });
+
+    useEffect(() => {
+        if (id) {
+            const fetchEvaluation = async () => {
+                try {
+                    setLoading(true);
+                    const response = await axiosInstance.get(`/suppliers/${id}`);
+                    if (response.data) {
+                        formik.setValues(response.data);
+                    }
+                } catch (error) {
+                    console.error("Error fetching evaluation:", error);
+                    showNotification("Failed to load evaluation data", "error");
+                } finally {
+                    setLoading(false);
+                }
+            };
+            fetchEvaluation();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id]);
+
+    const handleActualSubmit = async () => {
+        try {
+            setSubmitting(true);
+            const values = formik.values;
+
+            const payload = {
+                ...values,
+                evaluationNo: values.evaluationNo || `FRM12-04-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+            };
+
+            if (id) {
+                await axiosInstance.put(`/suppliers/${id}`, payload);
+                showNotification("Supplier evaluation updated successfully!", "success");
+            } else {
+                await axiosInstance.post("/suppliers", payload);
+                showNotification("Supplier evaluation created successfully!", "success");
+            }
+
+            setOpenPreview(false);
+            router.push("/suppliers");
+        } catch (error) {
+            console.error("Error saving evaluation:", error);
+            showNotification("Failed to save evaluation", "error");
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const handleNext = async () => {
+        const errors = await formik.validateForm();
+        if (Object.keys(errors).length === 0) {
+            setActiveStep((prev) => prev + 1);
+            formik.setTouched({});
+        } else {
+            formik.setTouched(
+                Object.keys(errors).reduce((acc, key) => {
+                    acc[key] = true;
+                    return acc;
+                }, {})
+            );
+        }
+    };
+
+    const handleBack = () => setActiveStep((prev) => prev - 1);
+
+    const getStepContent = (step) => {
+        switch (step) {
+            case 0:
+                return <SupplierContactSection formik={formik} />;
+            case 1:
+                return <SupplierFacilitiesSection formik={formik} />;
+            case 2:
+                return <QuestionnaireSection formik={formik} />;
+            case 3:
+                return <ApprovalSection formik={formik} />;
+            default:
+                return "Unknown step";
+        }
+    };
+
+    if (loading) return <Loader fullPage message="Loading Evaluation..." />;
+
+    return (
+        <Box>
+            <CommonCard title={id ? "Edit Supplier Evaluation" : "New Supplier Evaluation"}>
+                <Box sx={{ p: 1 }}>
+                    <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
+                        {steps.map((label) => (
+                            <Step key={label}>
+                                <StepLabel
+                                    StepIconProps={{
+                                        sx: {
+                                            "&.Mui-active": { color: "#1172ba" },
+                                            "&.Mui-completed": { color: "#1172ba" },
+                                        },
+                                    }}
+                                >
+                                    <Typography variant="body2" fontWeight={700}>
+                                        {label}
+                                    </Typography>
+                                </StepLabel>
+                            </Step>
+                        ))}
+                    </Stepper>
+
+                    <Box sx={{ minHeight: "400px" }}>{getStepContent(activeStep)}</Box>
+
+                    <Divider sx={{ my: 4 }} />
+
+                    <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
+                        <Button
+                            disabled={activeStep === 0}
+                            onClick={handleBack}
+                            startIcon={<ArrowBack />}
+                            sx={{
+                                borderRadius: 2,
+                                px: 4,
+                                py: 1.2,
+                                textTransform: "none",
+                                fontWeight: 700,
+                                color: "#64748b",
+                                "&:hover": { bgcolor: "#f1f5f9" },
+                                visibility: activeStep === 0 ? "hidden" : "visible",
+                            }}
+                        >
+                            Previous
+                        </Button>
+
+                        <Box sx={{ display: "flex", gap: 2 }}>
+                            <Button
+                                variant="outlined"
+                                onClick={() => router.push("/suppliers")}
+                                sx={{
+                                    px: 4,
+                                    py: 1.2,
+                                    fontWeight: 700,
+                                    borderRadius: 2,
+                                    textTransform: "none",
+                                    borderColor: "#e2e8f0",
+                                    color: "#64748b",
+                                }}
+                            >
+                                Cancel
+                            </Button>
+                            {activeStep === steps.length - 1 ? (
+                                <Button
+                                    variant="contained"
+                                    startIcon={<Save />}
+                                    onClick={formik.handleSubmit}
+                                    sx={{
+                                        px: 6,
+                                        py: 1.2,
+                                        fontWeight: 700,
+                                        borderRadius: 2,
+                                        background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
+                                        textTransform: "none",
+                                        boxShadow: "0 4px 12px rgba(17, 114, 186, 0.2)",
+                                    }}
+                                >
+                                    {id ? "Update Evaluation" : "Submit Evaluation"}
+                                </Button>
+                            ) : (
+                                <Button
+                                    variant="contained"
+                                    onClick={handleNext}
+                                    endIcon={<ArrowForward />}
+                                    sx={{
+                                        backgroundColor: "#1172ba",
+                                        borderRadius: 2,
+                                        px: 6,
+                                        py: 1.2,
+                                        textTransform: "none",
+                                        fontWeight: 700,
+                                    }}
+                                >
+                                    Next Step
+                                </Button>
+                            )}
+                        </Box>
+                    </Box>
+
+                    <SupplierPreviewDialog
+                        open={openPreview}
+                        onClose={() => setOpenPreview(false)}
+                        onConfirm={handleActualSubmit}
+                        values={formik.values}
+                        loading={submitting}
+                    />
+                </Box>
+            </CommonCard>
+        </Box>
+    );
+}
+
+export default function SupplierEvaluation() {
+    return (
+        <Suspense fallback={<Loader fullPage message="Loading..." />}>
+            <SupplierEvaluationContent />
+        </Suspense>
+    );
+}
