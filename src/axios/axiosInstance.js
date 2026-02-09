@@ -1,6 +1,6 @@
 import axios from "axios";
 const axiosInstance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || "http://52.66.131.217:3005",
+    baseURL: process.env.NEXT_PUBLIC_API_URL || "https://json-test-server.scanbo.com",
     headers: {
         "Content-Type": "application/json"
     },
