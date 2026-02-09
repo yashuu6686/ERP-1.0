@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import {
     Box,
     Button,
@@ -9,31 +9,21 @@ import {
     Typography,
     Divider,
     Paper,
-    Grid as MuiGrid,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Chip,
 } from "@mui/material";
 import {
     ArrowForward,
     Save,
     ArrowBack,
-    Assignment,
 } from "@mui/icons-material";
 import CommonCard from "../../../components/ui/CommonCard";
 import DeviceInfoStep from "../components/DeviceInfoStep";
 import TestingProcessStep from "../components/TestingProcessStep";
 import PackagingDetailsStep from "../components/PackagingDetailsStep";
 import ReviewSummaryStep from "../components/ReviewSummaryStep";
-import FormReviewDialog from "../../../components/ui/FormReviewDialog";
+import SOPPreviewDialog from "../components/SOPPreviewDialog";
 import { useRouter, useSearchParams } from "next/navigation";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/ui/Loader";
-import { Suspense } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useNotification } from "@/context/NotificationContext";
 import NotificationService from "@/services/NotificationService";
@@ -79,7 +69,8 @@ function SOPFormContent() {
     const id = searchParams.get("id");
     const [activeStep, setActiveStep] = useState(0);
     const [loading, setLoading] = useState(false);
-    const [showPreview, setShowPreview] = useState(false);
+    const [openPreview, setOpenPreview] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
 
     const formik = useFormik({
         initialValues: {
@@ -100,35 +91,14 @@ function SOPFormContent() {
         },
         validationSchema: validationSchema[activeStep],
         enableReinitialize: true,
-        onSubmit: async (values) => {
-            setShowPreview(true);
+        onSubmit: async () => {
+            setOpenPreview(true);
         },
     });
 
-    useEffect(() => {
-        const fetchSopDetails = async () => {
-            try {
-                setLoading(true);
-                const response = await axiosInstance.get(`/sops/${id}`);
-                if (response.data) {
-                    formik.setValues(response.data);
-                }
-            } catch (error) {
-                console.error("Error fetching SOP details:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        if (id) {
-            fetchSopDetails();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id]);
-
-    const handleFinalSubmitAction = async () => {
+    const handleActualSubmit = async () => {
         try {
-            setLoading(true);
+            setSubmitting(true);
             const values = formik.values;
             const isHR = user?.role === 'hr';
             const status = isHR ? "Pending Approval" : "Completed";
@@ -157,16 +127,37 @@ function SOPFormContent() {
                 });
             }
 
-            setShowPreview(false);
+            setOpenPreview(false);
             showNotification(`SOP ${id ? "Updated" : "Saved"} Successfully!`, "success");
             router.push("/sop");
         } catch (error) {
             console.error("Error saving SOP:", error);
             showNotification("Failed to save SOP.", "error");
         } finally {
-            setLoading(false);
+            setSubmitting(false);
         }
     };
+
+    useEffect(() => {
+        const fetchSopDetails = async () => {
+            try {
+                setLoading(true);
+                const response = await axiosInstance.get(`/sops/${id}`);
+                if (response.data) {
+                    formik.setValues(response.data);
+                }
+            } catch (error) {
+                console.error("Error fetching SOP details:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (id) {
+            fetchSopDetails();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id]);
 
     const handleNext = async () => {
         const errors = await formik.validateForm();
@@ -284,139 +275,13 @@ function SOPFormContent() {
                 </Box>
             </CommonCard>
 
-            <FormReviewDialog
-                open={showPreview}
-                onClose={() => setShowPreview(false)}
-                onConfirm={handleFinalSubmitAction}
-                title="Review SOP Details"
-                icon={<Assignment />}
-                headerInfo={{
-                    label1: "DEVICE ID",
-                    value1: formik.values.deviceId || "N/A",
-                    label2: "DATE",
-                    value2: formik.values.date
-                }}
-                confirmLabel={id ? "Confirm & Update" : "Confirm & Save"}
-            >
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                    {/* Section 1: Basic Info */}
-                    <Box>
-                        <Typography variant="subtitle2" sx={{ color: '#1172ba', fontWeight: 700, mb: 1.5, textTransform: 'uppercase' }}>
-                            1. Device & Company Information
-                        </Typography>
-                        <MuiGrid container spacing={2}>
-                            {[
-                                { label: 'Device ID', value: formik.values.deviceId },
-                                { label: 'Company Name', value: formik.values.companyName },
-                                { label: 'Company Address', value: formik.values.companyAddress },
-                                { label: 'Check Date', value: formik.values.date },
-                            ].map((item, i) => (
-                                <MuiGrid item xs={6} md={3} key={i}>
-                                    <Typography variant="caption" color="textSecondary">{item.label}</Typography>
-                                    <Typography variant="body2" sx={{ fontWeight: 500 }}>{item.value || '-'}</Typography>
-                                </MuiGrid>
-                            ))}
-                        </MuiGrid>
-                    </Box>
-
-                    <Divider />
-
-                    {/* Section 2: Testing Results */}
-                    <Box>
-                        <Typography variant="subtitle2" sx={{ color: '#1172ba', fontWeight: 700, mb: 1.5, textTransform: 'uppercase' }}>
-                            2. Testing Process Summary
-                        </Typography>
-                        <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid #e2e8f0' }}>
-                            <Table size="small">
-                                <TableHead>
-                                    <TableRow sx={{ bgcolor: '#f8fafc' }}>
-                                        <TableCell sx={{ fontWeight: 600 }}>Sr.No</TableCell>
-                                        <TableCell sx={{ fontWeight: 600 }}>Task</TableCell>
-                                        <TableCell sx={{ fontWeight: 600 }}>Expected</TableCell>
-                                        <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {Object.entries(formik.values.testingResults || {}).map(([idx, res], i) => (
-                                        <TableRow key={i}>
-                                            <TableCell>{i + 1}</TableCell>
-                                            <TableCell>{res.task || `Step ${i + 1}`}</TableCell>
-                                            <TableCell>{res.expected}</TableCell>
-                                            <TableCell>
-                                                <Chip
-                                                    label={res.status || 'N/A'}
-                                                    size="small"
-                                                    color={res.status === 'Pass' ? 'success' : res.status === 'Fail' ? 'error' : 'default'}
-                                                />
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </Box>
-
-                    <Divider />
-
-                    {/* Section 3: Packaging Details */}
-                    <Box>
-                        <Typography variant="subtitle2" sx={{ color: '#1172ba', fontWeight: 700, mb: 1.5, textTransform: 'uppercase' }}>
-                            3. Packaging Summary
-                        </Typography>
-                        <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid #e2e8f0' }}>
-                            <Table size="small">
-                                <TableHead>
-                                    <TableRow sx={{ bgcolor: '#f8fafc' }}>
-                                        <TableCell sx={{ fontWeight: 600 }}>Sr.No</TableCell>
-                                        <TableCell sx={{ fontWeight: 600 }}>Component</TableCell>
-                                        <TableCell sx={{ fontWeight: 600 }}>Expected</TableCell>
-                                        <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {Object.entries(formik.values.packagingResults || {}).map(([idx, res], i) => (
-                                        <TableRow key={i}>
-                                            <TableCell>{i + 1}</TableCell>
-                                            <TableCell>{res.components || `Item ${i + 1}`}</TableCell>
-                                            <TableCell>{res.expected}</TableCell>
-                                            <TableCell>
-                                                <Chip
-                                                    label={res.status || 'N/A'}
-                                                    size="small"
-                                                    color={res.status === 'Pass' ? 'success' : res.status === 'Fail' ? 'error' : 'default'}
-                                                />
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </Box>
-
-                    <Divider />
-
-                    {/* Section 4: Authorization */}
-                    <Box>
-                        <Typography variant="subtitle2" sx={{ color: '#1172ba', fontWeight: 700, mb: 1.5, textTransform: 'uppercase' }}>
-                            4. Authorizations
-                        </Typography>
-                        <MuiGrid container spacing={2}>
-                            {[
-                                { label: 'Testing By', value: formik.values.testingBy, date: formik.values.testingDate },
-                                { label: 'Verified By', value: formik.values.verifiedBy, date: formik.values.verifiedDate },
-                                { label: 'Packed By', value: formik.values.packedBy, date: formik.values.date },
-                                { label: 'Checked By', value: formik.values.checkedBy, date: formik.values.date },
-                            ].map((item, i) => (
-                                <MuiGrid item xs={6} md={3} key={i}>
-                                    <Typography variant="caption" color="textSecondary" sx={{ display: 'block' }}>{item.label}</Typography>
-                                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{item.value || '-'}</Typography>
-                                    <Typography variant="caption" color="textSecondary">{item.date}</Typography>
-                                </MuiGrid>
-                            ))}
-                        </MuiGrid>
-                    </Box>
-                </Box>
-            </FormReviewDialog>
+            <SOPPreviewDialog
+                open={openPreview}
+                onClose={() => setOpenPreview(false)}
+                onConfirm={handleActualSubmit}
+                values={formik.values}
+                loading={submitting}
+            />
         </Box>
     );
 }

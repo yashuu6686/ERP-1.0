@@ -35,6 +35,7 @@ import DispatchInfoCard from "./components/DispatchInfoCard";
 import CustomerDeliveryCard from "./components/CustomerDeliveryCard";
 import ProductDetailsTable from "./components/ProductDetailsTable";
 import PackagingApprovalsCard from "./components/PackagingApprovalsCard";
+import DispatchPreviewDialog from "./components/DispatchPreviewDialog";
 import { useRouter, useSearchParams } from "next/navigation";
 import CommonCard from "@/components/ui/CommonCard";
 import axiosInstance from "@/axios/axiosInstance";
@@ -42,7 +43,6 @@ import Loader from "@/components/ui/Loader";
 import { useAuth } from "@/context/AuthContext";
 import { useNotification } from "@/context/NotificationContext";
 import NotificationService from "@/services/NotificationService";
-import FormReviewDialog from "@/components/ui/FormReviewDialog";
 
 const steps = ["Dispatch Info", "Customer Logistics", "Product Details", "Approvals"];
 
@@ -57,7 +57,8 @@ function CreateDispatchEntryContent() {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
-  const [showPreview, setShowPreview] = useState(false);
+  const [openPreview, setOpenPreview] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const initialValues = {
     companyName: "Scanbo Engineering Pvt. Ltd.",
@@ -124,14 +125,14 @@ function CreateDispatchEntryContent() {
     initialValues,
     validationSchema: validationSchema[activeStep],
     enableReinitialize: true,
-    onSubmit: async (values) => {
-      setShowPreview(true);
+    onSubmit: async () => {
+      setOpenPreview(true);
     },
   });
 
-  const handleFinalSubmitAction = async () => {
+  const handleActualSubmit = async () => {
     try {
-      setLoading(true);
+      setSubmitting(true);
       const values = formik.values;
       const isHR = user?.role === 'hr';
       const status = isHR ? "Pending Approval" : "Shipped";
@@ -182,14 +183,14 @@ function CreateDispatchEntryContent() {
         });
       }
 
-      setShowPreview(false);
+      setOpenPreview(false);
       showNotification(`Dispatch Entry ${id ? "Updated" : "Saved"} Successfully!`, "success");
       router.push("/dispatch");
     } catch (error) {
       console.error("Save Error:", error);
       showNotification("Failed to save dispatch entry.", "error");
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
@@ -454,132 +455,16 @@ function CreateDispatchEntryContent() {
               </Button>
             )}
           </Box>
+
+          <DispatchPreviewDialog
+            open={openPreview}
+            onClose={() => setOpenPreview(false)}
+            onConfirm={handleActualSubmit}
+            values={formik.values}
+            loading={submitting}
+          />
         </Box>
       </CommonCard>
-
-      <FormReviewDialog
-        open={showPreview}
-        onClose={() => setShowPreview(false)}
-        onConfirm={handleFinalSubmitAction}
-        title="Review Dispatch Entry"
-        icon={<LocalShipping />}
-        headerInfo={{
-          label1: "DISPATCH NO",
-          value1: formik.values.dispatchNo || "N/A",
-          label2: "ORDER REF",
-          value2: formik.values.referenceNo || "N/A"
-        }}
-        confirmLabel={id ? "Confirm & Update" : "Confirm & Ship"}
-      >
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3.5, p: 1 }}>
-          <MuiGrid container spacing={3}>
-            {/* 1. Dispatch Details */}
-            <MuiGrid size={{ xs: 12 }} >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-                <LocalShipping sx={{ color: 'var(--brand-primary)', fontSize: 20 }} />
-                <MuiTypography variant="subtitle2" sx={{ fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  Dispatch Details
-                </MuiTypography>
-              </Box>
-              <Paper elevation={0} sx={{ p: 2, bgcolor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 2 }}>
-                <MuiGrid container spacing={2}>
-                  {[
-                    { label: 'Dispatch Date', value: formik.values.dispatchDate },
-                    { label: 'Tracking #', value: formik.values.trackingNumber },
-                    { label: 'Carrier', value: formik.values.courierCompany },
-                    { label: 'Platform', value: formik.values.salesPlatform }
-                  ].map((item, i) => (
-                    <MuiGrid size={{ xs: 12 }} key={i}>
-                      <MuiTypography variant="caption" sx={{ color: '#64748b', fontWeight: 600, display: 'block', mb: 0.5 }}>{item.label}</MuiTypography>
-                      <MuiTypography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>{item.value || '-'}</MuiTypography>
-                    </MuiGrid>
-                  ))}
-                </MuiGrid>
-              </Paper>
-            </MuiGrid>
-
-            {/* 2. Customer Information */}
-            <MuiGrid size={{ xs: 12 }} >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-                <Business sx={{ color: 'var(--brand-primary)', fontSize: 20 }} />
-                <MuiTypography variant="subtitle2" sx={{ fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  Customer Information
-                </MuiTypography>
-              </Box>
-              <Paper elevation={0} sx={{ p: 2, bgcolor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 2 }}>
-                <MuiGrid container spacing={2}>
-                  <MuiGrid size={{ xs: 12 }} >
-                    <MuiTypography variant="caption" sx={{ color: '#64748b', fontWeight: 600, display: 'block', mb: 0.5 }}>Customer Name</MuiTypography>
-                    <MuiTypography variant="body2" sx={{ fontWeight: 700, color: 'var(--brand-primary)' }}>{formik.values.customerName || '-'}</MuiTypography>
-                  </MuiGrid>
-                  <MuiGrid size={{ xs: 12 }} >
-                    <MuiTypography variant="caption" sx={{ color: '#64748b', fontWeight: 600, display: 'block', mb: 0.5 }}>Contact Person</MuiTypography>
-                    <MuiTypography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>{formik.values.contactPerson || '-'}</MuiTypography>
-                  </MuiGrid>
-                  <MuiGrid size={{ xs: 12 }} >
-                    <MuiTypography variant="caption" sx={{ color: '#64748b', fontWeight: 600, display: 'block', mb: 0.5 }}>Delivery Address</MuiTypography>
-                    <MuiTypography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>{formik.values.deliveryAddress || '-'}</MuiTypography>
-                  </MuiGrid>
-                </MuiGrid>
-              </Paper>
-            </MuiGrid>
-
-            {/* 3. Product Summary */}
-            <MuiGrid size={{ xs: 12 }} >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-                <Inventory sx={{ color: 'var(--brand-primary)', fontSize: 20 }} />
-                <MuiTypography variant="subtitle2" sx={{ fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  Product Summary
-                </MuiTypography>
-              </Box>
-              <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid #e2e8f0', borderRadius: 2 }}>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow sx={{ bgcolor: '#f1f5f9' }}>
-                      <TableCell sx={{ fontWeight: 700, color: '#475569' }}>#</TableCell>
-                      <TableCell sx={{ fontWeight: 700, color: '#475569' }}>Product Name</TableCell>
-                      <TableCell align="right" sx={{ fontWeight: 700, color: '#475569' }}>Qty</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {formik.values.products.map((row, index) => (
-                      <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                        <TableCell sx={{ color: '#64748b' }}>{index + 1}</TableCell>
-                        <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>{row.name}</TableCell>
-                        <TableCell align="right" sx={{ fontWeight: 700, color: 'var(--brand-primary)' }}>{row.quantity}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </MuiGrid>
-
-            {/* 4. Approvals */}
-            <MuiGrid size={{ xs: 12 }} >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-                <Person sx={{ color: 'var(--brand-primary)', fontSize: 20 }} />
-                <MuiTypography variant="subtitle2" sx={{ fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  Authorized Personnel
-                </MuiTypography>
-              </Box>
-              <Paper elevation={0} sx={{ p: 2, bgcolor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 2 }}>
-                <MuiGrid container spacing={2}>
-                  {[
-                    { label: 'Packed By', value: formik.values.packedBy },
-                    { label: 'Approved By', value: formik.values.approvedBy },
-                    { label: 'Accounting By', value: formik.values.accountingBy }
-                  ].map((item, i) => (
-                    <MuiGrid size={{ xs: 12 }} >
-                      <MuiTypography variant="caption" sx={{ color: '#64748b', fontWeight: 600, display: 'block', mb: 0.5 }}>{item.label}</MuiTypography>
-                      <MuiTypography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>{item.value || '-'}</MuiTypography>
-                    </MuiGrid>
-                  ))}
-                </MuiGrid>
-              </Paper>
-            </MuiGrid>
-          </MuiGrid>
-        </Box>
-      </FormReviewDialog>
     </Box>
   );
 }
