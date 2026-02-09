@@ -48,28 +48,43 @@ const InvoiceDetailsSection = ({ formik, orders = [], selectedOrderId, onOrderCh
             <CardContent sx={{ p: 3, bgcolor: "#f8fafc" }}>
                 <Grid container spacing={3}>
                     <Grid item xs={12} md={3} size={{ xs: 12, md: 3 }}>
-                        <TextField
-                            select
-                            fullWidth
-                            label="Order Number"
-                            variant="outlined"
-                            size="small"
-                            value={selectedOrderId || ""}
-                            onChange={(e) => onOrderChange?.(e.target.value)}
-                            onBlur={() => formik.setFieldTouched("invoiceInfo.orderNo", true)}
-                            error={touched.invoiceInfo?.orderNo && Boolean(errors.invoiceInfo?.orderNo)}
-                            helperText={touched.invoiceInfo?.orderNo && errors.invoiceInfo?.orderNo}
-                            sx={{
-                                "& .MuiOutlinedInput-root": { bgcolor: "white" },
-                            }}
-                            required
-                        >
-                            {orders.map((order) => (
-                                <MenuItem key={order.id} value={order.id}>
-                                    {order.orderNo}
-                                </MenuItem>
-                            ))}
-                        </TextField>
+                        {formik.values.id || formik.values._isEdit ? (
+                            <TextField
+                                fullWidth
+                                label="Order Number"
+                                variant="outlined"
+                                size="small"
+                                value={values.invoiceInfo.orderNo || ""}
+                                disabled
+                                sx={{
+                                    "& .MuiOutlinedInput-root": { bgcolor: "#f1f5f9" },
+                                    "& .MuiInputBase-input.Mui-disabled": { color: "#475569", WebkitTextFillColor: "#475569" }
+                                }}
+                            />
+                        ) : (
+                            <TextField
+                                select
+                                fullWidth
+                                label="Order Number"
+                                variant="outlined"
+                                size="small"
+                                value={selectedOrderId || ""}
+                                onChange={(e) => onOrderChange?.(e.target.value)}
+                                onBlur={() => formik.setFieldTouched("invoiceInfo.orderNo", true)}
+                                error={touched.invoiceInfo?.orderNo && Boolean(errors.invoiceInfo?.orderNo)}
+                                helperText={touched.invoiceInfo?.orderNo && errors.invoiceInfo?.orderNo}
+                                sx={{
+                                    "& .MuiOutlinedInput-root": { bgcolor: "white" },
+                                }}
+                                required
+                            >
+                                {orders.map((order) => (
+                                    <MenuItem key={order.id} value={order.id}>
+                                        {order.orderNo}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        )}
                     </Grid>
                     <Grid item xs={12} md={3} size={{ xs: 12, md: 3 }}>
                         <TextField

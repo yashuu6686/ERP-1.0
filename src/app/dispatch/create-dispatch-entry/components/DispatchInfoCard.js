@@ -41,11 +41,13 @@ export default function DispatchInfoCard({ formik, orders, onOrderSelect }) {
                         <Autocomplete
                             options={orders || []}
                             getOptionLabel={(option) => option.orderNo || option.orderId || option.orderNumber || option.id || ""}
+                            value={orders?.find(o => (o.orderNo || o.orderId || o.orderNumber || o.id) === formik.values.referenceNo) || null}
                             onChange={(event, newValue) => {
                                 if (newValue) {
                                     onOrderSelect?.(newValue);
                                 }
                             }}
+                            disabled={!!formik.values._isEdit}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
@@ -65,11 +67,16 @@ export default function DispatchInfoCard({ formik, orders, onOrderSelect }) {
                                     }}
                                     sx={{
                                         "& .MuiOutlinedInput-root": {
-                                            bgcolor: "white",
+                                            bgcolor: formik.values._isEdit ? "#f1f5f9" : "white",
                                             "&:hover": {
                                                 "& > fieldset": { borderColor: "#1172ba" },
                                             },
                                         },
+                                        "& .MuiInputBase-input.Mui-disabled": {
+                                            color: "#475569",
+                                            WebkitTextFillColor: "#475569",
+                                            fontWeight: 600
+                                        }
                                     }}
                                 />
                             )}

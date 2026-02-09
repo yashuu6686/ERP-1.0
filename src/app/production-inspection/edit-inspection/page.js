@@ -5,19 +5,25 @@ import Button from "@mui/material/Button";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
+import Grid from "@mui/material/Grid";
 
 import CheckCircle from "@mui/icons-material/CheckCircle";
-import Save from "@mui/icons-material/Save";
 import ArrowBack from "@mui/icons-material/ArrowBack";
 import ArrowForward from "@mui/icons-material/ArrowForward";
+import Visibility from "@mui/icons-material/Visibility";
 import { useRouter, useSearchParams } from "next/navigation";
 import CommonCard from "../../../components/ui/CommonCard";
 import ProductDetailsSection from "../after-production-quality-check/components/ProductDetailsSection";
 import QualityCheckDetailsTable from "../after-production-quality-check/components/QualityCheckDetailsTable";
 import InspectionSummarySection from "../after-production-quality-check/components/InspectionSummarySection";
 import InspectionApproval from "@/components/inspection/InspectionApproval";
+import ProductionInspectionPreviewDialog from "../components/ProductionInspectionPreviewDialog";
 import axiosInstance from "../../../axios/axiosInstance";
 import Loader from "@/components/ui/Loader";
+import { useAuth } from "@/context/AuthContext";
+import { useNotification } from "@/context/NotificationContext";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 const steps = [
     "Product Details",
@@ -27,46 +33,146 @@ const steps = [
 
 function EditInspectionContent() {
     const router = useRouter();
+    const { user } = useAuth();
+    const { showNotification } = useNotification();
     const searchParams = useSearchParams();
     const id = searchParams.get("id");
     const [activeStep, setActiveStep] = useState(0);
     const [loading, setLoading] = useState(true);
-
-    const [productDetails, setProductDetails] = useState({
-        productName: "",
-        qualityStandard: "",
-        checkedQuantity: "",
-        inspectionDate: "",
-        checkNumber: "",
-    });
-
-    const [checkDetails, setCheckDetails] = useState([
-        {
-            id: 1,
-            parameters: "",
-            specification: "",
-            method: "",
-            observation: "",
-            remarks: "",
-        },
+    const [submitting, setSubmitting] = useState(false);
+    const [showPreview, setShowPreview] = useState(false);
+    const [materialRequests, setMaterialRequests] = useState([]);
+    const [observationColumns, setObservationColumns] = useState([
+        { id: "observation", label: "Observation" },
     ]);
 
-    const [inspectionSummary, setInspectionSummary] = useState({
-        acceptedQuantity: "",
-        rejectedQuantity: "",
-        holdScrapQuantity: "",
-        other: "",
-        comments: "",
+    const getValidationSchema = (step, userRole) => {
+        const schemas = [
+            // Step 0: Product Details
+            Yup.object({
+                productName: Yup.string().required("Product Name is required"),
+                qualityStandard: Yup.string().required("Quality Standard No is required"),
+                checkedQuantity: Yup.number()
+                    .required("Checked Quantity is required")
+                    .positive("Must be positive")
+                    .typeError("Must be a number"),
+                inspectionDate: Yup.date().required("Inspection Date is required"),
+                checkNumber: Yup.string().required("Check Number is required"),
+                materialRequestNo: Yup.string(),
+            }),
+            // Step 1: Quality Check Details
+            Yup.object({
+                checkDetails: Yup.array().of(
+                    Yup.lazy(() => {
+                        const shape = {
+                            parameters: Yup.string().required("Parameters required"),
+                            specification: Yup.string().required("Specification required"),
+                            method: Yup.string().required("Method required"),
+                            remarks: Yup.string(),
+                        };
+                        observationColumns.forEach((col) => {
+                            shape[col.id] = Yup.string().required("Observation required");
+                        });
+                        return Yup.object(shape);
+                    })
+                ).min(1, "At least one row required"),
+            }),
+            // Step 2: Summary & Approval
+            Yup.object({
+                acceptedQuantity: Yup.number()
+                    .required("Accepted Qty required")
+                    .min(0, "Cannot be negative")
+                    .typeError("Must be a number"),
+                rejectedQuantity: Yup.number()
+                    .required("Rejected Qty required")
+                    .min(0, "Cannot be negative")
+                    .typeError("Must be a number"),
+                holdScrapQuantity: Yup.number()
+                    .required("Hold/Scrap Qty required")
+                    .min(0, "Cannot be negative")
+                    .typeError("Must be a number"),
+                other: Yup.number()
+                    .min(0, "Cannot be negative")
+                    .typeError("Must be a number")
+                    .nullable(),
+                comments: Yup.string().nullable(),
+                updatedBy: Yup.object({
+                    name: Yup.string().required("Name is required"),
+                    date: Yup.date().required("Date is required"),
+                }),
+                approvedBy: Yup.object({
+                    name: userRole === 'admin'
+                        ? Yup.string().required("Name is required")
+                        : Yup.string().nullable(),
+                    date: userRole === 'admin'
+                        ? Yup.date().required("Date is required")
+                        : Yup.date().nullable(),
+                }),
+            }),
+        ];
+        return schemas[step];
+    };
+
+    const formik = useFormik({
+        initialValues: {
+            productName: "",
+            qualityStandard: "",
+            checkedQuantity: "",
+            inspectionDate: "",
+            checkNumber: "",
+            materialRequestNo: "",
+            checkDetails: [
+                {
+                    id: 1,
+                    parameters: "",
+                    specification: "",
+                    method: "",
+                    observation: "",
+                    remarks: "",
+                },
+            ],
+            acceptedQuantity: "",
+            rejectedQuantity: "",
+            holdScrapQuantity: "",
+            other: "",
+            comments: "",
+            updatedBy: { name: "", date: "" },
+            approvedBy: { name: "", date: "" },
+        },
+        validationSchema: getValidationSchema(activeStep, user?.role),
+        onSubmit: async (values) => {
+            setShowPreview(true);
+        },
     });
 
-    const [approval, setApproval] = useState({
-        updatedByName: "",
-        updatedByDate: "",
-        approvedByName: "",
-        approvedByDate: "",
-    });
+    const handleFinalSubmit = async () => {
+        try {
+            setSubmitting(true);
+            setShowPreview(false);
+            const values = formik.values;
+            const formData = {
+                ...values,
+                approval: {
+                    updatedByName: values.updatedBy.name,
+                    updatedByDate: values.updatedBy.date,
+                    approvedByName: values.approvedBy.name,
+                    approvedByDate: values.approvedBy.date,
+                },
+                id: id,
+                status: (user?.role === 'hr' && !values.approvedBy.name) ? "Pending Approval" : "Completed",
+                updatedAt: new Date().toISOString()
+            };
 
-    const [materialRequests, setMaterialRequests] = useState([]);
+            await axiosInstance.put(`/quality-inspection/${id}`, formData);
+            showNotification("Quality Check updated successfully!", "success");
+            router.push("/production-inspection");
+        } catch (error) {
+            console.error("Error updating quality check:", error);
+            showNotification("Failed to update quality check.", "error");
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     useEffect(() => {
         const fetchMaterialRequests = async () => {
@@ -85,32 +191,59 @@ function EditInspectionContent() {
             if (!id) return;
             try {
                 setLoading(true);
-                const response = await axiosInstance.get(`/quality-inspection?id=${id}`); // Or direct /quality-inspection/id
-                // JSON server might return array for query param, or object for direct id.
-                // Assuming we get the object or find it
+                const response = await axiosInstance.get(`/quality-inspection?id=${id}`);
                 let data = response.data;
                 if (Array.isArray(data)) {
                     data = data.find(i => i.id == id) || data[0];
                 }
 
                 if (data) {
-                    setProductDetails({
+                    if (data.checkDetails && data.checkDetails.length > 0) {
+                        const firstRow = data.checkDetails[0];
+                        const customCols = Object.keys(firstRow).filter(k =>
+                            k.startsWith('observation_') || (k === 'observation' && !observationColumns.find(c => c.id === 'observation'))
+                        );
+
+                        if (customCols.length > 0) {
+                            const newCols = customCols.map(id => ({
+                                id,
+                                label: id === 'observation' ? 'Observation' : `Observation ${id.split('_')[1]}`
+                            }));
+                            setObservationColumns(newCols);
+                        }
+                    }
+
+                    formik.setValues({
                         productName: data.productName || "",
                         qualityStandard: data.qualityStandard || "",
                         checkedQuantity: data.checkedQuantity || "",
                         inspectionDate: data.inspectionDate || "",
                         checkNumber: data.checkNumber || "",
                         materialRequestNo: data.materialRequestNo || "",
-                    });
-                    if (data.checkDetails) setCheckDetails(data.checkDetails);
-                    setInspectionSummary({
+                        checkDetails: data.checkDetails || [
+                            {
+                                id: 1,
+                                parameters: "",
+                                specification: "",
+                                method: "",
+                                observation: "",
+                                remarks: "",
+                            },
+                        ],
                         acceptedQuantity: data.acceptedQuantity || "",
                         rejectedQuantity: data.rejectedQuantity || "",
                         holdScrapQuantity: data.holdScrapQuantity || "",
                         other: data.other || "",
                         comments: data.comments || "",
+                        updatedBy: {
+                            name: data.approval?.updatedByName || "",
+                            date: data.approval?.updatedByDate || ""
+                        },
+                        approvedBy: {
+                            name: data.approval?.approvedByName || "",
+                            date: data.approval?.approvedByDate || ""
+                        },
                     });
-                    if (data.approval) setApproval(data.approval);
                 }
             } catch (error) {
                 console.error("Error fetching inspection details:", error);
@@ -119,89 +252,91 @@ function EditInspectionContent() {
             }
         };
         fetchInspection();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
-    const handleNext = () => {
-        setActiveStep((prevStep) => prevStep + 1);
+    const handleMaterialRequestChange = (requestNo) => {
+        formik.setFieldValue("materialRequestNo", requestNo);
+        if (!requestNo) {
+            formik.setFieldValue("productName", "");
+            formik.setFieldValue("checkedQuantity", "");
+            return;
+        }
+        const selected = materialRequests.find(r => r.requestNo === requestNo);
+        if (selected) {
+            formik.setFieldValue("productName", selected.productName || selected.product || "");
+            formik.setFieldValue("checkedQuantity", selected.requiredQty || selected.qty || "");
+        }
+    };
+
+    const handleNext = async () => {
+        const errors = await formik.validateForm();
+        if (Object.keys(errors).length === 0) {
+            setActiveStep((prev) => prev + 1);
+        } else {
+            const touched = Object.keys(errors).reduce((acc, key) => {
+                if (key === 'checkDetails') {
+                    acc[key] = formik.values.checkDetails.map(row =>
+                        Object.keys(row).reduce((rAcc, rKey) => ({ ...rAcc, [rKey]: true }), {})
+                    );
+                } else {
+                    acc[key] = true;
+                }
+                return acc;
+            }, {});
+            formik.setTouched(touched);
+        }
     };
 
     const handleBack = () => {
         setActiveStep((prevStep) => prevStep - 1);
     };
 
-    const handleProductDetailsChange = (field, value) => {
-        setProductDetails((prev) => ({ ...prev, [field]: value }));
-    };
-
-    const handleMaterialRequestChange = (requestNo) => {
-        const selected = materialRequests.find(r => r.requestNo === requestNo);
-        if (selected) {
-            setProductDetails(prev => ({
-                ...prev,
-                materialRequestNo: requestNo,
-                productName: selected.productName || selected.product || "",
-                checkedQuantity: selected.requiredQty || selected.qty || "",
-            }));
-        } else {
-            setProductDetails(prev => ({ ...prev, materialRequestNo: requestNo }));
-        }
-    };
-
-    const handleCheckDetailsChange = (id, field, value) => {
-        setCheckDetails((prev) =>
-            prev.map((row) => (row.id === id ? { ...row, [field]: value } : row))
-        );
-    };
-
     const addRow = () => {
-        const newId = Math.max(...checkDetails.map((r) => r.id), 0) + 1;
-        setCheckDetails((prev) => [
-            ...prev,
-            {
-                id: newId,
-                parameters: "",
-                specification: "",
-                method: "",
-                observation: "",
-                remarks: "",
-            },
-        ]);
+        const newId = Math.max(...formik.values.checkDetails.map((r) => r.id), 0) + 1;
+        const newRow = {
+            id: newId,
+            parameters: "",
+            specification: "",
+            method: "",
+            remarks: "",
+        };
+        observationColumns.forEach(col => {
+            newRow[col.id] = "";
+        });
+        formik.setFieldValue("checkDetails", [...formik.values.checkDetails, newRow]);
     };
 
     const deleteRow = (id) => {
-        if (checkDetails.length > 1) {
-            setCheckDetails((prev) => prev.filter((row) => row.id !== id));
+        if (formik.values.checkDetails.length > 1) {
+            formik.setFieldValue("checkDetails", formik.values.checkDetails.filter((row) => row.id !== id));
         }
     };
 
-    const handleInspectionSummaryChange = (field, value) => {
-        setInspectionSummary((prev) => ({ ...prev, [field]: value }));
+    const addObservationColumn = () => {
+        const nextColNum = observationColumns.length + 1;
+        const newColId = `observation_${nextColNum}`;
+        setObservationColumns([
+            ...observationColumns,
+            { id: newColId, label: `Observation ${nextColNum}` },
+        ]);
+
+        const updatedDetails = formik.values.checkDetails.map(row => ({
+            ...row,
+            [newColId]: ""
+        }));
+        formik.setFieldValue("checkDetails", updatedDetails);
     };
 
-    const handleApprovalChange = (section, field, value) => {
-        const key = `${section}${field.charAt(0).toUpperCase() + field.slice(1)}`;
-        setApproval((prev) => ({ ...prev, [key]: value }));
-    };
-
-    const handleSubmit = async () => {
-        try {
-            const formData = {
-                ...productDetails,
-                checkDetails,
-                ...inspectionSummary,
-                approval,
-                id: id, // Ensure ID is preserved
-                status: "Completed",
-                updatedAt: new Date().toISOString()
-            };
-
-            console.log("Updating Quality Check:", formData);
-            await axiosInstance.put(`/quality-inspection/${id}`, formData);
-            alert("Quality Check updated successfully!");
-            router.push("/production-inspection");
-        } catch (error) {
-            console.error("Error updating quality check:", error);
-            alert("Failed to update quality check.");
+    const removeObservationColumn = (colId) => {
+        if (observationColumns.length > 1) {
+            setObservationColumns(observationColumns.filter((col) => col.id !== colId));
+            const updatedDetails = formik.values.checkDetails.map((row) => {
+                const newRow = { ...row };
+                delete newRow[colId];
+                return newRow;
+            });
+            formik.setFieldValue("checkDetails", updatedDetails);
         }
     };
 
@@ -212,31 +347,59 @@ function EditInspectionContent() {
             case 0:
                 return (
                     <ProductDetailsSection
-                        data={productDetails}
-                        onChange={handleProductDetailsChange}
+                        data={formik.values}
+                        onChange={(field, val) => formik.setFieldValue(field, val)}
                         materialRequests={materialRequests}
                         onRequestChange={handleMaterialRequestChange}
                         isEdit={true}
+                        formik={formik}
                     />
                 );
             case 1:
                 return (
                     <QualityCheckDetailsTable
-                        data={checkDetails}
-                        onAdd={addRow}
+                        data={formik.values.checkDetails}
+                        onAddRow={addRow}
                         onDelete={deleteRow}
-                        onChange={handleCheckDetailsChange}
+                        onChange={(id, field, val) => {
+                            const newDetails = formik.values.checkDetails.map((row) =>
+                                row.id === id ? { ...row, [field]: val } : row
+                            );
+                            formik.setFieldValue("checkDetails", newDetails);
+                        }}
+                        formik={formik}
+                        observationColumns={observationColumns}
+                        onAddColumn={addObservationColumn}
+                        onRemoveColumn={removeObservationColumn}
                     />
                 );
             case 2:
                 return (
-                    <>
-                        <InspectionSummarySection
-                            data={inspectionSummary}
-                            onChange={handleInspectionSummaryChange}
-                        />
-                        <InspectionApproval approvalData={approval} onChange={handleApprovalChange} />
-                    </>
+                    <Grid container spacing={1}>
+                        <Grid item size={{ xs: 12, md: user?.role === 'admin' ? 12 : 8 }}>
+                            <InspectionSummarySection
+                                data={formik.values}
+                                onChange={(field, val) => formik.setFieldValue(field, val)}
+                                formik={formik}
+                            />
+                        </Grid>
+                        <Grid item size={{ xs: 12, md: user?.role === 'admin' ? 12 : 4 }}>
+                            <InspectionApproval
+                                approvalData={{
+                                    updatedByName: formik.values.updatedBy.name,
+                                    updatedByDate: formik.values.updatedBy.date,
+                                    approvedByName: formik.values.approvedBy.name,
+                                    approvedByDate: formik.values.approvedBy.date,
+                                }}
+                                onChange={(section, field, val) => {
+                                    formik.setFieldValue(`${section}.${field}`, val);
+                                }}
+                                errors={formik.errors}
+                                touched={formik.touched}
+                                onBlur={formik.handleBlur}
+                            />
+                        </Grid>
+                    </Grid>
                 );
             default:
                 return null;
@@ -296,20 +459,21 @@ function EditInspectionContent() {
                         <Box sx={{ display: "flex", gap: 2 }}>
                             {activeStep === steps.length - 1 ? (
                                 <Button
-                                    variant="contained"
+                                    variant="outlined"
                                     size="large"
-                                    startIcon={<CheckCircle />}
-                                    onClick={handleSubmit}
+                                    startIcon={<Visibility />}
+                                    onClick={formik.handleSubmit}
                                     sx={{
                                         borderRadius: 2,
                                         textTransform: "none",
                                         fontWeight: 600,
                                         px: 4,
-                                        backgroundColor: "#1172ba",
-                                        "&:hover": { backgroundColor: "#0d5a94" },
+                                        color: "#475569",
+                                        borderColor: "#e2e8f0",
+                                        "&:hover": { borderColor: "#cbd5e1" },
                                     }}
                                 >
-                                    Update Quality Check
+                                    Preview & Update
                                 </Button>
                             ) : (
                                 <Button
@@ -333,6 +497,15 @@ function EditInspectionContent() {
                     </Box>
                 </Box>
             </CommonCard>
+
+            <ProductionInspectionPreviewDialog
+                open={showPreview}
+                onClose={() => setShowPreview(false)}
+                onConfirm={handleFinalSubmit}
+                values={formik.values}
+                loading={submitting}
+                observationColumns={observationColumns}
+            />
         </Box>
     );
 }

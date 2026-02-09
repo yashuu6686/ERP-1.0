@@ -1,31 +1,27 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 
-import CheckCircle from "@mui/icons-material/CheckCircle";
-import Save from "@mui/icons-material/Save";
 import ArrowBack from "@mui/icons-material/ArrowBack";
 import ArrowForward from "@mui/icons-material/ArrowForward";
+import Visibility from "@mui/icons-material/Visibility";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../../components/ui/CommonCard";
 import ProductDetailsSection from "./components/ProductDetailsSection";
 import QualityCheckDetailsTable from "./components/QualityCheckDetailsTable";
 import InspectionSummarySection from "./components/InspectionSummarySection";
 import InspectionApproval from "@/components/inspection/InspectionApproval";
+import ProductionInspectionPreviewDialog from "../components/ProductionInspectionPreviewDialog";
 import axiosInstance from "../../../axios/axiosInstance";
-import { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import NotificationService from "@/services/NotificationService";
-import { Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Divider } from "@mui/material";
 import { useNotification } from "@/context/NotificationContext";
-import FormReviewDialog from "@/components/ui/FormReviewDialog";
-import Visibility from "@mui/icons-material/Visibility";
-import FactCheck from "@mui/icons-material/FactCheck";
-
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { generateSerialNumberRange, getLastSequenceNumber, getModelCode } from "../../../lib/serialUtils";
@@ -183,27 +179,17 @@ export default function QualityCheckForm() {
 
       // Create Batch Entry
       try {
-        // Fetch existing batches to calculate sequence
         const batchesResponse = await axiosInstance.get("/batches");
         const allBatches = batchesResponse.data || [];
-
         const batchDate = new Date();
         const batchNo = `BAT-${batchDate.getFullYear()}-${Math.floor(Math.random() * 10000)}`;
-
-        // Calculate Serial Number Range
-        // 1. Get Model Code
         const modelCode = getModelCode(values.productName);
-
-        // 2. Get Date YYMM
         const yy = batchDate.getFullYear().toString().substring(2);
         const mm = (batchDate.getMonth() + 1).toString().padStart(2, '0');
         const yymm = `${yy}${mm}`;
-
-        // 3. Get Last Sequence
         const lastSeq = getLastSequenceNumber(allBatches, modelCode, yymm);
         const nextSeq = lastSeq + 1;
 
-        // 4. Generate Range
         const productSr = generateSerialNumberRange(
           values.productName,
           batchNo,
@@ -245,7 +231,6 @@ export default function QualityCheckForm() {
     }
   };
 
-  // Re-validate schema when activeStep or observationColumns changes
   useEffect(() => {
     formik.validateForm();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -264,40 +249,22 @@ export default function QualityCheckForm() {
   }, []);
 
   const handleNext = async () => {
-    const currentSchema = getValidationSchema(activeStep, user?.role);
-    try {
-      await currentSchema.validate(formik.values, { abortEarly: false });
+    const formikErrors = await formik.validateForm();
+    if (Object.keys(formikErrors).length > 0) {
+      formik.setTouched(
+        Object.keys(formikErrors).reduce((acc, key) => {
+          if (key === 'checkDetails') {
+            return {
+              ...acc, [key]: formik.values.checkDetails.map(row =>
+                Object.keys(row).reduce((rAcc, rKey) => ({ ...rAcc, [rKey]: true }), {})
+              )
+            };
+          }
+          return { ...acc, [key]: true };
+        }, {})
+      );
+    } else {
       setActiveStep((prevStep) => prevStep + 1);
-    } catch (err) {
-      const errors = {};
-      err.inner.forEach(e => {
-        // Handle nested paths for checkDetails array errors
-        if (e.path.startsWith('checkDetails')) {
-          // e.g. checkDetails[0].observation
-          // Formik expects array errors as array of objects
-          // But we can use setTouched to show all fields
-        }
-        // Simplified: let Formik handle validation via validateForm
-      });
-      // Actually usage of formik.validateForm is better 
-      const formikErrors = await formik.validateForm();
-      if (Object.keys(formikErrors).length > 0) {
-        formik.setTouched(
-          Object.keys(formikErrors).reduce((acc, key) => {
-            if (key === 'checkDetails') {
-              // Mark all fields in all rows as touched
-              return {
-                ...acc, [key]: formik.values.checkDetails.map(row =>
-                  Object.keys(row).reduce((rAcc, rKey) => ({ ...rAcc, [rKey]: true }), {})
-                )
-              };
-            }
-            return { ...acc, [key]: true };
-          }, {})
-        );
-      } else {
-        setActiveStep((prevStep) => prevStep + 1);
-      }
     }
   };
 
@@ -331,17 +298,13 @@ export default function QualityCheckForm() {
     observationColumns.forEach(col => {
       newRow[col.id] = "";
     });
-    formik.setFieldValue("checkDetails", [
-      ...formik.values.checkDetails,
-      newRow,
-    ]);
+    formik.setFieldValue("checkDetails", [...formik.values.checkDetails, newRow]);
   };
 
   const deleteRow = (id) => {
-    formik.setFieldValue(
-      "checkDetails",
-      formik.values.checkDetails.filter((row) => row.id !== id)
-    );
+    if (formik.values.checkDetails.length > 1) {
+      formik.setFieldValue("checkDetails", formik.values.checkDetails.filter((row) => row.id !== id));
+    }
   };
 
   const addObservationColumn = () => {
@@ -352,7 +315,6 @@ export default function QualityCheckForm() {
       { id: newColId, label: `Observation ${nextColNum}` },
     ]);
 
-    // Add new field to existing rows
     const updatedDetails = formik.values.checkDetails.map(row => ({
       ...row,
       [newColId]: ""
@@ -404,33 +366,31 @@ export default function QualityCheckForm() {
         );
       case 2:
         return (
-          <>
-            <Grid container spacing={1}>
-              <Grid size={{ xs: 12, md: user?.role === 'admin' ? 12 : 8 }}>
-                <InspectionSummarySection
-                  data={formik.values}
-                  onChange={(field, val) => formik.setFieldValue(field, val)}
-                  formik={formik}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, md: user?.role === 'admin' ? 12 : 4 }}>
-                <InspectionApproval
-                  approvalData={{
-                    updatedByName: formik.values.updatedBy.name,
-                    updatedByDate: formik.values.updatedBy.date,
-                    approvedByName: formik.values.approvedBy.name,
-                    approvedByDate: formik.values.approvedBy.date,
-                  }}
-                  onChange={(section, field, val) => {
-                    formik.setFieldValue(`${section}.${field}`, val);
-                  }}
-                  errors={formik.errors}
-                  touched={formik.touched}
-                  onBlur={formik.handleBlur}
-                />
-              </Grid>
+          <Grid container spacing={1}>
+            <Grid item size={{ xs: 12, md: user?.role === 'admin' ? 12 : 8 }}>
+              <InspectionSummarySection
+                data={formik.values}
+                onChange={(field, val) => formik.setFieldValue(field, val)}
+                formik={formik}
+              />
             </Grid>
-          </>
+            <Grid item size={{ xs: 12, md: user?.role === 'admin' ? 12 : 4 }}>
+              <InspectionApproval
+                approvalData={{
+                  updatedByName: formik.values.updatedBy.name,
+                  updatedByDate: formik.values.updatedBy.date,
+                  approvedByName: formik.values.approvedBy.name,
+                  approvedByDate: formik.values.approvedBy.date,
+                }}
+                onChange={(section, field, val) => {
+                  formik.setFieldValue(`${section}.${field}`, val);
+                }}
+                errors={formik.errors}
+                touched={formik.touched}
+                onBlur={formik.handleBlur}
+              />
+            </Grid>
+          </Grid>
         );
       default:
         return null;
@@ -530,152 +490,14 @@ export default function QualityCheckForm() {
         </Box>
       </CommonCard>
 
-      <FormReviewDialog
+      <ProductionInspectionPreviewDialog
         open={showPreview}
         onClose={() => setShowPreview(false)}
         onConfirm={handleFinalSubmit}
-        title="Review Quality Check"
-        icon={<FactCheck />}
-        headerInfo={{
-          label1: "PRODUCT",
-          value1: formik.values.productName || "N/A",
-          label2: "INSPECTION DATE",
-          value2: formik.values.inspectionDate
-        }}
-        confirmLabel="Confirm & Submit"
-      >
-        <Grid container spacing={3}>
-          {/* Product Info */}
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Paper elevation={0} sx={{ p: 2, borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'var(--brand-primary)' }}>
-                <FactCheck sx={{ fontSize: 18 }} />
-                <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Product Information</Typography>
-              </Box>
-              <Box sx={{ display: 'grid', gap: 1.5 }}>
-                <Grid container spacing={2}>
-                  <Grid size={{ xs: 6 }}>
-                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>REQ NO</Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 500 }}>{formik.values.materialRequestNo || "N/A"}</Typography>
-                  </Grid>
-                  <Grid size={{ xs: 6 }}>
-                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>CHECK NO</Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 500 }}>{formik.values.checkNumber}</Typography>
-                  </Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                  <Grid size={{ xs: 6 }}>
-                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>QUAL. STD</Typography>
-                    <Typography variant="body2">{formik.values.qualityStandard}</Typography>
-                  </Grid>
-                  <Grid size={{ xs: 6 }}>
-                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>CHECKED QTY</Typography>
-                    <Typography variant="body2">{formik.values.checkedQuantity}</Typography>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Paper>
-          </Grid>
-
-          {/* Summary */}
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Paper elevation={0} sx={{ p: 2, borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)', height: '100%' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'var(--brand-primary)' }}>
-                <FactCheck sx={{ fontSize: 18 }} />
-                <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Inspection Summary</Typography>
-              </Box>
-              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-                <Box>
-                  <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>ACCEPTED</Typography>
-                  <Typography variant="h6" color="success.main" sx={{ fontWeight: 700 }}>{formik.values.acceptedQuantity}</Typography>
-                </Box>
-                <Box>
-                  <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>REJECTED</Typography>
-                  <Typography variant="h6" color="error.main" sx={{ fontWeight: 700 }}>{formik.values.rejectedQuantity}</Typography>
-                </Box>
-                <Box>
-                  <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>HOLD/SCRAP</Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>{formik.values.holdScrapQuantity}</Typography>
-                </Box>
-                <Box>
-                  <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>OTHER</Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>{formik.values.other || 0}</Typography>
-                </Box>
-                <Box sx={{ gridColumn: 'span 2', mt: 1 }}>
-                  <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>COMMENTS</Typography>
-                  <Typography variant="body2" sx={{ width: '100%', wordBreak: 'break-word', color: 'text.secondary', fontStyle: formik.values.comments ? 'normal' : 'italic' }}>
-                    {formik.values.comments || "No comments"}
-                  </Typography>
-                </Box>
-              </Box>
-            </Paper>
-          </Grid>
-
-          {/* Approval Info */}
-          <Grid size={{ xs: 12 }}>
-            <Paper elevation={0} sx={{ p: 2, borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)' }}>
-              <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--brand-primary)', display: 'block', mb: 1.5 }}>Approvals</Typography>
-              <Grid container spacing={2}>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Box sx={{ borderRadius: 1 }}>
-                    <Typography variant="caption" color="textSecondary">UPDATED BY</Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
-                      <Typography variant="body2" fontWeight={600}>{formik.values.updatedBy.name}</Typography>
-                      <Typography variant="body2" color="textSecondary">{formik.values.updatedBy.date}</Typography>
-                    </Box>
-                  </Box>
-                </Grid>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Box sx={{ borderRadius: 1 }}>
-                    <Typography variant="caption" color="textSecondary">APPROVED BY</Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
-                      <Typography variant="body2" fontWeight={600}>{formik.values.approvedBy.name || "Pending"}</Typography>
-                      <Typography variant="body2" color="textSecondary">{formik.values.approvedBy.date || "-"}</Typography>
-                    </Box>
-                  </Box>
-                </Grid>
-              </Grid>
-            </Paper>
-          </Grid>
-
-          {/* Table Preview (Simplified) */}
-          <Grid size={{ xs: 12 }}>
-            <Paper elevation={0} sx={{ borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', overflow: 'hidden' }}>
-              <Box sx={{ p: 1.5, bgcolor: '#f1f5f9' }}>
-                <Typography variant="caption" sx={{ fontWeight: 700 }}>CHECK DETAILS ({formik.values.checkDetails.length})</Typography>
-              </Box>
-              <TableContainer sx={{ maxHeight: 300 }}>
-                <Table size="small" stickyHeader>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell sx={{ fontWeight: 600 }}>Parameter</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Specification</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Method</TableCell>
-                      {observationColumns.map(col => (
-                        <TableCell key={col.id} sx={{ fontWeight: 600, color: '#1172ba' }}>{col.label}</TableCell>
-                      ))}
-                      <TableCell sx={{ fontWeight: 600 }}>Remarks</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {formik.values.checkDetails.map((row, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{row.parameters}</TableCell>
-                        <TableCell>{row.specification}</TableCell>
-                        <TableCell>{row.method}</TableCell>
-                        {observationColumns.map(col => (
-                          <TableCell key={col.id}>{row[col.id] || "-"}</TableCell>
-                        ))}
-                        <TableCell>{row.remarks}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Paper>
-          </Grid>
-        </Grid>
-      </FormReviewDialog>
-    </Box >
+        values={formik.values}
+        loading={submitting}
+        observationColumns={observationColumns}
+      />
+    </Box>
   );
 }

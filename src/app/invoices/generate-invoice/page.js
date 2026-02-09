@@ -18,7 +18,7 @@ import InvoiceNotesSection from "./components/InvoiceNotesSection";
 import InvoiceSummarySection from "./components/InvoiceSummarySection";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/ui/Loader";
-import { Receipt, Person, LocalShipping, Inventory } from "@mui/icons-material";
+import { Receipt, Person, LocalShipping, Inventory, Assignment } from "@mui/icons-material";
 import { Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
 import FormReviewDialog from "@/components/ui/FormReviewDialog";
 
@@ -126,6 +126,7 @@ function InvoiceGeneratorContent() {
 
       const payload = {
         ...values,
+        notes: values.notes,
         totals: {
           subtotal,
           taxAmount,
@@ -133,6 +134,8 @@ function InvoiceGeneratorContent() {
           grandTotal,
         },
       };
+
+      console.log("Saving Invoice Payload:", payload);
 
       if (id) {
         await axiosInstance.put(`/invoices/${id}`, payload);
@@ -188,6 +191,8 @@ function InvoiceGeneratorContent() {
           }));
 
           formik.setValues({
+            id: inv.id,
+            _isEdit: true,
             invoiceInfo: inv.invoiceInfo || formik.initialValues.invoiceInfo,
             customer: inv.customer || formik.initialValues.customer,
             delivery: inv.delivery || formik.initialValues.delivery,
@@ -201,7 +206,9 @@ function InvoiceGeneratorContent() {
             setIsOrderLinked(true);
             const newLocked = { customer: {}, delivery: {}, items: [] };
             Object.keys(inv.customer || {}).forEach(key => {
-              if (inv.customer[key]) newLocked.customer[key] = true;
+              if (inv.customer[key] && key !== 'organization' && key !== 'drugLicence') {
+                newLocked.customer[key] = true;
+              }
             });
             Object.keys(inv.delivery || {}).forEach(key => {
               if (inv.delivery[key]) newLocked.delivery[key] = true;
@@ -531,6 +538,32 @@ function InvoiceGeneratorContent() {
               </Table>
             </Paper>
           </Grid>
+
+          {/* Notes Section */}
+          {(formik.values.notes.termsAndConditions || formik.values.notes.additionalNotes) && (
+            <Grid size={{ xs: 12 }}>
+              <Paper elevation={0} sx={{ p: 2, borderRadius: 2, border: '1px solid #e2e8f0', bgcolor: '#f8fafc' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: '#1172ba' }}>
+                  <Assignment sx={{ fontSize: 18 }} />
+                  <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase' }}>Notes & Terms</Typography>
+                </Box>
+                <Grid container spacing={2}>
+                  {formik.values.notes.termsAndConditions && (
+                    <Grid item xs={12} md={6}>
+                      <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>TERMS & CONDITIONS</Typography>
+                      <Typography variant="body2" sx={{ mt: 0.5 }}>{formik.values.notes.termsAndConditions}</Typography>
+                    </Grid>
+                  )}
+                  {formik.values.notes.additionalNotes && (
+                    <Grid item xs={12} md={6}>
+                      <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>ADDITIONAL NOTES</Typography>
+                      <Typography variant="body2" sx={{ mt: 0.5 }}>{formik.values.notes.additionalNotes}</Typography>
+                    </Grid>
+                  )}
+                </Grid>
+              </Paper>
+            </Grid>
+          )}
 
           {/* Totals */}
           <Grid size={{ xs: 12 }}>

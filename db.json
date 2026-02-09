@@ -145,8 +145,7 @@
       "id": "8e73"
     },
     {
-      "id": "7d54",
-      "name": "Admin",
+      "name": "admin",
       "description": "Admin allows to access All moduls",
       "permissions": {
         "dashboard": {
@@ -234,18 +233,18 @@
         }
       },
       "status": "active",
-      "createdAt": "2026-02-09T07:43:19.448Z"
+      "updatedAt": "2026-02-09T09:47:58.465Z",
+      "id": "7d54"
     }
   ],
   "incoming-inspection": [
     {
-      "id": "f1c1",
       "materialData": {
         "grnNumber": "GRN/202602224",
         "poNumber": "20260209653",
         "materialName": "D8",
         "receivedDate": "2026-02-09",
-        "invoiceNumber": "525722222222",
+        "invoiceNumber": "52572",
         "lotNumber": "20",
         "inspectionStandardNumber": "45654564",
         "supplierName": "Baroque Works",
@@ -283,22 +282,22 @@
         "approvedByDate": "2026-02-10"
       },
       "inspectionStatus": "Approved",
-      "grnId": "1255"
+      "grnId": "1255",
+      "id": "f1c1"
     }
   ],
   "rejected-goods": [
     {
-      "id": "67ef",
       "rejectionId": "IRN-202602-692",
       "sourceType": "Incoming Inspection",
       "sourceRef": "GRN/202602224",
       "goods": "D8",
-      "qty": 2,
+      "qty": 5,
       "date": "2026-02-09",
       "reason": "No issue",
       "status": "total",
-      "severity": "medium",
-      "rejectedBy": "ME"
+      "rejectedBy": "ME",
+      "id": "67ef"
     },
     {
       "rejectionId": "REJ-6133",
@@ -313,7 +312,19 @@
       "id": "2b1a"
     }
   ],
-  "store": [],
+  "store": [
+    {
+      "id": "fdc2",
+      "name": "Upper Case",
+      "code": "OG.PAP.002",
+      "category": "/store",
+      "available": 200,
+      "minimum": 20,
+      "unit": "Pcs",
+      "location": "Basment",
+      "updated": "2026-02-09"
+    }
+  ],
   "it-goods": [],
   "finish-goods": [],
   "other-goods": [
@@ -322,18 +333,17 @@
       "name": "D8",
       "code": "GRN/202602224",
       "category": "Other Goods",
-      "available": 20,
+      "available": 40,
       "minimum": 10,
       "updated": "2026-02-09"
     }
   ],
   "bom": [
     {
-      "id": "c1ea",
       "number": "BOM-430714",
       "productName": "Scanbo D8",
       "date": "09-02-2026",
-      "approvedBy": "Jignesh",
+      "approvedBy": "Monkey D luffy",
       "status": "Approved",
       "materials": [
         {
@@ -351,9 +361,10 @@
       "authorization": {
         "reviewedBy": "Kanaiya",
         "reviewedDate": "09-02-2026",
-        "approvedBy": "Jignesh",
+        "approvedBy": "Monkey D luffy",
         "approvedDate": "09-02-2026"
-      }
+      },
+      "id": "c1ea"
     }
   ],
   "material-issue": [
@@ -407,9 +418,8 @@
   ],
   "quality-inspection": [
     {
-      "id": "QC-6816",
       "productName": "Scanbo D8",
-      "qualityStandard": "7887",
+      "qualityStandard": "7654",
       "checkedQuantity": 20,
       "inspectionDate": "2026-02-09",
       "checkNumber": "78945",
@@ -443,8 +453,9 @@
         "approvedByName": "ME",
         "approvedByDate": "2026-02-10"
       },
+      "id": "QC-6816",
       "status": "Completed",
-      "createdAt": "2026-02-09T05:53:09.921Z"
+      "updatedAt": "2026-02-09T09:11:28.359Z"
     }
   ],
   "batches": [
@@ -479,23 +490,25 @@
   ],
   "orders": [
     {
-      "id": "57b3",
       "orderNo": "ORD-123",
       "customerName": "jignesh makvana",
       "orderDate": "2026-02-09",
       "contact": "9265515389",
       "address": "Laskana, Surat",
       "deliveryDate": "2026-02-11",
-      "status": "Confirmed",
+      "status": "Pending",
       "reference": "REF-24",
-      "kitQty": 4,
+      "kitQty": 2,
       "singleProducts": [],
-      "products": 0
+      "products": 0,
+      "updatedAt": "2026-02-09T09:15:55.322Z",
+      "id": "57b3"
     }
   ],
   "invoices": [
     {
       "id": "1a52",
+      "_isEdit": true,
       "invoiceInfo": {
         "invoiceNumber": "INV-789",
         "invoiceDate": "2026-02-09",
@@ -516,8 +529,8 @@
         "email": ""
       },
       "notes": {
-        "termsAndConditions": "",
-        "additionalNotes": ""
+        "termsAndConditions": "bggggg",
+        "additionalNotes": "gggggg"
       },
       "totals": {
         "subtotal": 6000,
@@ -544,7 +557,7 @@
     {
       "id": "dc8d",
       "inspectionStatus": "Approved",
-      "inspectionNo": "77878",
+      "inspectionNo": "8520",
       "productName": "Scanbo D8",
       "inspectionStdNo": "877878",
       "quantity": 50,
@@ -556,7 +569,7 @@
       "rejectedQuantity": "2",
       "holdScrapQuantity": "2",
       "other": "2",
-      "comments": "fghjklp;[]",
+      "comments": "One Piece",
       "result": "Pass",
       "remarks": "kkkk",
       "approvedBy": "ME",
@@ -600,7 +613,7 @@
       "deviceId": "ujyhgfds",
       "date": "2026-02-09",
       "companyName": "hgfvdcx",
-      "companyAddress": "gfdcx",
+      "companyAddress": "789, arena",
       "assistedBy": "",
       "doneBy": "",
       "testingBy": "rrrrr",
@@ -831,39 +844,40 @@
         }
       },
       "sopNumber": "SOP-2026-3846",
-      "status": "Completed"
+      "status": "Pending"
     }
   ],
   "dispatches": [
     {
-      "id": "2336",
       "shipmentInfo": {
         "dispatchNo": "DIS-001",
         "trackingNumber": "TRK-789",
         "shippingDate": "2026-02-09",
         "expectedDelivery": "2026-02-09",
         "carrier": "Blue Dart",
-        "platform": "Online"
+        "platform": "Online",
+        "orderNumber": "ORD-123"
       },
       "customer": {
         "companyName": "jignesh makvana",
         "contactPerson": "jignesh makvana",
         "address": "Laskana, Surat",
         "phone": "9638527410",
-        "email": ""
+        "email": "info@scanbo.com"
       },
       "items": [
         {
           "name": "D8",
-          "qty": 150,
+          "qty": 10,
           "serialNo": "-",
           "weight": "-"
         }
       ],
       "status": "Shipped",
-      "packedBy": "ME",
-      "approvedBy": "me",
-      "accountingBy": "me"
+      "packedBy": "Aizen",
+      "approvedBy": "Aizen",
+      "accountingBy": "Aizen",
+      "id": "2b2a"
     }
   ]
 }

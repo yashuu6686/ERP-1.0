@@ -49,6 +49,10 @@ export default function DispatchPreviewDialog({ open, onClose, onConfirm, values
                         </Box>
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                             <Box>
+                                <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>Order Number</Typography>
+                                <Typography variant="body2" sx={{ fontWeight: 600 }}>{values.referenceNo || "N/A"}</Typography>
+                            </Box>
+                            <Box>
                                 <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>Tracking Number</Typography>
                                 <Typography variant="body2" sx={{ fontWeight: 600 }}>{values.trackingNumber || "N/A"}</Typography>
                             </Box>

@@ -61,7 +61,7 @@ export default function PackagingApprovalsCard({ formik, uploadedFiles, handleFi
                             }}
                         />
                     </Grid>
-                    {user?.role === 'admin' && (
+                    {user?.role === 'Admin' && (
                         <>
                             <Grid size={{ xs: 12, md: 4 }}>
                                 <TextField

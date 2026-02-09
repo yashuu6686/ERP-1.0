@@ -145,6 +145,7 @@ function CreateDispatchEntryContent() {
           expectedDelivery: values.deliveryDate,
           carrier: values.courierCompany,
           platform: values.salesPlatform,
+          orderNumber: values.referenceNo,
         },
         customer: {
           companyName: values.customerName,
@@ -214,6 +215,9 @@ function CreateDispatchEntryContent() {
           const data = response.data;
 
           formik.setValues({
+            ...initialValues,
+            _isEdit: true,
+            id: data.id,
             companyName: data.customer?.companyName || "Scanbo Engineering Pvt. Ltd.",
             officeAddress: data.customer?.address || "Mumbai, Maharashtra, India",
             email: data.customer?.email || "info@scanbo.com",
@@ -227,7 +231,7 @@ function CreateDispatchEntryContent() {
             contactNo: data.customer?.phone || "",
             deliveryDate: data.shipmentInfo?.expectedDelivery || "",
             courierCompany: data.shipmentInfo?.carrier || "",
-            referenceNo: data.id || "",
+            referenceNo: data.shipmentInfo?.orderNumber || data.referenceNo || "",
             salesPlatform: data.shipmentInfo?.platform || "",
             packedBy: data.packedBy || "",
             approvedBy: data.approvedBy || "",
@@ -258,7 +262,7 @@ function CreateDispatchEntryContent() {
       email: order.email || "",
       contactNo: order.phone || "",
       deliveryAddress: order.address || "",
-      referenceNo: order.orderId || order.orderNo || "",
+      referenceNo: order.orderNo || order.orderId || order.orderNumber || "",
       products: order.products && Array.isArray(order.products)
         ? order.products.map(p => ({
           name: p.productName || p.name || "",

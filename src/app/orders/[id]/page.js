@@ -162,7 +162,7 @@ export default function OrderDetails() {
                             <Button
                                 variant="contained"
                                 startIcon={<Edit />}
-                                onClick={() => {/* Handle modify action */ }}
+                                onClick={() => router.push(`/orders/edit-order?id=${id}`)}
                                 sx={{
                                     borderRadius: "12px",
                                     textTransform: "none",

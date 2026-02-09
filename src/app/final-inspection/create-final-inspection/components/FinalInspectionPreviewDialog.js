@@ -50,7 +50,7 @@ export default function FinalInspectionPreviewDialog({ open, onClose, onConfirm,
         >
             <Grid container spacing={3}>
                 {/* Product Information */}
-                <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+                <Grid size={{ xs: 12, md: 6 }}>
                     <Paper elevation={0} sx={{ p: 2, height: '100%', borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'var(--brand-primary)' }}>
                             <Info sx={{ fontSize: 18 }} />
@@ -66,11 +66,11 @@ export default function FinalInspectionPreviewDialog({ open, onClose, onConfirm,
                                 <Typography variant="body2" sx={{ fontWeight: 500 }}>{values.inspectionStdNo || "N/A"}</Typography>
                             </Box>
                             <Grid container spacing={1}>
-                                <Grid item xs={6}>
+                                <Grid size={{ xs: 12, md: 6 }}>
                                     <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>Quantity</Typography>
                                     <Typography variant="body2" sx={{ fontWeight: 600 }}>{values.quantity || "0"}</Typography>
                                 </Grid>
-                                <Grid item xs={6}>
+                                <Grid size={{ xs: 12, md: 6 }}>
                                     <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>Result</Typography>
                                     <Chip
                                         label={values.result || "N/A"}
@@ -85,29 +85,29 @@ export default function FinalInspectionPreviewDialog({ open, onClose, onConfirm,
                 </Grid>
 
                 {/* Serial Range & Authorization */}
-                <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+                <Grid size={{ xs: 12, md: 6 }}>
                     <Paper elevation={0} sx={{ p: 2, height: '100%', borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'var(--brand-primary)' }}>
                             <Person sx={{ fontSize: 18 }} />
                             <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Serials & Approval</Typography>
                         </Box>
                         <Grid container spacing={2}>
-                            <Grid item xs={6}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>Serial From</Typography>
                                 <Typography variant="body2" sx={{ fontWeight: 600 }}>{values.serialFrom || "N/A"}</Typography>
                             </Grid>
-                            <Grid item xs={6}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>Serial To</Typography>
                                 <Typography variant="body2" sx={{ fontWeight: 600 }}>{values.serialTo || "N/A"}</Typography>
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <Divider sx={{ my: 1 }} />
                             </Grid>
-                            <Grid item xs={6}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>Updated By</Typography>
                                 <Typography variant="body2" sx={{ fontWeight: 600 }}>{values.updatedBySignature || "N/A"}</Typography>
                             </Grid>
-                            <Grid item xs={6}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>Approved By</Typography>
                                 <Typography variant="body2" sx={{ fontWeight: 600 }}>{values.approvedBy || "N/A"}</Typography>
                             </Grid>
@@ -116,7 +116,7 @@ export default function FinalInspectionPreviewDialog({ open, onClose, onConfirm,
                 </Grid>
 
                 {/* Observations Summary */}
-                <Grid item xs={12} size={{ xs: 12, md: 12 }}>
+                <Grid size={{ xs: 12, md: 12 }}>
                     <Paper elevation={0} sx={{ p: 2, borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'var(--brand-primary)' }}>
                             <FactCheck sx={{ fontSize: 18 }} />
@@ -172,10 +172,10 @@ export default function FinalInspectionPreviewDialog({ open, onClose, onConfirm,
                 </Grid>
 
                 {/* Quality Checklist & Special Reports */}
-                <Grid item xs={12} size={{ xs: 12, md: 12 }}>
+                <Grid size={{ xs: 12, md: 12 }}>
                     <Paper elevation={0} sx={{ p: 2, borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)' }}>
                         <Grid container spacing={3}>
-                            <Grid item xs={12} md={6}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'var(--brand-primary)' }}>
                                     <CheckCircle sx={{ fontSize: 18 }} />
                                     <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Quality Checklist</Typography>
@@ -195,7 +195,7 @@ export default function FinalInspectionPreviewDialog({ open, onClose, onConfirm,
                                     </Box>
                                 </Box>
                             </Grid>
-                            <Grid item xs={12} md={6}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'var(--brand-primary)' }}>
                                     <ReportProblem sx={{ fontSize: 18 }} />
                                     <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Special Reports</Typography>

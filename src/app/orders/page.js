@@ -117,7 +117,15 @@ export default function CustomerOrders() {
             </IconButton>
           </Tooltip>
           <Tooltip title="Edit">
-            <IconButton color="warning" size="small">
+            <IconButton
+              color="warning"
+              size="small"
+              onClick={() => router.push(`/orders/edit-order?id=${row.id}`)}
+              sx={{
+                bgcolor: "#fff7ed",
+                "&:hover": { bgcolor: "#ffedd5" },
+              }}
+            >
               <Edit fontSize="small" />
             </IconButton>
           </Tooltip>
