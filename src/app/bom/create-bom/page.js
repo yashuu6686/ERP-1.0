@@ -9,14 +9,18 @@ import CommonCard from "../../../components/ui/CommonCard";
 import MaterialListSpecifications from "./components/MaterialListSpecifications";
 import BOMAuthorization from "./components/BOMAuthorization";
 import axiosInstance from "../../../axios/axiosInstance";
+import BOMReviewDialog from "./components/BOMReviewDialog";
 import { TextField, Grid } from "@mui/material";
+import { useNotification } from "@/context/NotificationContext";
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
 export default function BOMCreator() {
   const router = useRouter();
+  const { showNotification } = useNotification();
   const [loading, setLoading] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const validationSchema = Yup.object().shape({
     productName: Yup.string().required("Product Name is required"),
@@ -56,45 +60,51 @@ export default function BOMCreator() {
       },
     },
     validationSchema: validationSchema,
-    onSubmit: async (values) => {
-      try {
-        setLoading(true);
-        const payload = {
-          number: `BOM-${new Date().getTime().toString().slice(-6)}`,
-          productName: values.productName,
-          date: new Date().toLocaleDateString("en-GB").replace(/\//g, "-"),
-          approvedBy: values.auth.approvedBy,
-          status: "Approved",
-          materials: values.materials.map((m, idx) => ({
-            sNo: idx + 1,
-            oemSupplier: m.manufacturerName,
-            oemPartNo: m.supplierPartNumber,
-            qty: m.quantity,
-            description: m.materialName,
-            bubbleNo: "-",
-            manufacturer: m.manufacturerName,
-            scanboPartNo: m.scanboPartNumber,
-            specs: m.technicalDetails,
-          })),
-          authorization: {
-            reviewedBy: values.auth.reviewedBy,
-            reviewedDate: new Date().toLocaleDateString("en-GB").replace(/\//g, "-"),
-            approvedBy: values.auth.approvedBy,
-            approvedDate: new Date().toLocaleDateString("en-GB").replace(/\//g, "-"),
-          },
-        };
-
-        await axiosInstance.post("/bom", payload);
-        alert("BOM saved successfully!");
-        router.push("/bom");
-      } catch (error) {
-        console.error("Error saving BOM:", error);
-        alert("Failed to save BOM.");
-      } finally {
-        setLoading(false);
-      }
+    onSubmit: async () => {
+      setShowPreview(true);
     },
   });
+
+  const handleFinalSubmit = async () => {
+    const values = formik.values;
+    try {
+      setLoading(true);
+      setShowPreview(false);
+      const payload = {
+        number: `BOM-${new Date().getTime().toString().slice(-6)}`,
+        productName: values.productName,
+        date: new Date().toLocaleDateString("en-GB").replace(/\//g, "-"),
+        approvedBy: values.auth.approvedBy,
+        status: "Approved",
+        materials: values.materials.map((m, idx) => ({
+          sNo: idx + 1,
+          oemSupplier: m.manufacturerName,
+          oemPartNo: m.supplierPartNumber,
+          qty: m.quantity,
+          description: m.materialName,
+          bubbleNo: "-",
+          manufacturer: m.manufacturerName,
+          scanboPartNo: m.scanboPartNumber,
+          specs: m.technicalDetails,
+        })),
+        authorization: {
+          reviewedBy: values.auth.reviewedBy,
+          reviewedDate: new Date().toLocaleDateString("en-GB").replace(/\//g, "-"),
+          approvedBy: values.auth.approvedBy,
+          approvedDate: new Date().toLocaleDateString("en-GB").replace(/\//g, "-"),
+        },
+      };
+
+      await axiosInstance.post("/bom", payload);
+      showNotification("BOM saved successfully!", "success");
+      router.push("/bom");
+    } catch (error) {
+      console.error("Error saving BOM:", error);
+      showNotification("Failed to save BOM.", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const addMaterial = () => {
     formik.setFieldValue("materials", [
@@ -224,6 +234,14 @@ export default function BOMCreator() {
           </Box>
         </Box>
       </CommonCard>
-    </Box>
+
+      <BOMReviewDialog
+        open={showPreview}
+        onClose={() => setShowPreview(false)}
+        onConfirm={handleFinalSubmit}
+        data={formik.values}
+        isEditMode={false}
+      />
+    </Box >
   );
 }

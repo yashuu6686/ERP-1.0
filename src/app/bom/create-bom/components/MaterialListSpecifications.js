@@ -26,6 +26,41 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate, erro
         },
     };
 
+    // Handle Enter key to move to next field in the table
+    const handleKeyDown = (e, materialId, currentField, rowIndex) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+
+            // Define field order for each row
+            const fieldOrder = ['scanboPartNumber', 'supplierPartNumber', 'quantity', 'materialName', 'manufacturerName', 'technicalDetails'];
+            const currentIndex = fieldOrder.indexOf(currentField);
+
+            if (currentIndex !== -1) {
+                // Try to move to next field in same row
+                if (currentIndex < fieldOrder.length - 1) {
+                    const nextField = fieldOrder[currentIndex + 1];
+                    // Try both input and textarea selectors
+                    let nextInput = document.querySelector(`input[name="materials[${rowIndex}].${nextField}"]`);
+                    if (!nextInput) {
+                        nextInput = document.querySelector(`textarea[name="materials[${rowIndex}].${nextField}"]`);
+                    }
+                    if (nextInput) {
+                        nextInput.focus();
+                        return;
+                    }
+                }
+
+                // If at end of row, move to first field of next row
+                if (currentIndex === fieldOrder.length - 1 && rowIndex < materials.length - 1) {
+                    const nextRowInput = document.querySelector(`input[name="materials[${rowIndex + 1}].scanboPartNumber"]`);
+                    if (nextRowInput) {
+                        nextRowInput.focus();
+                    }
+                }
+            }
+        }
+    };
+
     return (
         <Card
             sx={{
@@ -192,6 +227,7 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate, erro
                                             onUpdate(material.id, "scanboPartNumber", e.target.value)
                                         }
                                         onBlur={onBlur}
+                                        onKeyDown={(e) => handleKeyDown(e, material.id, 'scanboPartNumber', index)}
                                         name={`materials[${index}].scanboPartNumber`}
                                         error={touched[index]?.scanboPartNumber && Boolean(errors[index]?.scanboPartNumber)}
                                         helperText={touched[index]?.scanboPartNumber && errors[index]?.scanboPartNumber}
@@ -211,6 +247,7 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate, erro
                                             onUpdate(material.id, "supplierPartNumber", e.target.value)
                                         }
                                         onBlur={onBlur}
+                                        onKeyDown={(e) => handleKeyDown(e, material.id, 'supplierPartNumber', index)}
                                         name={`materials[${index}].supplierPartNumber`}
                                         error={touched[index]?.supplierPartNumber && Boolean(errors[index]?.supplierPartNumber)}
                                         helperText={touched[index]?.supplierPartNumber && errors[index]?.supplierPartNumber}
@@ -223,6 +260,7 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate, erro
                                 </TableCell>
                                 <TableCell sx={{ py: 0.2 }}>
                                     <TextField
+                                        type="number"
                                         fullWidth
                                         size="small"
                                         value={material.quantity}
@@ -230,6 +268,7 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate, erro
                                             onUpdate(material.id, "quantity", e.target.value)
                                         }
                                         onBlur={onBlur}
+                                        onKeyDown={(e) => handleKeyDown(e, material.id, 'quantity', index)}
                                         name={`materials[${index}].quantity`}
                                         error={touched[index]?.quantity && Boolean(errors[index]?.quantity)}
                                         helperText={touched[index]?.quantity && errors[index]?.quantity}
@@ -249,6 +288,7 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate, erro
                                             onUpdate(material.id, "materialName", e.target.value)
                                         }
                                         onBlur={onBlur}
+                                        onKeyDown={(e) => handleKeyDown(e, material.id, 'materialName', index)}
                                         name={`materials[${index}].materialName`}
                                         error={touched[index]?.materialName && Boolean(errors[index]?.materialName)}
                                         helperText={touched[index]?.materialName && errors[index]?.materialName}
@@ -268,6 +308,7 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate, erro
                                             onUpdate(material.id, "manufacturerName", e.target.value)
                                         }
                                         onBlur={onBlur}
+                                        onKeyDown={(e) => handleKeyDown(e, material.id, 'manufacturerName', index)}
                                         name={`materials[${index}].manufacturerName`}
                                         error={touched[index]?.manufacturerName && Boolean(errors[index]?.manufacturerName)}
                                         helperText={touched[index]?.manufacturerName && errors[index]?.manufacturerName}
@@ -289,6 +330,7 @@ const MaterialListSpecifications = ({ materials, onAdd, onDelete, onUpdate, erro
                                             onUpdate(material.id, "technicalDetails", e.target.value)
                                         }
                                         onBlur={onBlur}
+                                        onKeyDown={(e) => handleKeyDown(e, material.id, 'technicalDetails', index)}
                                         name={`materials[${index}].technicalDetails`}
                                         error={touched[index]?.technicalDetails && Boolean(errors[index]?.technicalDetails)}
                                         helperText={touched[index]?.technicalDetails && errors[index]?.technicalDetails}

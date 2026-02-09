@@ -101,8 +101,6 @@ export default function BatchDetails() {
         }
     }, [id]);
 
-
-
     const deviceList = React.useMemo(() => {
         if (!data || !data.productSr) return [];
         return expandSerialNumberRange(data.productSr, data.acceptedQty || 0);

@@ -17,6 +17,22 @@ import IconButton from "@mui/material/IconButton";
 import Clear from "@mui/icons-material/Clear";
 
 const ProductDetailsSection = ({ data, onChange, materialRequests = [], onRequestChange, isEdit = false, formik }) => {
+
+    const handleKeyDown = (e, currentField) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const fields = ['materialRequestNo', 'productName', 'qualityStandard', 'checkedQuantity', 'inspectionDate', 'checkNumber'];
+            const currentIndex = fields.indexOf(currentField);
+            if (currentIndex !== -1 && currentIndex < fields.length - 1) {
+                const nextField = fields[currentIndex + 1];
+                const nextInput = document.querySelector(`[name="${nextField}"]`);
+                if (nextInput) {
+                    nextInput.focus();
+                }
+            }
+        }
+    };
+
     return (
         <Card
             elevation={0}
@@ -57,6 +73,7 @@ const ProductDetailsSection = ({ data, onChange, materialRequests = [], onReques
                                 onChange={(e) => onRequestChange(e.target.value)}
                                 onBlur={formik.handleBlur}
                                 name="materialRequestNo"
+                                onKeyDown={(e) => handleKeyDown(e, 'materialRequestNo')}
                                 disabled={isEdit}
                                 endAdornment={
                                     data.materialRequestNo && !isEdit && (
@@ -94,6 +111,7 @@ const ProductDetailsSection = ({ data, onChange, materialRequests = [], onReques
                             value={data.productName}
                             onChange={(e) => onChange("productName", e.target.value)}
                             onBlur={formik.handleBlur}
+                            onKeyDown={(e) => handleKeyDown(e, 'productName')}
                             error={formik.touched.productName && Boolean(formik.errors.productName)}
                             helperText={formik.touched.productName && formik.errors.productName}
                             disabled={!!data.materialRequestNo}
@@ -110,6 +128,7 @@ const ProductDetailsSection = ({ data, onChange, materialRequests = [], onReques
                             value={data.qualityStandard}
                             onChange={(e) => onChange("qualityStandard", e.target.value)}
                             onBlur={formik.handleBlur}
+                            onKeyDown={(e) => handleKeyDown(e, 'qualityStandard')}
                             error={formik.touched.qualityStandard && Boolean(formik.errors.qualityStandard)}
                             helperText={formik.touched.qualityStandard && formik.errors.qualityStandard}
                             required
@@ -126,6 +145,7 @@ const ProductDetailsSection = ({ data, onChange, materialRequests = [], onReques
                             value={data.checkedQuantity}
                             onChange={(e) => onChange("checkedQuantity", e.target.value)}
                             onBlur={formik.handleBlur}
+                            onKeyDown={(e) => handleKeyDown(e, 'checkedQuantity')}
                             error={formik.touched.checkedQuantity && Boolean(formik.errors.checkedQuantity)}
                             helperText={formik.touched.checkedQuantity && formik.errors.checkedQuantity}
                             disabled={!!data.materialRequestNo}
@@ -144,6 +164,7 @@ const ProductDetailsSection = ({ data, onChange, materialRequests = [], onReques
                             value={data.inspectionDate}
                             onChange={(e) => onChange("inspectionDate", e.target.value)}
                             onBlur={formik.handleBlur}
+                            onKeyDown={(e) => handleKeyDown(e, 'inspectionDate')}
                             error={formik.touched.inspectionDate && Boolean(formik.errors.inspectionDate)}
                             helperText={formik.touched.inspectionDate && formik.errors.inspectionDate}
                             required
@@ -159,6 +180,7 @@ const ProductDetailsSection = ({ data, onChange, materialRequests = [], onReques
                             value={data.checkNumber}
                             onChange={(e) => onChange("checkNumber", e.target.value)}
                             onBlur={formik.handleBlur}
+                            onKeyDown={(e) => handleKeyDown(e, 'checkNumber')}
                             error={formik.touched.checkNumber && Boolean(formik.errors.checkNumber)}
                             helperText={formik.touched.checkNumber && formik.errors.checkNumber}
                             required

@@ -12,16 +12,29 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import Delete from "@mui/icons-material/Delete";
 import Add from "@mui/icons-material/Add";
+import Visibility from "@mui/icons-material/Visibility";
+import ReportProblem from "@mui/icons-material/ReportProblem";
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 import { useEffect } from "react";
 import axiosInstance from "../../../axios/axiosInstance";
+import { useNotification } from "@/context/NotificationContext";
+import FormReviewDialog from "@/components/ui/FormReviewDialog";
 
 import { useFormik, FieldArray, FormikProvider } from "formik";
 import * as Yup from "yup";
 
 export default function DefectiveMaterialForm({ request, onClose }) {
+    const { showNotification } = useNotification();
     const [submitting, setSubmitting] = useState(false);
     const [bomMaterials, setBomMaterials] = useState([]);
     const [loadingBOM, setLoadingBOM] = useState(false);
+    const [showPreview, setShowPreview] = useState(false);
 
     const validationSchema = Yup.object().shape({
         returnDate: Yup.date().required("Return Date is required"),
@@ -46,36 +59,44 @@ export default function DefectiveMaterialForm({ request, onClose }) {
         },
         validationSchema: validationSchema,
         onSubmit: async (values) => {
-            try {
-                setSubmitting(true);
-                const payload = values.items.map(item => ({
-                    rejectionId: `RET-${Math.floor(Math.random() * 10000)}`,
-                    sourceType: "Production Request",
-                    sourceRef: request.requestNo,
-                    product: request.productName || request.product,
-                    goods: item.itemName,
-                    qty: Number(item.quantity),
-                    date: values.returnDate,
-                    reason: item.reason,
-                    serialNumbers: item.serialNumbers,
-                    partNo: item.partNo,
-                    status: "total",
-                    severity: "medium"
-                }));
-
-                const requests = payload.map(p => axiosInstance.post("/defective-returns", p));
-                await Promise.all(requests);
-
-                alert("Defective return submitted successfully!");
-                onClose(true);
-            } catch (error) {
-                console.error("Error submitting defective return:", error);
-                alert("Failed to submit defective return.");
-            } finally {
-                setSubmitting(false);
-            }
+            // Show preview instead of submitting directly
+            setShowPreview(true);
         },
     });
+
+    const handleFinalSubmit = async () => {
+        try {
+            setSubmitting(true);
+            setShowPreview(false);
+            const values = formik.values;
+
+            const payload = values.items.map(item => ({
+                rejectionId: `RET-${Math.floor(Math.random() * 10000)}`,
+                sourceType: "Production Request",
+                sourceRef: request?.requestNo || "N/A",
+                product: request?.productName || request?.product || "N/A",
+                goods: item.itemName,
+                qty: Number(item.quantity),
+                date: values.returnDate,
+                reason: item.reason,
+                serialNumbers: item.serialNumbers,
+                partNo: item.partNo,
+                status: "total",
+                severity: "medium"
+            }));
+
+            const requests = payload.map(p => axiosInstance.post("/defective-returns", p));
+            await Promise.all(requests);
+
+            showNotification("Defective return submitted successfully!", "success");
+            onClose(true);
+        } catch (error) {
+            console.error("Error submitting defective return:", error);
+            showNotification("Failed to submit defective return.", "error");
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     useEffect(() => {
         const fetchBOMDetails = async () => {
@@ -157,6 +178,49 @@ export default function DefectiveMaterialForm({ request, onClose }) {
         }
     };
 
+    // Handle Enter key navigation
+    const handleKeyDown = (e, currentField, rowIndex) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+
+            // For returnDate field
+            if (currentField === 'returnDate') {
+                const firstItemField = document.querySelector(`[name="items[0].itemName"]`);
+                if (firstItemField) {
+                    firstItemField.focus();
+                }
+                return;
+            }
+
+            // For item fields - navigate within the row
+            const fieldOrder = ['itemName', 'quantity', 'reason', 'serialNumbers'];
+            const currentIndex = fieldOrder.indexOf(currentField);
+
+            if (currentIndex !== -1) {
+                // Try to move to next field in same row
+                if (currentIndex < fieldOrder.length - 1) {
+                    const nextField = fieldOrder[currentIndex + 1];
+                    let nextInput = document.querySelector(`input[name="items[${rowIndex}].${nextField}"]`);
+                    if (!nextInput) {
+                        nextInput = document.querySelector(`[name="items[${rowIndex}].${nextField}"]`);
+                    }
+                    if (nextInput) {
+                        nextInput.focus();
+                        return;
+                    }
+                }
+
+                // If at end of row, move to first field of next row
+                if (currentIndex === fieldOrder.length - 1 && rowIndex < formik.values.items.length - 1) {
+                    const nextRowInput = document.querySelector(`[name="items[${rowIndex + 1}].itemName"]`);
+                    if (nextRowInput) {
+                        nextRowInput.focus();
+                    }
+                }
+            }
+        }
+    };
+
     return (
         <Box sx={{ p: 1 }}>
             <Typography variant="h5" sx={{ fontWeight: 800, mb: 3, color: "#0f172a" }}>
@@ -175,6 +239,7 @@ export default function DefectiveMaterialForm({ request, onClose }) {
                     value={formik.values.returnDate}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
+                    onKeyDown={(e) => handleKeyDown(e, 'returnDate')}
                     error={formik.touched.returnDate && Boolean(formik.errors.returnDate)}
                     helperText={formik.touched.returnDate && formik.errors.returnDate}
                     sx={{ bgcolor: "#fff" }}
@@ -220,6 +285,7 @@ export default function DefectiveMaterialForm({ request, onClose }) {
                                         value={item.itemName}
                                         onChange={(e) => handleItemNameChange(index, e.target.value)}
                                         onBlur={formik.handleBlur}
+                                        onKeyDown={(e) => handleKeyDown(e, 'itemName', index)}
                                         displayEmpty
                                         disabled={loadingBOM}
                                         required
@@ -266,6 +332,7 @@ export default function DefectiveMaterialForm({ request, onClose }) {
                                     value={item.quantity}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
+                                    onKeyDown={(e) => handleKeyDown(e, 'quantity', index)}
                                     error={formik.touched.items?.[index]?.quantity && Boolean(formik.errors.items?.[index]?.quantity)}
                                     helperText={formik.touched.items?.[index]?.quantity && formik.errors.items?.[index]?.quantity}
                                     required
@@ -282,6 +349,7 @@ export default function DefectiveMaterialForm({ request, onClose }) {
                                     value={item.reason}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
+                                    onKeyDown={(e) => handleKeyDown(e, 'reason', index)}
                                     error={formik.touched.items?.[index]?.reason && Boolean(formik.errors.items?.[index]?.reason)}
                                     helperText={formik.touched.items?.[index]?.reason && formik.errors.items?.[index]?.reason}
                                     required
@@ -299,6 +367,7 @@ export default function DefectiveMaterialForm({ request, onClose }) {
                                     value={item.serialNumbers}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
+                                    onKeyDown={(e) => handleKeyDown(e, 'serialNumbers', index)}
                                     error={formik.touched.items?.[index]?.serialNumbers && Boolean(formik.errors.items?.[index]?.serialNumbers)}
                                     helperText={formik.touched.items?.[index]?.serialNumbers && formik.errors.items?.[index]?.serialNumbers}
                                     required
@@ -326,7 +395,8 @@ export default function DefectiveMaterialForm({ request, onClose }) {
                     cancel
                 </Button>
                 <Button
-                    variant="contained"
+                    variant="outlined"
+                    startIcon={<Visibility />}
                     onClick={formik.handleSubmit}
                     disabled={submitting}
                     sx={{
@@ -334,15 +404,126 @@ export default function DefectiveMaterialForm({ request, onClose }) {
                         fontWeight: 700,
                         borderRadius: 2,
                         px: 4,
-                        bgcolor: "#fff",
-                        color: "#1e293b",
-                        border: "1px solid #e2e8f0",
-                        "&:hover": { bgcolor: "#f1f5f9" }
+                        color: "#475569",
+                        borderColor: "#e2e8f0"
                     }}
                 >
-                    {submitting ? "Submitting..." : "Submit Defective Return"}
+                    Preview Return
                 </Button>
             </Box>
+
+            {/* Preview Dialog */}
+            <FormReviewDialog
+                open={showPreview}
+                onClose={() => setShowPreview(false)}
+                onConfirm={handleFinalSubmit}
+                title="Review Defective Material Return"
+                icon={<ReportProblem />}
+                headerInfo={{
+                    label1: "REQUEST NO",
+                    value1: request?.requestNo || "N/A",
+                    label2: "RETURN DATE",
+                    value2: formik.values.returnDate
+                }}
+                confirmLabel="Confirm & Submit"
+            >
+                <Grid container spacing={3}>
+                    {/* Request Info */}
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        <Paper elevation={0} sx={{ p: 2, borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)' }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'var(--brand-primary)' }}>
+                                <ReportProblem sx={{ fontSize: 18 }} />
+                                <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Request Information</Typography>
+                            </Box>
+                            <Box sx={{ display: 'grid', gap: 1.5 }}>
+                                <Box>
+                                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>PRODUCT</Typography>
+                                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{request?.productName || request?.product || "N/A"}</Typography>
+                                </Box>
+                                <Box>
+                                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>REQUEST NUMBER</Typography>
+                                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{request?.requestNo || "N/A"}</Typography>
+                                </Box>
+                                <Box>
+                                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>RETURN DATE</Typography>
+                                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{formik.values.returnDate}</Typography>
+                                </Box>
+                            </Box>
+                        </Paper>
+                    </Grid>
+
+                    {/* Summary */}
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        <Paper elevation={0} sx={{ p: 2, borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)' }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'var(--brand-primary)' }}>
+                                <ReportProblem sx={{ fontSize: 18 }} />
+                                <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Summary</Typography>
+                            </Box>
+                            <Box sx={{ display: 'grid', gap: 1.5 }}>
+                                <Box>
+                                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>TOTAL ITEMS</Typography>
+                                    <Typography variant="h6" color="error" sx={{ fontWeight: 700 }}>{formik.values.items.length}</Typography>
+                                </Box>
+                                <Box>
+                                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>TOTAL QUANTITY</Typography>
+                                    <Typography variant="h6" color="error" sx={{ fontWeight: 700 }}>
+                                        {formik.values.items.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0)}
+                                    </Typography>
+                                </Box>
+                            </Box>
+                        </Paper>
+                    </Grid>
+
+                    {/* Defective Items Table */}
+                    <Grid size={{ xs: 12 }}>
+                        <Paper elevation={0} sx={{ borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', overflow: 'hidden', bgcolor: 'var(--bg-surface)' }}>
+                            <Box sx={{ p: 2, bgcolor: 'var(--bg-page)' }}>
+                                <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--brand-primary)' }}>Defective Items</Typography>
+                            </Box>
+                            <TableContainer>
+                                <Table size="small">
+                                    <TableHead sx={{ bgcolor: 'var(--bg-page)' }}>
+                                        <TableRow>
+                                            <TableCell sx={{ fontWeight: 700, py: 2, color: 'var(--text-secondary)' }}>#</TableCell>
+                                            <TableCell sx={{ fontWeight: 700, py: 2, color: 'var(--text-secondary)' }}>ITEM NAME</TableCell>
+                                            <TableCell sx={{ fontWeight: 700, py: 2, color: 'var(--text-secondary)' }}>PART NO</TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 700, py: 2, color: 'var(--text-secondary)' }}>QUANTITY</TableCell>
+                                            <TableCell sx={{ fontWeight: 700, py: 2, color: 'var(--text-secondary)' }}>REASON</TableCell>
+                                            <TableCell sx={{ fontWeight: 700, py: 2, color: 'var(--text-secondary)' }}>SERIAL NUMBERS</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {formik.values.items.map((item, idx) => (
+                                            <TableRow key={idx} sx={{ '&:last-child td': { border: 0 } }}>
+                                                <TableCell sx={{ py: 1.5 }}>{idx + 1}</TableCell>
+                                                <TableCell sx={{ py: 1.5, fontWeight: 500 }}>{item.itemName}</TableCell>
+                                                <TableCell sx={{ color: 'text.secondary', fontSize: '0.8125rem' }}>{item.partNo}</TableCell>
+                                                <TableCell align="center">
+                                                    <Box sx={{
+                                                        display: 'inline-block',
+                                                        px: 1.5,
+                                                        py: 0.5,
+                                                        borderRadius: 1,
+                                                        bgcolor: '#fff1f2',
+                                                        color: '#e11d48',
+                                                        fontWeight: 700,
+                                                        fontSize: '0.75rem',
+                                                        border: '1px solid #f43f5e'
+                                                    }}>
+                                                        {item.quantity}
+                                                    </Box>
+                                                </TableCell>
+                                                <TableCell sx={{ color: 'text.secondary', fontSize: '0.8125rem' }}>{item.reason}</TableCell>
+                                                <TableCell sx={{ color: 'text.secondary', fontSize: '0.8125rem' }}>{item.serialNumbers}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Paper>
+                    </Grid>
+                </Grid>
+            </FormReviewDialog>
         </Box>
     );
 }

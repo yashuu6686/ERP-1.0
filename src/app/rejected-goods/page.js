@@ -12,12 +12,13 @@ import {
   IconButton,
 } from "@mui/material";
 import { Warning, Visibility, Edit, Delete } from "@mui/icons-material";
-import CommonCard from "../../components/ui/CommonCard";
+import CommonCard from "@/components/ui/CommonCard";
 import AddRejectedGoodsDialog from "./components/AddRejectedGoodsDialog";
 import RejectedGoodsMobileCard from "./components/RejectedGoodsMobileCard";
-import GlobalTable from "../../components/ui/GlobalTable";
+import GlobalTable from "@/components/ui/GlobalTable";
 import axiosInstance from "@/axios/axiosInstance";
-import Loader from "../../components/ui/Loader";
+import Loader from "@/components/ui/Loader";
+import { useNotification } from "@/context/NotificationContext";
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -48,6 +49,7 @@ const formatDate = (dateString) => {
 };
 
 export default function RejectedGoods() {
+  const { showNotification } = useNotification();
   const [tab, setTab] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogMode, setDialogMode] = useState("add");
@@ -132,10 +134,10 @@ export default function RejectedGoods() {
         setLoading(true);
         await axiosInstance.delete(`/rejected-goods/${id}`);
         await fetchRejectedGoods();
-        alert("Record deleted successfully!");
+        showNotification("Record deleted successfully!", "success");
       } catch (error) {
         console.error("Delete failed:", error);
-        alert("Failed to delete record.");
+        showNotification("Failed to delete record.", "error");
       } finally {
         setLoading(false);
       }
@@ -159,17 +161,17 @@ export default function RejectedGoods() {
 
       if (dialogMode === "add") {
         await axiosInstance.post("/rejected-goods", payload);
-        alert("Rejected Item Added Successfully!");
+        showNotification("Rejected Item Added Successfully!", "success");
       } else {
         await axiosInstance.put(`/rejected-goods/${selectedId}`, payload);
-        alert("Rejected Item Updated Successfully!");
+        showNotification("Rejected Item Updated Successfully!", "success");
       }
 
       setOpenDialog(false);
       await fetchRejectedGoods();
     } catch (error) {
       console.error("Submit failed:", error);
-      alert("Failed to save record.");
+      showNotification("Failed to save record.", "error");
     } finally {
       setLoading(false);
     }

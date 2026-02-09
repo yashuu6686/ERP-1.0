@@ -370,7 +370,7 @@ export default function OrderDetails() {
                                     </Stack>
 
                                     <Button
-                                    onClick={()=>router.push("/invoices/generate-invoice")}
+                                        onClick={() => router.push(`/invoices/generate-invoice?orderId=${id}`)}
                                         fullWidth
                                         variant="outlined"
                                         startIcon={<Receipt />}

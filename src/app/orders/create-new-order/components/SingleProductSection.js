@@ -28,13 +28,32 @@ const SingleProductSection = ({ formik }) => {
     };
 
     const onRemoveProduct = (id) => {
-        if (products.length > 1) {
-            setFieldValue("singleProducts", products.filter((p) => p.id !== id));
-        }
+        setFieldValue("singleProducts", products.filter((p) => p.id !== id));
     };
 
     const onUpdateProduct = (id, field, value) => {
         setFieldValue("singleProducts", products.map((p) => (p.id === id ? { ...p, [field]: value } : p)));
+    };
+
+    const handleKeyDown = (e, index, field) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if (field === 'name') {
+                const qtyInput = document.querySelector(`[name="singleProducts[${index}].quantity"]`);
+                if (qtyInput) qtyInput.focus();
+            } else if (field === 'quantity') {
+                const nextNameInput = document.querySelector(`[name="singleProducts[${index + 1}].name"]`);
+                if (nextNameInput) {
+                    nextNameInput.focus();
+                } else {
+                    onAddProduct();
+                    setTimeout(() => {
+                        const newInput = document.querySelector(`[name="singleProducts[${index + 1}].name"]`);
+                        if (newInput) newInput.focus();
+                    }, 100);
+                }
+            }
+        }
     };
 
     return (
@@ -64,6 +83,7 @@ const SingleProductSection = ({ formik }) => {
                     startIcon={<Add />}
                     variant="contained"
                     onClick={onAddProduct}
+                    id="add-product-btn"
                     sx={{
                         textTransform: "none",
                         bgcolor: "#1172ba",
@@ -96,11 +116,13 @@ const SingleProductSection = ({ formik }) => {
                                         fullWidth
                                         placeholder="Select Product"
                                         size="small"
+                                        name={`singleProducts[${index}].name`}
                                         value={product.name}
                                         onChange={(e) =>
                                             onUpdateProduct(product.id, "name", e.target.value)
                                         }
                                         onBlur={formik.handleBlur}
+                                        onKeyDown={(e) => handleKeyDown(e, index, 'name')}
                                         sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
                                     />
                                 </TableCell>
@@ -110,11 +132,13 @@ const SingleProductSection = ({ formik }) => {
                                         placeholder="Qty"
                                         size="small"
                                         type="number"
+                                        name={`singleProducts[${index}].quantity`}
                                         value={product.quantity}
                                         onChange={(e) =>
                                             onUpdateProduct(product.id, "quantity", e.target.value)
                                         }
                                         onBlur={formik.handleBlur}
+                                        onKeyDown={(e) => handleKeyDown(e, index, 'quantity')}
                                         sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
                                     />
                                 </TableCell>

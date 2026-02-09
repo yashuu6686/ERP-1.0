@@ -8,14 +8,36 @@ import {
     CardContent,
 } from '@mui/material';
 
+const FIELD_ORDER = [
+    "acceptedQuantity",
+    "rejectedQuantity",
+    "holdScrapQuantity",
+    "other",
+    "comments"
+];
+
 const InspectionSummary = ({ summaryData, onChange, errors = {}, touched = {}, onBlur }) => {
     const handleChange = (field) => (event) => {
         onChange?.(field, event.target.value);
     };
 
-    const handleNumberKeyDown = (e) => {
-        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+    const handleKeyDown = (e, fieldName) => {
+        // Prevent arrow keys from changing number values
+        if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && fieldName !== 'comments') {
             e.preventDefault();
+        }
+
+        // Handle Enter key navigation
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const currentIndex = FIELD_ORDER.indexOf(fieldName);
+            if (currentIndex !== -1 && currentIndex < FIELD_ORDER.length - 1) {
+                const nextFieldName = FIELD_ORDER[currentIndex + 1];
+                const nextField = document.querySelector(`[name="${nextFieldName}"]`);
+                if (nextField) {
+                    nextField.focus();
+                }
+            }
         }
     };
 
@@ -38,7 +60,7 @@ const InspectionSummary = ({ summaryData, onChange, errors = {}, touched = {}, o
                 }}
             >
                 <Typography variant="subtitle1" sx={{ color: '#fff', fontWeight: 600 }}>
-                    Inspection Summary
+                    Inspection Summary <span style={{ color: 'white' }}>*</span>
                 </Typography>
             </Box>
 
@@ -53,11 +75,11 @@ const InspectionSummary = ({ summaryData, onChange, errors = {}, touched = {}, o
                                 size="small"
                                 sx={{ width: '120px' }}
                                 type="number"
-                                name="summaryData.acceptedQuantity"
+                                name="acceptedQuantity"
                                 value={summaryData?.acceptedQuantity || ''}
                                 onChange={handleChange('acceptedQuantity')}
                                 onBlur={onBlur}
-                                onKeyDown={handleNumberKeyDown}
+                                onKeyDown={(e) => handleKeyDown(e, 'acceptedQuantity')}
                                 required
                                 error={touched.acceptedQuantity && Boolean(errors.acceptedQuantity)}
                                 helperText={touched.acceptedQuantity && errors.acceptedQuantity}
@@ -73,11 +95,11 @@ const InspectionSummary = ({ summaryData, onChange, errors = {}, touched = {}, o
                                 size="small"
                                 sx={{ width: '120px' }}
                                 type="number"
-                                name="summaryData.rejectedQuantity"
+                                name="rejectedQuantity"
                                 value={summaryData?.rejectedQuantity || ''}
                                 onChange={handleChange('rejectedQuantity')}
                                 onBlur={onBlur}
-                                onKeyDown={handleNumberKeyDown}
+                                onKeyDown={(e) => handleKeyDown(e, 'rejectedQuantity')}
                                 required
                                 error={touched.rejectedQuantity && Boolean(errors.rejectedQuantity)}
                                 helperText={touched.rejectedQuantity && errors.rejectedQuantity}
@@ -93,11 +115,11 @@ const InspectionSummary = ({ summaryData, onChange, errors = {}, touched = {}, o
                                 size="small"
                                 sx={{ width: '120px' }}
                                 type="number"
-                                name="summaryData.holdScrapQuantity"
+                                name="holdScrapQuantity"
                                 value={summaryData?.holdScrapQuantity || ''}
                                 onChange={handleChange('holdScrapQuantity')}
                                 onBlur={onBlur}
-                                onKeyDown={handleNumberKeyDown}
+                                onKeyDown={(e) => handleKeyDown(e, 'holdScrapQuantity')}
                                 required
                                 error={touched.holdScrapQuantity && Boolean(errors.holdScrapQuantity)}
                                 helperText={touched.holdScrapQuantity && errors.holdScrapQuantity}
@@ -113,11 +135,11 @@ const InspectionSummary = ({ summaryData, onChange, errors = {}, touched = {}, o
                                 size="small"
                                 sx={{ width: '120px' }}
                                 type="number"
-                                name="summaryData.other"
+                                name="other"
                                 value={summaryData?.other || ''}
                                 onChange={handleChange('other')}
                                 onBlur={onBlur}
-                                onKeyDown={handleNumberKeyDown}
+                                onKeyDown={(e) => handleKeyDown(e, 'other')}
                                 required
                                 error={touched.other && Boolean(errors.other)}
                                 helperText={touched.other && errors.other}
@@ -133,10 +155,11 @@ const InspectionSummary = ({ summaryData, onChange, errors = {}, touched = {}, o
                     multiline
                     rows={1}
                     variant="outlined"
-                    name="summaryData.comments"
+                    name="comments"
                     value={summaryData?.comments || ''}
                     onChange={handleChange('comments')}
                     onBlur={onBlur}
+                    onKeyDown={(e) => handleKeyDown(e, 'comments')}
                     required
                     error={touched.comments && Boolean(errors.comments)}
                     helperText={touched.comments && errors.comments}

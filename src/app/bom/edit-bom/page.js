@@ -9,15 +9,19 @@ import MaterialListSpecifications from "../create-bom/components/MaterialListSpe
 import BOMAuthorization from "../create-bom/components/BOMAuthorization";
 import axiosInstance from "../../../axios/axiosInstance";
 import Loader from "@/components/ui/Loader";
+import BOMReviewDialog from "../create-bom/components/BOMReviewDialog";
 import { TextField, Grid } from "@mui/material";
+import { useNotification } from "@/context/NotificationContext";
 
 function EditBOMContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const id = searchParams.get("id");
+    const { showNotification } = useNotification();
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [showPreview, setShowPreview] = useState(false);
     const [auth, setAuth] = useState({
         reviewedBy: "",
         approvedBy: "",
@@ -104,7 +108,11 @@ function EditBOMContent() {
         setAuth({ ...auth, [field]: value });
     };
 
-    const handleUpdate = async () => {
+    const handleUpdate = () => {
+        setShowPreview(true);
+    };
+
+    const handleFinalUpdate = async () => {
         try {
             setSaving(true);
             const payload = {
@@ -132,12 +140,13 @@ function EditBOMContent() {
                 },
             };
 
+            setShowPreview(false);
             await axiosInstance.put(`/bom/${id}`, payload);
-            alert("BOM updated successfully!");
+            showNotification("BOM updated successfully!", "success");
             router.push("/bom");
         } catch (error) {
             console.error("Error updating BOM:", error);
-            alert("Failed to update BOM on server.");
+            showNotification("Failed to update BOM on server.", "error");
         } finally {
             setSaving(false);
         }
@@ -225,6 +234,18 @@ function EditBOMContent() {
                     </Box>
                 </Box>
             </CommonCard>
+
+            <BOMReviewDialog
+                open={showPreview}
+                onClose={() => setShowPreview(false)}
+                onConfirm={handleFinalUpdate}
+                data={{
+                    productName: productName,
+                    materials: materials,
+                    auth: auth
+                }}
+                isEditMode={true}
+            />
         </Box>
     );
 }

@@ -28,6 +28,38 @@ const InspectionObservations = ({
     touched = [],
     onBlur = () => { }
 }) => {
+
+    // Handle Enter key to move to next field in the table
+    const handleKeyDown = (e, obsId, currentField, rowIndex) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+
+            // Define field order for each row
+            const fieldOrder = ['parameter', 'specification', 'method', ...observationColumns.map(col => col.id), 'remarks'];
+            const currentIndex = fieldOrder.indexOf(currentField);
+
+            if (currentIndex !== -1) {
+                // Try to move to next field in same row
+                if (currentIndex < fieldOrder.length - 1) {
+                    const nextField = fieldOrder[currentIndex + 1];
+                    const nextInput = document.querySelector(`input[name="observations[${rowIndex}].${nextField}"]`);
+                    if (nextInput) {
+                        nextInput.focus();
+                        return;
+                    }
+                }
+
+                // If at end of row, move to first field of next row
+                if (currentIndex === fieldOrder.length - 1 && rowIndex < observations.length - 1) {
+                    const nextRowInput = document.querySelector(`input[name="observations[${rowIndex + 1}].parameter"]`);
+                    if (nextRowInput) {
+                        nextRowInput.focus();
+                    }
+                }
+            }
+        }
+    };
+
     return (
         <Card
             elevation={0}
@@ -135,6 +167,7 @@ const InspectionObservations = ({
                                             value={obs.parameter || ''}
                                             onChange={(e) => onChange(obs.id, 'parameter', e.target.value)}
                                             onBlur={onBlur}
+                                            onKeyDown={(e) => handleKeyDown(e, obs.id, 'parameter', index)}
                                             error={rowTouched?.parameter && Boolean(rowError?.parameter)}
                                             helperText={rowTouched?.parameter && rowError?.parameter}
                                             sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
@@ -149,6 +182,7 @@ const InspectionObservations = ({
                                             value={obs.specification || ''}
                                             onChange={(e) => onChange(obs.id, 'specification', e.target.value)}
                                             onBlur={onBlur}
+                                            onKeyDown={(e) => handleKeyDown(e, obs.id, 'specification', index)}
                                             error={rowTouched?.specification && Boolean(rowError?.specification)}
                                             helperText={rowTouched?.specification && rowError?.specification}
                                             sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
@@ -163,6 +197,7 @@ const InspectionObservations = ({
                                             value={obs.method || ''}
                                             onChange={(e) => onChange(obs.id, 'method', e.target.value)}
                                             onBlur={onBlur}
+                                            onKeyDown={(e) => handleKeyDown(e, obs.id, 'method', index)}
                                             error={rowTouched?.method && Boolean(rowError?.method)}
                                             helperText={rowTouched?.method && rowError?.method}
                                             sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
@@ -178,6 +213,7 @@ const InspectionObservations = ({
                                                 value={obs[col.id] || ''}
                                                 onChange={(e) => onChange(obs.id, col.id, e.target.value)}
                                                 onBlur={onBlur}
+                                                onKeyDown={(e) => handleKeyDown(e, obs.id, col.id, index)}
                                                 error={rowTouched?.[col.id] && Boolean(rowError?.[col.id])}
                                                 helperText={rowTouched?.[col.id] && rowError?.[col.id]}
                                                 sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
@@ -193,6 +229,7 @@ const InspectionObservations = ({
                                             value={obs.remarks || ''}
                                             onChange={(e) => onChange(obs.id, 'remarks', e.target.value)}
                                             onBlur={onBlur}
+                                            onKeyDown={(e) => handleKeyDown(e, obs.id, 'remarks', index)}
                                             error={rowTouched?.remarks && Boolean(rowError?.remarks)}
                                             helperText={rowTouched?.remarks && rowError?.remarks}
                                             sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
@@ -214,6 +251,13 @@ const InspectionObservations = ({
                     </TableBody>
                 </Table>
             </TableContainer>
+            {typeof errors === 'string' && (
+                <Box sx={{ p: 2, bgcolor: '#fff5f5' }}>
+                    <Typography color="error" variant="body2" sx={{ fontWeight: 600 }}>
+                        {errors}
+                    </Typography>
+                </Box>
+            )}
         </Card>
     );
 };

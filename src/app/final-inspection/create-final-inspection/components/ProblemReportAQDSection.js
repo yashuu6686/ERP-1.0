@@ -15,6 +15,17 @@ import Info from "@mui/icons-material/Info";
 const ProblemReportAQDSection = ({ formik }) => {
     const { values, setFieldValue, touched, errors } = formik;
 
+    const handleKeyDown = (e, nextField, fallbackField) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            let nextInput = document.querySelector(`[name="${nextField}"]`);
+            if (!nextInput && fallbackField) {
+                nextInput = document.querySelector(`[name="${fallbackField}"]`);
+            }
+            if (nextInput) nextInput.focus();
+        }
+    };
+
     return (
         <Grid container spacing={3} sx={{ mb: 4 }}>
             <Grid size={{ xs: 12, md: 6 }}>
@@ -94,8 +105,10 @@ const ProblemReportAQDSection = ({ formik }) => {
                                         value={values.problemDescription || ""}
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
+                                        onKeyDown={(e) => handleKeyDown(e, "problemActionTaken")}
                                         error={touched.problemDescription && Boolean(errors.problemDescription)}
                                         helperText={touched.problemDescription && errors.problemDescription}
+                                        required
                                         sx={{
                                             "& .MuiOutlinedInput-root": {
                                                 backgroundColor: "white",
@@ -114,6 +127,10 @@ const ProblemReportAQDSection = ({ formik }) => {
                                         value={values.problemActionTaken || ""}
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
+                                        onKeyDown={(e) => handleKeyDown(e, "aqdDescription", "actionItemsDescription")}
+                                        error={touched.problemActionTaken && Boolean(errors.problemActionTaken)}
+                                        helperText={touched.problemActionTaken && errors.problemActionTaken}
+                                        required
                                         sx={{
                                             "& .MuiOutlinedInput-root": {
                                                 backgroundColor: "white",
@@ -207,8 +224,10 @@ const ProblemReportAQDSection = ({ formik }) => {
                                 value={values.aqdDescription || ""}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
+                                onKeyDown={(e) => handleKeyDown(e, "actionItemsDescription")}
                                 error={touched.aqdDescription && Boolean(errors.aqdDescription)}
                                 helperText={touched.aqdDescription && errors.aqdDescription}
+                                required
                                 sx={{
                                     "& .MuiOutlinedInput-root": { backgroundColor: "white" },
                                 }}

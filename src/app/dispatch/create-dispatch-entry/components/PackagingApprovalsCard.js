@@ -18,8 +18,7 @@ export default function PackagingApprovalsCard({ formik, uploadedFiles, handleFi
 
     const handleCharacterOnlyChange = (e) => {
         const { name, value } = e.target;
-        const filteredValue = value.replace(/[^a-zA-Z\s]/g, "");
-        formik.setFieldValue(name, filteredValue);
+        formik.setFieldValue(name, value);
     };
 
     return (
@@ -114,10 +113,11 @@ export default function PackagingApprovalsCard({ formik, uploadedFiles, handleFi
                         sx={{
                             py: 3,
                             borderStyle: "dashed",
-                            borderColor: "#cbd5e1",
+                            borderColor: formik.touched.evidence && formik.errors.evidence ? "#d32f2f" : "#cbd5e1",
                             bgcolor: "white",
+                            color: formik.touched.evidence && formik.errors.evidence ? "#d32f2f" : "inherit",
                             "&:hover": {
-                                borderColor: "#1172ba",
+                                borderColor: formik.touched.evidence && formik.errors.evidence ? "#d32f2f" : "#1172ba",
                                 bgcolor: "#f8fafc",
                             },
                             textTransform: "none",
@@ -126,6 +126,12 @@ export default function PackagingApprovalsCard({ formik, uploadedFiles, handleFi
                         Click to Upload Files or Drag and Drop
                         <input type="file" hidden multiple onChange={handleFileUpload} />
                     </Button>
+
+                    {formik.touched.evidence && formik.errors.evidence && (
+                        <Typography variant="caption" sx={{ color: "#d32f2f", mt: 0.5, display: "block", fontWeight: 600 }}>
+                            {formik.errors.evidence}
+                        </Typography>
+                    )}
 
                     {uploadedFiles.length > 0 && (
                         <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>

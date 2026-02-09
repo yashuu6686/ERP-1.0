@@ -12,6 +12,14 @@ import LocalShipping from "@mui/icons-material/LocalShipping";
 const DeliveryInformationSection = ({ formik, lockedFields = {} }) => {
     const { values, setFieldValue, touched, errors } = formik;
 
+    const handleKeyDown = (e, nextFieldName) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const nextInput = document.querySelector(`[name="${nextFieldName}"]`);
+            if (nextInput) nextInput.focus();
+        }
+    };
+
     return (
         <Card
             elevation={0}
@@ -44,9 +52,11 @@ const DeliveryInformationSection = ({ formik, lockedFields = {} }) => {
                             fullWidth
                             label="Delivery Address"
                             size="small"
+                            name="delivery.deliveryAddress"
                             value={values.delivery.deliveryAddress || ""}
                             onChange={(e) => setFieldValue("delivery.deliveryAddress", e.target.value)}
                             onBlur={() => formik.setFieldTouched("delivery.deliveryAddress", true)}
+                            onKeyDown={(e) => handleKeyDown(e, "delivery.contactPerson")}
                             error={touched.delivery?.deliveryAddress && Boolean(errors.delivery?.deliveryAddress)}
                             helperText={touched.delivery?.deliveryAddress && errors.delivery?.deliveryAddress}
                             InputProps={{ readOnly: !!lockedFields.deliveryAddress }}
@@ -59,9 +69,11 @@ const DeliveryInformationSection = ({ formik, lockedFields = {} }) => {
                             fullWidth
                             label="Contact Person"
                             size="small"
+                            name="delivery.contactPerson"
                             value={values.delivery.contactPerson || ""}
                             onChange={(e) => setFieldValue("delivery.contactPerson", e.target.value)}
                             onBlur={() => formik.setFieldTouched("delivery.contactPerson", true)}
+                            onKeyDown={(e) => handleKeyDown(e, "delivery.phone")}
                             error={touched.delivery?.contactPerson && Boolean(errors.delivery?.contactPerson)}
                             helperText={touched.delivery?.contactPerson && errors.delivery?.contactPerson}
                             InputProps={{ readOnly: !!lockedFields.contactPerson }}
@@ -74,9 +86,11 @@ const DeliveryInformationSection = ({ formik, lockedFields = {} }) => {
                             fullWidth
                             label="Phone"
                             size="small"
+                            name="delivery.phone"
                             value={values.delivery.phone || ""}
                             onChange={(e) => setFieldValue("delivery.phone", e.target.value)}
                             onBlur={() => formik.setFieldTouched("delivery.phone", true)}
+                            onKeyDown={(e) => handleKeyDown(e, "items[0].name")}
                             error={touched.delivery?.phone && Boolean(errors.delivery?.phone)}
                             helperText={touched.delivery?.phone && errors.delivery?.phone}
                             InputProps={{ readOnly: !!lockedFields.phone }}

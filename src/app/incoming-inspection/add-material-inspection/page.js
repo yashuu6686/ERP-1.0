@@ -1,19 +1,28 @@
 "use client";
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Stepper from "@mui/material/Stepper";
-import Step from "@mui/material/Step";
-import StepLabel from "@mui/material/StepLabel";
-import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid";
+import {
+  Box,
+  Button,
+  Stepper,
+  Step,
+  StepLabel,
+  Typography,
+  Grid,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow
+} from "@mui/material";
 
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import SaveIcon from "@mui/icons-material/Save";
 import ScienceIcon from "@mui/icons-material/Science";
 import ArrowBack from "@mui/icons-material/ArrowBack";
 import ArrowForward from "@mui/icons-material/ArrowForward";
+import VerifiedIcon from "@mui/icons-material/Verified";
 import CommonCard from "../../../components/ui/CommonCard";
 import InspectionObservations from "@/components/inspection/InspectionObservations";
 import InspectionSummary from "@/components/inspection/InspectionSummary";
@@ -22,6 +31,7 @@ import MaterialInformation from "./components/MaterialInformation";
 import VerificationChecks from "./components/VerificationChecks";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/ui/Loader";
+import FormReviewDialog from "@/components/ui/FormReviewDialog";
 import { useAuth } from "@/context/AuthContext";
 import { useNotification } from "@/context/NotificationContext";
 import NotificationService from "@/services/NotificationService";
@@ -41,6 +51,7 @@ function MaterialInspectionFormContent() {
   const [loading, setLoading] = useState(false);
   const [pendingGRNs, setPendingGRNs] = useState([]);
   const [selectedGRN, setSelectedGRN] = useState(null);
+  const [showPreview, setShowPreview] = useState(false);
   const router = useRouter();
   const { showNotification } = useNotification();
   const searchParams = useSearchParams();
@@ -61,8 +72,8 @@ function MaterialInspectionFormContent() {
           poNumber: Yup.string().required("PO Number is required"),
           receivedDate: Yup.date().required("Received Date is required").typeError("Invalid date"),
           invoiceNumber: Yup.string().required("Invoice Number is required"),
-          lotNumber: Yup.string().required("Lot Number is required"),
-          inspectionStandardNumber: Yup.string().required("Inspection Standard Number is required"),
+          lotNumber: Yup.number().typeError("Must be a number").positive("Lot Number must be greater than 0").required("Lot Number is required"),
+          inspectionStandardNumber: Yup.number().typeError("Must be a number").positive("Inspection Standard Number must be greater than 0").required("Inspection Standard Number is required"),
           supplierName: Yup.string().required("Supplier Name is required"),
           lotQuantity: Yup.number().typeError("Must be a number").positive("Lot Quantity must be greater than 0").required("Lot Quantity is required"),
           sampleSize: Yup.number().typeError("Must be a number").positive("Sample Size must be greater than 0").required("Sample Size is required"),
@@ -161,8 +172,8 @@ function MaterialInspectionFormContent() {
       },
     },
     validationSchema: getValidationSchema(activeStep, user?.role),
-    onSubmit: async (values) => {
-      await handleSubmit(values);
+    onSubmit: async () => {
+      setShowPreview(true);
     },
   });
 
@@ -374,9 +385,11 @@ function MaterialInspectionFormContent() {
     );
   };
 
-  const handleSubmit = async (values) => {
+  const handleFinalSubmit = async () => {
+    const values = formik.values;
     try {
       setLoading(true);
+      setShowPreview(false);
       const isHR = user?.role === 'hr';
       const inspectionData = {
         ...values,
@@ -683,6 +696,241 @@ function MaterialInspectionFormContent() {
             </Box>
           </Box>
         </CommonCard>
+
+        {/* Review Dialog */}
+        <FormReviewDialog
+          open={showPreview}
+          onClose={() => setShowPreview(false)}
+          onConfirm={handleFinalSubmit}
+          title={isEditMode ? "Review & Update Inspection" : "Review Material Inspection"}
+          icon={<ScienceIcon />}
+          headerInfo={{
+            label1: "REPORT NUMBER",
+            value1: `#${formik.values.materialData.inspectionReportNumber}`,
+            label2: "INSPECTION DATE",
+            value2: formik.values.materialData.inspectionDate
+          }}
+          confirmLabel={isEditMode ? "Confirm & Update" : "Confirm & Submit"}
+        >
+          <Grid container spacing={3}>
+            {/* Material Details - Expanded */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Paper elevation={0} sx={{ p: 2, borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'var(--brand-primary)' }}>
+                  <ScienceIcon sx={{ fontSize: 18 }} />
+                  <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Material Information</Typography>
+                </Box>
+                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1.5, color: 'var(--text-primary)', fontFamily: 'var(--font-manrope)' }}>{formik.values.materialData.materialName}</Typography>
+                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1 }}>
+                  <Box>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>GRN NUMBER</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{formik.values.materialData.grnNumber}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>PO NUMBER</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{formik.values.materialData.poNumber}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>SUPPLIER</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{formik.values.materialData.supplierName}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>INVOICE NO</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{formik.values.materialData.invoiceNumber}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>RECEIVED DATE</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{formik.values.materialData.receivedDate}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>LOT NUMBER</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{formik.values.materialData.lotNumber}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>LOT QUANTITY</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{formik.values.materialData.lotQuantity}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>SAMPLE SIZE</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{formik.values.materialData.sampleSize}</Typography>
+                  </Box>
+                </Box>
+              </Paper>
+            </Grid>
+
+            {/* Inspection Details */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Paper elevation={0} sx={{ p: 2, borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'var(--brand-primary)' }}>
+                  <CheckCircleIcon sx={{ fontSize: 18 }} />
+                  <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Inspection Details</Typography>
+                </Box>
+                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1, mb: 2 }}>
+                  <Box>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>INSPECTION DATE</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{formik.values.materialData.inspectionDate}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>EQUIPMENT ID</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{formik.values.materialData.equipmentId}</Typography>
+                  </Box>
+                  <Box sx={{ gridColumn: 'span 2' }}>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>INSPECTION STANDARD</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{formik.values.materialData.inspectionStandard}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>STANDARD NUMBER</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{formik.values.materialData.inspectionStandardNumber}</Typography>
+                  </Box>
+                </Box>
+              </Paper>
+            </Grid>
+
+            {/* Summary & Quantities */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Paper elevation={0} sx={{ p: 2, borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'var(--brand-primary)' }}>
+                  <CheckCircleIcon sx={{ fontSize: 18 }} />
+                  <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Inspection Summary</Typography>
+                </Box>
+                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1.5 }}>
+                  <Box>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>ACCEPTED</Typography>
+                    <Typography variant="h6" color="success.main" sx={{ fontWeight: 700 }}>{formik.values.summaryData.acceptedQuantity}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>REJECTED</Typography>
+                    <Typography variant="h6" color="error.main" sx={{ fontWeight: 700 }}>{formik.values.summaryData.rejectedQuantity}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>HOLD/SCRAP</Typography>
+                    <Typography variant="h6" color="warning.main" sx={{ fontWeight: 700 }}>{formik.values.summaryData.holdScrapQuantity}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>OTHER</Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 700 }}>{formik.values.summaryData.other}</Typography>
+                  </Box>
+                </Box>
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>COMMENTS</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 500, mt: 0.5 }}>{formik.values.summaryData.comments || '-'}</Typography>
+                </Box>
+              </Paper>
+            </Grid>
+
+            {/* Approval Information */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Paper elevation={0} sx={{ p: 2, borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'var(--brand-primary)' }}>
+                  <VerifiedIcon sx={{ fontSize: 18 }} />
+                  <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Approval Information</Typography>
+                </Box>
+                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1.5 }}>
+                  <Box>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>UPDATED BY</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 700 }}>{formik.values.approvalData.updatedByName}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>UPDATE DATE</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 700 }}>{formik.values.approvalData.updatedByDate}</Typography>
+                  </Box>
+                  {user?.role === 'admin' && (
+                    <>
+                      <Box>
+                        <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>APPROVED BY</Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 700 }}>{formik.values.approvalData.approvedByName || '-'}</Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>APPROVAL DATE</Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 700 }}>{formik.values.approvalData.approvedByDate || '-'}</Typography>
+                      </Box>
+                    </>
+                  )}
+                </Box>
+              </Paper>
+            </Grid>
+
+            {/* Verification Checks */}
+            <Grid size={{ xs: 12 }}>
+              <Paper elevation={0} sx={{ p: 2, borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'var(--brand-primary)' }}>
+                  <VerifiedIcon sx={{ fontSize: 18 }} />
+                  <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Verification Checks</Typography>
+                </Box>
+                <Grid container spacing={3}>
+                  <Grid item xs={4} size={{ xs: 4 }}>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>TOOLS USED</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 700, textTransform: 'uppercase', color: formik.values.materialData.toolsUsed === 'yes' ? 'success.main' : 'text.primary' }}>
+                      {formik.values.materialData.toolsUsed || '-'}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={4} size={{ xs: 4 }}>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>SDS AVAILABLE</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 700, textTransform: 'uppercase', color: formik.values.materialData.sdsAvailable === 'yes' ? 'success.main' : 'text.primary' }}>
+                      {formik.values.materialData.sdsAvailable || '-'}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={4} size={{ xs: 4 }}>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>QUALITY CERTIFICATE</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 700, textTransform: 'uppercase', color: formik.values.materialData.qualityCertificate === 'yes' ? 'success.main' : 'text.primary' }}>
+                      {formik.values.materialData.qualityCertificate || '-'}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Paper>
+            </Grid>
+
+            {/* Observations Table */}
+            <Grid size={{ xs: 12 }}>
+              <Paper elevation={0} sx={{ borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', overflow: 'hidden', bgcolor: 'var(--bg-surface)' }}>
+                <Box sx={{ p: 2, bgcolor: 'var(--bg-page)' }}>
+                  <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--brand-primary)' }}>Observations</Typography>
+                </Box>
+                <Table size="small">
+                  <TableHead sx={{ bgcolor: 'var(--bg-page)' }}>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: 700, py: 2, color: 'var(--text-secondary)' }}>PARAMETER</TableCell>
+                      <TableCell sx={{ fontWeight: 700, py: 2, color: 'var(--text-secondary)' }}>SPECIFICATION</TableCell>
+                      <TableCell sx={{ fontWeight: 700, py: 2, color: 'var(--text-secondary)' }}>METHOD</TableCell>
+                      {observationColumns.map((col) => (
+                        <TableCell key={col.id} align="center" sx={{ fontWeight: 700, py: 2, color: 'var(--text-secondary)' }}>{col.label.toUpperCase()}</TableCell>
+                      ))}
+                      <TableCell sx={{ fontWeight: 700, py: 2, color: 'var(--text-secondary)' }}>REMARKS</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {formik.values.observations.map((obs, idx) => (
+                      <TableRow key={idx} sx={{ '&:last-child td': { border: 0 } }}>
+                        <TableCell sx={{ py: 1.5, fontWeight: 500 }}>{obs.parameter}</TableCell>
+                        <TableCell sx={{ color: 'text.secondary', fontSize: '0.8125rem' }}>{obs.specification}</TableCell>
+                        <TableCell sx={{ color: 'text.secondary', fontSize: '0.8125rem' }}>{obs.method}</TableCell>
+                        {observationColumns.map((col) => (
+                          <TableCell key={col.id} align="center">
+                            <Box sx={{
+                              display: 'inline-block',
+                              px: 1.5,
+                              py: 0.5,
+                              borderRadius: 1,
+                              bgcolor: obs[col.id]?.toLowerCase() === 'ok' ? '#ecfdf5' : '#fff1f2',
+                              color: obs[col.id]?.toLowerCase() === 'ok' ? '#059669' : '#e11d48',
+                              fontWeight: 700,
+                              fontSize: '0.75rem',
+                              border: '1px solid',
+                              borderColor: obs[col.id]?.toLowerCase() === 'ok' ? '#10b981' : '#f43f5e'
+                            }}>
+                              {obs[col.id]?.toUpperCase() || '-'}
+                            </Box>
+                          </TableCell>
+                        ))}
+                        <TableCell sx={{ color: 'text.secondary', fontSize: '0.8125rem' }}>{obs.remarks || '-'}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Paper>
+            </Grid>
+          </Grid>
+        </FormReviewDialog>
       </Box>
     </FormikProvider>
   );

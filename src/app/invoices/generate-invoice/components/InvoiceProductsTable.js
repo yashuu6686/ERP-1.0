@@ -40,8 +40,29 @@ const InvoiceProductsTable = ({ formik, lockedProductIds = [], onProductChange }
     };
 
     const removeItem = (id) => {
-        if (products.length > 1) {
-            setFieldValue("items", products.filter(p => !lockedProductIds.includes(p.id) || p.id !== id));
+        setFieldValue("items", products.filter(p => p.id !== id));
+    };
+
+    const handleKeyDown = (e, index, field) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const fields = ['name', 'hsnSac', 'qty', 'price', 'taxPercent'];
+            const currentIndex = fields.indexOf(field);
+
+            if (currentIndex < fields.length - 1) {
+                const nextField = fields[currentIndex + 1];
+                const nextInput = document.querySelector(`[name="items[${index}].${nextField}"]`);
+                if (nextInput) nextInput.focus();
+            } else {
+                // Last field of the row
+                const nextRowInput = document.querySelector(`[name="items[${index + 1}].name"]`);
+                if (nextRowInput) {
+                    nextRowInput.focus();
+                } else {
+                    const addBtn = document.getElementById("add-item-btn");
+                    if (addBtn) addBtn.focus();
+                }
+            }
         }
     };
 
@@ -72,6 +93,7 @@ const InvoiceProductsTable = ({ formik, lockedProductIds = [], onProductChange }
                     </Typography>
                 </Box>
                 <Button
+                    id="add-item-btn"
                     variant="contained"
                     size="small"
                     startIcon={<Add />}
@@ -115,8 +137,10 @@ const InvoiceProductsTable = ({ formik, lockedProductIds = [], onProductChange }
                                             size="small"
                                             placeholder="Item Name"
                                             fullWidth
+                                            name={`items[${index}].name`}
                                             value={product.name || ""}
                                             onChange={(e) => onProductChange?.(product.id, "name", e.target.value)}
+                                            onKeyDown={(e) => handleKeyDown(e, index, 'name')}
                                             error={itemTouched.name && Boolean(itemErrors.name)}
                                             helperText={itemTouched.name && itemErrors.name}
                                             InputProps={{ readOnly: isItemFromOrder }}
@@ -128,8 +152,10 @@ const InvoiceProductsTable = ({ formik, lockedProductIds = [], onProductChange }
                                             size="small"
                                             placeholder="HSN/SAC"
                                             fullWidth
+                                            name={`items[${index}].hsnSac`}
                                             value={product.hsnSac || ""}
                                             onChange={(e) => onProductChange?.(product.id, "hsnSac", e.target.value)}
+                                            onKeyDown={(e) => handleKeyDown(e, index, 'hsnSac')}
                                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
                                         />
                                     </TableCell>
@@ -138,8 +164,10 @@ const InvoiceProductsTable = ({ formik, lockedProductIds = [], onProductChange }
                                             size="small"
                                             placeholder="Qty"
                                             type="number"
+                                            name={`items[${index}].qty`}
                                             value={product.qty || ""}
                                             onChange={(e) => onProductChange?.(product.id, "qty", e.target.value)}
+                                            onKeyDown={(e) => handleKeyDown(e, index, 'qty')}
                                             error={itemTouched.qty && Boolean(itemErrors.qty)}
                                             InputProps={{ readOnly: isItemFromOrder }}
                                             sx={{
@@ -153,8 +181,10 @@ const InvoiceProductsTable = ({ formik, lockedProductIds = [], onProductChange }
                                             size="small"
                                             placeholder="Price"
                                             type="number"
+                                            name={`items[${index}].price`}
                                             value={product.price || ""}
                                             onChange={(e) => onProductChange?.(product.id, "price", e.target.value)}
+                                            onKeyDown={(e) => handleKeyDown(e, index, 'price')}
                                             error={itemTouched.price && Boolean(itemErrors.price)}
                                             sx={{
                                                 width: 100,
@@ -167,8 +197,10 @@ const InvoiceProductsTable = ({ formik, lockedProductIds = [], onProductChange }
                                             size="small"
                                             placeholder="Tax %"
                                             type="number"
+                                            name={`items[${index}].taxPercent`}
                                             value={product.taxPercent || ""}
                                             onChange={(e) => onProductChange?.(product.id, "taxPercent", e.target.value)}
+                                            onKeyDown={(e) => handleKeyDown(e, index, 'taxPercent')}
                                             sx={{
                                                 width: 80,
                                                 "& .MuiOutlinedInput-root": { bgcolor: "white" },
@@ -178,7 +210,7 @@ const InvoiceProductsTable = ({ formik, lockedProductIds = [], onProductChange }
                                     <TableCell align="center">₹{parseFloat(product.taxAmount || 0).toFixed(2)}</TableCell>
                                     <TableCell align="center" sx={{ fontWeight: 600 }}>₹{parseFloat(product.total || 0).toFixed(2)}</TableCell>
                                     <TableCell align="center">
-                                        {!isItemFromOrder && (
+                                        {index !== 0 && (
                                             <IconButton color="error" size="small" onClick={() => removeItem(product.id)}>
                                                 <Delete fontSize="small" />
                                             </IconButton>

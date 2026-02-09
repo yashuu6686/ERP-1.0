@@ -20,7 +20,11 @@ import axiosInstance from "../../../axios/axiosInstance";
 import { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import NotificationService from "@/services/NotificationService";
-import { Grid } from "@mui/material";
+import { Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Divider } from "@mui/material";
+import { useNotification } from "@/context/NotificationContext";
+import FormReviewDialog from "@/components/ui/FormReviewDialog";
+import Visibility from "@mui/icons-material/Visibility";
+import FactCheck from "@mui/icons-material/FactCheck";
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -35,8 +39,10 @@ const steps = [
 export default function QualityCheckForm() {
   const router = useRouter();
   const { user } = useAuth();
+  const { showNotification } = useNotification();
   const [activeStep, setActiveStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   const [materialRequests, setMaterialRequests] = useState([]);
   const [observationColumns, setObservationColumns] = useState([
     { id: "observation", label: "Observation" },
@@ -137,101 +143,107 @@ export default function QualityCheckForm() {
     },
     validationSchema: getValidationSchema(activeStep, user?.role),
     onSubmit: async (values) => {
-      try {
-        setSubmitting(true);
-        const isHR = user?.role === 'hr';
-        const status = isHR ? "Pending Approval" : "Completed";
-
-        const formData = {
-          ...values,
-          approval: {
-            updatedByName: values.updatedBy.name,
-            updatedByDate: values.updatedBy.date,
-            approvedByName: values.approvedBy.name,
-            approvedByDate: values.approvedBy.date,
-          },
-          id: `QC-${Math.floor(Math.random() * 10000)}`,
-          status: status,
-          createdAt: new Date().toISOString()
-        };
-
-        const response = await axiosInstance.post("/quality-inspection", formData);
-
-        if (isHR && (response.status === 201 || response.status === 200)) {
-          await NotificationService.createNotification({
-            title: "Production Inspection Approval Required",
-            message: `HR ${user.name} has submitted a production inspection for ${values.productName} (Report: ${formData.id}).`,
-            targetRole: "admin",
-            type: "production_inspection_approval",
-            link: `/production-inspection/view-inspection?id=${formData.id}`,
-            inspectionId: formData.id
-          });
-        }
-
-        // Create Batch Entry
-        try {
-          // Fetch existing batches to calculate sequence
-          const batchesResponse = await axiosInstance.get("/batches");
-          const allBatches = batchesResponse.data || [];
-
-          const batchDate = new Date();
-          const batchNo = `BAT-${batchDate.getFullYear()}-${Math.floor(Math.random() * 10000)}`;
-
-          // Calculate Serial Number Range
-          // 1. Get Model Code
-          const modelCode = getModelCode(values.productName);
-
-          // 2. Get Date YYMM
-          const yy = batchDate.getFullYear().toString().substring(2);
-          const mm = (batchDate.getMonth() + 1).toString().padStart(2, '0');
-          const yymm = `${yy}${mm}`;
-
-          // 3. Get Last Sequence
-          const lastSeq = getLastSequenceNumber(allBatches, modelCode, yymm);
-          const nextSeq = lastSeq + 1;
-
-          // 4. Generate Range
-          const productSr = generateSerialNumberRange(
-            values.productName,
-            batchNo,
-            batchDate,
-            nextSeq,
-            Number(values.acceptedQuantity)
-          );
-
-          const batchData = {
-            batchNo: batchNo,
-            requestNo: values.materialRequestNo || "N/A",
-            checkNo: values.checkNumber || "-",
-            productSr: productSr,
-            acceptedQty: values.acceptedQuantity || 0,
-            status: "Ready",
-            inspectionId: formData.id,
-            date: batchDate.toISOString(),
-            qualityCheck: values.checkDetails,
-            summary: {
-              acceptedQuantity: values.acceptedQuantity,
-              rejectedQuantity: values.rejectedQuantity,
-              holdScrapQuantity: values.holdScrapQuantity,
-              other: values.other,
-              comments: values.comments
-            }
-          };
-          await axiosInstance.post("/batches", batchData);
-        } catch (batchError) {
-          console.error("Error creating batch:", batchError);
-        }
-
-        alert("Quality Check submitted successfully!");
-        router.push("/production-inspection");
-      } catch (error) {
-        console.error("Error submitting quality check:", error);
-        alert("Failed to save quality check.");
-      } finally {
-        setSubmitting(false);
-      }
+      setShowPreview(true);
     },
   });
+
+  const handleFinalSubmit = async () => {
+    try {
+      setSubmitting(true);
+      setShowPreview(false);
+      const values = formik.values;
+      const isHR = user?.role === 'hr';
+      const status = isHR ? "Pending Approval" : "Completed";
+
+      const formData = {
+        ...values,
+        approval: {
+          updatedByName: values.updatedBy.name,
+          updatedByDate: values.updatedBy.date,
+          approvedByName: values.approvedBy.name,
+          approvedByDate: values.approvedBy.date,
+        },
+        id: `QC-${Math.floor(Math.random() * 10000)}`,
+        status: status,
+        createdAt: new Date().toISOString()
+      };
+
+      const response = await axiosInstance.post("/quality-inspection", formData);
+
+      if (isHR && (response.status === 201 || response.status === 200)) {
+        await NotificationService.createNotification({
+          title: "Production Inspection Approval Required",
+          message: `HR ${user.name} has submitted a production inspection for ${values.productName} (Report: ${formData.id}).`,
+          targetRole: "admin",
+          type: "production_inspection_approval",
+          link: `/production-inspection/view-inspection?id=${formData.id}`,
+          inspectionId: formData.id
+        });
+      }
+
+      // Create Batch Entry
+      try {
+        // Fetch existing batches to calculate sequence
+        const batchesResponse = await axiosInstance.get("/batches");
+        const allBatches = batchesResponse.data || [];
+
+        const batchDate = new Date();
+        const batchNo = `BAT-${batchDate.getFullYear()}-${Math.floor(Math.random() * 10000)}`;
+
+        // Calculate Serial Number Range
+        // 1. Get Model Code
+        const modelCode = getModelCode(values.productName);
+
+        // 2. Get Date YYMM
+        const yy = batchDate.getFullYear().toString().substring(2);
+        const mm = (batchDate.getMonth() + 1).toString().padStart(2, '0');
+        const yymm = `${yy}${mm}`;
+
+        // 3. Get Last Sequence
+        const lastSeq = getLastSequenceNumber(allBatches, modelCode, yymm);
+        const nextSeq = lastSeq + 1;
+
+        // 4. Generate Range
+        const productSr = generateSerialNumberRange(
+          values.productName,
+          batchNo,
+          batchDate,
+          nextSeq,
+          Number(values.acceptedQuantity)
+        );
+
+        const batchData = {
+          batchNo: batchNo,
+          requestNo: values.materialRequestNo || "N/A",
+          checkNo: values.checkNumber || "-",
+          productSr: productSr,
+          acceptedQty: values.acceptedQuantity || 0,
+          status: "Ready",
+          inspectionId: formData.id,
+          date: batchDate.toISOString(),
+          qualityCheck: values.checkDetails,
+          summary: {
+            acceptedQuantity: values.acceptedQuantity,
+            rejectedQuantity: values.rejectedQuantity,
+            holdScrapQuantity: values.holdScrapQuantity,
+            other: values.other,
+            comments: values.comments
+          }
+        };
+        await axiosInstance.post("/batches", batchData);
+      } catch (batchError) {
+        console.error("Error creating batch:", batchError);
+      }
+
+      showNotification("Quality Check submitted successfully!", "success");
+      router.push("/production-inspection");
+    } catch (error) {
+      console.error("Error submitting quality check:", error);
+      showNotification("Failed to save quality check.", "error");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   // Re-validate schema when activeStep or observationColumns changes
   useEffect(() => {
@@ -478,9 +490,9 @@ export default function QualityCheckForm() {
             <Box sx={{ display: "flex", gap: 2 }}>
               {activeStep === steps.length - 1 ? (
                 <Button
-                  variant="contained"
+                  variant="outlined"
                   size="large"
-                  startIcon={<CheckCircle />}
+                  startIcon={<Visibility />}
                   onClick={formik.handleSubmit}
                   disabled={submitting}
                   sx={{
@@ -488,11 +500,12 @@ export default function QualityCheckForm() {
                     textTransform: "none",
                     fontWeight: 600,
                     px: 4,
-                    backgroundColor: "#1172ba",
-                    "&:hover": { backgroundColor: "#0d5a94" },
+                    color: "#475569",
+                    borderColor: "#e2e8f0",
+                    "&:hover": { borderColor: "#cbd5e1" },
                   }}
                 >
-                  {submitting ? "Submitting..." : "Submit Quality Check"}
+                  {submitting ? "Submitting..." : "Preview Quality Check"}
                 </Button>
               ) : (
                 <Button
@@ -516,6 +529,153 @@ export default function QualityCheckForm() {
           </Box>
         </Box>
       </CommonCard>
-    </Box>
+
+      <FormReviewDialog
+        open={showPreview}
+        onClose={() => setShowPreview(false)}
+        onConfirm={handleFinalSubmit}
+        title="Review Quality Check"
+        icon={<FactCheck />}
+        headerInfo={{
+          label1: "PRODUCT",
+          value1: formik.values.productName || "N/A",
+          label2: "INSPECTION DATE",
+          value2: formik.values.inspectionDate
+        }}
+        confirmLabel="Confirm & Submit"
+      >
+        <Grid container spacing={3}>
+          {/* Product Info */}
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Paper elevation={0} sx={{ p: 2, borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'var(--brand-primary)' }}>
+                <FactCheck sx={{ fontSize: 18 }} />
+                <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Product Information</Typography>
+              </Box>
+              <Box sx={{ display: 'grid', gap: 1.5 }}>
+                <Grid container spacing={2}>
+                  <Grid size={{ xs: 6 }}>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>REQ NO</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 500 }}>{formik.values.materialRequestNo || "N/A"}</Typography>
+                  </Grid>
+                  <Grid size={{ xs: 6 }}>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>CHECK NO</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 500 }}>{formik.values.checkNumber}</Typography>
+                  </Grid>
+                </Grid>
+                <Grid container spacing={2}>
+                  <Grid size={{ xs: 6 }}>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>QUAL. STD</Typography>
+                    <Typography variant="body2">{formik.values.qualityStandard}</Typography>
+                  </Grid>
+                  <Grid size={{ xs: 6 }}>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>CHECKED QTY</Typography>
+                    <Typography variant="body2">{formik.values.checkedQuantity}</Typography>
+                  </Grid>
+                </Grid>
+              </Box>
+            </Paper>
+          </Grid>
+
+          {/* Summary */}
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Paper elevation={0} sx={{ p: 2, borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)', height: '100%' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'var(--brand-primary)' }}>
+                <FactCheck sx={{ fontSize: 18 }} />
+                <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Inspection Summary</Typography>
+              </Box>
+              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                <Box>
+                  <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>ACCEPTED</Typography>
+                  <Typography variant="h6" color="success.main" sx={{ fontWeight: 700 }}>{formik.values.acceptedQuantity}</Typography>
+                </Box>
+                <Box>
+                  <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>REJECTED</Typography>
+                  <Typography variant="h6" color="error.main" sx={{ fontWeight: 700 }}>{formik.values.rejectedQuantity}</Typography>
+                </Box>
+                <Box>
+                  <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>HOLD/SCRAP</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>{formik.values.holdScrapQuantity}</Typography>
+                </Box>
+                <Box>
+                  <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>OTHER</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>{formik.values.other || 0}</Typography>
+                </Box>
+                <Box sx={{ gridColumn: 'span 2', mt: 1 }}>
+                  <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>COMMENTS</Typography>
+                  <Typography variant="body2" sx={{ width: '100%', wordBreak: 'break-word', color: 'text.secondary', fontStyle: formik.values.comments ? 'normal' : 'italic' }}>
+                    {formik.values.comments || "No comments"}
+                  </Typography>
+                </Box>
+              </Box>
+            </Paper>
+          </Grid>
+
+          {/* Approval Info */}
+          <Grid size={{ xs: 12 }}>
+            <Paper elevation={0} sx={{ p: 2, borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', bgcolor: 'var(--bg-surface)' }}>
+              <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--brand-primary)', display: 'block', mb: 1.5 }}>Approvals</Typography>
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Box sx={{ borderRadius: 1 }}>
+                    <Typography variant="caption" color="textSecondary">UPDATED BY</Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
+                      <Typography variant="body2" fontWeight={600}>{formik.values.updatedBy.name}</Typography>
+                      <Typography variant="body2" color="textSecondary">{formik.values.updatedBy.date}</Typography>
+                    </Box>
+                  </Box>
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Box sx={{ borderRadius: 1 }}>
+                    <Typography variant="caption" color="textSecondary">APPROVED BY</Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
+                      <Typography variant="body2" fontWeight={600}>{formik.values.approvedBy.name || "Pending"}</Typography>
+                      <Typography variant="body2" color="textSecondary">{formik.values.approvedBy.date || "-"}</Typography>
+                    </Box>
+                  </Box>
+                </Grid>
+              </Grid>
+            </Paper>
+          </Grid>
+
+          {/* Table Preview (Simplified) */}
+          <Grid size={{ xs: 12 }}>
+            <Paper elevation={0} sx={{ borderRadius: 'var(--card-radius)', border: '1px solid var(--border-default)', overflow: 'hidden' }}>
+              <Box sx={{ p: 1.5, bgcolor: '#f1f5f9' }}>
+                <Typography variant="caption" sx={{ fontWeight: 700 }}>CHECK DETAILS ({formik.values.checkDetails.length})</Typography>
+              </Box>
+              <TableContainer sx={{ maxHeight: 300 }}>
+                <Table size="small" stickyHeader>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: 600 }}>Parameter</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Specification</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Method</TableCell>
+                      {observationColumns.map(col => (
+                        <TableCell key={col.id} sx={{ fontWeight: 600, color: '#1172ba' }}>{col.label}</TableCell>
+                      ))}
+                      <TableCell sx={{ fontWeight: 600 }}>Remarks</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {formik.values.checkDetails.map((row, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{row.parameters}</TableCell>
+                        <TableCell>{row.specification}</TableCell>
+                        <TableCell>{row.method}</TableCell>
+                        {observationColumns.map(col => (
+                          <TableCell key={col.id}>{row[col.id] || "-"}</TableCell>
+                        ))}
+                        <TableCell>{row.remarks}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
+          </Grid>
+        </Grid>
+      </FormReviewDialog>
+    </Box >
   );
 }

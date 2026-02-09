@@ -22,13 +22,7 @@ export default function ProductDetailsTable({ formik }) {
 
     const handleProductChange = (index, field, value) => {
         const updated = [...products];
-        if (field === "name") {
-            // Only allow characters and spaces
-            const filteredValue = value.replace(/[^a-zA-Z\s]/g, "");
-            updated[index][field] = filteredValue;
-        } else {
-            updated[index][field] = value;
-        }
+        updated[index][field] = value;
         formik.setFieldValue("products", updated);
     };
 

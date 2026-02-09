@@ -13,6 +13,23 @@ import { useAuth } from '@/context/AuthContext';
 const InspectionApproval = ({ approvalData, onChange, errors = {}, touched = {}, onBlur }) => {
     const { user } = useAuth();
 
+    const handleKeyDown = (e, currentSection, currentField) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const fieldPath = `${currentSection}.${currentField}`;
+            const fields = ['updatedBy.name', 'updatedBy.date', 'approvedBy.name', 'approvedBy.date'];
+
+            const currentIndex = fields.indexOf(fieldPath);
+            if (currentIndex !== -1 && currentIndex < fields.length - 1) {
+                const nextFieldPath = fields[currentIndex + 1];
+                const nextInput = document.querySelector(`[name="${nextFieldPath}"]`);
+                if (nextInput) {
+                    nextInput.focus();
+                }
+            }
+        }
+    };
+
     const handleChange = (section, field) => (event) => {
         onChange?.(section, field, event.target.value);
     };
@@ -62,6 +79,7 @@ const InspectionApproval = ({ approvalData, onChange, errors = {}, touched = {},
                                         value={approvalData?.updatedByName || ''}
                                         onChange={handleChange('updatedBy', 'name')}
                                         onBlur={onBlur}
+                                        onKeyDown={(e) => handleKeyDown(e, 'updatedBy', 'name')}
                                         required
                                         error={touched.updatedBy?.name && Boolean(errors.updatedBy?.name)}
                                         helperText={touched.updatedBy?.name && errors.updatedBy?.name}
@@ -80,6 +98,7 @@ const InspectionApproval = ({ approvalData, onChange, errors = {}, touched = {},
                                         value={approvalData?.updatedByDate || ''}
                                         onChange={handleChange('updatedBy', 'date')}
                                         onBlur={onBlur}
+                                        onKeyDown={(e) => handleKeyDown(e, 'updatedBy', 'date')}
                                         required
                                         error={touched.updatedBy?.date && Boolean(errors.updatedBy?.date)}
                                         helperText={touched.updatedBy?.date && errors.updatedBy?.date}
@@ -108,6 +127,7 @@ const InspectionApproval = ({ approvalData, onChange, errors = {}, touched = {},
                                             value={approvalData?.approvedByName || ''}
                                             onChange={handleChange('approvedBy', 'name')}
                                             onBlur={onBlur}
+                                            onKeyDown={(e) => handleKeyDown(e, 'approvedBy', 'name')}
                                             required
                                             error={touched.approvedBy?.name && Boolean(errors.approvedBy?.name)}
                                             helperText={touched.approvedBy?.name && errors.approvedBy?.name}
@@ -126,6 +146,7 @@ const InspectionApproval = ({ approvalData, onChange, errors = {}, touched = {},
                                             value={approvalData?.approvedByDate || ''}
                                             onChange={handleChange('approvedBy', 'date')}
                                             onBlur={onBlur}
+                                            onKeyDown={(e) => handleKeyDown(e, 'approvedBy', 'date')}
                                             required
                                             error={touched.approvedBy?.date && Boolean(errors.approvedBy?.date)}
                                             helperText={touched.approvedBy?.date && errors.approvedBy?.date}

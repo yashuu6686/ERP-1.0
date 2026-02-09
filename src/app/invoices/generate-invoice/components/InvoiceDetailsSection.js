@@ -13,6 +13,14 @@ import Receipt from "@mui/icons-material/Receipt";
 const InvoiceDetailsSection = ({ formik, orders = [], selectedOrderId, onOrderChange }) => {
     const { values, setFieldValue, touched, errors } = formik;
 
+    const handleKeyDown = (e, nextFieldName) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const nextInput = document.querySelector(`[name="${nextFieldName}"]`);
+            if (nextInput) nextInput.focus();
+        }
+    };
+
     return (
         <Card
             elevation={0}
@@ -70,9 +78,11 @@ const InvoiceDetailsSection = ({ formik, orders = [], selectedOrderId, onOrderCh
                             variant="outlined"
                             size="small"
                             placeholder="Auto-generated"
+                            name="invoiceInfo.invoiceNumber"
                             value={values.invoiceInfo.invoiceNumber || ""}
                             onChange={(e) => setFieldValue("invoiceInfo.invoiceNumber", e.target.value)}
                             onBlur={() => formik.setFieldTouched("invoiceInfo.invoiceNumber", true)}
+                            onKeyDown={(e) => handleKeyDown(e, "invoiceInfo.invoiceDate")}
                             error={touched.invoiceInfo?.invoiceNumber && Boolean(errors.invoiceInfo?.invoiceNumber)}
                             helperText={touched.invoiceInfo?.invoiceNumber && errors.invoiceInfo?.invoiceNumber}
                             sx={{
@@ -90,9 +100,11 @@ const InvoiceDetailsSection = ({ formik, orders = [], selectedOrderId, onOrderCh
                             type="date"
                             variant="outlined"
                             size="small"
+                            name="invoiceInfo.invoiceDate"
                             value={values.invoiceInfo.invoiceDate || ""}
                             onChange={(e) => setFieldValue("invoiceInfo.invoiceDate", e.target.value)}
                             onBlur={() => formik.setFieldTouched("invoiceInfo.invoiceDate", true)}
+                            onKeyDown={(e) => handleKeyDown(e, "invoiceInfo.dueDate")}
                             error={touched.invoiceInfo?.invoiceDate && Boolean(errors.invoiceInfo?.invoiceDate)}
                             helperText={touched.invoiceInfo?.invoiceDate && errors.invoiceInfo?.invoiceDate}
                             InputLabelProps={{ shrink: true }}
@@ -109,9 +121,11 @@ const InvoiceDetailsSection = ({ formik, orders = [], selectedOrderId, onOrderCh
                             type="date"
                             variant="outlined"
                             size="small"
+                            name="invoiceInfo.dueDate"
                             value={values.invoiceInfo.dueDate || ""}
                             onChange={(e) => setFieldValue("invoiceInfo.dueDate", e.target.value)}
                             onBlur={() => formik.setFieldTouched("invoiceInfo.dueDate", true)}
+                            onKeyDown={(e) => handleKeyDown(e, "customer.companyName")}
                             error={touched.invoiceInfo?.dueDate && Boolean(errors.invoiceInfo?.dueDate)}
                             helperText={touched.invoiceInfo?.dueDate && errors.invoiceInfo?.dueDate}
                             InputLabelProps={{ shrink: true }}

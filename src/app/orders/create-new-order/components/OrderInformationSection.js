@@ -66,6 +66,32 @@ const OrderInformationSection = ({ formik }) => {
                                 value={values[field.name] || ""}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        e.preventDefault();
+                                        const fields = [
+                                            "orderNo",
+                                            "customerName",
+                                            "orderDate",
+                                            "contact",
+                                            "address",
+                                            "deliveryDate",
+                                        ];
+                                        const currentIndex = fields.indexOf(field.name);
+                                        if (currentIndex < fields.length - 1) {
+                                            const nextField = fields[currentIndex + 1];
+                                            const nextInput = document.querySelector(`[name="${nextField}"]`);
+                                            if (nextInput) nextInput.focus();
+                                        } else {
+                                            // Try to focus first single product name if available, otherwise Add Product button
+                                            let nextInput = document.querySelector(`[name="singleProducts[0].name"]`);
+                                            if (!nextInput) {
+                                                nextInput = document.getElementById('add-product-btn');
+                                            }
+                                            if (nextInput) nextInput.focus();
+                                        }
+                                    }
+                                }}
                                 error={touched[field.name] && Boolean(errors[field.name])}
                                 helperText={touched[field.name] && errors[field.name]}
                                 placeholder={field.placeholder}

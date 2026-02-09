@@ -9,6 +9,22 @@ import TextField from "@mui/material/TextField";
 import Summarize from "@mui/icons-material/Summarize";
 
 const InspectionSummarySection = ({ data, onChange, formik }) => {
+
+    const handleKeyDown = (e, currentField) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const fields = ['acceptedQuantity', 'rejectedQuantity', 'holdScrapQuantity', 'other', 'comments'];
+            const currentIndex = fields.indexOf(currentField);
+            if (currentIndex !== -1 && currentIndex < fields.length - 1) {
+                const nextField = fields[currentIndex + 1];
+                const nextInput = document.querySelector(`[name="${nextField}"]`);
+                if (nextInput) {
+                    nextInput.focus();
+                }
+            }
+        }
+    };
+
     return (
         <Card
             elevation={0}
@@ -47,6 +63,7 @@ const InspectionSummarySection = ({ data, onChange, formik }) => {
                             value={data.acceptedQuantity}
                             onChange={(e) => onChange("acceptedQuantity", e.target.value)}
                             onBlur={formik.handleBlur}
+                            onKeyDown={(e) => handleKeyDown(e, 'acceptedQuantity')}
                             error={formik.touched.acceptedQuantity && Boolean(formik.errors.acceptedQuantity)}
                             helperText={formik.touched.acceptedQuantity && formik.errors.acceptedQuantity}
                             required
@@ -63,6 +80,7 @@ const InspectionSummarySection = ({ data, onChange, formik }) => {
                             value={data.rejectedQuantity}
                             onChange={(e) => onChange("rejectedQuantity", e.target.value)}
                             onBlur={formik.handleBlur}
+                            onKeyDown={(e) => handleKeyDown(e, 'rejectedQuantity')}
                             error={formik.touched.rejectedQuantity && Boolean(formik.errors.rejectedQuantity)}
                             helperText={formik.touched.rejectedQuantity && formik.errors.rejectedQuantity}
                             required
@@ -79,6 +97,7 @@ const InspectionSummarySection = ({ data, onChange, formik }) => {
                             value={data.holdScrapQuantity}
                             onChange={(e) => onChange("holdScrapQuantity", e.target.value)}
                             onBlur={formik.handleBlur}
+                            onKeyDown={(e) => handleKeyDown(e, 'holdScrapQuantity')}
                             error={formik.touched.holdScrapQuantity && Boolean(formik.errors.holdScrapQuantity)}
                             helperText={formik.touched.holdScrapQuantity && formik.errors.holdScrapQuantity}
                             required
@@ -94,6 +113,7 @@ const InspectionSummarySection = ({ data, onChange, formik }) => {
                             value={data.other}
                             onChange={(e) => onChange("other", e.target.value)}
                             onBlur={formik.handleBlur}
+                            onKeyDown={(e) => handleKeyDown(e, 'other')}
                             error={formik.touched.other && Boolean(formik.errors.other)}
                             helperText={formik.touched.other && formik.errors.other}
                         />
@@ -109,6 +129,7 @@ const InspectionSummarySection = ({ data, onChange, formik }) => {
                             value={data.comments}
                             onChange={(e) => onChange("comments", e.target.value)}
                             onBlur={formik.handleBlur}
+                            onKeyDown={(e) => handleKeyDown(e, 'comments')}
                             error={formik.touched.comments && Boolean(formik.errors.comments)}
                             helperText={formik.touched.comments && formik.errors.comments}
                         />

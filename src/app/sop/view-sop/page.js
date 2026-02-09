@@ -7,6 +7,7 @@ import { ArrowBack } from "@mui/icons-material";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/ui/Loader";
 import { useAuth } from "@/context/AuthContext";
+import { useNotification } from "@/context/NotificationContext";
 
 // Import modular components
 import SOPHeaderActions from "./components/SOPHeaderActions";
@@ -60,6 +61,7 @@ function ViewSOPContent() {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState(null);
     const { user } = useAuth();
+    const { showNotification } = useNotification();
 
     useEffect(() => {
         const fetchSOP = async () => {
@@ -88,10 +90,10 @@ function ViewSOPContent() {
                 status: 'Approved'
             });
             setData(prev => ({ ...prev, status: 'Approved' }));
-            alert("SOP has been approved.");
+            showNotification("SOP has been approved.", "success");
         } catch (error) {
             console.error("Error approving SOP:", error);
-            alert("Failed to approve SOP.");
+            showNotification("Failed to approve SOP.", "error");
         } finally {
             setLoading(false);
         }
@@ -105,10 +107,10 @@ function ViewSOPContent() {
                 status: 'Rejected'
             });
             setData(prev => ({ ...prev, status: 'Rejected' }));
-            alert("SOP has been rejected.");
+            showNotification("SOP has been rejected.", "success");
         } catch (error) {
             console.error("Error rejecting SOP:", error);
-            alert("Failed to reject SOP.");
+            showNotification("Failed to reject SOP.", "error");
         } finally {
             setLoading(false);
         }

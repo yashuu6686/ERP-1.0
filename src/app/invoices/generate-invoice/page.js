@@ -18,6 +18,9 @@ import InvoiceNotesSection from "./components/InvoiceNotesSection";
 import InvoiceSummarySection from "./components/InvoiceSummarySection";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/ui/Loader";
+import { Receipt, Person, LocalShipping, Inventory } from "@mui/icons-material";
+import { Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
+import FormReviewDialog from "@/components/ui/FormReviewDialog";
 
 const validationSchema = Yup.object({
   invoiceInfo: Yup.object({
@@ -50,6 +53,7 @@ function InvoiceGeneratorContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
+  const orderIdParam = searchParams.get("orderId");
   const [loading, setLoading] = useState(false);
   const [orders, setOrders] = useState([]);
   const [selectedOrderId, setSelectedOrderId] = useState("");
@@ -59,6 +63,7 @@ function InvoiceGeneratorContent() {
     delivery: {},
     items: [] // IDs of items from order
   });
+  const [showPreview, setShowPreview] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -104,51 +109,57 @@ function InvoiceGeneratorContent() {
       status: "Draft",
     },
     validationSchema: validationSchema,
-    onSubmit: async (values) => {
-      try {
-        setLoading(true);
-        const subtotal = values.items.reduce((sum, item) => sum + ((parseFloat(item.qty) || 0) * (parseFloat(item.price) || 0)), 0);
-        const taxAmount = values.items.reduce((sum, item) => sum + (parseFloat(item.taxAmount) || 0), 0);
-        const discountAmount = parseFloat(values.totals.discountAmount) || 0;
-        const grandTotal = subtotal + taxAmount - discountAmount;
-
-        const payload = {
-          ...values,
-          totals: {
-            subtotal,
-            taxAmount,
-            discountAmount,
-            grandTotal,
-          },
-        };
-
-        if (id) {
-          await axiosInstance.put(`/invoices/${id}`, payload);
-        } else {
-          if (!payload.invoiceInfo.invoiceNumber) {
-            payload.invoiceInfo.invoiceNumber = `INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
-          }
-          await axiosInstance.post("/invoices", payload);
-        }
-
-        if (selectedOrderId) {
-          try {
-            await axiosInstance.patch(`/orders/${selectedOrderId}`, {
-              status: "Confirmed"
-            });
-          } catch (orderError) {
-            console.error("Error updating order status:", orderError);
-          }
-        }
-
-        router.push("/invoices");
-      } catch (error) {
-        console.error("Error saving invoice:", error);
-      } finally {
-        setLoading(false);
-      }
+    onSubmit: () => {
+      setShowPreview(true);
     },
   });
+
+  const handleFinalSubmit = async () => {
+    const values = formik.values;
+    try {
+      setLoading(true);
+      setShowPreview(false);
+      const subtotal = values.items.reduce((sum, item) => sum + ((parseFloat(item.qty) || 0) * (parseFloat(item.price) || 0)), 0);
+      const taxAmount = values.items.reduce((sum, item) => sum + (parseFloat(item.taxAmount) || 0), 0);
+      const discountAmount = parseFloat(values.totals.discountAmount) || 0;
+      const grandTotal = subtotal + taxAmount - discountAmount;
+
+      const payload = {
+        ...values,
+        totals: {
+          subtotal,
+          taxAmount,
+          discountAmount,
+          grandTotal,
+        },
+      };
+
+      if (id) {
+        await axiosInstance.put(`/invoices/${id}`, payload);
+      } else {
+        if (!payload.invoiceInfo.invoiceNumber) {
+          payload.invoiceInfo.invoiceNumber = `INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+        }
+        await axiosInstance.post("/invoices", payload);
+      }
+
+      if (selectedOrderId) {
+        try {
+          await axiosInstance.patch(`/orders/${selectedOrderId}`, {
+            status: "Confirmed"
+          });
+        } catch (orderError) {
+          console.error("Error updating order status:", orderError);
+        }
+      }
+
+      router.push("/invoices");
+    } catch (error) {
+      console.error("Error saving invoice:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -327,6 +338,13 @@ function InvoiceGeneratorContent() {
     formik.setFieldValue("items", updatedItems);
   };
 
+  useEffect(() => {
+    if (orderIdParam && !id) {
+      handleOrderChange(orderIdParam);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orderIdParam, id]);
+
   if (loading) return <Loader fullPage message="Fetching Invoice Details..." />;
 
   return (
@@ -411,6 +429,132 @@ function InvoiceGeneratorContent() {
           </Button>
         </Box>
       </Box>
+      <FormReviewDialog
+        open={showPreview}
+        onClose={() => setShowPreview(false)}
+        onConfirm={handleFinalSubmit}
+        title="Review Invoice"
+        icon={<Receipt />}
+        headerInfo={{
+          label1: "INVOICE NO",
+          value1: formik.values.invoiceInfo.invoiceNumber || "Auto-Generated",
+          label2: "INVOICE DATE",
+          value2: formik.values.invoiceInfo.invoiceDate
+        }}
+        confirmLabel={id ? "Confirm & Update" : "Confirm & Save"}
+      >
+        <Grid container spacing={3}>
+          {/* Order & Due Date Info */}
+          <Grid size={{ xs: 12 }}>
+            <Box sx={{ display: 'flex', gap: 4, mb: 1, p: 1.5, bgcolor: '#f8fafc', borderRadius: 2, border: '1px solid #e2e8f0' }}>
+              <Box>
+                <Typography variant="caption" color="textSecondary" display="block" sx={{ mb: 0.5 }}>ORDER NUMBER</Typography>
+                <Typography variant="body2" fontWeight={600}>
+                  {orders.find(o => o.id === selectedOrderId)?.orderNo || "N/A"}
+                </Typography>
+              </Box>
+              <Box>
+                <Typography variant="caption" color="textSecondary" display="block" sx={{ mb: 0.5 }}>DUE DATE</Typography>
+                <Typography variant="body2" fontWeight={600}>
+                  {formik.values.invoiceInfo.dueDate}
+                </Typography>
+              </Box>
+            </Box>
+          </Grid>
+
+          {/* Customer & Delivery */}
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Paper elevation={0} sx={{ p: 2, borderRadius: 2, border: '1px solid #e2e8f0', bgcolor: 'white', height: '100%' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: '#1172ba' }}>
+                <Person sx={{ fontSize: 18 }} />
+                <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase' }}>Customer Details</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                <Typography variant="subtitle2" fontWeight={600}>{formik.values.customer.companyName}</Typography>
+                <Typography variant="caption" color="textSecondary">Org: {formik.values.customer.organization}</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>{formik.values.customer.address}</Typography>
+                <Box sx={{ mt: 1, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                  <Typography variant="caption" sx={{ fontWeight: 500 }}>Ph: {formik.values.customer.contact}</Typography>
+                  {formik.values.customer.drugLicence && (
+                    <Typography variant="caption" sx={{ fontWeight: 500 }}>DL: {formik.values.customer.drugLicence}</Typography>
+                  )}
+                </Box>
+              </Box>
+            </Paper>
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Paper elevation={0} sx={{ p: 2, borderRadius: 2, border: '1px solid #e2e8f0', bgcolor: 'white', height: '100%' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: '#1172ba' }}>
+                <LocalShipping sx={{ fontSize: 18 }} />
+                <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase' }}>Delivery To</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                <Typography variant="subtitle2" fontWeight={600}>{formik.values.delivery.contactPerson}</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>{formik.values.delivery.deliveryAddress}</Typography>
+                <Box sx={{ mt: 1 }}>
+                  <Typography variant="caption" sx={{ fontWeight: 500 }}>Ph: {formik.values.delivery.phone}</Typography>
+                </Box>
+              </Box>
+            </Paper>
+          </Grid>
+
+          {/* Items Table */}
+          <Grid size={{ xs: 12 }}>
+            <Paper elevation={0} sx={{ borderRadius: 2, border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+              <Table size="small">
+                <TableHead sx={{ bgcolor: '#f8fafc' }}>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>Item</TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>HSN</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 600, color: 'text.secondary' }}>Qty</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 600, color: 'text.secondary' }}>Price</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 600, color: 'text.secondary' }}>Tax %</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 600, color: 'text.secondary' }}>Total</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {formik.values.items.map((item, idx) => (
+                    <TableRow key={idx}>
+                      <TableCell>
+                        <Typography variant="body2" fontWeight={500}>{item.name}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="caption" color="textSecondary">{item.hsnSac}</Typography>
+                      </TableCell>
+                      <TableCell align="right">{item.qty}</TableCell>
+                      <TableCell align="right">{item.price}</TableCell>
+                      <TableCell align="right">{item.taxPercent}%</TableCell>
+                      <TableCell align="right" fontWeight={600}>{parseFloat(item.total || 0).toFixed(2)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Paper>
+          </Grid>
+
+          {/* Totals */}
+          <Grid size={{ xs: 12 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 4, p: 2, bgcolor: '#f8fafc', borderRadius: 2, border: '1px solid #e2e8f0' }}>
+              <Box sx={{ textAlign: 'right' }}>
+                <Typography variant="caption" color="textSecondary" display="block">Subtotal</Typography>
+                <Typography variant="body2" fontWeight={600}>{parseFloat(formik.values.totals.subtotal || 0).toFixed(2)}</Typography>
+              </Box>
+              <Box sx={{ textAlign: 'right' }}>
+                <Typography variant="caption" color="textSecondary" display="block">Discount</Typography>
+                <Typography variant="body2" fontWeight={600}>{parseFloat(formik.values.totals.discountAmount || 0).toFixed(2)}</Typography>
+              </Box>
+              <Box sx={{ textAlign: 'right' }}>
+                <Typography variant="caption" color="textSecondary" display="block">Tax</Typography>
+                <Typography variant="body2" fontWeight={600}>{parseFloat(formik.values.totals.taxAmount || 0).toFixed(2)}</Typography>
+              </Box>
+              <Box sx={{ textAlign: 'right' }}>
+                <Typography variant="caption" color="textSecondary" display="block">Total</Typography>
+                <Typography variant="h6" color="#1172ba" fontWeight={700}>{parseFloat(formik.values.totals.grandTotal || 0).toFixed(2)}</Typography>
+              </Box>
+            </Box>
+          </Grid>
+        </Grid>
+      </FormReviewDialog>
     </CommonCard>
   );
 }

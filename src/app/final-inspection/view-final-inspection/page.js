@@ -43,6 +43,7 @@ import Info from "@mui/icons-material/Info";
 import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/ui/Loader";
 import { useAuth } from "@/context/AuthContext";
+import { useNotification } from "@/context/NotificationContext";
 
 import InspectionHeaderActions from "./components/InspectionHeaderActions";
 import InspectionDocument from "./components/InspectionDocument";
@@ -55,6 +56,7 @@ function ViewFinalInspectionContent() {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState(null);
     const { user } = useAuth();
+    const { showNotification } = useNotification();
 
     useEffect(() => {
         const fetchInspection = async () => {
@@ -82,10 +84,10 @@ function ViewFinalInspectionContent() {
                 inspectionStatus: 'Approved'
             });
             setData(prev => ({ ...prev, inspectionStatus: 'Approved' }));
-            alert("Inspection report has been approved.");
+            showNotification("Inspection report has been approved.", "success");
         } catch (error) {
             console.error("Error approving inspection:", error);
-            alert("Failed to approve inspection.");
+            showNotification("Failed to approve inspection.", "error");
         } finally {
             setLoading(false);
         }
@@ -99,10 +101,10 @@ function ViewFinalInspectionContent() {
                 inspectionStatus: 'Rejected'
             });
             setData(prev => ({ ...prev, inspectionStatus: 'Rejected' }));
-            alert("Inspection report has been rejected.");
+            showNotification("Inspection report has been rejected.", "success");
         } catch (error) {
             console.error("Error rejecting inspection:", error);
-            alert("Failed to reject inspection.");
+            showNotification("Failed to reject inspection.", "error");
         } finally {
             setLoading(false);
         }

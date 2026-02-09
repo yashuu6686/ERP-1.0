@@ -18,6 +18,23 @@ const BOMAuthorization = ({ reviewedBy, approvedBy, onUpdate, errors = {}, touch
         },
     };
 
+    // Handle Enter key to move between fields
+    const handleKeyDown = (e, currentField) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const fields = ['auth.reviewedBy', 'auth.approvedBy'];
+            const currentIndex = fields.indexOf(currentField);
+
+            if (currentIndex !== -1 && currentIndex < fields.length - 1) {
+                const nextField = fields[currentIndex + 1];
+                const nextInput = document.querySelector(`input[name="${nextField}"]`);
+                if (nextInput) {
+                    nextInput.focus();
+                }
+            }
+        }
+    };
+
     return (
         <Card
             sx={{
@@ -56,6 +73,7 @@ const BOMAuthorization = ({ reviewedBy, approvedBy, onUpdate, errors = {}, touch
                             value={reviewedBy}
                             onChange={(e) => onUpdate("reviewedBy", e.target.value)}
                             onBlur={onBlur}
+                            onKeyDown={(e) => handleKeyDown(e, 'auth.reviewedBy')}
                             name="auth.reviewedBy"
                             error={touched.reviewedBy && Boolean(errors.reviewedBy)}
                             helperText={touched.reviewedBy && errors.reviewedBy}
@@ -72,6 +90,7 @@ const BOMAuthorization = ({ reviewedBy, approvedBy, onUpdate, errors = {}, touch
                             value={approvedBy}
                             onChange={(e) => onUpdate("approvedBy", e.target.value)}
                             onBlur={onBlur}
+                            onKeyDown={(e) => handleKeyDown(e, 'auth.approvedBy')}
                             name="auth.approvedBy"
                             error={touched.approvedBy && Boolean(errors.approvedBy)}
                             helperText={touched.approvedBy && errors.approvedBy}

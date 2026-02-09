@@ -1,0 +1,869 @@
+{
+  "users": [
+    {
+      "id": "1770612095704",
+      "name": "HR",
+      "email": "hr@gmail.com",
+      "password": "123456",
+      "roleId": "8e73",
+      "roleName": "HR",
+      "additionalPermissions": {},
+      "status": "active",
+      "createdAt": "2026-02-09T04:41:35.704Z"
+    },
+    {
+      "id": "1770623016164",
+      "name": "Admin",
+      "email": "admin@gmail.com",
+      "password": "123456",
+      "roleId": "7d54",
+      "roleName": "Admin",
+      "additionalPermissions": {},
+      "status": "active",
+      "createdAt": "2026-02-09T07:43:36.164Z"
+    }
+  ],
+  "purachase": [
+    {
+      "id": "4f08",
+      "items": [
+        {
+          "name": "D8",
+          "qty": "5",
+          "price": "1500",
+          "total": 7500
+        }
+      ],
+      "taxRate": 18,
+      "discount": 0,
+      "shippingCharges": 0,
+      "otherDiscount": 0,
+      "orderInfo": {
+        "orderNumber": "20260209653",
+        "orderDate": "2026-02-09",
+        "expectedDelivery": "2026-02-10"
+      },
+      "supplier": {
+        "companyName": "Baroque Works",
+        "contactPerson": "Crocodile",
+        "address": "456, abc road",
+        "email": "sircrocodile@gmail.com",
+        "phone": "7894564564",
+        "pan": "FFFF4FF5F455F",
+        "gstin": "FFFF4FF5F455F"
+      },
+      "delivery": {
+        "invoiceTo": "donquixote doflamingo",
+        "deliverTo": "Warehouse",
+        "deliveryAddress": "456, abc road",
+        "contactPerson": "Doflamingo",
+        "phone": "9876543210",
+        "email": "donquixote@gmail.com"
+      },
+      "status": "Completed",
+      "totals": {
+        "subtotal": 7500,
+        "taxAmount": 1350,
+        "discountAmount": 0,
+        "otherDiscountAmount": 0,
+        "grandTotal": 8850
+      },
+      "isEdited": false,
+      "creatorId": "1",
+      "creatorName": "Admin User"
+    }
+  ],
+  "grn": [
+    {
+      "id": "1255",
+      "grnNumber": "GRN/202602224",
+      "poNumber": "20260209653",
+      "invoiceNumber": "525722222222",
+      "receivedDate": "2026-02-09",
+      "receivedBy": "Rukiya",
+      "supplierName": "Baroque Works",
+      "items": [
+        {
+          "name": "D8",
+          "qty": "5",
+          "price": "1500",
+          "total": 7500,
+          "orderedQty": "5",
+          "receivedQty": "5",
+          "remark": "Good"
+        }
+      ],
+      "inspectionStatus": "Completed"
+    }
+  ],
+  "roles": [
+    {
+      "name": "HR",
+      "description": "HR allows to access Half moduls",
+      "permissions": {
+        "purchase": {
+          "view": true,
+          "create": true,
+          "edit": true
+        },
+        "grn": {
+          "view": true,
+          "create": true,
+          "edit": true
+        },
+        "incoming_inspection": {
+          "view": true,
+          "create": true,
+          "edit": true
+        },
+        "store": {
+          "view": true,
+          "create": true,
+          "edit": true
+        },
+        "dashboard": {
+          "view": true
+        },
+        "role_management": {
+          "edit": true,
+          "view": true,
+          "create": true
+        },
+        "user_management": {
+          "view": true,
+          "create": true,
+          "edit": true
+        },
+        "orders": {
+          "view": true,
+          "create": true,
+          "edit": true
+        }
+      },
+      "status": "active",
+      "updatedAt": "2026-02-09T05:17:40.564Z",
+      "id": "8e73"
+    },
+    {
+      "id": "7d54",
+      "name": "Admin",
+      "description": "Admin allows to access All moduls",
+      "permissions": {
+        "dashboard": {
+          "view": true
+        },
+        "purchase": {
+          "view": true,
+          "create": true,
+          "edit": true
+        },
+        "grn": {
+          "view": true,
+          "create": true,
+          "edit": true
+        },
+        "incoming_inspection": {
+          "view": true,
+          "create": true,
+          "edit": true
+        },
+        "store": {
+          "view": true,
+          "create": true,
+          "edit": true
+        },
+        "bom": {
+          "view": true,
+          "create": true,
+          "edit": true
+        },
+        "material_issue": {
+          "view": true,
+          "create": true,
+          "edit": true
+        },
+        "production_inspection": {
+          "view": true,
+          "create": true,
+          "edit": true
+        },
+        "batch": {
+          "view": true,
+          "create": true,
+          "edit": true
+        },
+        "orders": {
+          "view": true,
+          "create": true,
+          "edit": true
+        },
+        "invoices": {
+          "view": true,
+          "create": true,
+          "edit": true
+        },
+        "final_inspection": {
+          "view": true,
+          "create": true,
+          "edit": true
+        },
+        "sop": {
+          "view": true,
+          "create": true,
+          "edit": true
+        },
+        "dispatch": {
+          "view": true,
+          "create": true,
+          "edit": true
+        },
+        "rejected_goods": {
+          "view": true,
+          "create": true,
+          "edit": true
+        },
+        "role_management": {
+          "view": true,
+          "create": true,
+          "edit": true
+        },
+        "user_management": {
+          "view": true,
+          "create": true,
+          "edit": true
+        }
+      },
+      "status": "active",
+      "createdAt": "2026-02-09T07:43:19.448Z"
+    }
+  ],
+  "incoming-inspection": [
+    {
+      "id": "f1c1",
+      "materialData": {
+        "grnNumber": "GRN/202602224",
+        "poNumber": "20260209653",
+        "materialName": "D8",
+        "receivedDate": "2026-02-09",
+        "invoiceNumber": "525722222222",
+        "lotNumber": "20",
+        "inspectionStandardNumber": "45654564",
+        "supplierName": "Baroque Works",
+        "lotQuantity": "5",
+        "equipmentId": "5555",
+        "sampleSize": "2",
+        "inspectionReportNumber": "IRN-202602-692",
+        "inspectionDate": "2026-02-09",
+        "inspectionStandard": "456",
+        "toolsUsed": "yes",
+        "sdsAvailable": "yes",
+        "qualityCertificate": "yes"
+      },
+      "observations": [
+        {
+          "id": 1,
+          "parameter": "uobop",
+          "specification": "jjhh",
+          "method": "ddd",
+          "observation": "ddd",
+          "remarks": "Good"
+        }
+      ],
+      "summaryData": {
+        "acceptedQuantity": "20",
+        "rejectedQuantity": "2",
+        "holdScrapQuantity": "0",
+        "other": "0",
+        "comments": "No issue"
+      },
+      "approvalData": {
+        "updatedByName": "ME",
+        "updatedByDate": "2026-02-09",
+        "approvedByName": "Me",
+        "approvedByDate": "2026-02-10"
+      },
+      "inspectionStatus": "Approved",
+      "grnId": "1255"
+    }
+  ],
+  "rejected-goods": [
+    {
+      "id": "67ef",
+      "rejectionId": "IRN-202602-692",
+      "sourceType": "Incoming Inspection",
+      "sourceRef": "GRN/202602224",
+      "goods": "D8",
+      "qty": 2,
+      "date": "2026-02-09",
+      "reason": "No issue",
+      "status": "total",
+      "severity": "medium",
+      "rejectedBy": "ME"
+    },
+    {
+      "rejectionId": "REJ-6133",
+      "sourceType": "GRN",
+      "sourceRef": "GRN-78945",
+      "goods": "dddd",
+      "qty": 78,
+      "date": "2026-02-09",
+      "reason": "not work",
+      "status": "total",
+      "rejectedBy": "Don Lee",
+      "id": "2b1a"
+    }
+  ],
+  "store": [],
+  "it-goods": [],
+  "finish-goods": [],
+  "other-goods": [
+    {
+      "id": "43ba",
+      "name": "D8",
+      "code": "GRN/202602224",
+      "category": "Other Goods",
+      "available": 20,
+      "minimum": 10,
+      "updated": "2026-02-09"
+    }
+  ],
+  "bom": [
+    {
+      "id": "c1ea",
+      "number": "BOM-430714",
+      "productName": "Scanbo D8",
+      "date": "09-02-2026",
+      "approvedBy": "Jignesh",
+      "status": "Approved",
+      "materials": [
+        {
+          "sNo": 1,
+          "oemSupplier": "lktp.20240501-0011",
+          "oemPartNo": "rr",
+          "qty": "50",
+          "description": "Upper cover",
+          "bubbleNo": "-",
+          "manufacturer": "lktp.20240501-0011",
+          "scanboPartNo": "SIPL.ASY.PBT.001",
+          "specs": "dfghjk"
+        }
+      ],
+      "authorization": {
+        "reviewedBy": "Kanaiya",
+        "reviewedDate": "09-02-2026",
+        "approvedBy": "Jignesh",
+        "approvedDate": "09-02-2026"
+      }
+    }
+  ],
+  "material-issue": [
+    {
+      "id": "b8cb",
+      "productName": "Scanbo D8",
+      "bomNumber": "BOM-430714",
+      "requiredQty": 20,
+      "startDate": "2026-02-09",
+      "endDate": "2026-02-11",
+      "requestedBy": "Ichigo",
+      "approvedBy": "Aizen",
+      "description": "No anythink",
+      "bomId": "c1ea",
+      "requestNo": "MIR-2026-457",
+      "status": "Pending",
+      "createdAt": "2026-02-09T05:22:45.043Z"
+    }
+  ],
+  "defective-returns": [
+    {
+      "id": "e6b9",
+      "rejectionId": "RET-9848",
+      "sourceType": "Production Request",
+      "sourceRef": "MIR-2026-457",
+      "product": "Scanbo D8",
+      "goods": "Upper cover",
+      "qty": 2,
+      "date": "2026-02-09",
+      "reason": "Not good",
+      "serialNumbers": "8945",
+      "partNo": "SIPL.ASY.PBT.001",
+      "status": "total",
+      "severity": "medium"
+    },
+    {
+      "id": "2e32",
+      "rejectionId": "RET-7556",
+      "sourceType": "Production Request",
+      "sourceRef": "MIR-2026-457",
+      "product": "Scanbo D8",
+      "goods": "Upper cover",
+      "qty": 20,
+      "date": "2026-02-09",
+      "reason": "Not good",
+      "serialNumbers": "8945",
+      "partNo": "SIPL.ASY.PBT.001",
+      "status": "total",
+      "severity": "medium"
+    }
+  ],
+  "quality-inspection": [
+    {
+      "id": "QC-6816",
+      "productName": "Scanbo D8",
+      "qualityStandard": "7887",
+      "checkedQuantity": 20,
+      "inspectionDate": "2026-02-09",
+      "checkNumber": "78945",
+      "materialRequestNo": "MIR-2026-457",
+      "checkDetails": [
+        {
+          "id": 1,
+          "parameters": "ghj",
+          "specification": "ghjk",
+          "method": "fghj",
+          "observation": "dfghj",
+          "remarks": "hh"
+        }
+      ],
+      "acceptedQuantity": "24",
+      "rejectedQuantity": "14",
+      "holdScrapQuantity": "1",
+      "other": "1",
+      "comments": "good",
+      "updatedBy": {
+        "name": "Admin User",
+        "date": "2026-02-09"
+      },
+      "approvedBy": {
+        "name": "ME",
+        "date": "2026-02-10"
+      },
+      "approval": {
+        "updatedByName": "Admin User",
+        "updatedByDate": "2026-02-09",
+        "approvedByName": "ME",
+        "approvedByDate": "2026-02-10"
+      },
+      "status": "Completed",
+      "createdAt": "2026-02-09T05:53:09.921Z"
+    }
+  ],
+  "batches": [
+    {
+      "id": "92c8",
+      "batchNo": "BAT-2026-9556",
+      "requestNo": "MIR-2026-457",
+      "checkNo": "78945",
+      "productSr": "SCAN2602560001 - SCAN2602560024",
+      "acceptedQty": "24",
+      "status": "Ready",
+      "inspectionId": "QC-6816",
+      "date": "2026-02-09T05:53:09.979Z",
+      "qualityCheck": [
+        {
+          "id": 1,
+          "parameters": "ghj",
+          "specification": "ghjk",
+          "method": "fghj",
+          "observation": "dfghj",
+          "remarks": "hh"
+        }
+      ],
+      "summary": {
+        "acceptedQuantity": "24",
+        "rejectedQuantity": "14",
+        "holdScrapQuantity": "1",
+        "other": "1",
+        "comments": "good"
+      }
+    }
+  ],
+  "orders": [
+    {
+      "id": "57b3",
+      "orderNo": "ORD-123",
+      "customerName": "jignesh makvana",
+      "orderDate": "2026-02-09",
+      "contact": "9265515389",
+      "address": "Laskana, Surat",
+      "deliveryDate": "2026-02-11",
+      "status": "Confirmed",
+      "reference": "REF-24",
+      "kitQty": 4,
+      "singleProducts": [],
+      "products": 0
+    }
+  ],
+  "invoices": [
+    {
+      "id": "1a52",
+      "invoiceInfo": {
+        "invoiceNumber": "INV-789",
+        "invoiceDate": "2026-02-09",
+        "dueDate": "2026-02-11",
+        "orderNo": "ORD-123"
+      },
+      "customer": {
+        "companyName": "jignesh makvana",
+        "organization": "fghjk",
+        "address": "Laskana, Surat",
+        "contact": "9265515389",
+        "drugLicence": "fghjkl"
+      },
+      "delivery": {
+        "deliveryAddress": "Laskana, Surat",
+        "contactPerson": "jignesh makvana",
+        "phone": "9265515389",
+        "email": ""
+      },
+      "notes": {
+        "termsAndConditions": "",
+        "additionalNotes": ""
+      },
+      "totals": {
+        "subtotal": 6000,
+        "taxAmount": 1080,
+        "discountAmount": 0,
+        "grandTotal": 7080
+      },
+      "items": [
+        {
+          "id": 1,
+          "name": "Standard Kit Allocation (D8)",
+          "hsnSac": "SAC",
+          "qty": 4,
+          "price": "1500",
+          "taxPercent": 18,
+          "taxAmount": 1080,
+          "total": 7080
+        }
+      ],
+      "status": "Draft"
+    }
+  ],
+  "final-inspections": [
+    {
+      "id": "dc8d",
+      "inspectionStatus": "Approved",
+      "inspectionNo": "77878",
+      "productName": "Scanbo D8",
+      "inspectionStdNo": "877878",
+      "quantity": 50,
+      "date": "2026-02-09",
+      "serialFrom": "778787",
+      "serialTo": "77878",
+      "totalChecked": "",
+      "acceptedQuantity": "50",
+      "rejectedQuantity": "2",
+      "holdScrapQuantity": "2",
+      "other": "2",
+      "comments": "fghjklp;[]",
+      "result": "Pass",
+      "remarks": "kkkk",
+      "approvedBy": "ME",
+      "approvalDate": "2026-02-09",
+      "updatedBySignature": "Admin User",
+      "updatedByDate": "2026-02-09",
+      "problemReport": "no",
+      "problemDescription": "kk",
+      "problemActionTaken": "kkk",
+      "aqd": "yes",
+      "aqdDescription": "kkk",
+      "actionItemsDescription": "kkkk",
+      "actionItemsFinishDate": "2026-02-11",
+      "qualityFile": {},
+      "checklist": {
+        "labelAttached": true,
+        "packagingProof": true,
+        "finalTestDone": true
+      },
+      "observationColumns": [
+        {
+          "id": "observation",
+          "label": "Observation"
+        }
+      ],
+      "observations": [
+        {
+          "id": 1,
+          "parameter": "kkk",
+          "specification": "kk",
+          "method": "kk",
+          "observation": "kkk",
+          "remarks": "kkk"
+        }
+      ]
+    }
+  ],
+  "sops": [
+    {
+      "id": "5ecd",
+      "deviceId": "ujyhgfds",
+      "date": "2026-02-09",
+      "companyName": "hgfvdcx",
+      "companyAddress": "gfdcx",
+      "assistedBy": "",
+      "doneBy": "",
+      "testingBy": "rrrrr",
+      "testingDate": "2026-02-09",
+      "verifiedBy": "rr",
+      "verifiedDate": "2026-02-09",
+      "packedBy": "rrr",
+      "checkedBy": "rrr",
+      "testingResults": {
+        "0": {
+          "parameter": "N/A",
+          "methodology": "Charge the device, check the software version, and its physical appearance",
+          "expected": "rr",
+          "status": "",
+          "remarks": ""
+        },
+        "1": {
+          "parameter": "Temperature measurement",
+          "methodology": "Compared with a calibrated thermometer",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "2": {
+          "parameter": "SpO2 measurement",
+          "methodology": "Compared with a pulse oximeter",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "3": {
+          "parameter": "Glucose measurement",
+          "methodology": "Working good",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "4": {
+          "parameter": "BP count",
+          "methodology": "SR, DR",
+          "expected": "rr",
+          "status": "",
+          "remarks": ""
+        },
+        "5": {
+          "parameter": "ECG recording",
+          "methodology": "RR Min, RR Max, HR, BR, HRV",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "6": {
+          "parameter": "Both working good",
+          "methodology": "Check functionality & quality",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "7": {
+          "parameter": "Both working good",
+          "methodology": "Check functionality & quality",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "8": {
+          "parameter": "Yes",
+          "methodology": "Check expiry date and stickers",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "9": {
+          "parameter": "Yes (25 Set)",
+          "methodology": "pack of 25 needles",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "10": {
+          "parameter": "Yes",
+          "methodology": "properly wrapped",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "11": {
+          "parameter": "No",
+          "methodology": "Put it above the BP cuff",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "12": {
+          "parameter": "Yes",
+          "methodology": "Make sure it works properly and is clean after testing",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "13": {
+          "parameter": "Yes",
+          "methodology": "Put it above the device",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "14": {
+          "parameter": "Yes",
+          "methodology": "Stick properly at both ends.",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "15": {
+          "parameter": "Yes",
+          "methodology": "New Sticker",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "16": {
+          "parameter": "Yes",
+          "methodology": "Add the device to the Jute bag",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "17": {
+          "parameter": "F2F29D.pdf",
+          "methodology": "Have you checked all the above points?",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "18": {
+          "parameter": "Review checklist",
+          "methodology": "All components included",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        }
+      },
+      "packagingResults": {
+        "0": {
+          "verificationCriteria": "Inspect for physical damage",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "1": {
+          "verificationCriteria": "Test functionality",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "2": {
+          "verificationCriteria": "Test functionality",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "3": {
+          "verificationCriteria": "Check the expiry date and sticker",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "4": {
+          "verificationCriteria": "Count lancets (25 pieces)",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "5": {
+          "verificationCriteria": "Functionality and Cleaning",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "6": {
+          "verificationCriteria": "Check functionality",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "7": {
+          "verificationCriteria": "Put it above the device",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "8": {
+          "verificationCriteria": "Add the Scanbo device box to the Jute bag",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "9": {
+          "verificationCriteria": "Place items in their slots",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "10": {
+          "verificationCriteria": "Ensure secure sealing",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "11": {
+          "verificationCriteria": "Put it exactly above the last validity stickers",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "12": {
+          "verificationCriteria": "Check picture/video clarity",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        },
+        "13": {
+          "verificationCriteria": "Review checklist",
+          "expected": "r",
+          "status": "",
+          "remarks": ""
+        }
+      },
+      "sopNumber": "SOP-2026-3846",
+      "status": "Completed"
+    }
+  ],
+  "dispatches": [
+    {
+      "id": "2336",
+      "shipmentInfo": {
+        "dispatchNo": "DIS-001",
+        "trackingNumber": "TRK-789",
+        "shippingDate": "2026-02-09",
+        "expectedDelivery": "2026-02-09",
+        "carrier": "Blue Dart",
+        "platform": "Online"
+      },
+      "customer": {
+        "companyName": "jignesh makvana",
+        "contactPerson": "jignesh makvana",
+        "address": "Laskana, Surat",
+        "phone": "9638527410",
+        "email": ""
+      },
+      "items": [
+        {
+          "name": "D8",
+          "qty": 150,
+          "serialNo": "-",
+          "weight": "-"
+        }
+      ],
+      "status": "Shipped",
+      "packedBy": "ME",
+      "approvedBy": "me",
+      "accountingBy": "me"
+    }
+  ]
+}

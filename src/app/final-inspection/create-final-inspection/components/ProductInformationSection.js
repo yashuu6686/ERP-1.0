@@ -11,6 +11,14 @@ import Inventory from "@mui/icons-material/Inventory";
 const ProductInformationSection = ({ formik }) => {
     const { values, handleChange, handleBlur, touched, errors } = formik;
 
+    const handleKeyDown = (e, nextField) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const nextInput = document.querySelector(`[name="${nextField}"]`);
+            if (nextInput) nextInput.focus();
+        }
+    };
+
     return (
         <Card
             elevation={0}
@@ -47,6 +55,7 @@ const ProductInformationSection = ({ formik }) => {
                             value={values.productName || ""}
                             onChange={handleChange}
                             onBlur={handleBlur}
+                            onKeyDown={(e) => handleKeyDown(e, "inspectionStdNo")}
                             error={touched.productName && Boolean(errors.productName)}
                             helperText={touched.productName && errors.productName}
                             sx={{
@@ -64,6 +73,7 @@ const ProductInformationSection = ({ formik }) => {
                             value={values.inspectionStdNo || ""}
                             onChange={handleChange}
                             onBlur={handleBlur}
+                            onKeyDown={(e) => handleKeyDown(e, "quantity")}
                             error={touched.inspectionStdNo && Boolean(errors.inspectionStdNo)}
                             helperText={touched.inspectionStdNo && errors.inspectionStdNo}
                             sx={{
@@ -82,6 +92,7 @@ const ProductInformationSection = ({ formik }) => {
                             value={values.quantity || ""}
                             onChange={handleChange}
                             onBlur={handleBlur}
+                            onKeyDown={(e) => handleKeyDown(e, "date")}
                             error={touched.quantity && Boolean(errors.quantity)}
                             helperText={touched.quantity && errors.quantity}
                             sx={{
@@ -101,6 +112,7 @@ const ProductInformationSection = ({ formik }) => {
                             value={values.date || ""}
                             onChange={handleChange}
                             onBlur={handleBlur}
+                            onKeyDown={(e) => handleKeyDown(e, "inspectionNo")}
                             error={touched.date && Boolean(errors.date)}
                             helperText={touched.date && errors.date}
                             sx={{
@@ -118,6 +130,7 @@ const ProductInformationSection = ({ formik }) => {
                             value={values.inspectionNo || ""}
                             onChange={handleChange}
                             onBlur={handleBlur}
+                            onKeyDown={(e) => handleKeyDown(e, "serialFrom")}
                             error={touched.inspectionNo && Boolean(errors.inspectionNo)}
                             helperText={touched.inspectionNo && errors.inspectionNo}
                             sx={{
@@ -135,6 +148,7 @@ const ProductInformationSection = ({ formik }) => {
                             value={values.serialFrom || ""}
                             onChange={handleChange}
                             onBlur={handleBlur}
+                            onKeyDown={(e) => handleKeyDown(e, "serialTo")}
                             error={touched.serialFrom && Boolean(errors.serialFrom)}
                             helperText={touched.serialFrom && errors.serialFrom}
                             sx={{

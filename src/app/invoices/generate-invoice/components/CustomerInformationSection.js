@@ -12,6 +12,14 @@ import Person from "@mui/icons-material/Person";
 const CustomerInformationSection = ({ formik, lockedFields = {} }) => {
     const { values, setFieldValue, touched, errors } = formik;
 
+    const handleKeyDown = (e, nextFieldName) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const nextInput = document.querySelector(`[name="${nextFieldName}"]`);
+            if (nextInput) nextInput.focus();
+        }
+    };
+
     return (
         <Card
             elevation={0}
@@ -44,9 +52,11 @@ const CustomerInformationSection = ({ formik, lockedFields = {} }) => {
                             fullWidth
                             label="Customer Name"
                             size="small"
+                            name="customer.companyName"
                             value={values.customer.companyName || ""}
                             onChange={(e) => setFieldValue("customer.companyName", e.target.value)}
                             onBlur={() => formik.setFieldTouched("customer.companyName", true)}
+                            onKeyDown={(e) => handleKeyDown(e, "customer.organization")}
                             error={touched.customer?.companyName && Boolean(errors.customer?.companyName)}
                             helperText={touched.customer?.companyName && errors.customer?.companyName}
                             InputProps={{ readOnly: !!lockedFields.companyName }}
@@ -59,9 +69,11 @@ const CustomerInformationSection = ({ formik, lockedFields = {} }) => {
                             fullWidth
                             label="Organization"
                             size="small"
+                            name="customer.organization"
                             value={values.customer.organization || ""}
                             onChange={(e) => setFieldValue("customer.organization", e.target.value)}
                             onBlur={() => formik.setFieldTouched("customer.organization", true)}
+                            onKeyDown={(e) => handleKeyDown(e, "customer.address")}
                             error={touched.customer?.organization && Boolean(errors.customer?.organization)}
                             helperText={touched.customer?.organization && errors.customer?.organization}
                             InputProps={{ readOnly: !!lockedFields.organization }}
@@ -74,9 +86,11 @@ const CustomerInformationSection = ({ formik, lockedFields = {} }) => {
                             fullWidth
                             label="Address"
                             size="small"
+                            name="customer.address"
                             value={values.customer.address || ""}
                             onChange={(e) => setFieldValue("customer.address", e.target.value)}
                             onBlur={() => formik.setFieldTouched("customer.address", true)}
+                            onKeyDown={(e) => handleKeyDown(e, "customer.contact")}
                             error={touched.customer?.address && Boolean(errors.customer?.address)}
                             helperText={touched.customer?.address && errors.customer?.address}
                             InputProps={{ readOnly: !!lockedFields.address }}
@@ -89,9 +103,11 @@ const CustomerInformationSection = ({ formik, lockedFields = {} }) => {
                             fullWidth
                             label="Contact No."
                             size="small"
+                            name="customer.contact"
                             value={values.customer.contact || ""}
                             onChange={(e) => setFieldValue("customer.contact", e.target.value)}
                             onBlur={() => formik.setFieldTouched("customer.contact", true)}
+                            onKeyDown={(e) => handleKeyDown(e, "customer.drugLicence")}
                             error={touched.customer?.contact && Boolean(errors.customer?.contact)}
                             helperText={touched.customer?.contact && errors.customer?.contact}
                             InputProps={{ readOnly: !!lockedFields.contact }}
@@ -104,8 +120,10 @@ const CustomerInformationSection = ({ formik, lockedFields = {} }) => {
                             fullWidth
                             label="Drug Licence"
                             size="small"
+                            name="customer.drugLicence"
                             value={values.customer.drugLicence || ""}
                             onChange={(e) => setFieldValue("customer.drugLicence", e.target.value)}
+                            onKeyDown={(e) => handleKeyDown(e, "delivery.deliveryAddress")}
                             InputProps={{ readOnly: !!lockedFields.drugLicence }}
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: lockedFields.drugLicence ? "#f1f5f9" : "white" } }}
                         />

@@ -122,6 +122,9 @@ export default function DeviceInfoStep({ formik }) {
                                 value={formik.values.companyAddress}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
+                                error={formik.touched.companyAddress && Boolean(formik.errors.companyAddress)}
+                                helperText={formik.touched.companyAddress && formik.errors.companyAddress}
+                                required
                                 sx={textFieldStyle}
                             />
                         </Grid>
