@@ -170,7 +170,7 @@ export default function ProductionInspectionPreviewDialog({ open, onClose, onCon
                                     <Box sx={{ mt: 1 }}>
                                         <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>COMMENTS</Typography>
                                         <Typography variant="body2" sx={{ color: 'text.secondary', fontStyle: 'italic', mt: 0.5 }}>
-                                            "{values.comments}"
+                                            &quot;{values.comments}&quot;
                                         </Typography>
                                     </Box>
                                 </Grid>

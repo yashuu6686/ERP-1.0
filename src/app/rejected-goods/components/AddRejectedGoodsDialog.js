@@ -339,7 +339,7 @@ export default function AddRejectedGoodsDialog({
                                     <MuiGrid item xs={12}>
                                         <MuiTypography variant="caption" sx={{ color: '#64748b', fontWeight: 600, display: 'block', mb: 0.5 }}>Reason for Rejection</MuiTypography>
                                         <MuiTypography variant="body2" sx={{ fontWeight: 500, color: '#475569', fontStyle: 'italic' }}>
-                                            "{formik.values.reason}"
+                                            &quot;{formik.values.reason}&quot;
                                         </MuiTypography>
                                     </MuiGrid>
                                 </MuiGrid>

@@ -54,6 +54,7 @@ function ViewPurchaseOrderContent() {
         if (id) {
             fetchOrderDetails();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     if (loading) return <Loader fullPage message="Securely Loading Order..." />;

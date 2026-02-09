@@ -93,6 +93,7 @@ function EditOrderContent() {
             }
         };
         fetchOrder();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     const handleFinalUpdate = async () => {
