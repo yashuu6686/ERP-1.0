@@ -11,11 +11,18 @@ import {
     StepLabel,
     Typography,
     Divider,
+    Autocomplete,
+    TextField,
+    CircularProgress,
+    InputAdornment,
+    Stack,
 } from "@mui/material";
 import {
     Save,
     ArrowForward,
     ArrowBack,
+    Search,
+    FactCheck as SurveyIcon,
 } from "@mui/icons-material";
 import CommonCard from "../../../components/ui/CommonCard";
 import SupplierContactSection from "./components/SupplierContactSection";
@@ -70,6 +77,9 @@ function SupplierEvaluationContent() {
     const [loading, setLoading] = useState(false);
     const [openPreview, setOpenPreview] = useState(false);
     const [submitting, setSubmitting] = useState(false);
+    const [completedSurveys, setCompletedSurveys] = useState([]);
+    const [loadingSurveys, setLoadingSurveys] = useState(false);
+    const [selectedSurvey, setSelectedSurvey] = useState(null);
 
     const formik = useFormik({
         initialValues: {
@@ -138,6 +148,22 @@ function SupplierEvaluationContent() {
     });
 
     useEffect(() => {
+        const fetchCompletedSurveys = async () => {
+            try {
+                setLoadingSurveys(true);
+                const response = await axiosInstance.get("/supplier-surveys");
+                // Only get completed surveys
+                const completed = (response.data || []).filter(s => s.status === "Completed");
+                setCompletedSurveys(completed);
+            } catch (error) {
+                console.error("Error fetching surveys:", error);
+            } finally {
+                setLoadingSurveys(false);
+            }
+        };
+
+        fetchCompletedSurveys();
+
         if (id) {
             const fetchEvaluation = async () => {
                 try {
@@ -155,8 +181,32 @@ function SupplierEvaluationContent() {
             };
             fetchEvaluation();
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
+
+    const handleSurveySelect = (event, survey) => {
+        setSelectedSurvey(survey);
+        if (survey) {
+            // Calculate year established approx from yearsInBusiness
+            const currentYear = new Date().getFullYear();
+            const yearEst = survey.financials?.yearsInBusiness ? (currentYear - parseInt(survey.financials.yearsInBusiness)).toString() : "";
+
+            formik.setValues({
+                ...formik.initialValues,
+                supplierName: survey.companyName || "",
+                address: survey.address || "",
+                phone: survey.phone || "",
+                contactPerson: survey.signOff?.name || "",
+                title: survey.signOff?.position || "",
+                numberOfEmployees: survey.financials?.totalEmployees || "",
+                numberOfQAEmployees: survey.financials?.qaEmployees || "",
+                yearEstablished: yearEst,
+                productServices: survey.underConsideration || "",
+                // Split address if possible (very basic)
+                city: survey.address?.split(",")?.[1]?.trim() || "",
+            });
+            showNotification(`Data imported from survey: ${survey.companyName}`, "success");
+        }
+    };
 
     const handleActualSubmit = async () => {
         try {
@@ -224,6 +274,109 @@ function SupplierEvaluationContent() {
         <Box>
             <CommonCard title={id ? "Edit Supplier Evaluation" : "New Supplier Evaluation"}>
                 <Box sx={{ p: 1 }}>
+                    {/* Survey Reference Section - High Visibility Hero Box */}
+                    {!id && (
+                        <Box
+                            sx={{
+                                mb: 5,
+                                p: 4,
+                                borderRadius: 4,
+                                bgcolor: "rgba(17, 114, 186, 0.02)",
+                                border: "1px solid rgba(17, 114, 186, 0.15)",
+                                position: 'relative',
+                                overflow: 'hidden',
+                                "&::before": {
+                                    content: '""',
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    width: '4px',
+                                    height: '100%',
+                                    bgcolor: '#1172ba'
+                                }
+                            }}
+                        >
+                            <Stack direction={{ xs: 'column', md: 'row' }} spacing={3} alignItems="center" justifyContent="space-between">
+                                <Box sx={{ flex: 1 }}>
+                                    <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 1 }}>
+                                        <Box sx={{
+                                            p: 1,
+                                            borderRadius: 1.5,
+                                            bgcolor: 'rgba(17, 114, 186, 0.1)',
+                                            color: '#1172ba',
+                                            display: 'flex'
+                                        }}>
+                                            <SurveyIcon sx={{ fontSize: 20 }} />
+                                        </Box>
+                                        <Typography variant="h6" sx={{ color: "#0f172a", fontWeight: 800, letterSpacing: '-0.01em' }}>
+                                            Quick Start from Survey
+                                        </Typography>
+                                    </Stack>
+                                    <Typography variant="body2" sx={{ color: '#64748b', mb: { xs: 2, md: 0 }, maxWidth: '500px' }}>
+                                        Search for an approved supplier survey to instantly pre-fill company details, operational capacities, and contact information.
+                                    </Typography>
+                                </Box>
+
+                                <Box sx={{ width: { xs: '100%', md: '450px' } }}>
+                                    <Autocomplete
+                                        options={completedSurveys}
+                                        getOptionLabel={(option) => option.companyName || ""}
+                                        loading={loadingSurveys}
+                                        value={selectedSurvey}
+                                        onChange={handleSurveySelect}
+                                        renderOption={(props, option) => (
+                                            <Box component="li" {...props} sx={{ borderBottom: '1px solid #f1f5f9', p: 1.5 }}>
+                                                <Stack spacing={0.5}>
+                                                    <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#1172ba' }}>
+                                                        {option.companyName}
+                                                    </Typography>
+                                                    <Stack direction="row" spacing={2} divider={<Divider orientation="vertical" flexItem sx={{ height: 12, my: 'auto' }} />}>
+                                                        <Typography variant="caption" sx={{ color: '#64748b' }}>
+                                                            ID: <b>{option.id?.substring(0, 8)}</b>
+                                                        </Typography>
+                                                        <Typography variant="caption" sx={{ color: '#64748b' }}>
+                                                            Approved: <b>{option.scanboReview?.approvedDate || option.signOff?.date || 'N/A'}</b>
+                                                        </Typography>
+                                                    </Stack>
+                                                </Stack>
+                                            </Box>
+                                        )}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label="Import Data from Approved Survey"
+                                                variant="outlined"
+                                                placeholder="Type company name to search..."
+                                                InputProps={{
+                                                    ...params.InputProps,
+                                                    startAdornment: (
+                                                        <InputAdornment position="start">
+                                                            <Search sx={{ color: '#1172ba', ml: 1 }} />
+                                                        </InputAdornment>
+                                                    ),
+                                                    endAdornment: (
+                                                        <React.Fragment>
+                                                            {loadingSurveys ? <CircularProgress color="inherit" size={20} /> : null}
+                                                            {params.InputProps.endAdornment}
+                                                        </React.Fragment>
+                                                    ),
+                                                }}
+                                                sx={{
+                                                    "& .MuiOutlinedInput-root": {
+                                                        bgcolor: 'white',
+                                                        borderRadius: 3,
+                                                        boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                                                        "&:hover": { boxShadow: '0 6px 16px rgba(17, 114, 186, 0.08)' }
+                                                    }
+                                                }}
+                                            />
+                                        )}
+                                    />
+                                </Box>
+                            </Stack>
+                        </Box>
+                    )}
+
                     <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
                         {steps.map((label) => (
                             <Step key={label}>

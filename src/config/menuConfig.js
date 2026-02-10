@@ -16,6 +16,7 @@ import LocalShipping from "@mui/icons-material/LocalShipping";
 import Cancel from "@mui/icons-material/Cancel";
 import Settings from "@mui/icons-material/Settings";
 import Business from "@mui/icons-material/Business";
+import RateReview from "@mui/icons-material/RateReview";
 
 export const APP_MENU = [
     {
@@ -30,6 +31,7 @@ export const APP_MENU = [
         description: "Procurement and inventory management",
         items: [
             { text: "Purchase", icon: <ShoppingCart />, path: "/purchase", key: "purchase" },
+            { text: "Supplier Survey", icon: <RateReview />, path: "/supplier-survey", key: "supplier_survey" },
             { text: "Suppliers", icon: <Business />, path: "/suppliers", key: "suppliers" },
             { text: "Goods Receipt Note (GRN)", icon: <Inventory />, path: "/grn", key: "grn" },
             { text: "Incoming Inspection", icon: <Assignment />, path: "/incoming-inspection", key: "incoming_inspection" },

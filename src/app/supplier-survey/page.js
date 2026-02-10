@@ -1,51 +1,52 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Box, Chip, IconButton, Typography } from "@mui/material";
-import { Visibility, Edit, Add } from "@mui/icons-material";
+import { Visibility, Edit } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/ui/CommonCard";
 import GlobalTable from "../../components/ui/GlobalTable";
-import axiosInstance from "@/axios/axiosInstance";
 import Loader from "../../components/ui/Loader";
+import axiosInstance from "../../axios/axiosInstance";
 
-
-export default function SuppliersPage() {
+export default function SupplierSurveyListPage() {
     const router = useRouter();
-    const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [search, setSearch] = useState("");
+    const [data, setData] = useState([]);
 
-    useEffect(() => {
-        fetchSuppliers();
-    }, []);
-
-    const fetchSuppliers = async () => {
+    const fetchData = async () => {
+        setLoading(true);
         try {
-            setLoading(true);
-            const response = await axiosInstance.get("/suppliers");
-            setData(response.data || []);
+            const response = await axiosInstance.get("/supplier-surveys");
+            setData(response.data);
         } catch (error) {
-            console.error("Error fetching suppliers:", error);
+            console.error("Error fetching supplier surveys:", error);
+            // Fallback to empty array if error
+            setData([]);
         } finally {
             setLoading(false);
         }
     };
 
+    useEffect(() => {
+        fetchData();
+    }, []);
+
     const filtered = data.filter((item) =>
-        (item.supplierName || "").toLowerCase().includes(search.toLowerCase()) ||
-        (item.evaluationNo || "").toLowerCase().includes(search.toLowerCase())
+        (item.companyName || "").toLowerCase().includes(search.toLowerCase()) ||
+        (item.reviewedBy || "").toLowerCase().includes(search.toLowerCase())
     );
 
     const getStatusColor = (status) => {
         switch (status) {
-            case "Approved":
-                return { bgcolor: "#dcfce7", color: "#15803d" };
+            case "Completed":
+                return { bgcolor: "#dcfce7", color: "#15803d" }; // Green
             case "Rejected":
-                return { bgcolor: "#fee2e2", color: "#b91c1c" };
+                return { bgcolor: "#fee2e2", color: "#b91c1c" }; // Red
             case "Pending":
-                return { bgcolor: "#fef9c3", color: "#a16207" };
+                return { bgcolor: "#fef9c3", color: "#a16207" }; // Yellow
             default:
-                return { bgcolor: "#f1f5f9", color: "#64748b" };
+                return { bgcolor: "#f1f5f9", color: "#64748b" }; // Grey
         }
     };
 
@@ -60,37 +61,24 @@ export default function SuppliersPage() {
             ),
         },
         {
-            label: "Evaluation No.",
-            align: "center",
-            render: (row) => (
-                <Typography variant="body2" sx={{ fontWeight: 700, color: "#1172ba" }}>
-                    {row.evaluationNo}
-                </Typography>
-            ),
-        },
-        {
-            label: "Supplier Name",
+            label: "Company Name",
             align: "left",
             render: (row) => (
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    {row.supplierName}
+                    {row.companyName}
                 </Typography>
             ),
         },
         {
-            label: "City",
+            label: "Survey Date",
             align: "center",
-            accessor: "city",
+            accessor: "surveyDate",
+            render: (row) => row.signOff?.date || row.surveyDate || "N/A"
         },
         {
-            label: "Contact Person",
+            label: "Reviewed By",
             align: "center",
-            accessor: "contactPerson",
-        },
-        {
-            label: "Phone",
-            align: "center",
-            accessor: "phone",
+            render: (row) => row.scanboReview?.reviewedBy || row.reviewedBy || "N/A"
         },
         {
             label: "Status",
@@ -110,18 +98,13 @@ export default function SuppliersPage() {
             ),
         },
         {
-            label: "Evaluation Date",
-            align: "center",
-            accessor: "evaluationDate",
-        },
-        {
             label: "Actions",
             align: "center",
             render: (row) => (
                 <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
                     <IconButton
                         size="small"
-                        onClick={() => router.push(`/suppliers/view-evaluation?id=${row.id}`)}
+                        onClick={() => router.push(`/supplier-survey/view?id=${row.id}`)}
                         sx={{
                             color: "rgb(17, 114, 186)",
                             bgcolor: "#f1f5f9",
@@ -132,7 +115,7 @@ export default function SuppliersPage() {
                     </IconButton>
                     <IconButton
                         size="small"
-                        onClick={() => router.push(`/suppliers/create-evaluation?id=${row.id}`)}
+                        onClick={() => router.push(`/supplier-survey/create?id=${row.id}`)}
                         sx={{
                             color: "rgb(17, 114, 186)",
                             bgcolor: "#f1f5f9",
@@ -149,15 +132,15 @@ export default function SuppliersPage() {
     return (
         <Box>
             <CommonCard
-                title="Supplier Evaluation Management"
-                addText="New Evaluation"
-                onAdd={() => router.push("/suppliers/create-evaluation")}
-                searchPlaceholder="Search Supplier or Evaluation No..."
+                title="Supplier Surveys"
+                addText="New Survey"
+                onAdd={() => router.push("/supplier-survey/create")}
+                searchPlaceholder="Search Company or Reviewer..."
                 searchValue={search}
                 onSearchChange={(e) => setSearch(e.target.value)}
             >
                 {loading ? (
-                    <Loader message="Loading Suppliers..." />
+                    <Loader message="Loading Surveys..." />
                 ) : (
                     <GlobalTable columns={columns} data={filtered} />
                 )}
