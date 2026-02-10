@@ -34,7 +34,7 @@ const SurveySummarySidebar = ({ data }) => {
     const status = data.status || "Pending";
     const getStatusColor = (s) => {
         switch (s) {
-            case "Completed": return "#15803d";
+            case "Approved": return "#15803d";
             case "Rejected": return "#b91c1c";
             default: return "#a16207";
         }

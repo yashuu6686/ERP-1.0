@@ -152,8 +152,8 @@ function SupplierEvaluationContent() {
             try {
                 setLoadingSurveys(true);
                 const response = await axiosInstance.get("/supplier-surveys");
-                // Only get completed surveys
-                const completed = (response.data || []).filter(s => s.status === "Completed");
+                // Only get approved surveys
+                const completed = (response.data || []).filter(s => s.status === "Approved");
                 setCompletedSurveys(completed);
             } catch (error) {
                 console.error("Error fetching surveys:", error);

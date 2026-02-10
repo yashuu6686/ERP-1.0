@@ -72,13 +72,13 @@ const SurveyViewHeader = ({ router, id, status }) => {
                     variant="contained"
                     startIcon={<Edit />}
                     onClick={() => router.push(`/supplier-survey/create?id=${id}`)}
-                    disabled={status === "Completed"}
+                    disabled={status === "Approved"}
                     sx={{
                         borderRadius: "12px",
                         textTransform: "none",
                         fontWeight: 600,
-                        background: status === "Completed" ? "#f1f5f9" : "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
-                        boxShadow: status === "Completed" ? "none" : "0 4px 12px rgba(17, 114, 186, 0.25)",
+                        background: status === "Approved" ? "#f1f5f9" : "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
+                        boxShadow: status === "Approved" ? "none" : "0 4px 12px rgba(17, 114, 186, 0.25)",
                         "&.Mui-disabled": {
                             bgcolor: "#f1f5f9",
                             color: "#94a3b8"

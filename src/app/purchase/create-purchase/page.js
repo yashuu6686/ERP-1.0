@@ -6,7 +6,15 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import Autocomplete from "@mui/material/Autocomplete";
+import TextField from "@mui/material/TextField";
+import CircularProgress from "@mui/material/CircularProgress";
+import InputAdornment from "@mui/material/InputAdornment";
+import Divider from "@mui/material/Divider";
 import Save from "@mui/icons-material/Save";
+import { Search, Business as SupplierIcon } from "@mui/icons-material";
 import { useFormik, FormikProvider } from "formik";
 import * as Yup from "yup";
 import CommonCard from "../../../components/ui/CommonCard";
@@ -76,6 +84,9 @@ function CreatePurchaseOrderContent() {
   const { showNotification } = useNotification();
   const [loading, setLoading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [approvedSuppliers, setApprovedSuppliers] = useState([]);
+  const [loadingSuppliers, setLoadingSuppliers] = useState(false);
+  const [selectedSupplier, setSelectedSupplier] = useState(null);
   const formContainerRef = useRef(null);
 
   const handleKeyDown = (e) => {
@@ -204,6 +215,32 @@ function CreatePurchaseOrderContent() {
   const totals = useMemo(() => calculateTotals(formik.values), [formik.values]);
 
   useEffect(() => {
+    // Fetch approved suppliers for import
+    const fetchApprovedSuppliers = async () => {
+      try {
+        setLoadingSuppliers(true);
+        const response = await axiosInstance.get("/suppliers");
+        console.log("All suppliers fetched:", response.data);
+        // Only get approved suppliers
+        const approved = (response.data || []).filter(s => s.status === "Approved");
+        console.log("Approved suppliers:", approved);
+
+        // If no approved suppliers, show all for now
+        if (approved.length === 0) {
+          console.warn("No approved suppliers found, showing all suppliers");
+          setApprovedSuppliers(response.data || []);
+        } else {
+          setApprovedSuppliers(approved);
+        }
+      } catch (error) {
+        console.error("Error fetching suppliers:", error);
+      } finally {
+        setLoadingSuppliers(false);
+      }
+    };
+
+    fetchApprovedSuppliers();
+
     if (isEditMode && id) {
       const fetchData = async () => {
         try {
@@ -253,6 +290,25 @@ function CreatePurchaseOrderContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, isEditMode]);
 
+  const handleSupplierSelect = (event, supplier) => {
+    setSelectedSupplier(supplier);
+    if (supplier) {
+      formik.setValues({
+        ...formik.values,
+        supplier: {
+          companyName: supplier.supplierName || "",
+          contactPerson: supplier.contactPerson || "",
+          address: supplier.address || "",
+          email: supplier.email || "",
+          phone: supplier.phone || "",
+          pan: supplier.pan || "",
+          gstin: supplier.gstin || "",
+        },
+      });
+      showNotification(`Supplier data imported: ${supplier.supplierName}`, "success");
+    }
+  };
+
   if (loading) {
     return <Loader fullPage message="Loading Purchase Order Details..." />;
   }
@@ -262,6 +318,109 @@ function CreatePurchaseOrderContent() {
       <Box onKeyDown={handleKeyDown} ref={formContainerRef}>
         <CommonCard title={isEditMode ? "Edit Purchase Order" : "Create Purchase Order"}>
           <Box sx={{ p: 1 }}>
+            {/* Supplier Import Section - Only for new POs */}
+            {!isEditMode && (
+              <Box
+                sx={{
+                  mb: 5,
+                  p: 4,
+                  borderRadius: 4,
+                  bgcolor: "rgba(17, 114, 186, 0.02)",
+                  border: "1px solid rgba(17, 114, 186, 0.15)",
+                  position: 'relative',
+                  overflow: 'hidden',
+                  "&::before": {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '4px',
+                    height: '100%',
+                    bgcolor: '#1172ba'
+                  }
+                }}
+              >
+                <Stack direction={{ xs: 'column', md: 'row' }} spacing={3} alignItems="center" justifyContent="space-between">
+                  <Box sx={{ flex: 1 }}>
+                    <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 1 }}>
+                      <Box sx={{
+                        p: 1,
+                        borderRadius: 1.5,
+                        bgcolor: 'rgba(17, 114, 186, 0.1)',
+                        color: '#1172ba',
+                        display: 'flex'
+                      }}>
+                        <SupplierIcon sx={{ fontSize: 20 }} />
+                      </Box>
+                      <Typography variant="h6" sx={{ color: "#0f172a", fontWeight: 800, letterSpacing: '-0.01em' }}>
+                        Quick Start from Approved Supplier
+                      </Typography>
+                    </Stack>
+                    <Typography variant="body2" sx={{ color: '#64748b', mb: { xs: 2, md: 0 }, maxWidth: '500px' }}>
+                      Search for an approved supplier to instantly pre-fill company details, contact information, and tax identifiers.
+                    </Typography>
+                  </Box>
+
+                  <Box sx={{ width: { xs: '100%', md: '450px' } }}>
+                    <Autocomplete
+                      options={approvedSuppliers}
+                      getOptionLabel={(option) => option.supplierName || ""}
+                      loading={loadingSuppliers}
+                      value={selectedSupplier}
+                      onChange={handleSupplierSelect}
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props} sx={{ borderBottom: '1px solid #f1f5f9', p: 1.5 }}>
+                          <Stack spacing={0.5}>
+                            <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#1172ba' }}>
+                              {option.supplierName}
+                            </Typography>
+                            <Stack direction="row" spacing={2} divider={<Divider orientation="vertical" flexItem sx={{ height: 12, my: 'auto' }} />}>
+                              <Typography variant="caption" sx={{ color: '#64748b' }}>
+                                Eval: <b>{option.evaluationNo}</b>
+                              </Typography>
+                              <Typography variant="caption" sx={{ color: '#64748b' }}>
+                                Contact: <b>{option.contactPerson}</b>
+                              </Typography>
+                            </Stack>
+                          </Stack>
+                        </Box>
+                      )}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Import Data from Approved Supplier"
+                          variant="outlined"
+                          placeholder="Type supplier name to search..."
+                          InputProps={{
+                            ...params.InputProps,
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <Search sx={{ color: '#1172ba', ml: 1 }} />
+                              </InputAdornment>
+                            ),
+                            endAdornment: (
+                              <React.Fragment>
+                                {loadingSuppliers ? <CircularProgress color="inherit" size={20} /> : null}
+                                {params.InputProps.endAdornment}
+                              </React.Fragment>
+                            ),
+                          }}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              bgcolor: 'white',
+                              borderRadius: 3,
+                              boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                              "&:hover": { boxShadow: '0 6px 16px rgba(17, 114, 186, 0.08)' }
+                            }
+                          }}
+                        />
+                      )}
+                    />
+                  </Box>
+                </Stack>
+              </Box>
+            )}
+
             <OrderInformation />
 
             <Grid container spacing={3} sx={{ mb: 4 }}>

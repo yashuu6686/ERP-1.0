@@ -34,7 +34,7 @@ const SurveyViewContent = ({ data }) => {
     const status = data.status || "Pending";
     const getStatusConfig = (s) => {
         const configs = {
-            Completed: { color: "#166534", bg: "#dcfce7", border: "#bbedc2", icon: <CheckCircle /> },
+            Approved: { color: "#166534", bg: "#dcfce7", border: "#bbedc2", icon: <CheckCircle /> },
             Pending: { color: "#92400e", bg: "#fef3c7", border: "#fde68a", icon: <Schedule /> },
             Rejected: { color: "#991b1b", bg: "#fee2e2", border: "#fecaca", icon: <Cancel /> },
         };

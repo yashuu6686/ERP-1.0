@@ -39,7 +39,7 @@ export default function SupplierSurveyListPage() {
 
     const getStatusColor = (status) => {
         switch (status) {
-            case "Completed":
+            case "Approved":
                 return { bgcolor: "#dcfce7", color: "#15803d" }; // Green
             case "Rejected":
                 return { bgcolor: "#fee2e2", color: "#b91c1c" }; // Red

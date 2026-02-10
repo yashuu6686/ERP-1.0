@@ -212,7 +212,7 @@ const SupplierSurveyForm = ({ initialData, isEdit }) => {
         // Determine Status dynamically
         let finalStatus = "Pending";
         if (values.scanboReview?.reviewedBy && values.scanboReview?.approvedBy) {
-            finalStatus = "Completed";
+            finalStatus = "Approved";
         }
 
         const replaceEmptyWithNA = (obj) => {
