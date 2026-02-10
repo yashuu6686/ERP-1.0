@@ -27,12 +27,18 @@ export const APP_MENU = [
         ]
     },
     {
+        name: "Supplier Management",
+        description: "Supplier and supplier survey management",
+        items: [
+            { text: "Supplier Survey", icon: <RateReview />, path: "/supplier-survey", key: "supplier_survey" },
+            { text: "Suppliers", icon: <Business />, path: "/suppliers", key: "suppliers" },
+        ]
+    },
+    {
         name: "Purchase Flow",
         description: "Procurement and inventory management",
         items: [
             { text: "Purchase", icon: <ShoppingCart />, path: "/purchase", key: "purchase" },
-            { text: "Supplier Survey", icon: <RateReview />, path: "/supplier-survey", key: "supplier_survey" },
-            { text: "Suppliers", icon: <Business />, path: "/suppliers", key: "suppliers" },
             { text: "Goods Receipt Note (GRN)", icon: <Inventory />, path: "/grn", key: "grn" },
             { text: "Incoming Inspection", icon: <Assignment />, path: "/incoming-inspection", key: "incoming_inspection" },
             { text: "Store", icon: <Store />, path: "/store", key: "store" },

@@ -290,22 +290,47 @@ function CreatePurchaseOrderContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, isEditMode]);
 
-  const handleSupplierSelect = (event, supplier) => {
+  const handleSupplierSelect = async (event, supplier) => {
     setSelectedSupplier(supplier);
     if (supplier) {
+      console.log("Selected supplier data:", supplier);
+
+      // Try to fetch the related survey data
+      let surveyData = null;
+      try {
+        const surveysResponse = await axiosInstance.get("/supplier-surveys");
+        // Find survey that matches this supplier's company name
+        surveyData = (surveysResponse.data || []).find(
+          s => s.companyName?.toLowerCase() === supplier.supplierName?.toLowerCase()
+        );
+        console.log("Related survey data:", surveyData);
+      } catch (error) {
+        console.error("Error fetching survey data:", error);
+      }
+
+      // Build full address from available fields
+      const fullAddress = [
+        supplier.address,
+        supplier.city,
+        supplier.state,
+        supplier.zipCode
+      ].filter(Boolean).join(", ");
+
       formik.setValues({
         ...formik.values,
         supplier: {
           companyName: supplier.supplierName || "",
-          contactPerson: supplier.contactPerson || "",
-          address: supplier.address || "",
-          email: supplier.email || "",
-          phone: supplier.phone || "",
-          pan: supplier.pan || "",
-          gstin: supplier.gstin || "",
+          contactPerson: supplier.contactPerson || surveyData?.signOff?.name || "",
+          address: fullAddress || supplier.address || surveyData?.address || "",
+          email: surveyData?.customerServiceContact?.email || surveyData?.qualityContact?.email || "",
+          phone: supplier.phone || surveyData?.phone || "",
+          pan: surveyData?.pan || "",
+          gstin: surveyData?.vatTin || "",
         },
       });
-      showNotification(`Supplier data imported: ${supplier.supplierName}`, "success");
+
+      const dataSource = surveyData ? "Evaluation and Survey" : "Evaluation only";
+      showNotification(`Data imported from ${dataSource}: ${supplier.supplierName}`, "success");
     }
   };
 
