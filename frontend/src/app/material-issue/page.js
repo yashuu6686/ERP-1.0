@@ -29,6 +29,8 @@ export default function MaterialIssueRequests() {
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const fetchData = React.useCallback(async () => {
     try {
@@ -51,6 +53,7 @@ export default function MaterialIssueRequests() {
   const handleTabChange = (e, newValue) => {
     setTab(newValue);
     setSearch("");
+    setPage(0);
   };
 
   const handleDialogClose = () => {
@@ -83,11 +86,16 @@ export default function MaterialIssueRequests() {
     }
   });
 
+  const paginatedData = filtered.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
   const requestColumns = [
     {
       label: "Sr. No.",
       align: "center",
-      render: (row, index) => index + 1,
+      render: (row, index) => page * rowsPerPage + index + 1,
     },
     {
       label: "Material Issue Request No.",
@@ -172,6 +180,11 @@ export default function MaterialIssueRequests() {
 
   const defectiveColumns = [
     {
+      label: "Sr. No.",
+      align: "center",
+      render: (row, index) => page * rowsPerPage + index + 1,
+    },
+    {
       label: "Return No.",
       align: "center",
       render: (row) => (
@@ -239,11 +252,26 @@ export default function MaterialIssueRequests() {
         onAdd={tab === 0 ? () => setOpenDialog(true) : null}
         searchPlaceholder={tab === 0 ? "Search Request No..." : "Search Return No or Product..."}
         searchValue={search}
-        onSearchChange={(e) => setSearch(e.target.value)}
+        onSearchChange={(e) => {
+          setSearch(e.target.value);
+          setPage(0);
+        }}
       >
         <MaterialIssueTabs value={tab} handleChange={handleTabChange} />
 
-        <GlobalTable columns={columns} data={filtered} loading={loading} />
+        <GlobalTable
+          columns={columns}
+          data={paginatedData}
+          loading={loading}
+          totalCount={filtered.length}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onPageChange={setPage}
+          onRowsPerPageChange={(val) => {
+            setRowsPerPage(val);
+            setPage(0);
+          }}
+        />
 
         {/* Dialog */}
         <Dialog open={openDialog} onClose={handleDialogClose}>

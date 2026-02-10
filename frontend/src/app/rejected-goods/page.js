@@ -57,6 +57,8 @@ export default function RejectedGoods() {
   const [search, setSearch] = useState("");
   const [rejectedData, setRejectedData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -89,7 +91,10 @@ export default function RejectedGoods() {
     fetchRejectedGoods();
   }, []);
 
-  const handleTabChange = (e, newValue) => setTab(newValue);
+  const handleTabChange = (e, newValue) => {
+    setTab(newValue);
+    setPage(0);
+  };
 
   const handleAdd = () => {
     setDialogMode("add");
@@ -191,12 +196,17 @@ export default function RejectedGoods() {
         (item.goods || "").toLowerCase().includes(search.toLowerCase())
     );
 
+  const paginatedData = filteredData.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
   const columns = [
     {
       label: "Sr.No.",
       align: "center",
       sx: { width: "60px" },
-      render: (row, index) => <span style={{ color: "#6c757d" }}>{index + 1}</span>,
+      render: (row, index) => <span style={{ color: "#6c757d" }}>{page * rowsPerPage + index + 1}</span>,
     },
     {
       label: "Rejection No.",
@@ -306,7 +316,10 @@ export default function RejectedGoods() {
         onAdd={handleAdd}
         searchPlaceholder="Search Rejection ID, Source, Goods..."
         searchValue={search}
-        onSearchChange={(e) => setSearch(e.target.value)}
+        onSearchChange={(e) => {
+          setSearch(e.target.value);
+          setPage(0);
+        }}
       >
         <Tabs
           value={tab}
@@ -349,19 +362,47 @@ export default function RejectedGoods() {
         {loading ? (
           <Loader message="Fetching rejected goods..." />
         ) : !isMobile ? (
-          <GlobalTable columns={columns} data={filteredData} />
+          <GlobalTable
+            columns={columns}
+            data={paginatedData}
+            totalCount={filteredData.length}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={setPage}
+            onRowsPerPageChange={(val) => {
+              setRowsPerPage(val);
+              setPage(0);
+            }}
+          />
         ) : (
           <Box>
-            {filteredData.length > 0 ? (
-              filteredData.map((item) => (
-                <RejectedGoodsMobileCard
-                  key={item.id}
-                  item={item}
-                  onView={() => handleView(item)}
-                  onEdit={() => handleEdit(item)}
-                  onDelete={() => handleDelete(item.id)}
-                />
-              ))
+            {paginatedData.length > 0 ? (
+              <>
+                {paginatedData.map((item) => (
+                  <RejectedGoodsMobileCard
+                    key={item.id}
+                    item={item}
+                    onView={() => handleView(item)}
+                    onEdit={() => handleEdit(item)}
+                    onDelete={() => handleDelete(item.id)}
+                  />
+                ))}
+                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+                  <GlobalTable
+                    columns={[]}
+                    data={[]}
+                    totalCount={filteredData.length}
+                    page={page}
+                    rowsPerPage={rowsPerPage}
+                    onPageChange={setPage}
+                    onRowsPerPageChange={(val) => {
+                      setRowsPerPage(val);
+                      setPage(0);
+                    }}
+                    onlyPagination={true}
+                  />
+                </Box>
+              </>
             ) : (
               <Box
                 sx={{

@@ -32,9 +32,17 @@ export default function SupplierSurveyListPage() {
         fetchData();
     }, []);
 
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+
     const filtered = data.filter((item) =>
         (item.companyName || "").toLowerCase().includes(search.toLowerCase()) ||
         (item.reviewedBy || "").toLowerCase().includes(search.toLowerCase())
+    );
+
+    const paginatedSurveys = filtered.slice(
+        page * rowsPerPage,
+        page * rowsPerPage + rowsPerPage
     );
 
     const getStatusColor = (status) => {
@@ -56,7 +64,7 @@ export default function SupplierSurveyListPage() {
             align: "center",
             render: (row, index) => (
                 <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 500 }}>
-                    {index + 1}
+                    {page * rowsPerPage + index + 1}
                 </Typography>
             ),
         },
@@ -137,12 +145,26 @@ export default function SupplierSurveyListPage() {
                 onAdd={() => router.push("/supplier-survey/create")}
                 searchPlaceholder="Search Company or Reviewer..."
                 searchValue={search}
-                onSearchChange={(e) => setSearch(e.target.value)}
+                onSearchChange={(e) => {
+                    setSearch(e.target.value);
+                    setPage(0);
+                }}
             >
                 {loading ? (
                     <Loader message="Loading Surveys..." />
                 ) : (
-                    <GlobalTable columns={columns} data={filtered} />
+                    <GlobalTable
+                        columns={columns}
+                        data={paginatedSurveys}
+                        totalCount={filtered.length}
+                        page={page}
+                        rowsPerPage={rowsPerPage}
+                        onPageChange={setPage}
+                        onRowsPerPageChange={(val) => {
+                            setRowsPerPage(val);
+                            setPage(0);
+                        }}
+                    />
                 )}
             </CommonCard>
         </Box>

@@ -13,6 +13,8 @@ export default function FinalQualityCheck() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
     fetchInspections();
@@ -34,13 +36,18 @@ export default function FinalQualityCheck() {
     (item.inspectionNo || "").toLowerCase().includes(search.toLowerCase())
   );
 
+  const paginatedData = filtered.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
   const columns = [
     {
       label: "Sr. No.",
       align: "center",
       render: (row, index) => (
         <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 500 }}>
-          {index + 1}
+          {page * rowsPerPage + index + 1}
         </Typography>
       ),
     },
@@ -148,12 +155,26 @@ export default function FinalQualityCheck() {
         onAdd={() => router.push("/final-inspection/create-final-inspection")}
         searchPlaceholder="Search Inspection No..."
         searchValue={search}
-        onSearchChange={(e) => setSearch(e.target.value)}
+        onSearchChange={(e) => {
+          setSearch(e.target.value);
+          setPage(0);
+        }}
       >
         {loading ? (
           <Loader message="Loading Inspections..." />
         ) : (
-          <GlobalTable columns={columns} data={filtered} />
+          <GlobalTable
+            columns={columns}
+            data={paginatedData}
+            totalCount={filtered.length}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={setPage}
+            onRowsPerPageChange={(val) => {
+              setRowsPerPage(val);
+              setPage(0);
+            }}
+          />
         )}
       </CommonCard>
     </Box>

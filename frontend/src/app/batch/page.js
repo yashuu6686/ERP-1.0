@@ -18,6 +18,8 @@ export default function Batch() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
     const fetchBatches = async () => {
@@ -40,11 +42,16 @@ export default function Batch() {
       (b.requestNo || "").toLowerCase().includes(search.toLowerCase())
   );
 
+  const paginatedData = filtered.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
   const columns = [
     {
       label: "SR.No.",
       align: "center",
-      render: (row, index) => index + 1,
+      render: (row, index) => page * rowsPerPage + index + 1,
     },
     {
       label: "Batch No",
@@ -129,9 +136,23 @@ export default function Batch() {
         onAdd={null}
         searchPlaceholder="Search Batch No..."
         searchValue={search}
-        onSearchChange={(e) => setSearch(e.target.value)}
+        onSearchChange={(e) => {
+          setSearch(e.target.value);
+          setPage(0);
+        }}
       >
-        <GlobalTable columns={columns} data={filtered} />
+        <GlobalTable
+          columns={columns}
+          data={paginatedData}
+          totalCount={filtered.length}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onPageChange={setPage}
+          onRowsPerPageChange={(val) => {
+            setRowsPerPage(val);
+            setPage(0);
+          }}
+        />
       </CommonCard>
     </Box>
   );

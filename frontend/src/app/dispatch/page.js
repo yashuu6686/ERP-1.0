@@ -59,6 +59,8 @@ export default function DispatchDetails() {
   const [dispatchData, setDispatchData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
@@ -89,12 +91,17 @@ export default function DispatchDetails() {
       item.shipmentInfo?.trackingNumber?.toLowerCase().includes(search.toLowerCase())
   );
 
+  const paginatedData = filtered.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
   const columns = [
     {
       label: "Sr.No.",
       align: "center",
       sx: { width: "60px" },
-      render: (row, index) => <span style={{ color: "#6c757d" }}>{index + 1}</span>,
+      render: (row, index) => <span style={{ color: "#6c757d" }}>{page * rowsPerPage + index + 1}</span>,
     },
     {
       label: "Dispatch NO.",
@@ -245,20 +252,51 @@ export default function DispatchDetails() {
         onAdd={() => router.push("/dispatch/create-dispatch-entry")}
         searchPlaceholder="Search Order, Product, Contact, Tracking..."
         searchValue={search}
-        onSearchChange={(e) => setSearch(e.target.value)}
+        onSearchChange={(e) => {
+          setSearch(e.target.value);
+          setPage(0);
+        }}
       >
         {loading ? (
           <Box sx={{ display: "flex", justifyContent: "center", py: 10 }}>
             <Typography variant="body1" color="textSecondary">Loading Dispatch Data...</Typography>
           </Box>
         ) : !isMobile ? (
-          <GlobalTable columns={columns} data={filtered} />
+          <GlobalTable
+            columns={columns}
+            data={paginatedData}
+            totalCount={filtered.length}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={setPage}
+            onRowsPerPageChange={(val) => {
+              setRowsPerPage(val);
+              setPage(0);
+            }}
+          />
         ) : (
           <Box>
-            {filtered.length > 0 ? (
-              filtered.map((item) => (
-                <DispatchMobileCard key={item.id} item={item} router={router} />
-              ))
+            {paginatedData.length > 0 ? (
+              <>
+                {paginatedData.map((item) => (
+                  <DispatchMobileCard key={item.id} item={item} router={router} />
+                ))}
+                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+                  <GlobalTable
+                    columns={[]}
+                    data={[]}
+                    totalCount={filtered.length}
+                    page={page}
+                    rowsPerPage={rowsPerPage}
+                    onPageChange={setPage}
+                    onRowsPerPageChange={(val) => {
+                      setRowsPerPage(val);
+                      setPage(0);
+                    }}
+                    onlyPagination={true}
+                  />
+                </Box>
+              </>
             ) : (
               <Box
                 sx={{

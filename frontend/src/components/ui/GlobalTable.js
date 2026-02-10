@@ -28,7 +28,8 @@ const GlobalTable = ({
     totalCount = 0,
     onPageChange,
     onRowsPerPageChange,
-    loading = false
+    loading = false,
+    onlyPagination = false
 }) => {
     const totalPages = Math.ceil(totalCount / rowsPerPage);
 
@@ -43,149 +44,151 @@ const GlobalTable = ({
 
     return (
         <Box sx={{ position: "relative" }}>
-            <TableContainer
-                component={Paper}
-                elevation={0}
-                sx={{
-                    overflowX: "auto",
-                    width: "100%",
-                    maxWidth: "100%",
-                    display: "block",
-                    mb: 2,
-                    "&::-webkit-scrollbar": {
-                        height: "8px",
-                        width: "8px",
-                    },
-                    "&::-webkit-scrollbar-track": {
-                        background: "var(--bg-page)",
-                    },
-                    "&::-webkit-scrollbar-thumb": {
-                        backgroundColor: "var(--border-strong)",
-                        borderRadius: "10px",
-                        border: "2px solid var(--bg-page)",
-                    },
-                    "&::-webkit-scrollbar-thumb:hover": {
-                        backgroundColor: "var(--text-muted)",
-                    },
-                    opacity: loading ? 0.6 : 1,
-                    pointerEvents: loading ? "none" : "auto",
-                    transition: "opacity 0.2s"
-                }}
-            >
-                {loading && (
-                    <Box sx={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        zIndex: 2,
-                        bgcolor: "rgba(255, 255, 255, 0.4)",
-                        borderRadius: "var(--card-radius)"
-                    }}>
-                        <Box className="loader-inner" sx={{
-                            width: 40,
-                            height: 40,
-                            border: "3px solid var(--brand-soft)",
-                            borderTop: "3px solid var(--brand-primary)",
-                            borderRadius: "50%",
-                            animation: "spin 1s linear infinite",
-                        }} />
-                        <style>{`
-                            @keyframes spin {
-                                0% { transform: rotate(0deg); }
-                                100% { transform: rotate(360deg); }
-                            }
-                        `}</style>
-                    </Box>
-                )}
-                <Table size="small" sx={{ minWidth: 650 }}>
-                    <TableHead sx={{
-                        //  bgcolor: "var(--bg-page)"
-                    }}>
-                        <TableRow>
-                            {columns.map((col, index) => (
-                                <TableCell
-                                    key={index}
-                                    align={col.align || "left"}
-                                    sx={{
-                                        fontWeight: 700,
-                                        color: "var(--text-primary)",
-                                        py: 0,
-                                        fontSize: "var(--size-caption)",
-                                        textTransform: "uppercase",
-                                        letterSpacing: "0.02em",
-                                        fontFamily: "var(--font-manrope)",
-                                        borderBottom: "1px solid var(--border-default)",
-                                        width: col.width || "auto",
-                                        ...col.sx,
-                                    }}
-                                >
-                                    {col.label}
-                                </TableCell>
-                            ))}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {data && data.length > 0 ? (
-                            data.map((row, rowIndex) => (
-                                <TableRow
-                                    key={row.id || rowIndex}
-                                    hover
-                                    onClick={() => onRowClick && onRowClick(row)}
-                                    sx={{
-                                        cursor: onRowClick ? "pointer" : "default",
-                                        transition: "background-color 0.2s",
-                                        "&:hover": { bgcolor: "var(--brand-soft) !important" },
-                                    }}
-                                >
-                                    {columns.map((col, colIndex) => (
-                                        <TableCell
-                                            key={colIndex}
-                                            align={col.align || "left"}
-                                            sx={{
-                                                py: 2,
-                                                borderBottom: "1px solid var(--border-default)",
-                                                width: col.width || "auto",
-                                            }}
-                                        >
-                                            <Box
-                                                sx={{
-                                                    fontSize: "var(--size-body)",
-                                                    color: "var(--text-primary)",
-                                                    fontFamily: "var(--font-manrope)",
-                                                    whiteSpace: "nowrap",
-                                                    overflow: "hidden",
-                                                    textOverflow: "ellipsis",
-                                                    maxWidth: col.width || "200px",
-                                                }}
-                                                title={typeof (col.render ? col.render(row, rowIndex) : row[col.accessor]) === 'string' ? (col.render ? col.render(row, rowIndex) : row[col.accessor]) : ""}
-                                            >
-                                                {col.render
-                                                    ? col.render(row, rowIndex)
-                                                    : row[col.accessor] || "-"}
-                                            </Box>
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            ))
-                        ) : (
-                            !loading && (
-                                <TableRow>
-                                    <TableCell colSpan={columns.length} align="center" sx={{ py: 4 }}>
-                                        <Typography sx={{ fontSize: "var(--size-body)", color: "var(--text-muted)", fontFamily: "var(--font-manrope)" }}>
-                                            No records found in this view.
-                                        </Typography>
+            {!onlyPagination && (
+                <TableContainer
+                    component={Paper}
+                    elevation={0}
+                    sx={{
+                        overflowX: "auto",
+                        width: "100%",
+                        maxWidth: "100%",
+                        display: "block",
+                        mb: 2,
+                        "&::-webkit-scrollbar": {
+                            height: "8px",
+                            width: "8px",
+                        },
+                        "&::-webkit-scrollbar-track": {
+                            background: "var(--bg-page)",
+                        },
+                        "&::-webkit-scrollbar-thumb": {
+                            backgroundColor: "var(--border-strong)",
+                            borderRadius: "10px",
+                            border: "2px solid var(--bg-page)",
+                        },
+                        "&::-webkit-scrollbar-thumb:hover": {
+                            backgroundColor: "var(--text-muted)",
+                        },
+                        opacity: loading ? 0.6 : 1,
+                        pointerEvents: loading ? "none" : "auto",
+                        transition: "opacity 0.2s"
+                    }}
+                >
+                    {loading && (
+                        <Box sx={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            zIndex: 2,
+                            bgcolor: "rgba(255, 255, 255, 0.4)",
+                            borderRadius: "var(--card-radius)"
+                        }}>
+                            <Box className="loader-inner" sx={{
+                                width: 40,
+                                height: 40,
+                                border: "3px solid var(--brand-soft)",
+                                borderTop: "3px solid var(--brand-primary)",
+                                borderRadius: "50%",
+                                animation: "spin 1s linear infinite",
+                            }} />
+                            <style>{`
+                                @keyframes spin {
+                                    0% { transform: rotate(0deg); }
+                                    100% { transform: rotate(360deg); }
+                                }
+                            `}</style>
+                        </Box>
+                    )}
+                    <Table size="small" sx={{ minWidth: 650 }}>
+                        <TableHead sx={{
+                            //  bgcolor: "var(--bg-page)"
+                        }}>
+                            <TableRow>
+                                {columns.map((col, index) => (
+                                    <TableCell
+                                        key={index}
+                                        align={col.align || "left"}
+                                        sx={{
+                                            fontWeight: 700,
+                                            color: "var(--text-primary)",
+                                            py: 0,
+                                            fontSize: "var(--size-caption)",
+                                            textTransform: "uppercase",
+                                            letterSpacing: "0.02em",
+                                            fontFamily: "var(--font-manrope)",
+                                            borderBottom: "1px solid var(--border-default)",
+                                            width: col.width || "auto",
+                                            ...col.sx,
+                                        }}
+                                    >
+                                        {col.label}
                                     </TableCell>
-                                </TableRow>
-                            )
-                        )}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                                ))}
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {data && data.length > 0 ? (
+                                data.map((row, rowIndex) => (
+                                    <TableRow
+                                        key={row.id || rowIndex}
+                                        hover
+                                        onClick={() => onRowClick && onRowClick(row)}
+                                        sx={{
+                                            cursor: onRowClick ? "pointer" : "default",
+                                            transition: "background-color 0.2s",
+                                            "&:hover": { bgcolor: "var(--brand-soft) !important" },
+                                        }}
+                                    >
+                                        {columns.map((col, colIndex) => (
+                                            <TableCell
+                                                key={colIndex}
+                                                align={col.align || "left"}
+                                                sx={{
+                                                    py: 2,
+                                                    borderBottom: "1px solid var(--border-default)",
+                                                    width: col.width || "auto",
+                                                }}
+                                            >
+                                                <Box
+                                                    sx={{
+                                                        fontSize: "var(--size-body)",
+                                                        color: "var(--text-primary)",
+                                                        fontFamily: "var(--font-manrope)",
+                                                        whiteSpace: "nowrap",
+                                                        overflow: "hidden",
+                                                        textOverflow: "ellipsis",
+                                                        maxWidth: col.width || "200px",
+                                                    }}
+                                                    title={typeof (col.render ? col.render(row, rowIndex) : row[col.accessor]) === 'string' ? (col.render ? col.render(row, rowIndex) : row[col.accessor]) : ""}
+                                                >
+                                                    {col.render
+                                                        ? col.render(row, rowIndex)
+                                                        : row[col.accessor] || "-"}
+                                                </Box>
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))
+                            ) : (
+                                !loading && (
+                                    <TableRow>
+                                        <TableCell colSpan={columns.length} align="center" sx={{ py: 4 }}>
+                                            <Typography sx={{ fontSize: "var(--size-body)", color: "var(--text-muted)", fontFamily: "var(--font-manrope)" }}>
+                                                No records found in this view.
+                                            </Typography>
+                                        </TableCell>
+                                    </TableRow>
+                                )
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            )}
 
             {/* Pagination Implementation */}
             {totalCount > 0 && (

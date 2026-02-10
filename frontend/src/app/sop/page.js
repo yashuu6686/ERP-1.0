@@ -63,7 +63,7 @@ export default function SOPTrackingTable() {
             align: "center",
             render: (row, index) => (
                 <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 500 }}>
-                    {index + 1}
+                    {page * rowsPerPage + index + 1}
                 </Typography>
             ),
         },
@@ -178,12 +178,18 @@ export default function SOPTrackingTable() {
                 onAdd={() => router.push("/sop/create-sop")}
                 searchPlaceholder="Search SOP, Device, Company..."
                 searchValue={searchTerm}
-                onSearchChange={(e) => setSearchTerm(e.target.value)}
+                onSearchChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setPage(0);
+                }}
                 searchExtra={
                     <Select
                         size="small"
                         value={filterStatus}
-                        onChange={(e) => setFilterStatus(e.target.value)}
+                        onChange={(e) => {
+                            setFilterStatus(e.target.value);
+                            setPage(0);
+                        }}
                         startAdornment={<FilterList sx={{ mr: 1, color: "#6b7280" }} />}
                         sx={{ borderRadius: "8px", minWidth: "150px" }}
                     >

@@ -43,6 +43,10 @@ export default function IncomingInspection() {
     }
   };
 
+  // Pagination State
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
   const filtered = (inspections || []).filter(
     (i) =>
       i.materialData?.grnNumber?.toLowerCase().includes(search.toLowerCase()) ||
@@ -50,11 +54,17 @@ export default function IncomingInspection() {
       i.materialData?.supplierName?.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Calculate paginated data
+  const paginatedInspections = filtered.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
   const columns = [
     {
       label: "Sr.No.",
       align: "center",
-      render: (row, index) => index + 1,
+      render: (row, index) => page * rowsPerPage + index + 1,
     },
     {
       label: "GRN Number",
@@ -205,9 +215,23 @@ export default function IncomingInspection() {
         onAdd={canCreate ? () => router.push("/incoming-inspection/add-material-inspection") : null}
         searchPlaceholder="Search GRN, Material, Supplier..."
         searchValue={search}
-        onSearchChange={(e) => setSearch(e.target.value)}
+        onSearchChange={(e) => {
+          setSearch(e.target.value);
+          setPage(0);
+        }}
       >
-        <GlobalTable columns={columns} data={filtered} />
+        <GlobalTable
+          columns={columns}
+          data={paginatedInspections}
+          totalCount={filtered.length}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onPageChange={setPage}
+          onRowsPerPageChange={(val) => {
+            setRowsPerPage(val);
+            setPage(0);
+          }}
+        />
       </CommonCard>
     </Box>
   );

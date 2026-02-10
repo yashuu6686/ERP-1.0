@@ -15,6 +15,8 @@ export default function CustomerOrders() {
   const [search, setSearch] = useState("");
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -37,11 +39,16 @@ export default function CustomerOrders() {
       o.customerName?.toLowerCase().includes(search.toLowerCase())
   );
 
+  const paginatedOrders = filtered.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
   const columns = [
     {
       label: "Sr.No.",
       align: "center",
-      render: (row, index) => index + 1,
+      render: (row, index) => page * rowsPerPage + index + 1,
     },
     {
       label: "Order No.",
@@ -154,12 +161,26 @@ export default function CustomerOrders() {
         onAdd={() => router.push("/orders/create-new-order")}
         searchPlaceholder="Search Order No, Customer..."
         searchValue={search}
-        onSearchChange={(e) => setSearch(e.target.value)}
+        onSearchChange={(e) => {
+          setSearch(e.target.value);
+          setPage(0);
+        }}
       >
         {loading ? (
           <Loader message="Loading orders from server..." />
         ) : (
-          <GlobalTable columns={columns} data={filtered} />
+          <GlobalTable
+            columns={columns}
+            data={paginatedOrders}
+            totalCount={filtered.length}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={setPage}
+            onRowsPerPageChange={(val) => {
+              setRowsPerPage(val);
+              setPage(0);
+            }}
+          />
         )}
       </CommonCard>
     </Box>

@@ -44,6 +44,10 @@ export default function GRNTable() {
     }
   };
 
+  // Pagination State
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
   const filtered = grns.filter(
     (g) =>
       g.grnNumber?.toLowerCase().includes(search.toLowerCase()) ||
@@ -51,11 +55,17 @@ export default function GRNTable() {
       g.supplierName?.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Calculate paginated data
+  const paginatedGrns = filtered.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
   const columns = [
     {
       label: "Sr.No.",
       align: "center",
-      render: (row, index) => index + 1,
+      render: (row, index) => page * rowsPerPage + index + 1,
     },
     {
       label: "GRN Number",
@@ -194,7 +204,18 @@ export default function GRNTable() {
         searchValue={search}
         onSearchChange={(e) => setSearch(e.target.value)}
       >
-        <GlobalTable columns={columns} data={filtered} />
+        <GlobalTable
+          columns={columns}
+          data={paginatedGrns}
+          totalCount={filtered.length}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onPageChange={setPage}
+          onRowsPerPageChange={(val) => {
+            setRowsPerPage(val);
+            setPage(0);
+          }}
+        />
       </CommonCard>
     </Box>
   );

@@ -96,7 +96,14 @@ export default function Store() {
     fetchData();
   }, [fetchData]);
 
-  const handleTabChange = (e, newValue) => setTab(newValue);
+  const handleTabChange = (e, newValue) => {
+    setTab(newValue);
+    setPage(0);
+  };
+
+  // Pagination State
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const filtered = data.filter(
     (m) =>
@@ -104,12 +111,18 @@ export default function Store() {
       (m.code || m.id || "").toLowerCase().includes(search.toLowerCase())
   );
 
+  // Calculate paginated data
+  const paginatedData = filtered.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
   const columns = [
     {
       label: "Sr.No.",
       align: "center",
       render: (row, index) => (
-        <span style={{ fontWeight: 600 }}>{index + 1}</span>
+        <span style={{ fontWeight: 600 }}>{page * rowsPerPage + index + 1}</span>
       ),
     },
     {
@@ -201,14 +214,28 @@ export default function Store() {
         } : null}
         searchPlaceholder={`Search ${tabLabels[tab]}`}
         searchValue={search}
-        onSearchChange={(e) => setSearch(e.target.value)}
+        onSearchChange={(e) => {
+          setSearch(e.target.value);
+          setPage(0);
+        }}
       >
         <StoreTabs value={tab} handleChange={handleTabChange} />
 
         {loading ? (
           <Loader message="Loading store data..." />
         ) : (
-          <GlobalTable columns={columns} data={filtered} />
+          <GlobalTable
+            columns={columns}
+            data={paginatedData}
+            totalCount={filtered.length}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={setPage}
+            onRowsPerPageChange={(val) => {
+              setRowsPerPage(val);
+              setPage(0);
+            }}
+          />
         )}
 
         <AddMaterialDialog

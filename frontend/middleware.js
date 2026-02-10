@@ -19,6 +19,8 @@ const MENU_ITEMS = [
     { path: "/rejected-goods", key: "rejected_goods" },
     { path: "/settings/roles", key: "role_management" },
     { path: "/settings/users", key: "user_management" },
+    { path: "/suppliers", key: "suppliers" },
+    { path: "/supplier-survey", key: "supplier_survey" },
 ];
 
 export async function middleware(request) {

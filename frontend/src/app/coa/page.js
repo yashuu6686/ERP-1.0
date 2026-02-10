@@ -11,6 +11,9 @@ import Loader from "@/components/ui/Loader";
 export default function COAListPage() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const router = useRouter();
 
   useEffect(() => {
@@ -29,13 +32,23 @@ export default function COAListPage() {
     }
   };
 
+  const filtered = data.filter((item) =>
+    (item.coaNumber || "").toLowerCase().includes(search.toLowerCase()) ||
+    (item.productName || "").toLowerCase().includes(search.toLowerCase())
+  );
+
+  const paginatedData = filtered.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
   const columns = [
     {
       label: "Sr. No.",
       align: "center",
       render: (row, index) => (
         <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 500 }}>
-          {index + 1}
+          {page * rowsPerPage + index + 1}
         </Typography>
       ),
     },
@@ -143,16 +156,27 @@ export default function COAListPage() {
   return (
     <CommonCard
       title="Certificate of Analysis - Tracking"
-      actions={[
-        {
-          label: "Create COA",
-          icon: Add,
-          onClick: () => router.push("/coa/create-coa"),
-          variant: "contained",
-        },
-      ]}
+      addText="Create COA"
+      onAdd={() => router.push("/coa/create-coa")}
+      searchPlaceholder="Search COA No, Product..."
+      searchValue={search}
+      onSearchChange={(e) => {
+        setSearch(e.target.value);
+        setPage(0);
+      }}
     >
-      <GlobalTable data={data} columns={columns} />
+      <GlobalTable
+        data={paginatedData}
+        columns={columns}
+        totalCount={filtered.length}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        onPageChange={setPage}
+        onRowsPerPageChange={(val) => {
+          setRowsPerPage(val);
+          setPage(0);
+        }}
+      />
     </CommonCard>
   );
 }

@@ -33,6 +33,8 @@ export default function BOMList() {
   const [search, setSearch] = useState("");
   const [bomData, setBomData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
     const fetchBOMs = async () => {
@@ -53,11 +55,16 @@ export default function BOMList() {
     b.number?.toLowerCase().includes(search.toLowerCase())
   );
 
+  const paginatedBOM = filtered.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
   const columns = [
     {
       label: "Sr. No.",
       align: "center",
-      render: (row, index) => index + 1,
+      render: (row, index) => page * rowsPerPage + index + 1,
     },
     {
       label: "BOM Number",
@@ -135,9 +142,24 @@ export default function BOMList() {
         onAdd={() => router.push("/bom/create-bom")}
         searchPlaceholder="Search BOM Number"
         searchValue={search}
-        onSearchChange={(e) => setSearch(e.target.value)}
+        onSearchChange={(e) => {
+          setSearch(e.target.value);
+          setPage(0);
+        }}
       >
-        <GlobalTable columns={columns} data={filtered} loading={loading} />
+        <GlobalTable
+          columns={columns}
+          data={paginatedBOM}
+          loading={loading}
+          totalCount={filtered.length}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onPageChange={setPage}
+          onRowsPerPageChange={(val) => {
+            setRowsPerPage(val);
+            setPage(0);
+          }}
+        />
       </CommonCard>
     </Box>
   );
