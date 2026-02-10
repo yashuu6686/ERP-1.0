@@ -6,15 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
-import CircularProgress from "@mui/material/CircularProgress";
-import InputAdornment from "@mui/material/InputAdornment";
-import Divider from "@mui/material/Divider";
 import Save from "@mui/icons-material/Save";
-import { Search, Business as SupplierIcon } from "@mui/icons-material";
 import { useFormik, FormikProvider } from "formik";
 import * as Yup from "yup";
 import CommonCard from "../../../components/ui/CommonCard";
@@ -27,9 +19,7 @@ import Loader from "../../../components/ui/Loader";
 import axiosInstance from "@/axios/axiosInstance";
 import NotificationService from "@/services/NotificationService";
 import { useAuth } from "@/context/AuthContext";
-import { useNotification } from "@/context/NotificationContext";
 import { useRef } from "react";
-import PurchasePreviewDialog from "./components/PurchasePreviewDialog";
 
 const validationSchema = Yup.object().shape({
   orderInfo: Yup.object().shape({
@@ -81,12 +71,7 @@ function CreatePurchaseOrderContent() {
   const id = searchParams.get("id");
   const isEditMode = !!id;
   const { user } = useAuth();
-  const { showNotification } = useNotification();
   const [loading, setLoading] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
-  const [approvedSuppliers, setApprovedSuppliers] = useState([]);
-  const [loadingSuppliers, setLoadingSuppliers] = useState(false);
-  const [selectedSupplier, setSelectedSupplier] = useState(null);
   const formContainerRef = useRef(null);
 
   const handleKeyDown = (e) => {
@@ -103,7 +88,7 @@ function CreatePurchaseOrderContent() {
         e.target.type !== "button"
       ) {
         e.preventDefault();
-        const allFocusable = Array.from(
+        const allFocusable = Array.from( 
           formContainerRef.current.querySelectorAll("input, select, textarea")
         ).filter((el) => !el.disabled && el.tabIndex !== -1 && el.type !== "hidden" && !el.readOnly);
 
@@ -147,53 +132,43 @@ function CreatePurchaseOrderContent() {
       status: "Pending",
     },
     validationSchema,
-    onSubmit: async () => {
-      // Instead of immediate submit, show the preview
-      setShowPreview(true);
+    onSubmit: async (values) => {
+      const calculation = calculateTotals(values);
+      const finalData = {
+        ...values,
+        totals: calculation.totals,
+        isEdited: isEditMode,
+        creatorId: user?.id,
+        creatorName: user?.name,
+        status: isEditMode ? values.status : "Pending",
+      };
+
+      try {
+        const response = isEditMode
+          ? await axiosInstance.put(`/purachase/${id}`, finalData)
+          : await axiosInstance.post(`/purachase`, finalData);
+
+        if (response.status === 200 || response.status === 201) {
+          if (!isEditMode) {
+            await NotificationService.createNotification({
+              title: "New PO for Approval",
+              message: `${user?.name} has created PO #${values.orderInfo.orderNumber}. Needs approval.`,
+              targetRole: "admin",
+              poId: response.data.id,
+              link: `/purchase/view-purchase?id=${response.data.id}`
+            });
+          }
+          alert(`Purchase Order ${isEditMode ? "Updated" : "Created"} Successfully!`);
+          router.push("/purchase");
+        } else {
+          alert("Failed to save data. Please try again.");
+        }
+      } catch (error) {
+        console.error("Save Error:", error);
+        alert("Error connecting to the server.");
+      }
     },
   });
-
-  const handleFinalSubmit = async () => {
-    const values = formik.values;
-    const calculation = calculateTotals(values);
-    const finalData = {
-      ...values,
-      totals: calculation.totals,
-      isEdited: isEditMode,
-      creatorId: user?.id,
-      creatorName: user?.name,
-      status: isEditMode ? values.status : "Pending",
-    };
-
-    try {
-      setLoading(true);
-      setShowPreview(false);
-      const response = isEditMode
-        ? await axiosInstance.put(`/purachase/${id}`, finalData)
-        : await axiosInstance.post(`/purachase`, finalData);
-
-      if (response.status === 200 || response.status === 201) {
-        if (!isEditMode) {
-          await NotificationService.createNotification({
-            title: "New PO for Approval",
-            message: `${user?.name} has created PO #${values.orderInfo.orderNumber}. Needs approval.`,
-            targetRole: "admin",
-            poId: response.data.id,
-            link: `/purchase/view-purchase?id=${response.data.id}`,
-          });
-        }
-        showNotification(`Purchase Order ${isEditMode ? "Updated" : "Created"} Successfully!`, "success");
-        router.push("/purchase");
-      } else {
-        showNotification("Failed to save data. Please try again.", "error");
-      }
-    } catch (error) {
-      console.error("Save Error:", error);
-      showNotification("Error connecting to the server.", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const calculateTotals = (values) => {
     const subtotal = values.items.reduce((sum, i) => sum + (parseFloat(i.qty) || 0) * (parseFloat(i.price) || 0), 0);
@@ -215,32 +190,6 @@ function CreatePurchaseOrderContent() {
   const totals = useMemo(() => calculateTotals(formik.values), [formik.values]);
 
   useEffect(() => {
-    // Fetch approved suppliers for import
-    const fetchApprovedSuppliers = async () => {
-      try {
-        setLoadingSuppliers(true);
-        const response = await axiosInstance.get("/suppliers");
-        console.log("All suppliers fetched:", response.data);
-        // Only get approved suppliers
-        const approved = (response.data || []).filter(s => s.status === "Approved");
-        console.log("Approved suppliers:", approved);
-
-        // If no approved suppliers, show all for now
-        if (approved.length === 0) {
-          console.warn("No approved suppliers found, showing all suppliers");
-          setApprovedSuppliers(response.data || []);
-        } else {
-          setApprovedSuppliers(approved);
-        }
-      } catch (error) {
-        console.error("Error fetching suppliers:", error);
-      } finally {
-        setLoadingSuppliers(false);
-      }
-    };
-
-    fetchApprovedSuppliers();
-
     if (isEditMode && id) {
       const fetchData = async () => {
         try {
@@ -249,7 +198,7 @@ function CreatePurchaseOrderContent() {
           const data = response.data;
           if (data) {
             if (data.status === "Completed") {
-              showNotification("This purchase order is completed and cannot be edited.", "warning");
+              alert("This purchase order is completed and cannot be edited.");
               router.push("/purchase");
               return;
             }
@@ -272,7 +221,7 @@ function CreatePurchaseOrderContent() {
           }
         } catch (error) {
           console.error("Fetch Error:", error);
-          showNotification("Failed to fetch purchase order data.", "error");
+          alert("Failed to fetch purchase order data.");
         } finally {
           setLoading(false);
         }
@@ -290,50 +239,6 @@ function CreatePurchaseOrderContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, isEditMode]);
 
-  const handleSupplierSelect = async (event, supplier) => {
-    setSelectedSupplier(supplier);
-    if (supplier) {
-      console.log("Selected supplier data:", supplier);
-
-      // Try to fetch the related survey data
-      let surveyData = null;
-      try {
-        const surveysResponse = await axiosInstance.get("/supplier-surveys");
-        // Find survey that matches this supplier's company name
-        surveyData = (surveysResponse.data || []).find(
-          s => s.companyName?.toLowerCase() === supplier.supplierName?.toLowerCase()
-        );
-        console.log("Related survey data:", surveyData);
-      } catch (error) {
-        console.error("Error fetching survey data:", error);
-      }
-
-      // Build full address from available fields
-      const fullAddress = [
-        supplier.address,
-        supplier.city,
-        supplier.state,
-        supplier.zipCode
-      ].filter(Boolean).join(", ");
-
-      formik.setValues({
-        ...formik.values,
-        supplier: {
-          companyName: supplier.supplierName || "",
-          contactPerson: supplier.contactPerson || surveyData?.signOff?.name || "",
-          address: fullAddress || supplier.address || surveyData?.address || "",
-          email: surveyData?.customerServiceContact?.email || surveyData?.qualityContact?.email || "",
-          phone: supplier.phone || surveyData?.phone || "",
-          pan: surveyData?.pan || "",
-          gstin: surveyData?.vatTin || "",
-        },
-      });
-
-      const dataSource = surveyData ? "Evaluation and Survey" : "Evaluation only";
-      showNotification(`Data imported from ${dataSource}: ${supplier.supplierName}`, "success");
-    }
-  };
-
   if (loading) {
     return <Loader fullPage message="Loading Purchase Order Details..." />;
   }
@@ -343,109 +248,6 @@ function CreatePurchaseOrderContent() {
       <Box onKeyDown={handleKeyDown} ref={formContainerRef}>
         <CommonCard title={isEditMode ? "Edit Purchase Order" : "Create Purchase Order"}>
           <Box sx={{ p: 1 }}>
-            {/* Supplier Import Section - Only for new POs */}
-            {!isEditMode && (
-              <Box
-                sx={{
-                  mb: 5,
-                  p: 4,
-                  borderRadius: 4,
-                  bgcolor: "rgba(17, 114, 186, 0.02)",
-                  border: "1px solid rgba(17, 114, 186, 0.15)",
-                  position: 'relative',
-                  overflow: 'hidden',
-                  "&::before": {
-                    content: '""',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '4px',
-                    height: '100%',
-                    bgcolor: '#1172ba'
-                  }
-                }}
-              >
-                <Stack direction={{ xs: 'column', md: 'row' }} spacing={3} alignItems="center" justifyContent="space-between">
-                  <Box sx={{ flex: 1 }}>
-                    <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 1 }}>
-                      <Box sx={{
-                        p: 1,
-                        borderRadius: 1.5,
-                        bgcolor: 'rgba(17, 114, 186, 0.1)',
-                        color: '#1172ba',
-                        display: 'flex'
-                      }}>
-                        <SupplierIcon sx={{ fontSize: 20 }} />
-                      </Box>
-                      <Typography variant="h6" sx={{ color: "#0f172a", fontWeight: 800, letterSpacing: '-0.01em' }}>
-                        Quick Start from Approved Supplier
-                      </Typography>
-                    </Stack>
-                    <Typography variant="body2" sx={{ color: '#64748b', mb: { xs: 2, md: 0 }, maxWidth: '500px' }}>
-                      Search for an approved supplier to instantly pre-fill company details, contact information, and tax identifiers.
-                    </Typography>
-                  </Box>
-
-                  <Box sx={{ width: { xs: '100%', md: '450px' } }}>
-                    <Autocomplete
-                      options={approvedSuppliers}
-                      getOptionLabel={(option) => option.supplierName || ""}
-                      loading={loadingSuppliers}
-                      value={selectedSupplier}
-                      onChange={handleSupplierSelect}
-                      renderOption={(props, option) => (
-                        <Box component="li" {...props} sx={{ borderBottom: '1px solid #f1f5f9', p: 1.5 }}>
-                          <Stack spacing={0.5}>
-                            <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#1172ba' }}>
-                              {option.supplierName}
-                            </Typography>
-                            <Stack direction="row" spacing={2} divider={<Divider orientation="vertical" flexItem sx={{ height: 12, my: 'auto' }} />}>
-                              <Typography variant="caption" sx={{ color: '#64748b' }}>
-                                Eval: <b>{option.evaluationNo}</b>
-                              </Typography>
-                              <Typography variant="caption" sx={{ color: '#64748b' }}>
-                                Contact: <b>{option.contactPerson}</b>
-                              </Typography>
-                            </Stack>
-                          </Stack>
-                        </Box>
-                      )}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Import Data from Approved Supplier"
-                          variant="outlined"
-                          placeholder="Type supplier name to search..."
-                          InputProps={{
-                            ...params.InputProps,
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                <Search sx={{ color: '#1172ba', ml: 1 }} />
-                              </InputAdornment>
-                            ),
-                            endAdornment: (
-                              <React.Fragment>
-                                {loadingSuppliers ? <CircularProgress color="inherit" size={20} /> : null}
-                                {params.InputProps.endAdornment}
-                              </React.Fragment>
-                            ),
-                          }}
-                          sx={{
-                            "& .MuiOutlinedInput-root": {
-                              bgcolor: 'white',
-                              borderRadius: 3,
-                              boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
-                              "&:hover": { boxShadow: '0 6px 16px rgba(17, 114, 186, 0.08)' }
-                            }
-                          }}
-                        />
-                      )}
-                    />
-                  </Box>
-                </Stack>
-              </Box>
-            )}
-
             <OrderInformation />
 
             <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -480,15 +282,6 @@ function CreatePurchaseOrderContent() {
             </Box>
           </Box>
         </CommonCard >
-
-        <PurchasePreviewDialog
-          open={showPreview}
-          onClose={() => setShowPreview(false)}
-          onConfirm={handleFinalSubmit}
-          data={formik.values}
-          totals={totals}
-          isEditMode={isEditMode}
-        />
       </Box >
     </FormikProvider>
   );
