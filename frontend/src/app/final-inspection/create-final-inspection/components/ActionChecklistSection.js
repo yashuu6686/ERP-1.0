@@ -177,52 +177,6 @@ const ActionChecklistSection = ({ formik }) => {
                                 </Paper>
                             ))}
                         </Box>
-
-                        <Box sx={{ mt: 2 }}>
-                            <Divider sx={{ my: 2 }} />
-                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
-                                Quality Proof / File Upload <span style={{ color: 'red' }}>*</span>
-                            </Typography>
-                            <Box
-                                sx={{
-                                    p: 2,
-                                    border: "2px dashed #e2e8f0",
-                                    borderRadius: 2,
-                                    textAlign: "center",
-                                    bgcolor: touched.qualityFile && errors.qualityFile ? "#fff5f5" : "white",
-                                    borderColor: touched.qualityFile && errors.qualityFile ? "error.main" : "#e2e8f0",
-                                    transition: "all 0.2s",
-                                }}
-                            >
-                                {values.qualityFile ? (
-                                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                                                {typeof values.qualityFile === "string" ? "Current File" : values.qualityFile.name}
-                                            </Typography>
-                                        </Box>
-                                        <IconButton size="small" color="error" onClick={removeFile}>
-                                            <Close fontSize="small" />
-                                        </IconButton>
-                                    </Box>
-                                ) : (
-                                    <Button
-                                        component="label"
-                                        variant="text"
-                                        startIcon={<CloudUpload />}
-                                        sx={{ textTransform: "none" }}
-                                    >
-                                        Upload Proof
-                                        <input type="file" hidden onChange={handleFileChange} />
-                                    </Button>
-                                )}
-                            </Box>
-                            {touched.qualityFile && errors.qualityFile && (
-                                <Typography variant="caption" color="error" sx={{ mt: 0.5, display: "block" }}>
-                                    {errors.qualityFile}
-                                </Typography>
-                            )}
-                        </Box>
                     </CardContent>
                 </Card>
             </Grid>

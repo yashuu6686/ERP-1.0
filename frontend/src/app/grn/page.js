@@ -192,7 +192,7 @@ export default function GRNTable() {
     },
   ];
 
-  if (loading) return <Loader fullPage message="Loading GRN list..." />;
+
 
   return (
     <Box>
@@ -204,18 +204,22 @@ export default function GRNTable() {
         searchValue={search}
         onSearchChange={(e) => setSearch(e.target.value)}
       >
-        <GlobalTable
-          columns={columns}
-          data={paginatedGrns}
-          totalCount={filtered.length}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          onPageChange={setPage}
-          onRowsPerPageChange={(val) => {
-            setRowsPerPage(val);
-            setPage(0);
-          }}
-        />
+        {loading ? (
+          <Loader message="Loading Purchase Orders..." />
+        ) : (
+          <GlobalTable
+            columns={columns}
+            data={paginatedGrns}
+            totalCount={filtered.length}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={setPage}
+            onRowsPerPageChange={(val) => {
+              setRowsPerPage(val);
+              setPage(0);
+            }}
+          />
+        )}
       </CommonCard>
     </Box>
   );

@@ -205,7 +205,7 @@ export default function IncomingInspection() {
     },
   ];
 
-  if (loading) return <Loader fullPage message="Loading Inspections..." />;
+  // if (loading) return <Loader fullPage message="Loading Inspections..." />;
 
   return (
     <Box>
@@ -220,6 +220,9 @@ export default function IncomingInspection() {
           setPage(0);
         }}
       >
+         {loading ? (
+          <Loader message="Loading Purchase Orders..." />
+        ) : (
         <GlobalTable
           columns={columns}
           data={paginatedInspections}
@@ -232,6 +235,7 @@ export default function IncomingInspection() {
             setPage(0);
           }}
         />
+        )}
       </CommonCard>
     </Box>
   );
