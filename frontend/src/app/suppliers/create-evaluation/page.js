@@ -396,7 +396,7 @@ function SupplierEvaluationContent() {
                         ))}
                     </Stepper>
 
-                    <Box sx={{ minHeight: "400px" }}>{getStepContent(activeStep)}</Box>
+                    <Box>{getStepContent(activeStep)}</Box>
 
                     <Divider sx={{ my: 4 }} />
 
