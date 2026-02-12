@@ -76,7 +76,7 @@ export default function QuestionnaireSection({ formik }) {
 
                 <Grid container spacing={3}>
                     {questions.map((question, index) => (
-                        <Grid size={{ xs: 12 }} key={question.id}>
+                        <Grid size={{ xs: 6 }} key={question.id}>
                             <Box
                                 sx={{
                                     p: 2,
