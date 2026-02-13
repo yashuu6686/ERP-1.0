@@ -1,21 +1,68 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
+import CircularProgress from "@mui/material/CircularProgress";
 import Business from "@mui/icons-material/Business";
+import Search from "@mui/icons-material/Search";
+import InputAdornment from "@mui/material/InputAdornment";
 import { useFormikContext } from "formik";
+import axiosInstance from "@/axios/axiosInstance";
 
 const SupplierInformation = () => {
     const { values, errors, touched, setFieldValue, handleBlur } = useFormikContext();
+    const [suppliers, setSuppliers] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [selectedSupplier, setSelectedSupplier] = useState(null);
+
+    useEffect(() => {
+        const fetchSuppliers = async () => {
+            try {
+                setLoading(true);
+                const response = await axiosInstance.get("/suppliers");
+                setSuppliers(response.data || []);
+            } catch (error) {
+                console.error("Error fetching suppliers:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchSuppliers();
+    }, []);
+
+    const handleSupplierSelect = (event, supplier) => {
+        setSelectedSupplier(supplier);
+        if (supplier) {
+            setFieldValue("supplier.companyName", supplier.supplierName || "");
+            setFieldValue("supplier.contactPerson", supplier.contactPerson || "");
+            setFieldValue("supplier.phone", supplier.phone || "");
+
+            // Constructing address from components if available
+            const fullAddress = [
+                supplier.address,
+                supplier.city,
+                supplier.state,
+                supplier.zipCode
+            ].filter(Boolean).join(", ");
+
+            setFieldValue("supplier.address", fullAddress || supplier.address || "");
+
+            // If the supplier has more fields like pan/gstin in their record, they could be mapped here too
+            if (supplier.pan) setFieldValue("supplier.pan", supplier.pan);
+            if (supplier.gstin) setFieldValue("supplier.gstin", supplier.gstin);
+        }
+    };
 
     return (
         <Card
             sx={{
                 height: "100%",
                 borderRadius: 2,
+                boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)"
             }}
         >
             <Box
@@ -25,14 +72,60 @@ const SupplierInformation = () => {
                     color: "white",
                     display: "flex",
                     alignItems: "center",
+                    justifyContent: "space-between",
                     gap: 1.5,
                 }}
             >
-                <Business />
-                <Typography variant="h6" fontWeight={600} color={"white"}>
-                    Supplier Information
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                    <Business />
+                    <Typography variant="h6" fontWeight={600} color={"white"}>
+                        Supplier Information
+                    </Typography>
+                </Box>
+            </Box>
+
+            <Box sx={{ px: 3, pt: 3 }}>
+                <Autocomplete
+                    options={suppliers}
+                    getOptionLabel={(option) => option.supplierName || ""}
+                    loading={loading}
+                    value={selectedSupplier}
+                    onChange={handleSupplierSelect}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            label="Search Existing Supplier"
+                            placeholder="Type to search..."
+                            variant="outlined"
+                            InputProps={{
+                                ...params.InputProps,
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <Search sx={{ color: "#1172ba", ml: 1 }} />
+                                    </InputAdornment>
+                                ),
+                                endAdornment: (
+                                    <React.Fragment>
+                                        {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                        {params.InputProps.endAdornment}
+                                    </React.Fragment>
+                                ),
+                            }}
+                            sx={{
+                                "& .MuiOutlinedInput-root": {
+                                    borderRadius: 2,
+                                    bgcolor: "#f8fafc",
+                                    "&:hover": { bgcolor: "#f1f5f9" }
+                                }
+                            }}
+                        />
+                    )}
+                />
+                <Typography variant="caption" sx={{ color: "#64748b", mt: 1, display: "block", fontStyle: "italic" }}>
+                    Select a supplier from our list to automatically fill the details below.
                 </Typography>
             </Box>
+
             <CardContent sx={{ p: 3 }}>
                 <Grid container spacing={2}>
                     <Grid size={{ xs: 12, md: 6 }}>
@@ -179,3 +272,4 @@ const SupplierInformation = () => {
 };
 
 export default SupplierInformation;
+

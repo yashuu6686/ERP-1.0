@@ -37,6 +37,7 @@ const SupplierSurveyPreviewDialog = ({ open, onClose, onConfirm, data, isEdit })
                         <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>{data.companyName}</Typography>
                         <InfoRow label="Phone" value={data.phone} />
                         <InfoRow label="Address" value={data.address} />
+                        <InfoRow label="State" value={data.state} />
                         <InfoRow label="Website" value={data.website} />
                     </Section>
                 </Grid>

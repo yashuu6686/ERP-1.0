@@ -48,6 +48,7 @@ const validationSchema = Yup.object().shape({
         .matches(/^[0-9]{10}$/, "Phone number must be exactly 10 digits")
         .required("Phone is required"),
     address: Yup.string().required("Address is required"),
+    state: Yup.string().required("State is required"),
     management: Yup.array().of(
         Yup.object().shape({
             name: Yup.string(),
@@ -86,6 +87,7 @@ const defaultValues = {
     companyName: "",
     phone: "",
     address: "",
+    state: "",
     management: [
         { name: "", title: "", email: "" },
         { name: "", title: "", email: "" },
@@ -267,7 +269,7 @@ const SupplierSurveyForm = ({ initialData, isEdit }) => {
     const handleNext = async () => {
         const stepFields = {
             0: [
-                "companyName", "phone", "address",
+                "companyName", "phone", "address", "state",
                 ...(formik.values.management || []).flatMap((_, i) => [
                     `management[${i}].name`,
                     `management[${i}].title`,
@@ -381,7 +383,7 @@ const SupplierSurveyForm = ({ initialData, isEdit }) => {
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
                         />
                     </Grid>
-                    <Grid size={{ xs: 12 }}>
+                    <Grid size={{ xs: 12, md: 8 }}>
                         <TextField
                             fullWidth label="Address" size="small" multiline rows={2}
                             name="address"
@@ -390,6 +392,18 @@ const SupplierSurveyForm = ({ initialData, isEdit }) => {
                             onBlur={formik.handleBlur}
                             error={formik.touched.address && Boolean(formik.errors.address)}
                             helperText={formik.touched.address && formik.errors.address}
+                            sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                        />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                        <TextField
+                            fullWidth label="State" size="small"
+                            name="state"
+                            value={formik.values.state}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.state && Boolean(formik.errors.state)}
+                            helperText={formik.touched.state && formik.errors.state}
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
                         />
                     </Grid>

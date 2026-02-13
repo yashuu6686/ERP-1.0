@@ -65,7 +65,7 @@ export default function DispatchPreviewDialog({ open, onClose, onConfirm, values
                                 <Typography variant="body2" sx={{ fontWeight: 600 }}>{values.salesPlatform || "N/A"}</Typography>
                             </Box>
                             <Box>
-                                <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>Shipment Type</Typography>
+                                <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>Shipping Type</Typography>
                                 <Typography variant="body2" sx={{ fontWeight: 600 }}>{values.shipmentType || "Commercial"}</Typography>
                             </Box>
                             {values.shipmentType === "Non-Commercial" && (
