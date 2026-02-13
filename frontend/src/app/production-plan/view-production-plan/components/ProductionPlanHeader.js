@@ -1,14 +1,12 @@
 import React from "react";
-import { Stack, Button, Tooltip, Box } from "@mui/material";
-import { ArrowBack, Print, Edit, CheckCircle, Schedule, Cancel, Download } from "@mui/icons-material";
+import { Stack, Button, Tooltip, IconButton, Box, Typography } from "@mui/material";
+import { ArrowBack, Print, Edit, Download } from "@mui/icons-material";
 
-const PurchaseViewHeader = ({
+const ProductionPlanHeader = ({
     router,
     id,
-    status,
-    user,
-    handleApprove,
-    handleReject
+    productName,
+    onPrint
 }) => {
     return (
         <Stack
@@ -19,30 +17,37 @@ const PurchaseViewHeader = ({
             sx={{ mb: 3 }}
             className="no-print"
         >
-            <Button
-                startIcon={<ArrowBack />}
-                onClick={() => router.push("/purchase")}
-                sx={{
-                    color: "#64748b",
-                    fontWeight: 600,
-                    textTransform: "none",
-                    bgcolor: "rgba(255,255,255,0.8)",
-                    px: 2,
-                    borderRadius: '12px',
-                    backdropFilter: "blur(4px)",
-                    border: '1px solid #e2e8f0',
-                    "&:hover": { bgcolor: "#f1f5f9", borderColor: "#cbd5e1" },
-                }}
-            >
-                Back to Orders
-            </Button>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Button
+                    startIcon={<ArrowBack />}
+                    onClick={() => router.push("/production-plan")}
+                    sx={{
+                        color: "#64748b",
+                        fontWeight: 600,
+                        textTransform: "none",
+                        bgcolor: "rgba(255,255,255,0.8)",
+                        px: 2,
+                        borderRadius: '12px',
+                        backdropFilter: "blur(4px)",
+                        border: '1px solid #e2e8f0',
+                        "&:hover": { bgcolor: "#f1f5f9", borderColor: "#cbd5e1" },
+                    }}
+                >
+                    Back to List
+                </Button>
+                <Box>
+                    <Typography variant="h6" sx={{ fontWeight: 700, color: "#1e293b", lineHeight: 1.2 }}>
+                        {productName || "Production Plan"}
+                    </Typography>
+                </Box>
+            </Box>
 
             <Stack direction="row" spacing={1.5}>
-                <Tooltip title="Print Order">
+                <Tooltip title="Print Plan">
                     <Button
                         variant="outlined"
                         startIcon={<Print />}
-                        onClick={() => window.print()}
+                        onClick={onPrint}
                         sx={{
                             borderRadius: "12px",
                             textTransform: "none",
@@ -75,34 +80,27 @@ const PurchaseViewHeader = ({
                     </Button>
                 </Tooltip>
 
-
-
                 <Button
                     variant="contained"
                     startIcon={<Edit />}
-                    onClick={() => router.push(`/purchase/create-purchase?id=${id}`)}
-                    disabled={status === "Completed"}
+                    onClick={() => router.push(`/production-plan/create-production-plan?id=${id}`)}
                     sx={{
                         borderRadius: "12px",
                         textTransform: "none",
                         fontWeight: 600,
-                        background: status === "Completed" ? "#f1f5f9" : "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
-                        boxShadow: status === "Completed" ? "none" : "0 4px 12px rgba(17, 114, 186, 0.25)",
-                        "&.Mui-disabled": {
-                            bgcolor: "#f1f5f9",
-                            color: "#94a3b8"
-                        },
+                        background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
+                        boxShadow: "0 4px 12px rgba(17, 114, 186, 0.25)",
                         "&:hover": {
                             background: "linear-gradient(135deg, #0d5a94 0%, #0a4571 100%)",
                             boxShadow: "0 6px 16px rgba(17, 114, 186, 0.35)",
                         },
                     }}
                 >
-                    Edit Order
+                    Edit Plan
                 </Button>
             </Stack>
         </Stack>
     );
 };
 
-export default PurchaseViewHeader;
+export default ProductionPlanHeader;
