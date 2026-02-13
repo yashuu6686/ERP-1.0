@@ -8,8 +8,9 @@ import {
     TextField,
     InputAdornment,
     Autocomplete,
+    MenuItem,
 } from "@mui/material";
-import { Description, CalendarToday, LocalShipping } from "@mui/icons-material";
+import { Description, CalendarToday, LocalShipping, Business, Person, CardGiftcard, Repeat } from "@mui/icons-material";
 
 export default function DispatchInfoCard({ formik, orders, onOrderSelect }) {
     return (
@@ -164,13 +165,12 @@ export default function DispatchInfoCard({ formik, orders, onOrderSelect }) {
                         <TextField
                             fullWidth
                             select
-                            label="Shipment Type"
+                            label="Shipping Type"
                             name="shipmentType"
                             value={formik.values.shipmentType}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             required
-                            SelectProps={{ native: true }}
                             error={formik.touched.shipmentType && Boolean(formik.errors.shipmentType)}
                             helperText={formik.touched.shipmentType && formik.errors.shipmentType}
                             InputProps={{
@@ -181,11 +181,31 @@ export default function DispatchInfoCard({ formik, orders, onOrderSelect }) {
                                 ),
                             }}
                             sx={{
-                                "& .MuiOutlinedInput-root": { bgcolor: "white" },
+                                "& .MuiOutlinedInput-root": {
+                                    bgcolor: "white",
+                                    transition: "all 0.2s",
+                                    "&:hover": {
+                                        "& > fieldset": { borderColor: "#1172ba" },
+                                        boxShadow: "0 4px 12px rgba(17, 114, 186, 0.08)",
+                                    },
+                                    "&.Mui-focused": {
+                                        "& > fieldset": { borderWidth: "2px" },
+                                    }
+                                },
                             }}
                         >
-                            <option value="Commercial">Commercial</option>
-                            <option value="Non-Commercial">Non-Commercial</option>
+                            <MenuItem value="Commercial">
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                    <Business sx={{ fontSize: 20, color: "#1172ba" }} />
+                                    <Typography variant="body2" fontWeight={500}>Commercial</Typography>
+                                </Box>
+                            </MenuItem>
+                            <MenuItem value="Non-Commercial">
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                    <Person sx={{ fontSize: 20, color: "#1172ba" }} />
+                                    <Typography variant="body2" fontWeight={500}>Non-Commercial</Typography>
+                                </Box>
+                            </MenuItem>
                         </TextField>
                     </Grid>
                     <Grid item xs={12} md={4} size={{ xs: 12, md: 4 }}>

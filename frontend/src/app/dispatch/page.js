@@ -157,7 +157,7 @@ export default function DispatchDetails() {
       render: (row) => formatDate(row.shipmentInfo?.shippingDate),
     },
     {
-      label: "Shipment Type",
+      label: "Shipping Type",
       align: "center",
       render: (row) => (
         <Chip

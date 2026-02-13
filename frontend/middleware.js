@@ -21,6 +21,7 @@ const MENU_ITEMS = [
     { path: "/settings/users", key: "user_management" },
     { path: "/suppliers", key: "suppliers" },
     { path: "/supplier-survey", key: "supplier_survey" },
+    { path: "/calibration", key: "calibration" },
 ];
 
 export async function middleware(request) {

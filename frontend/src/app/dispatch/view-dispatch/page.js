@@ -140,6 +140,9 @@ function ViewDispatchContent() {
                                 items={items}
                                 status={status}
                                 getStatusChip={getStatusChip}
+                                packedBy={dispatch.packedBy}
+                                approvedBy={dispatch.approvedBy}
+                                accountingBy={dispatch.accountingBy}
                             />
                         </Grid>
                         <Grid size={{ xs: 12, lg: 3 }}>
