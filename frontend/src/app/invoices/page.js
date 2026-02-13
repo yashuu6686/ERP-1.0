@@ -6,6 +6,7 @@ import CommonCard from "../../components/ui/CommonCard";
 import GlobalTable from "../../components/ui/GlobalTable";
 import { Download, Edit, Visibility } from "@mui/icons-material";
 import axiosInstance from "@/axios/axiosInstance";
+import Loader from "@/components/ui/Loader";
 
 export default function Invoices() {
   const router = useRouter();
@@ -155,6 +156,9 @@ export default function Invoices() {
           setPage(0);
         }}
       >
+         {loading ? (
+          <Loader message="Loading invoices..." />
+        ) : (
         <GlobalTable
           columns={columns}
           data={paginatedInvoices}
@@ -167,6 +171,7 @@ export default function Invoices() {
             setPage(0);
           }}
         />
+        )}
       </CommonCard>
     </Box>
   );

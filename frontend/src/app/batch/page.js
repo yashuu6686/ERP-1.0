@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import CommonCard from "../../components/ui/CommonCard";
 import GlobalTable from "../../components/ui/GlobalTable";
 import axiosInstance from "../../axios/axiosInstance";
+import Loader from "@/components/ui/Loader";
 
 export default function Batch() {
   const router = useRouter();
@@ -141,6 +142,9 @@ export default function Batch() {
           setPage(0);
         }}
       >
+          {loading ? (
+          <Loader message="Loading batches..." />
+        ) : (
         <GlobalTable
           columns={columns}
           data={paginatedData}
@@ -153,6 +157,7 @@ export default function Batch() {
             setPage(0);
           }}
         />
+        )}
       </CommonCard>
     </Box>
   );

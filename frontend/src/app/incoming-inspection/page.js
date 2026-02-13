@@ -205,7 +205,6 @@ export default function IncomingInspection() {
     },
   ];
 
-  // if (loading) return <Loader fullPage message="Loading Inspections..." />;
 
   return (
     <Box>

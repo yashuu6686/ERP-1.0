@@ -76,6 +76,14 @@ function CreateDispatchEntryContent() {
     courierCompany: "",
     referenceNo: "",
     salesPlatform: "",
+    shipmentType: "Commercial",
+    shipmentPurpose: "",
+    udi: "",
+    countryMarket: "",
+    suppliedViaDistributor: false,
+    distributorId: "",
+    shippedToCanadianSite: false,
+    dateOfShipmentToCanadianSite: "",
     packedBy: "",
     approvedBy: "",
     accountingBy: "",
@@ -89,6 +97,12 @@ function CreateDispatchEntryContent() {
       dispatchNo: Yup.string().required("Dispatch No is required"),
       dispatchDate: Yup.date().required("Dispatch Date is required"),
       trackingNumber: Yup.string().required("Tracking Number is required"),
+      shipmentType: Yup.string().required("Shipment Type is required"),
+      shipmentPurpose: Yup.string().when("shipmentType", {
+        is: "Non-Commercial",
+        then: () => Yup.string().required("Purpose is mandatory for non-commercial shipments"),
+        otherwise: () => Yup.string().notRequired(),
+      }),
     }),
     // Step 1: Customer Logistics
     Yup.object({
@@ -99,6 +113,12 @@ function CreateDispatchEntryContent() {
       deliveryDate: Yup.date().required("Delivery Date is required"),
       courierCompany: Yup.string().required("Courier Company is required"),
       salesPlatform: Yup.string().required("Sales Platform is required"),
+      countryMarket: Yup.string().required("Country/Market is required"),
+      distributorId: Yup.string().when("suppliedViaDistributor", {
+        is: true,
+        then: () => Yup.string().required("Distributor ID is required"),
+        otherwise: () => Yup.string().notRequired(),
+      }),
     }),
     // Step 2: Product Details
     Yup.object({
@@ -146,6 +166,14 @@ function CreateDispatchEntryContent() {
           carrier: values.courierCompany,
           platform: values.salesPlatform,
           orderNumber: values.referenceNo,
+          shipmentType: values.shipmentType,
+          shipmentPurpose: values.shipmentPurpose,
+          udi: values.udi,
+          countryMarket: values.countryMarket,
+          suppliedViaDistributor: values.suppliedViaDistributor,
+          distributorId: values.distributorId,
+          shippedToCanadianSite: values.shippedToCanadianSite,
+          dateOfShipmentToCanadianSite: values.dateOfShipmentToCanadianSite,
         },
         customer: {
           companyName: values.customerName,
@@ -157,8 +185,8 @@ function CreateDispatchEntryContent() {
         items: values.products.map(p => ({
           name: p.name,
           qty: parseInt(p.quantity),
-          serialNo: "-",
-          weight: "-"
+          serialNo: p.serialNo || "-",
+          weight: p.weight || "-"
         })),
         status: status,
         packedBy: values.packedBy,
@@ -233,6 +261,14 @@ function CreateDispatchEntryContent() {
             courierCompany: data.shipmentInfo?.carrier || "",
             referenceNo: data.shipmentInfo?.orderNumber || data.referenceNo || "",
             salesPlatform: data.shipmentInfo?.platform || "",
+            shipmentType: data.shipmentInfo?.shipmentType || "Commercial",
+            shipmentPurpose: data.shipmentInfo?.shipmentPurpose || "",
+            udi: data.shipmentInfo?.udi || "",
+            countryMarket: data.shipmentInfo?.countryMarket || "",
+            suppliedViaDistributor: data.shipmentInfo?.suppliedViaDistributor || false,
+            distributorId: data.shipmentInfo?.distributorId || "",
+            shippedToCanadianSite: data.shipmentInfo?.shippedToCanadianSite || false,
+            dateOfShipmentToCanadianSite: data.shipmentInfo?.dateOfShipmentToCanadianSite || "",
             packedBy: data.packedBy || "",
             approvedBy: data.approvedBy || "",
             accountingBy: data.accountingBy || "",

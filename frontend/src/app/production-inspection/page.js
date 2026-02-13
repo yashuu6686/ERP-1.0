@@ -12,31 +12,9 @@ import { useRouter } from "next/navigation";
 import CommonCard from "../../components/ui/CommonCard";
 import GlobalTable from "../../components/ui/GlobalTable";
 import axiosInstance from "../../axios/axiosInstance";
+import Loader from "@/components/ui/Loader";
 
-const inspectionData = [
-  {
-    id: 1,
-    checkNo: "FIN-INS-0001",
-    checkedQty: 20,
-    acceptedQty: 18,
-    rejectedQty: 2,
-    result: "Pass / Fail / Conditional",
-    date: "01 Jan 2026",
-    remarks: "description",
-    approvedBy: "QC Head",
-  },
-  {
-    id: 2,
-    checkNo: "FIN-INS-0002",
-    checkedQty: 20,
-    acceptedQty: 15,
-    rejectedQty: 5,
-    result: "Pass / Fail / Conditional",
-    date: "01 Jan 2026",
-    remarks: "description",
-    approvedBy: "QC Head",
-  },
-];
+
 
 export default function ProductionInspectionPage() {
   const router = useRouter();
@@ -200,6 +178,9 @@ export default function ProductionInspectionPage() {
           setPage(0);
         }}
       >
+          {loading ? (
+          <Loader message="Loading inspections..." />
+        ) : (
         <GlobalTable
           columns={columns}
           data={paginatedData}
@@ -212,6 +193,7 @@ export default function ProductionInspectionPage() {
             setPage(0);
           }}
         />
+          )}
       </CommonCard>
     </Box>
   );
