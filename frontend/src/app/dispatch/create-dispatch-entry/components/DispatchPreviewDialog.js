@@ -64,6 +64,20 @@ export default function DispatchPreviewDialog({ open, onClose, onConfirm, values
                                 <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>Sales Platform</Typography>
                                 <Typography variant="body2" sx={{ fontWeight: 600 }}>{values.salesPlatform || "N/A"}</Typography>
                             </Box>
+                            <Box>
+                                <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>Shipment Type</Typography>
+                                <Typography variant="body2" sx={{ fontWeight: 600 }}>{values.shipmentType || "Commercial"}</Typography>
+                            </Box>
+                            {values.shipmentType === "Non-Commercial" && (
+                                <Box>
+                                    <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>Shipment Purpose</Typography>
+                                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{values.shipmentPurpose || "N/A"}</Typography>
+                                </Box>
+                            )}
+                            <Box>
+                                <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>UDI</Typography>
+                                <Typography variant="body2" sx={{ fontWeight: 600 }}>{values.udi || "N/A"}</Typography>
+                            </Box>
                         </Box>
                     </Paper>
                 </Grid>
@@ -79,6 +93,22 @@ export default function DispatchPreviewDialog({ open, onClose, onConfirm, values
                             <Typography variant="body2" sx={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>Recipient: <b style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{values.contactPerson}</b></Typography>
                             <Typography variant="body2" sx={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>Phone: {values.contactNo}</Typography>
                             <Typography variant="body2" sx={{ color: 'var(--text-secondary)', mt: 0.5, lineHeight: 1.5, fontSize: '0.8125rem' }}>{values.deliveryAddress}</Typography>
+                            <Box sx={{ mt: 1 }}>
+                                <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>Country/Market</Typography>
+                                <Typography variant="body2" sx={{ fontWeight: 600 }}>{values.countryMarket || "N/A"}</Typography>
+                            </Box>
+                            {values.suppliedViaDistributor && (
+                                <Box sx={{ mt: 0.5 }}>
+                                    <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>Distributor ID</Typography>
+                                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{values.distributorId}</Typography>
+                                </Box>
+                            )}
+                            {values.shippedToCanadianSite && (
+                                <Box sx={{ mt: 0.5 }}>
+                                    <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>Shipment to Canada</Typography>
+                                    <Typography variant="body2" sx={{ fontWeight: 600 }}>Date: {values.dateOfShipmentToCanadianSite || "N/A"}</Typography>
+                                </Box>
+                            )}
                         </Box>
                     </Paper>
                 </Grid>

@@ -21,6 +21,7 @@ import CommonCard from "../../components/ui/CommonCard";
 import DispatchMobileCard from "./components/DispatchMobileCard";
 import GlobalTable from "../../components/ui/GlobalTable";
 import axiosInstance from "@/axios/axiosInstance";
+import Loader from "@/components/ui/Loader";
 
 // Static data removed, now fetching from API
 
@@ -108,7 +109,16 @@ export default function DispatchDetails() {
       align: "center",
       render: (row) => (
         <Typography variant="body2" sx={{ fontWeight: 600, color: "#1172ba" }}>
-          {row.shipmentInfo?.orderNumber}
+          {row.shipmentInfo?.dispatchNo || "-"}
+        </Typography>
+      ),
+    },
+    {
+      label: "Order NO.",
+      align: "center",
+      render: (row) => (
+        <Typography variant="body2" sx={{ fontWeight: 500, color: "#64748b" }}>
+          {row.shipmentInfo?.orderNumber || "-"}
         </Typography>
       ),
     },
@@ -145,6 +155,27 @@ export default function DispatchDetails() {
       label: "Shipping Date",
       align: "center",
       render: (row) => formatDate(row.shipmentInfo?.shippingDate),
+    },
+    {
+      label: "Shipment Type",
+      align: "center",
+      render: (row) => (
+        <Chip
+          label={row.shipmentInfo?.shipmentType || "Commercial"}
+          size="small"
+          sx={{
+            backgroundColor: row.shipmentInfo?.shipmentType === "Non-Commercial" ? "#fff3cd" : "#e2e3e5",
+            color: row.shipmentInfo?.shipmentType === "Non-Commercial" ? "#856404" : "#383d41",
+            fontWeight: 600,
+            fontSize: "0.7rem",
+          }}
+        />
+      ),
+    },
+    {
+      label: "Country/Market",
+      align: "center",
+      render: (row) => row.shipmentInfo?.countryMarket || "-",
     },
     {
       label: "Sales Platform",
@@ -258,9 +289,7 @@ export default function DispatchDetails() {
         }}
       >
         {loading ? (
-          <Box sx={{ display: "flex", justifyContent: "center", py: 10 }}>
-            <Typography variant="body1" color="textSecondary">Loading Dispatch Data...</Typography>
-          </Box>
+          <Loader message="Loading dispatches..." />
         ) : !isMobile ? (
           <GlobalTable
             columns={columns}

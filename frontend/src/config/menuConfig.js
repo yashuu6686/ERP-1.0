@@ -17,6 +17,7 @@ import Cancel from "@mui/icons-material/Cancel";
 import Settings from "@mui/icons-material/Settings";
 import Business from "@mui/icons-material/Business";
 import RateReview from "@mui/icons-material/RateReview";
+import Assessment from "@mui/icons-material/Assessment";
 
 export const APP_MENU = [
     {
@@ -61,6 +62,7 @@ export const APP_MENU = [
             { text: "Customer Orders", icon: <People />, path: "/orders", key: "orders" },
             { text: "Invoices", icon: <Receipt />, path: "/invoices", key: "invoices" },
             { text: "Final Inspection", icon: <Verified />, path: "/final-inspection", key: "final_inspection" },
+            { text: "Certificate of Analysis", icon: <Assessment />, path: "/coa", key: "coa" },
             { text: "Standard Operating Procedures", icon: <Description />, path: "/sop", key: "sop" },
             { text: "Dispatch Details", icon: <LocalShipping />, path: "/dispatch", key: "dispatch" },
         ]
@@ -76,7 +78,7 @@ export const APP_MENU = [
     }
 ];
 
-// Derived exports to maintain compatibility with existing code
+
 export const MENU_ITEMS = APP_MENU.flatMap(flow => flow.items);
 
 export const FLOWS = APP_MENU.map(flow => ({

@@ -160,6 +160,79 @@ export default function DispatchInfoCard({ formik, orders, onOrderSelect }) {
                             }}
                         />
                     </Grid>
+                    <Grid item xs={12} md={4} size={{ xs: 12, md: 4 }}>
+                        <TextField
+                            fullWidth
+                            select
+                            label="Shipment Type"
+                            name="shipmentType"
+                            value={formik.values.shipmentType}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            required
+                            SelectProps={{ native: true }}
+                            error={formik.touched.shipmentType && Boolean(formik.errors.shipmentType)}
+                            helperText={formik.touched.shipmentType && formik.errors.shipmentType}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <LocalShipping sx={{ color: "#1172ba" }} />
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                "& .MuiOutlinedInput-root": { bgcolor: "white" },
+                            }}
+                        >
+                            <option value="Commercial">Commercial</option>
+                            <option value="Non-Commercial">Non-Commercial</option>
+                        </TextField>
+                    </Grid>
+                    <Grid item xs={12} md={4} size={{ xs: 12, md: 4 }}>
+                        <TextField
+                            fullWidth
+                            label="Shipment Purpose"
+                            name="shipmentPurpose"
+                            placeholder="Mandatory for Non-Commercial"
+                            value={formik.values.shipmentPurpose}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            required={formik.values.shipmentType === "Non-Commercial"}
+                            error={formik.touched.shipmentPurpose && Boolean(formik.errors.shipmentPurpose)}
+                            helperText={formik.touched.shipmentPurpose && formik.errors.shipmentPurpose}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <Description sx={{ color: "#1172ba" }} />
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                "& .MuiOutlinedInput-root": { bgcolor: "white" },
+                            }}
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={4} size={{ xs: 12, md: 4 }}>
+                        <TextField
+                            fullWidth
+                            label="UDI"
+                            name="udi"
+                            placeholder="Unique Device Identifier"
+                            value={formik.values.udi}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <Description sx={{ color: "#1172ba" }} />
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                "& .MuiOutlinedInput-root": { bgcolor: "white" },
+                            }}
+                        />
+                    </Grid>
                 </Grid>
             </CardContent>
         </Card>

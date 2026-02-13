@@ -6,8 +6,12 @@ import {
     Typography,
     Grid,
     TextField,
+    Button,
+    ButtonGroup,
+    Divider,
+    Stack,
 } from "@mui/material";
-import { Business, LocalShipping } from "@mui/icons-material";
+import { Business, LocalShipping, CheckCircle, Cancel, Public, Apartment } from "@mui/icons-material";
 
 export default function CustomerDeliveryCard({ formik }) {
     const handleCharacterOnlyChange = (e) => {
@@ -228,6 +232,169 @@ export default function CustomerDeliveryCard({ formik }) {
                                     }}
                                 />
                             </Grid>
+                            <Grid item xs={6} size={{ xs: 6 }}>
+                                <TextField
+                                    fullWidth
+                                    name="countryMarket"
+                                    value={formik.values.countryMarket}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    required
+                                    error={formik.touched.countryMarket && Boolean(formik.errors.countryMarket)}
+                                    helperText={formik.touched.countryMarket && formik.errors.countryMarket}
+                                    label="Country/Market"
+                                    placeholder="e.g., India / USA"
+                                    sx={{
+                                        "& .MuiOutlinedInput-root": {
+                                            background: "linear-gradient(135deg, #F8FAFC, #F1F5F9)",
+                                        }
+                                    }}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} size={{ xs: 12 }}>
+                                <Divider sx={{ my: 1 }} />
+                            </Grid>
+
+                            <Grid item xs={12} size={{ xs: 12 }}>
+                                <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 700, mb: 1, display: 'block', textTransform: 'uppercase' }}>
+                                    Supplied via Distributor?
+                                </Typography>
+                                <Stack direction="row" spacing={1}>
+                                    <Button
+                                        variant={formik.values.suppliedViaDistributor ? "contained" : "outlined"}
+                                        onClick={() => formik.setFieldValue("suppliedViaDistributor", true)}
+                                        startIcon={<CheckCircle />}
+                                        size="small"
+                                        sx={{
+                                            flex: 1,
+                                            borderRadius: 1.5,
+                                            textTransform: 'none',
+                                            fontWeight: 600,
+                                            py: 0.8,
+                                            ...(formik.values.suppliedViaDistributor ? { bgcolor: "#1172ba" } : { color: "#64748b", borderColor: "#e2e8f0" })
+                                        }}
+                                    >
+                                        Yes
+                                    </Button>
+                                    <Button
+                                        variant={!formik.values.suppliedViaDistributor ? "contained" : "outlined"}
+                                        onClick={() => {
+                                            formik.setFieldValue("suppliedViaDistributor", false);
+                                            formik.setFieldValue("distributorId", "");
+                                        }}
+                                        startIcon={<Cancel />}
+                                        size="small"
+                                        sx={{
+                                            flex: 1,
+                                            borderRadius: 1.5,
+                                            textTransform: 'none',
+                                            fontWeight: 600,
+                                            py: 0.8,
+                                            ...(!formik.values.suppliedViaDistributor ? { bgcolor: "#64748b" } : { color: "#64748b", borderColor: "#e2e8f0" })
+                                        }}
+                                    >
+                                        No
+                                    </Button>
+                                </Stack>
+                            </Grid>
+
+                            {formik.values.suppliedViaDistributor && (
+                                <Grid item xs={12} size={{ xs: 12 }}>
+                                    <TextField
+                                        fullWidth
+                                        name="distributorId"
+                                        value={formik.values.distributorId}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        required={formik.values.suppliedViaDistributor}
+                                        error={formik.touched.distributorId && Boolean(formik.errors.distributorId)}
+                                        helperText={formik.touched.distributorId && formik.errors.distributorId}
+                                        label="Distributor ID"
+                                        placeholder="Enter ID"
+                                        sx={{
+                                            "& .MuiOutlinedInput-root": {
+                                                background: "linear-gradient(135deg, #F8FAFC, #F1F5F9)",
+                                            }
+                                        }}
+                                    />
+                                </Grid>
+                            )}
+
+                            <Grid item xs={12} size={{ xs: 12 }}>
+                                <Box sx={{ mt: 2, mb: 1, p: 1.5, borderRadius: 2, bgcolor: "#f8fafc", border: "1px dashed #cbd5e1", display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <Apartment sx={{ color: "#1172ba", fontSize: 20 }} />
+                                    <Typography variant="subtitle2" sx={{ color: "#1172ba", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                        Shipment to HQ
+                                    </Typography>
+                                </Box>
+                            </Grid>
+
+                            <Grid item xs={12} size={{ xs: 12 }}>
+                                <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 700, mb: 1, display: 'block', textTransform: 'uppercase' }}>
+                                    Shipped to Canadian site?
+                                </Typography>
+                                <Stack direction="row" spacing={1}>
+                                    <Button
+                                        variant={formik.values.shippedToCanadianSite ? "contained" : "outlined"}
+                                        onClick={() => formik.setFieldValue("shippedToCanadianSite", true)}
+                                        startIcon={<CheckCircle />}
+                                        size="small"
+                                        sx={{
+                                            flex: 1,
+                                            borderRadius: 1.5,
+                                            textTransform: 'none',
+                                            fontWeight: 600,
+                                            py: 0.8,
+                                            ...(formik.values.shippedToCanadianSite ? { bgcolor: "#1172ba" } : { color: "#64748b", borderColor: "#e2e8f0" })
+                                        }}
+                                    >
+                                        Yes
+                                    </Button>
+                                    <Button
+                                        variant={!formik.values.shippedToCanadianSite ? "contained" : "outlined"}
+                                        onClick={() => {
+                                            formik.setFieldValue("shippedToCanadianSite", false);
+                                            formik.setFieldValue("dateOfShipmentToCanadianSite", "");
+                                        }}
+                                        startIcon={<Cancel />}
+                                        size="small"
+                                        sx={{
+                                            flex: 1,
+                                            borderRadius: 1.5,
+                                            textTransform: 'none',
+                                            fontWeight: 600,
+                                            py: 0.8,
+                                            ...(!formik.values.shippedToCanadianSite ? { bgcolor: "#64748b" } : { color: "#64748b", borderColor: "#e2e8f0" })
+                                        }}
+                                    >
+                                        No
+                                    </Button>
+                                </Stack>
+                            </Grid>
+
+                            {formik.values.shippedToCanadianSite && (
+                                <Grid item xs={12} size={{ xs: 12 }}>
+                                    <TextField
+                                        fullWidth
+                                        type="date"
+                                        name="dateOfShipmentToCanadianSite"
+                                        value={formik.values.dateOfShipmentToCanadianSite}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        required={formik.values.shippedToCanadianSite}
+                                        error={formik.touched.dateOfShipmentToCanadianSite && Boolean(formik.errors.dateOfShipmentToCanadianSite)}
+                                        helperText={formik.touched.dateOfShipmentToCanadianSite && formik.errors.dateOfShipmentToCanadianSite}
+                                        label="Date of Shipment to Canada"
+                                        InputLabelProps={{ shrink: true }}
+                                        sx={{
+                                            "& .MuiOutlinedInput-root": {
+                                                background: "linear-gradient(135deg, #F8FAFC, #F1F5F9)",
+                                            }
+                                        }}
+                                    />
+                                </Grid>
+                            )}
                         </Grid>
                     </CardContent>
                 </Card>
