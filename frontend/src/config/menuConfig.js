@@ -18,6 +18,7 @@ import Settings from "@mui/icons-material/Settings";
 import Business from "@mui/icons-material/Business";
 import RateReview from "@mui/icons-material/RateReview";
 import Assessment from "@mui/icons-material/Assessment";
+import PrecisionManufacturing from "@mui/icons-material/PrecisionManufacturing";
 
 export const APP_MENU = [
     {
@@ -74,6 +75,13 @@ export const APP_MENU = [
             { text: "Rejected Goods", icon: <Cancel />, path: "/rejected-goods", key: "rejected_goods" },
             { text: "Role Management", icon: <Settings />, path: "/settings/roles", key: "role_management" },
             { text: "User Management", icon: <People />, path: "/settings/users", key: "user_management" },
+        ]
+    },
+    {
+        name: "Quality & Compliance",
+        description: "Standards and equipment control",
+        items: [
+            { text: "Calibration", icon: <PrecisionManufacturing />, path: "/calibration", key: "calibration" },
         ]
     }
 ];
