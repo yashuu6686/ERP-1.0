@@ -38,13 +38,17 @@ const PurchaseSummary = ({
                 <Card sx={{
                     background: "#f8fafc",
                     p: 2,
+                    boxShadow: "none",
+                    border: "1px solid #e9ecef",
                     "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
                         display: "none",
                     },
                     "& input[type=number]": {
                         MozAppearance: "textfield",
                     },
-                }}>
+                }}
+                    elevation={0}
+                >
                     <Grid container spacing={2}>
                         <Grid size={{ xs: 6, sm: 3 }}>
                             <TextField

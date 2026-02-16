@@ -34,9 +34,11 @@ const ItemDetailsTable = () => {
         <Card
             sx={{
                 mb: 4,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                boxShadow: "none",
                 borderRadius: 2,
+                border: "1px solid #e9ecef"
             }}
+            elevation={0}
         >
             <Box
                 sx={{

@@ -7,68 +7,61 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Visibility from "@mui/icons-material/Visibility";
 import Edit from "@mui/icons-material/Edit";
-import Download from "@mui/icons-material/Download";
+import Delete from "@mui/icons-material/Delete";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/ui/CommonCard";
 import GlobalTable from "../../components/ui/GlobalTable";
 import Loader from "../../components/ui/Loader";
-import axiosInstance from "@/axios/axiosInstance";
 
-function RejectionTransferSlipListContent() {
+function LineClearanceChecklistListContent() {
     const router = useRouter();
-    const [slips, setSlips] = useState([]);
+    const [checklists, setChecklists] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
     useEffect(() => {
-        fetchSlips();
+        fetchChecklists();
     }, []);
 
-    const fetchSlips = async () => {
+    const fetchChecklists = async () => {
         try {
             setLoading(true);
-            // In a real app, this would be an API call
-            // const response = await axiosInstance.get("/rejection-transfer-slips");
-            // setSlips(response.data);
-
             // Mock data for demonstration
             const mockData = [
                 {
                     id: 1,
-                    slipNo: "RTS-001",
-                    bmrNo: "BMR/2026/001",
-                    batchNo: "BATCH-456",
-                    productName: "Product A",
-                    batchReceivedDate: "2026-02-13",
-                    status: "Completed"
+                    checklistNo: "LCC-2026-001",
+                    bmrNo: "BMR/2026/015",
+                    batchNo: "BATCH-A12",
+                    date: "2026-02-16",
+                    status: "Completed",
                 },
                 {
                     id: 2,
-                    slipNo: "RTS-002",
-                    bmrNo: "BMR/2026/002",
-                    batchNo: "BATCH-789",
-                    productName: "Product B",
-                    batchReceivedDate: "2026-02-12",
-                    status: "Pending"
+                    checklistNo: "LCC-2026-002",
+                    bmrNo: "BMR/2026/018",
+                    batchNo: "BATCH-B45",
+                    date: "2026-02-15",
+                    status: "Pending",
                 }
             ];
-            setSlips(mockData);
+            setChecklists(mockData);
         } catch (error) {
-            console.error("Failed to fetch slips:", error);
+            console.error("Failed to fetch checklists:", error);
         } finally {
             setLoading(false);
         }
     };
 
-    const filteredSlips = slips.filter((slip) =>
-        slip.bmrNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        slip.batchNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        slip.productName.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredData = checklists.filter((item) =>
+        item.checklistNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.bmrNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.batchNo.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const paginatedSlips = filteredSlips.slice(
+    const paginatedData = filteredData.slice(
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage
     );
@@ -84,11 +77,11 @@ function RejectionTransferSlipListContent() {
             ),
         },
         {
-            label: "Rejection Transfer Slip No.",
+            label: "Checklist No.",
             align: "center",
             render: (row) => (
                 <Typography variant="body2" sx={{ color: "#1172ba", fontWeight: 700 }}>
-                    {row.slipNo}
+                    {row.checklistNo}
                 </Typography>
             ),
         },
@@ -96,7 +89,7 @@ function RejectionTransferSlipListContent() {
             label: "BMR No.",
             align: "center",
             render: (row) => (
-                <Typography variant="body2" sx={{ color: "#1172ba", fontWeight: 700 }}>
+                <Typography variant="body2" sx={{ color: "#334155", fontWeight: 600 }}>
                     {row.bmrNo}
                 </Typography>
             ),
@@ -105,26 +98,17 @@ function RejectionTransferSlipListContent() {
             label: "Batch No.",
             align: "center",
             render: (row) => (
-                <Typography variant="body2" sx={{ color: "#334155", fontWeight: 600 }}>
+                <Typography variant="body2" sx={{ color: "#1e293b" }}>
                     {row.batchNo}
                 </Typography>
             ),
         },
         {
-            label: "Product Name",
-            align: "center",
-            render: (row) => (
-                <Typography variant="body2" sx={{ color: "#1e293b" }}>
-                    {row.productName}
-                </Typography>
-            ),
-        },
-        {
-            label: "Received Date",
+            label: "Date",
             align: "center",
             render: (row) => (
                 <Typography variant="body2" sx={{ color: "#475569" }}>
-                    {row.batchReceivedDate}
+                    {row.date}
                 </Typography>
             ),
         },
@@ -153,23 +137,23 @@ function RejectionTransferSlipListContent() {
                 <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
                     <IconButton
                         size="small"
-                        onClick={() => router.push(`/rejection-transfer-slip/view-transfer-slip?id=${row.id}`)}
+                        onClick={() => router.push(`/line-clearance-checklist/view?id=${row.id}`)}
                         sx={{ color: "#1172ba", bgcolor: "#f1f5f9", "&:hover": { bgcolor: "#e2e8f0" } }}
                     >
                         <Visibility fontSize="small" />
                     </IconButton>
                     <IconButton
                         size="small"
-                        onClick={() => router.push(`/rejection-transfer-slip/create-transfer-slip?id=${row.id}`)}
+                        onClick={() => router.push(`/line-clearance-checklist/create?id=${row.id}`)}
                         sx={{ color: "#1172ba", bgcolor: "#f1f5f9", "&:hover": { bgcolor: "#e2e8f0" } }}
                     >
                         <Edit sx={{ fontSize: 16 }} />
                     </IconButton>
                     <IconButton
                         size="small"
-                        sx={{ color: "#0891b2", bgcolor: "#ecfeff", "&:hover": { bgcolor: "#cffafe" } }}
+                        sx={{ color: "#ef4444", bgcolor: "#fef2f2", "&:hover": { bgcolor: "#fee2e2" } }}
                     >
-                        <Download fontSize="small" />
+                        <Delete fontSize="small" />
                     </IconButton>
                 </Box>
             ),
@@ -179,20 +163,20 @@ function RejectionTransferSlipListContent() {
     return (
         <Box>
             <CommonCard
-                title="Rejection Material Transfer Slips"
-                addText="Create Transfer Slip"
-                onAdd={() => router.push("/rejection-transfer-slip/create-transfer-slip")}
-                searchPlaceholder="Search BMR, Batch, Product..."
+                title="Line Clearance Checklists"
+                addText="Create Checklist"
+                onAdd={() => router.push("/line-clearance-checklist/create")}
+                searchPlaceholder="Search No, BMR, Batch..."
                 searchValue={searchTerm}
                 onSearchChange={(e) => setSearchTerm(e.target.value)}
             >
                 {loading ? (
-                    <Loader message="Loading Slips..." />
+                    <Loader message="Loading Checklists..." />
                 ) : (
                     <GlobalTable
                         columns={columns}
-                        data={paginatedSlips}
-                        totalCount={filteredSlips.length}
+                        data={paginatedData}
+                        totalCount={filteredData.length}
                         page={page}
                         rowsPerPage={rowsPerPage}
                         onPageChange={setPage}
@@ -207,10 +191,10 @@ function RejectionTransferSlipListContent() {
     );
 }
 
-export default function RejectionTransferSlipList() {
+export default function LineClearanceChecklistList() {
     return (
         <Suspense fallback={<Loader fullPage message="Loading..." />}>
-            <RejectionTransferSlipListContent />
+            <LineClearanceChecklistListContent />
         </Suspense>
     );
 }

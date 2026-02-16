@@ -188,10 +188,10 @@ function ViewGRNContent() {
                                 textTransform: "none",
                                 fontWeight: 600,
                                 background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
-                                boxShadow: "0 4px 12px rgba(17, 114, 186, 0.25)",
+                                boxShadow: "none",
                                 "&:hover": {
                                     background: "linear-gradient(135deg, #0d5a94 0%, #0a4571 100%)",
-                                    boxShadow: "0 6px 16px rgba(17, 114, 186, 0.35)",
+                                    boxShadow: "none",
                                 },
                             }}
                         >
@@ -379,7 +379,7 @@ function ViewGRNContent() {
                     <Grid size={{ xs: 12, lg: 3 }}>
                         <Stack spacing={2}>
                             {/* Summary Card */}
-                            <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+                            <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff', boxShadow: "none" }}>
                                 <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
                                     <CheckCircle sx={{ color: '#1172ba', fontSize: 20 }} /> Status Overview
                                 </Typography>
@@ -426,7 +426,7 @@ function ViewGRNContent() {
                             </Paper>
 
                             {/* Logistics Card */}
-                            <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+                            <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff', boxShadow: "none" }}>
                                 <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
                                     <LocalShipping sx={{ color: '#1172ba', fontSize: 20 }} /> Logistics Info
                                 </Typography>
@@ -441,7 +441,7 @@ function ViewGRNContent() {
                             <Box sx={{
                                 p: 3,
                                 borderRadius: 4,
-                                border: '1px solid #e2e8f0', bgcolor: '#fff'
+                                border: '1px solid #e2e8f0', bgcolor: '#fff', boxShadow: "none"
                             }}>
                                 <Typography variant="h4" fontWeight={900} sx={{ mb: 1 }}>
                                     {grn.items?.reduce((acc, item) => acc + (Number(item.receivedQty) || 0), 0)}

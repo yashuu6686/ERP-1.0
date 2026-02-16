@@ -56,6 +56,7 @@ export const APP_MENU = [
             { text: "Material Issue Request", icon: <Send />, path: "/material-issue", key: "material_issue" },
             { text: "Rejection Material Transfer Slip", icon: <Description />, path: "/rejection-transfer-slip", key: "rejection_transfer_slip" },
             { text: "After Production Inspection", icon: <CheckCircle />, path: "/production-inspection", key: "production_inspection" },
+            { text: "Line Clearance Checklist", icon: <Assignment />, path: "/line-clearance-checklist", key: "line_clearance_checklist" },
             { text: "Batch", icon: <Layers />, path: "/batch", key: "batch" },
         ]
     },
