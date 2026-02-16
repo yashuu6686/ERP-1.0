@@ -13,6 +13,7 @@ import CommonCard from "../../components/ui/CommonCard";
 import GlobalTable from "../../components/ui/GlobalTable";
 import Loader from "../../components/ui/Loader";
 import axiosInstance from "@/axios/axiosInstance";
+import { useNotification } from "@/context/NotificationContext";
 
 function RejectionTransferSlipListContent() {
     const router = useRouter();
@@ -21,6 +22,7 @@ function RejectionTransferSlipListContent() {
     const [searchTerm, setSearchTerm] = useState("");
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const { showNotification } = useNotification();
 
     useEffect(() => {
         fetchSlips();
@@ -29,34 +31,11 @@ function RejectionTransferSlipListContent() {
     const fetchSlips = async () => {
         try {
             setLoading(true);
-            // In a real app, this would be an API call
-            // const response = await axiosInstance.get("/rejection-transfer-slips");
-            // setSlips(response.data);
-
-            // Mock data for demonstration
-            const mockData = [
-                {
-                    id: 1,
-                    slipNo: "RTS-001",
-                    bmrNo: "BMR/2026/001",
-                    batchNo: "BATCH-456",
-                    productName: "Product A",
-                    batchReceivedDate: "2026-02-13",
-                    status: "Completed"
-                },
-                {
-                    id: 2,
-                    slipNo: "RTS-002",
-                    bmrNo: "BMR/2026/002",
-                    batchNo: "BATCH-789",
-                    productName: "Product B",
-                    batchReceivedDate: "2026-02-12",
-                    status: "Pending"
-                }
-            ];
-            setSlips(mockData);
+            const response = await axiosInstance.get("/rejection-transfer-slips");
+            setSlips(response.data || []);
         } catch (error) {
             console.error("Failed to fetch slips:", error);
+            showNotification("Failed to fetch transfer slips.", "error");
         } finally {
             setLoading(false);
         }

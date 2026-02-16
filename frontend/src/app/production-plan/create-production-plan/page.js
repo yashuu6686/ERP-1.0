@@ -112,10 +112,10 @@ export default function CreateProductionPlan() {
             try {
                 setLoading(true);
                 if (id) {
-                    await axiosInstance.put(`/productionPlans/${id}`, values);
+                    await axiosInstance.put(`/production-plans/${id}`, values);
                     showNotification("Production Plan updated successfully!", "success");
                 } else {
-                    await axiosInstance.post("/productionPlans", values);
+                    await axiosInstance.post("/production-plans", values);
                     showNotification("Production Plan created successfully!", "success");
                 }
                 router.push("/production-plan");

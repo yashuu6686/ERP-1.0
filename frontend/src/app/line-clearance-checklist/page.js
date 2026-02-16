@@ -12,6 +12,8 @@ import { useRouter } from "next/navigation";
 import CommonCard from "../../components/ui/CommonCard";
 import GlobalTable from "../../components/ui/GlobalTable";
 import Loader from "../../components/ui/Loader";
+import axiosInstance from "@/axios/axiosInstance";
+import { useNotification } from "@/context/NotificationContext";
 
 function LineClearanceChecklistListContent() {
     const router = useRouter();
@@ -20,6 +22,7 @@ function LineClearanceChecklistListContent() {
     const [searchTerm, setSearchTerm] = useState("");
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const { showNotification } = useNotification();
 
     useEffect(() => {
         fetchChecklists();
@@ -28,28 +31,11 @@ function LineClearanceChecklistListContent() {
     const fetchChecklists = async () => {
         try {
             setLoading(true);
-            // Mock data for demonstration
-            const mockData = [
-                {
-                    id: 1,
-                    checklistNo: "LCC-2026-001",
-                    bmrNo: "BMR/2026/015",
-                    batchNo: "BATCH-A12",
-                    date: "2026-02-16",
-                    status: "Completed",
-                },
-                {
-                    id: 2,
-                    checklistNo: "LCC-2026-002",
-                    bmrNo: "BMR/2026/018",
-                    batchNo: "BATCH-B45",
-                    date: "2026-02-15",
-                    status: "Pending",
-                }
-            ];
-            setChecklists(mockData);
+            const response = await axiosInstance.get("/line-clearance-checklist");
+            setChecklists(response.data || []);
         } catch (error) {
             console.error("Failed to fetch checklists:", error);
+            showNotification("Failed to fetch checklists.", "error");
         } finally {
             setLoading(false);
         }

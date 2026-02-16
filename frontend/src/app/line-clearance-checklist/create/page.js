@@ -23,6 +23,8 @@ import { useFormik, FormikProvider } from "formik";
 import * as Yup from "yup";
 import CommonCard from "../../../components/ui/CommonCard";
 import Loader from "../../../components/ui/Loader";
+import axiosInstance from "@/axios/axiosInstance";
+import { useNotification } from "@/context/NotificationContext";
 
 const validationSchema = Yup.object().shape({
     date: Yup.date().required("Date is required"),
@@ -60,6 +62,7 @@ function CreateLineClearanceChecklistContent() {
     const id = searchParams.get("id");
     const isEditMode = !!id;
     const [loading, setLoading] = useState(false);
+    const { showNotification } = useNotification();
 
     const formik = useFormik({
         initialValues: {
@@ -76,14 +79,17 @@ function CreateLineClearanceChecklistContent() {
         onSubmit: async (values) => {
             try {
                 setLoading(true);
-                console.log("Submitting values:", values);
-                // In a real app, this would be an API call
-                // await axiosInstance.post("/line-clearance-checklist", values);
-                alert(`Checklist ${isEditMode ? "Updated" : "Created"} Successfully!`);
+                if (isEditMode) {
+                    await axiosInstance.put(`/line-clearance-checklist/${id}`, values);
+                    showNotification("Checklist updated successfully!", "success");
+                } else {
+                    await axiosInstance.post("/line-clearance-checklist", values);
+                    showNotification("Checklist created successfully!", "success");
+                }
                 router.push("/line-clearance-checklist");
             } catch (error) {
                 console.error("Save Error:", error);
-                alert("Error saving checklist.");
+                showNotification(error.response?.data?.message || "Error saving checklist.", "error");
             } finally {
                 setLoading(false);
             }
@@ -92,21 +98,19 @@ function CreateLineClearanceChecklistContent() {
 
     useEffect(() => {
         if (isEditMode && id) {
-            // Fetch checklist data if in edit mode
-            // Mock fetching
-            const timer = setTimeout(() => {
-                formik.setValues({
-                    date: "2026-02-16",
-                    bmrNo: "BMR/2026/015",
-                    currentBatchNo: "BATCH-A12",
-                    oldBatchNo: "BATCH-A11",
-                    time: "10:30",
-                    items: CHECKLIST_POINTS.map((point, i) => ({ point, response: i % 3 === 0 ? "No" : "Yes" })),
-                    reviewedBy: "John Doe",
-                    approvedBy: "Jane Smith",
-                });
-            }, 500);
-            return () => clearTimeout(timer);
+            const fetchChecklist = async () => {
+                try {
+                    setLoading(true);
+                    const response = await axiosInstance.get(`/line-clearance-checklist/${id}`);
+                    formik.setValues(response.data);
+                } catch (error) {
+                    console.error("Fetch Error:", error);
+                    showNotification("Failed to fetch checklist details.", "error");
+                } finally {
+                    setLoading(false);
+                }
+            };
+            fetchChecklist();
         }
     }, [id, isEditMode]);
 
@@ -163,7 +167,7 @@ function CreateLineClearanceChecklistContent() {
                                         sx={{ bgcolor: "#fff", borderRadius: 2 }}
                                     />
                                 </Grid>
-                              
+
                                 <Grid item xs={12} md={3} size={{ xs: 12, md: 2.4 }}>
                                     <TextField
                                         fullWidth
@@ -177,7 +181,7 @@ function CreateLineClearanceChecklistContent() {
                                         sx={{ bgcolor: "#fff", borderRadius: 2 }}
                                     />
                                 </Grid>
-                                  <Grid item xs={12} md={3} size={{ xs: 12, md: 2.4 }}>
+                                <Grid item xs={12} md={3} size={{ xs: 12, md: 2.4 }}>
                                     <TextField
                                         fullWidth
                                         label="Time"

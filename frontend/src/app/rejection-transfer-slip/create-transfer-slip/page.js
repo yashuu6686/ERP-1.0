@@ -12,12 +12,17 @@ import BatchProcessInfo from "../components/BatchProcessInfo";
 import ProductDetailsInfo from "../components/ProductDetailsInfo";
 import ApprovalSection from "../components/ApprovalSection";
 import Loader from "../../../components/ui/Loader";
+import axiosInstance from "@/axios/axiosInstance";
+import { useNotification } from "@/context/NotificationContext";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const validationSchema = Yup.object().shape({
     batchReceivedDate: Yup.date().required("Batch Received Date is required"),
     bmrNo: Yup.string().required("BMR No. is required"),
     batchNo: Yup.string().required("Batch No. is required"),
-    serialNo: Yup.string().required("Serial No. is required"),
+    serialNoFrom: Yup.string().required("Serial No From is required"),
+    serialNoTo: Yup.string().required("Serial No To is required"),
     mfgDate: Yup.date().required("Manufacturing Date is required"),
     expiryDate: Yup.date().required("Expiry Date is required"),
     productName: Yup.string().required("Name of Product is required"),
@@ -31,13 +36,20 @@ const validationSchema = Yup.object().shape({
 
 function RejectionTransferSlipContent() {
     const formContainerRef = useRef(null);
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const id = searchParams.get("id");
+    const isEditMode = !!id;
+    const [loading, setLoading] = useState(false);
+    const { showNotification } = useNotification();
 
     const formik = useFormik({
         initialValues: {
             batchReceivedDate: new Date().toISOString().split("T")[0],
             bmrNo: "",
             batchNo: "",
-            serialNo: "",
+            serialNoFrom: "",
+            serialNoTo: "",
             mfgDate: "",
             expiryDate: "",
             productName: "",
@@ -48,10 +60,44 @@ function RejectionTransferSlipContent() {
         },
         validationSchema,
         onSubmit: async (values) => {
-            console.log("Form Values:", values);
-            alert("Rejection Material Transfer Slip Created Successfully!");
+            try {
+                setLoading(true);
+                if (isEditMode) {
+                    await axiosInstance.put(`/rejection-transfer-slips/${id}`, values);
+                    showNotification("Transfer Slip updated successfully!", "success");
+                } else {
+                    await axiosInstance.post("/rejection-transfer-slips", values);
+                    showNotification("Transfer Slip created successfully!", "success");
+                }
+                router.push("/rejection-transfer-slip");
+            } catch (error) {
+                console.error("Save Error:", error);
+                showNotification(error.response?.data?.message || "Error saving transfer slip.", "error");
+            } finally {
+                setLoading(false);
+            }
         },
     });
+
+    useEffect(() => {
+        if (isEditMode && id) {
+            const fetchSlip = async () => {
+                try {
+                    setLoading(true);
+                    const response = await axiosInstance.get(`/rejection-transfer-slips/${id}`);
+                    formik.setValues(response.data);
+                } catch (error) {
+                    console.error("Fetch Error:", error);
+                    showNotification("Failed to fetch transfer slip details.", "error");
+                } finally {
+                    setLoading(false);
+                }
+            };
+            fetchSlip();
+        }
+    }, [id, isEditMode]);
+
+    if (loading) return <Loader fullPage message={isEditMode ? "Loading Details..." : "Saving..."} />;
 
     const handleKeyDown = (e) => {
         if (e.key === "Enter") {

@@ -21,8 +21,9 @@ const ProductDetailsInfo = () => {
                 border: "1px solid #e9ecef",
                 borderRadius: 2,
                 overflow: "hidden",
-                boxShadow: "0 2px 10px rgba(0,0,0,0.05)"
+                boxShadow: "none"
             }}
+            elevation={0}
         >
             <Box
                 sx={{
