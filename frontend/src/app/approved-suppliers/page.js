@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Box, Chip, Typography, IconButton } from "@mui/material";
-import { Visibility } from "@mui/icons-material";
+import { Visibility, PostAdd } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import CommonCard from "@/components/ui/CommonCard";
 import GlobalTable from "@/components/ui/GlobalTable";
@@ -113,27 +113,27 @@ export default function ApprovedSuppliersPage() {
                 <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
                     <IconButton
                         size="small"
-                        onClick={() => router.push(`/initial-evaluation/view-evaluation?id=${row.id}`)}
+                        onClick={() => router.push(`/approved-suppliers/view?id=${row.id}`)}
                         sx={{
                             color: "rgb(17, 114, 186)",
                             bgcolor: "#f1f5f9",
                             "&:hover": { bgcolor: "#e2e8f0" },
                         }}
-                        title="View Supplier Evaluation"
+                        title="View Supplier Profile"
                     >
                         <Visibility fontSize="small" />
                     </IconButton>
                     <IconButton
                         size="small"
-                        onClick={() => router.push(`/approved-suppliers/ongoing-checklist?id=${row.id}`)}
+                        onClick={() => router.push(`/ongoing-evaluation/create?supplierId=${row.id}`)}
                         sx={{
                             color: "rgb(5, 150, 105)",
                             bgcolor: "#f1f5f9",
                             "&:hover": { bgcolor: "#e2e8f0" },
                         }}
-                        title="Ongoing Evaluation Checklist"
+                        title="Start Ongoing Evaluation"
                     >
-                        <Visibility fontSize="small" />
+                        <PostAdd fontSize="small" />
                     </IconButton>
                 </Box>
             ),

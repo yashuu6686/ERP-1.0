@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Box, Chip, Typography, IconButton, Button } from "@mui/material";
-import { Visibility, Add } from "@mui/icons-material";
+import { Visibility, Add, Edit } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import CommonCard from "@/components/ui/CommonCard";
 import GlobalTable from "@/components/ui/GlobalTable";
@@ -21,14 +21,10 @@ export default function OngoingEvaluationListPage() {
     const fetchSuppliers = async () => {
         try {
             setLoading(true);
-            const response = await axiosInstance.get("/suppliers");
-            // Only show Approved/Active suppliers for Ongoing Evaluation
-            const activeSuppliers = (response.data || []).filter(item =>
-                ['approved', 'active'].includes((item.status || '').toLowerCase())
-            );
-            setData(activeSuppliers);
+            const response = await axiosInstance.get("/ongoing-evaluation");
+            setData(response.data || []);
         } catch (error) {
-            console.error("Error fetching suppliers:", error);
+            console.error("Error fetching evaluations:", error);
         } finally {
             setLoading(false);
         }
@@ -48,24 +44,62 @@ export default function OngoingEvaluationListPage() {
     );
 
     const columns = [
-        { label: "Sr. No.", align: "center", render: (row, i) => <Typography variant="body2" sx={{ color: "#64748b" }}>{page * rowsPerPage + i + 1}</Typography> },
+        {
+            label: "Sr. No.",
+            align: "center",
+            render: (row, i) => (
+                <Typography variant="body2" sx={{ color: "#64748b" }}>
+                    {page * rowsPerPage + i + 1}
+                </Typography>
+            )
+        },
         { label: "Supplier Name", align: "left", render: (row) => <Typography variant="body2" fontWeight={600}>{row.supplierName}</Typography> },
-        { label: "Evaluation No.", align: "center", render: (row) => <Typography variant="body2" fontWeight={700} color="#1172ba">{row.evaluationNo}</Typography> },
+        { label: "Evaluation Period", align: "center", render: (row) => <Typography variant="body2">{row.evaluationPeriod}</Typography> },
         { label: "Contact Person", align: "center", accessor: "contactPerson" },
         {
-            label: "Status",
+            label: "Result",
             align: "center",
             render: (row) => (
-                <Chip label={row.status} size="small" sx={{ fontWeight: 800, fontSize: "0.65rem", borderRadius: 1.5, bgcolor: "#dcfce7", color: "#15803d" }} />
+                <Chip
+                    label={row.evaluationResult || "Pending"}
+                    size="small"
+                    sx={{
+                        fontWeight: 800,
+                        fontSize: "0.65rem",
+                        borderRadius: 1.5,
+                        bgcolor: row.evaluationResult?.includes('Not') ? "#fee2e2" : "#dcfce7",
+                        color: row.evaluationResult?.includes('Not') ? "#b91c1c" : "#15803d"
+                    }}
+                />
             )
+        },
+        {
+            label: "Date",
+            align: "center",
+            render: (row) => <Typography variant="body2">{row.date}</Typography>
         },
         {
             label: "Actions",
             align: "center",
             render: (row) => (
-                <IconButton size="small" color="primary" onClick={() => router.push(`/suppliers/view-evaluation?id=${row.id}`)}>
-                    <Visibility fontSize="small" />
-                </IconButton>
+                <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
+                    <IconButton
+                        size="small"
+                        onClick={() => router.push(`/ongoing-evaluation/view?id=${row.id}`)}
+                        sx={{ color: "#1172ba", bgcolor: "#f1f5f9", "&:hover": { bgcolor: "#e2e8f0" } }}
+                        title="View"
+                    >
+                        <Visibility fontSize="small" />
+                    </IconButton>
+                    <IconButton
+                        size="small"
+                        onClick={() => router.push(`/ongoing-evaluation/edit?id=${row.id}`)}
+                        sx={{ color: "#059669", bgcolor: "#f1f5f9", "&:hover": { bgcolor: "#e2e8f0" } }}
+                        title="Edit"
+                    >
+                        <Edit fontSize="small" />
+                    </IconButton>
+                </Box>
             )
         }
     ];
@@ -80,7 +114,7 @@ export default function OngoingEvaluationListPage() {
                 <Button
                     variant="contained"
                     startIcon={<Add />}
-                    onClick={() => router.push("/suppliers/ongoing-evaluation")}
+                    onClick={() => router.push("/ongoing-evaluation/create")}
                     sx={{ bgcolor: "#059669", "&:hover": { bgcolor: "#047857" }, textTransform: "none" }}
                 >
                     New Ongoing Evaluation
