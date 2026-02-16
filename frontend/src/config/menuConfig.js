@@ -19,6 +19,7 @@ import Business from "@mui/icons-material/Business";
 import RateReview from "@mui/icons-material/RateReview";
 import Assessment from "@mui/icons-material/Assessment";
 import EventNote from "@mui/icons-material/EventNote";
+import { PrecisionManufacturing } from "@mui/icons-material";
 
 export const APP_MENU = [
     {
