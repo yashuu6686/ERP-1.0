@@ -18,7 +18,8 @@ import Settings from "@mui/icons-material/Settings";
 import Business from "@mui/icons-material/Business";
 import RateReview from "@mui/icons-material/RateReview";
 import Assessment from "@mui/icons-material/Assessment";
-import PrecisionManufacturing from "@mui/icons-material/PrecisionManufacturing";
+import EventNote from "@mui/icons-material/EventNote";
+import { PrecisionManufacturing } from "@mui/icons-material";
 
 export const APP_MENU = [
     {
@@ -51,7 +52,9 @@ export const APP_MENU = [
         description: "Manufacturing and production control",
         items: [
             { text: "Bill of Materials", icon: <Build />, path: "/bom", key: "bom" },
+            { text: "Production Plan", icon: <EventNote />, path: "/production-plan", key: "production_plan" },
             { text: "Material Issue Request", icon: <Send />, path: "/material-issue", key: "material_issue" },
+            { text: "Rejection Material Transfer Slip", icon: <Description />, path: "/rejection-transfer-slip", key: "rejection_transfer_slip" },
             { text: "After Production Inspection", icon: <CheckCircle />, path: "/production-inspection", key: "production_inspection" },
             { text: "Batch", icon: <Layers />, path: "/batch", key: "batch" },
         ]
