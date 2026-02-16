@@ -26,8 +26,8 @@ function ViewProductionPlanContent() {
         const fetchPlanDetails = async () => {
             try {
                 setLoading(true);
-                // The URL was updated to camelCase by the user
-                const response = await axiosInstance.get(`/productionPlans/${id}`);
+                // The URL was updated to match the backend convention
+                const response = await axiosInstance.get(`/production-plans/${id}`);
                 setPlan(response.data);
             } catch (error) {
                 console.error("Fetch Error:", error);

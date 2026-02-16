@@ -19,8 +19,8 @@ import Business from "@mui/icons-material/Business";
 import RateReview from "@mui/icons-material/RateReview";
 import Assessment from "@mui/icons-material/Assessment";
 import EventNote from "@mui/icons-material/EventNote";
-import FactCheck from "@mui/icons-material/FactCheck"; // Added
-import { PrecisionManufacturing } from "@mui/icons-material";
+import PrecisionManufacturing from "@mui/icons-material/PrecisionManufacturing";
+import Thermostat from "@mui/icons-material/Thermostat";
 
 export const APP_MENU = [
     {
@@ -82,6 +82,13 @@ export const APP_MENU = [
         description: "Standards and equipment control",
         items: [
             { text: "Calibration", icon: <PrecisionManufacturing />, path: "/calibration", key: "calibration" },
+        ]
+    },
+    {
+        name: "Environment Management",
+        description: "Monitoring and managing environment conditions",
+        items: [
+            { text: "Daily Monitoring Log", icon: <Assignment />, path: "/environment/monitoring-log", key: "environment_log" },
         ]
     },
     {
