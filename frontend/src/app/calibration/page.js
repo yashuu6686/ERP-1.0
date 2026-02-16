@@ -12,16 +12,17 @@ import {
 } from "@mui/material";
 import {
     Edit,
-    History,
     FilterList,
     CheckCircle,
     Warning,
     EventNote,
-    Description
+    Description,
+    Visibility
 } from "@mui/icons-material";
 import GlobalTable from "@/components/ui/GlobalTable";
 import CommonCard from "@/components/ui/CommonCard";
 import { useRouter } from "next/navigation";
+import { mockEquipmentData } from "./mockData";
 
 export default function CalibrationMasterPage() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -30,44 +31,7 @@ export default function CalibrationMasterPage() {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const router = useRouter();
 
-    const mockEquipmentData = [
-        {
-            id: 1,
-            slNo: "01",
-            equipmentName: "Digital Multimeter",
-            masterId: "SCAN-DMM-001",
-            frequency: "Annual",
-            location: "Production Lab",
-            lastCalibration: "2023-08-15",
-            dueDate: "2024-08-15",
-            calibratedBy: "External (NABL Lab)",
-            status: "Calibrated"
-        },
-        {
-            id: 2,
-            slNo: "02",
-            equipmentName: "Pressure Gauge",
-            masterId: "SCAN-PG-045",
-            frequency: "6 Months",
-            location: "Maintenance Area",
-            lastCalibration: "2024-01-10",
-            dueDate: "2024-07-10",
-            calibratedBy: "Internal",
-            status: "Due Soon"
-        },
-        {
-            id: 3,
-            slNo: "03",
-            equipmentName: "Temperature Controller",
-            masterId: "SCAN-TC-009",
-            frequency: "Annual",
-            location: "Testing Lab",
-            lastCalibration: "2024-02-01",
-            dueDate: "2024-02-05",
-            calibratedBy: "External",
-            status: "Failed"
-        }
-    ];
+
 
     const filteredEquipment = mockEquipmentData.filter((equipment) => {
         const matchesSearch =
@@ -223,10 +187,11 @@ export default function CalibrationMasterPage() {
                             "&:hover": { bgcolor: "#e2e8f0" }
                         }}
                     >
-                        <History fontSize="small" />
+                        <Visibility fontSize="small" />
                     </IconButton>
                     <IconButton
                         size="small"
+                        onClick={() => router.push(`/calibration/register-equipment?id=${row.id}`)}
                         sx={{
                             color: "rgb(17, 114, 186)",
                             bgcolor: "#f1f5f9",

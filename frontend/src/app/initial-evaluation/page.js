@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Box, Chip, IconButton, Typography } from "@mui/material";
+import { Box, Chip, IconButton, Typography, Button } from "@mui/material";
 import { Visibility, Edit, Add } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import CommonCard from "../../components/ui/CommonCard";
@@ -22,7 +22,7 @@ export default function SuppliersPage() {
     const fetchSuppliers = async () => {
         try {
             setLoading(true);
-            const response = await axiosInstance.get("/suppliers");
+            const response = await axiosInstance.get("/evaluation");
             setData(response.data || []);
         } catch (error) {
             console.error("Error fetching suppliers:", error);
@@ -101,18 +101,19 @@ export default function SuppliersPage() {
             accessor: "phone",
         },
         {
-            label: "Status",
+            label: "Approved",
             align: "center",
             render: (row) => (
                 <Chip
-                    label={row.status || "Pending"}
+                    label={row.supplierApproved === "yes" ? "Approved" : "Not Approved"}
                     size="small"
                     sx={{
                         fontWeight: 800,
                         fontSize: "0.65rem",
                         textTransform: "uppercase",
                         borderRadius: 1.5,
-                        ...getStatusColor(row.status),
+                        bgcolor: row.supplierApproved === "yes" ? "#dcfce7" : "#fee2e2",
+                        color: row.supplierApproved === "yes" ? "#15803d" : "#b91c1c",
                     }}
                 />
             ),
@@ -129,7 +130,7 @@ export default function SuppliersPage() {
                 <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
                     <IconButton
                         size="small"
-                        onClick={() => router.push(`/suppliers/view-evaluation?id=${row.id}`)}
+                        onClick={() => router.push(`/initial-evaluation/view-evaluation?id=${row.id}`)}
                         sx={{
                             color: "rgb(17, 114, 186)",
                             bgcolor: "#f1f5f9",
@@ -140,7 +141,7 @@ export default function SuppliersPage() {
                     </IconButton>
                     <IconButton
                         size="small"
-                        onClick={() => router.push(`/suppliers/create-evaluation?id=${row.id}`)}
+                        onClick={() => router.push(`/initial-evaluation/create-evaluation?id=${row.id}`)}
                         sx={{
                             color: "rgb(17, 114, 186)",
                             bgcolor: "#f1f5f9",
@@ -157,9 +158,9 @@ export default function SuppliersPage() {
     return (
         <Box>
             <CommonCard
-                title="Supplier Evaluation Management"
-                addText="New Evaluation"
-                onAdd={() => router.push("/suppliers/create-evaluation")}
+                title="Initial Evaluation"
+                addText="New Initial Evaluation"
+                onAdd={() => router.push("/initial-evaluation/create-evaluation")}
                 searchPlaceholder="Search Supplier or Evaluation No..."
                 searchValue={search}
                 onSearchChange={(e) => {
@@ -168,7 +169,7 @@ export default function SuppliersPage() {
                 }}
             >
                 {loading ? (
-                    <Loader message="Loading Suppliers..." />
+                    <Loader message="Loading Evaluations..." />
                 ) : (
                     <GlobalTable
                         columns={columns}

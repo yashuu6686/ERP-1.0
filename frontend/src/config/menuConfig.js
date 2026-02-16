@@ -19,6 +19,7 @@ import Business from "@mui/icons-material/Business";
 import RateReview from "@mui/icons-material/RateReview";
 import Assessment from "@mui/icons-material/Assessment";
 import EventNote from "@mui/icons-material/EventNote";
+import FactCheck from "@mui/icons-material/FactCheck"; // Added
 import { PrecisionManufacturing } from "@mui/icons-material";
 
 export const APP_MENU = [
@@ -29,22 +30,26 @@ export const APP_MENU = [
         key: "dashboard"
     },
     {
-        name: "Supplier Management",
-        description: "Supplier and supplier survey management",
+        name: "Supplier Lifecycle",
+        description: "Supplier management flow",
         items: [
             { text: "Supplier Survey", icon: <RateReview />, path: "/supplier-survey", key: "supplier_survey" },
-            { text: "Suppliers", icon: <Business />, path: "/suppliers", key: "suppliers" },
+            { text: "Risk Assessment", icon: <Assessment />, path: "/risk-assessment", key: "risk_assessment" },
+            { text: "Initial Evaluation", icon: <Business />, path: "/initial-evaluation", key: "initial_evaluation" },
+            { text: "Approved Suppliers", icon: <Verified />, path: "/approved-suppliers", key: "approved_suppliers" },
+            { text: "Purchase Orders", icon: <ShoppingCart />, path: "/purchase", key: "purchase" },
+            { text: "Receiving Inspection", icon: <Assignment />, path: "/incoming-inspection", key: "incoming_inspection" },
+            { text: "Ongoing Evaluation", icon: <FactCheck />, path: "/ongoing-evaluation", key: "ongoing_evaluation" },
+            { text: "Corrective Action", icon: <Build />, path: "/corrective-action", key: "corrective_action" },
         ]
     },
     {
         name: "Purchase Management",
         description: "Procurement and inventory management",
         items: [
-            { text: "Purchase", icon: <ShoppingCart />, path: "/purchase", key: "purchase" },
             { text: "Goods Receipt Note (GRN)", icon: <Inventory />, path: "/grn", key: "grn" },
-            { text: "Incoming Inspection", icon: <Assignment />, path: "/incoming-inspection", key: "incoming_inspection" },
             { text: "Store", icon: <Store />, path: "/store", key: "store" },
-             { text: "Rejected Goods", icon: <Cancel />, path: "/rejected-goods", key: "rejected_goods" },
+            { text: "Rejected Goods", icon: <Cancel />, path: "/rejected-goods", key: "rejected_goods" },
         ]
     },
     {
@@ -72,7 +77,7 @@ export const APP_MENU = [
             { text: "Dispatch Details", icon: <LocalShipping />, path: "/dispatch", key: "dispatch" },
         ]
     },
-     {
+    {
         name: "Quality & Compliance",
         description: "Standards and equipment control",
         items: [
@@ -83,12 +88,12 @@ export const APP_MENU = [
         name: "General & Settings",
         description: "Administration and general operations",
         items: [
-           
+
             { text: "Role Management", icon: <Settings />, path: "/settings/roles", key: "role_management" },
             { text: "User Management", icon: <People />, path: "/settings/users", key: "user_management" },
         ]
     },
-   
+
 ];
 
 

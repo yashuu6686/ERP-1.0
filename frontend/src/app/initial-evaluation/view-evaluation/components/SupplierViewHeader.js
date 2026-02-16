@@ -18,7 +18,7 @@ const SupplierViewHeader = ({
         >
             <Button
                 startIcon={<ArrowBack />}
-                onClick={() => router.push("/suppliers")}
+                onClick={() => router.push("/initial-evaluation")}
                 sx={{
                     color: "#64748b",
                     fontWeight: 600,
@@ -31,7 +31,7 @@ const SupplierViewHeader = ({
                     "&:hover": { bgcolor: "#f1f5f9", borderColor: "#cbd5e1" },
                 }}
             >
-                Back to Suppliers
+                Back to Initial Evaluation
             </Button>
 
             <Stack direction="row" spacing={1.5}>
@@ -75,7 +75,7 @@ const SupplierViewHeader = ({
                 <Button
                     variant="contained"
                     startIcon={<Edit />}
-                    onClick={() => router.push(`/suppliers/create-evaluation?id=${id}`)}
+                    onClick={() => router.push(`/initial-evaluation/create-evaluation?id=${id}`)}
                     sx={{
                         borderRadius: "12px",
                         textTransform: "none",
