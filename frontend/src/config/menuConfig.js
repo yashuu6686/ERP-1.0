@@ -21,6 +21,7 @@ import Assessment from "@mui/icons-material/Assessment";
 import EventNote from "@mui/icons-material/EventNote";
 import PrecisionManufacturing from "@mui/icons-material/PrecisionManufacturing";
 import Thermostat from "@mui/icons-material/Thermostat";
+import FactCheck from "@mui/icons-material/FactCheck";
 
 export const APP_MENU = [
     {
