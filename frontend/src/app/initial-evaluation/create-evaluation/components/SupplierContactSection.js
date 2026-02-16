@@ -113,6 +113,15 @@ export default function SupplierContactSection({ formik }) {
                             name="zipCode"
                             id="zipCode"
                             size="small"
+                            type="text"
+                            inputProps={{
+                                maxLength: 6,
+                                inputMode: 'numeric',
+                                pattern: '[0-9]*'
+                            }}
+                            onInput={(e) => {
+                                e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 6);
+                            }}
                             value={values.zipCode}
                             onChange={handleChange}
                             onBlur={handleBlur}
@@ -131,6 +140,15 @@ export default function SupplierContactSection({ formik }) {
                             name="contactPerson"
                             id="contactPerson"
                             size="small"
+                            type="text"
+                            inputProps={{
+                                maxLength: 50,
+                                inputMode: 'text',
+                                pattern: '[A-Za-z ]*'
+                            }}
+                            onInput={(e) => {
+                                e.target.value = e.target.value.replace(/[^A-Za-z ]/g, '').slice(0, 50);
+                            }}
                             value={values.contactPerson}
                             onChange={handleChange}
                             onBlur={handleBlur}
@@ -167,6 +185,15 @@ export default function SupplierContactSection({ formik }) {
                             name="phone"
                             id="phone"
                             size="small"
+                            type="text"
+                            inputProps={{
+                                maxLength: 10,
+                                inputMode: 'numeric',
+                                pattern: '[0-9]*'
+                            }}
+                            onInput={(e) => {
+                                e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 10);
+                            }}
                             value={values.phone}
                             onChange={handleChange}
                             onBlur={handleBlur}

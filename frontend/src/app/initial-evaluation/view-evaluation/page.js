@@ -42,11 +42,22 @@ function ViewEvaluationContent() {
     const fetchEvaluation = async () => {
         try {
             setLoading(true);
-            const response = await axiosInstance.get(`/suppliers/${id}`);
-            setData(response.data);
+            const response = await axiosInstance.get(`/evaluation/${id}`);
+            const result = Array.isArray(response.data) ? response.data[0] : response.data;
+
+            if (result && result.id) {
+                setData(result);
+            } else {
+                // Fallback: search main list if direct ID lookup fails
+                const listResp = await axiosInstance.get('/evaluation');
+                const found = listResp.data.find(item => item.id === id);
+                if (found) setData(found);
+                else setData(null);
+            }
         } catch (error) {
             console.error("Error fetching evaluation:", error);
             showNotification("Failed to load evaluation data", "error");
+            setData(null);
         } finally {
             setLoading(false);
         }
@@ -58,8 +69,8 @@ function ViewEvaluationContent() {
         return (
             <Box sx={{ p: 4, textAlign: "center", minHeight: "80vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
                 <Typography variant="h5" color="error" fontWeight={600}>Evaluation Not Found</Typography>
-                <Button variant="contained" startIcon={<ArrowBack />} onClick={() => router.push("/suppliers")} sx={{ mt: 3, borderRadius: '12px', textTransform: 'none' }}>
-                    Back to Suppliers
+                <Button variant="contained" startIcon={<ArrowBack />} onClick={() => router.push("/initial-evaluation")} sx={{ mt: 3, borderRadius: '12px', textTransform: 'none' }}>
+                    Back to Initial Evaluation
                 </Button>
             </Box>
         );

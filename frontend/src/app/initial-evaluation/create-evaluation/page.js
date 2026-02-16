@@ -16,6 +16,7 @@ import {
     CircularProgress,
     InputAdornment,
     Stack,
+    Chip,
 } from "@mui/material";
 import {
     Save,
@@ -43,18 +44,32 @@ const validationSchema = [
         address: Yup.string().required("Address is required"),
         city: Yup.string().required("City is required"),
         state: Yup.string().required("State is required"),
-        zipCode: Yup.string().required("Zip code is required"),
+        zipCode: Yup.string()
+            .required("Zip code is required")
+            .matches(/^\d{5,6}$/, "Zip code must be 5 or 6 digits"),
         contactPerson: Yup.string().required("Contact person is required"),
         title: Yup.string().required("Title is required"),
-        phone: Yup.string().required("Phone is required"),
+        phone: Yup.string()
+            .required("Phone is required")
+            .matches(/^\d{10}$/, "Phone number must be exactly 10 digits"),
     }),
     // Step 1: Facilities
     Yup.object({
-        yearEstablished: Yup.string().required("Year established is required"),
-        totalSquareFootage: Yup.string().required("Total square footage is required"),
-        numberOfEmployees: Yup.number().required("Number of employees is required").positive(),
+        yearEstablished: Yup.string()
+            .required("Year established is required")
+            .matches(/^\d{4}$/, "Must be a 4-digit year (e.g., 2024)"),
+        totalSquareFootage: Yup.string()
+            .required("Total square footage is required")
+            .matches(/^\d+$/, "Must be a numeric value"),
+        numberOfEmployees: Yup.number()
+            .typeError("Must be a number")
+            .required("Number of employees is required")
+            .positive("Must be a positive number"),
         qaTitle: Yup.string().required("QA title is required"),
-        numberOfQAEmployees: Yup.number().required("Number of QA employees is required").positive(),
+        numberOfQAEmployees: Yup.number()
+            .typeError("Must be a number")
+            .required("Number of QA employees is required")
+            .positive("Must be a positive number"),
         productServices: Yup.string().required("Product/Services description is required"),
     }),
     // Step 2: Questionnaire
@@ -77,9 +92,9 @@ function SupplierEvaluationContent() {
     const [loading, setLoading] = useState(false);
     const [openPreview, setOpenPreview] = useState(false);
     const [submitting, setSubmitting] = useState(false);
-    const [completedSurveys, setCompletedSurveys] = useState([]);
-    const [loadingSurveys, setLoadingSurveys] = useState(false);
-    const [selectedSurvey, setSelectedSurvey] = useState(null);
+    const [referenceData, setReferenceData] = useState([]);
+    const [loadingRef, setLoadingRef] = useState(false);
+    const [selectedRef, setSelectedRef] = useState(null);
 
     const formik = useFormik({
         initialValues: {
@@ -148,27 +163,27 @@ function SupplierEvaluationContent() {
     });
 
     useEffect(() => {
-        const fetchCompletedSurveys = async () => {
+        const fetchReferenceData = async () => {
             try {
-                setLoadingSurveys(true);
-                const response = await axiosInstance.get("/supplier-surveys");
-                // Only get approved surveys
-                const completed = (response.data || []).filter(s => s.status === "Approved");
-                setCompletedSurveys(completed);
+                setLoadingRef(true);
+                const response = await axiosInstance.get("/risk-assessments");
+                // Only get completed risk assessments
+                const completed = (response.data || []).filter(s => s.status === "Completed");
+                setReferenceData(completed);
             } catch (error) {
-                console.error("Error fetching surveys:", error);
+                console.error("Error fetching risk assessments:", error);
             } finally {
-                setLoadingSurveys(false);
+                setLoadingRef(false);
             }
         };
 
-        fetchCompletedSurveys();
+        fetchReferenceData();
 
         if (id) {
             const fetchEvaluation = async () => {
                 try {
                     setLoading(true);
-                    const response = await axiosInstance.get(`/suppliers/${id}`);
+                    const response = await axiosInstance.get(`/evaluation/${id}`);
                     if (response.data) {
                         formik.setValues(response.data);
                     }
@@ -183,28 +198,22 @@ function SupplierEvaluationContent() {
         }
     }, [id]);
 
-    const handleSurveySelect = (event, survey) => {
-        setSelectedSurvey(survey);
-        if (survey) {
-            // Calculate year established approx from yearsInBusiness
-            const currentYear = new Date().getFullYear();
-            const yearEst = survey.financials?.yearsInBusiness ? (currentYear - parseInt(survey.financials.yearsInBusiness)).toString() : "";
+    const handleReferenceSelect = (event, assessment) => {
+        setSelectedRef(assessment);
+        if (assessment) {
+            const addressParts = assessment.addressLocation?.split(",") || [];
 
             formik.setValues({
                 ...formik.initialValues,
-                supplierName: survey.companyName || "",
-                address: survey.address || "",
-                phone: survey.phone || "",
-                contactPerson: survey.signOff?.name || "",
-                title: survey.signOff?.position || "",
-                numberOfEmployees: survey.financials?.totalEmployees || "",
-                numberOfQAEmployees: survey.financials?.qaEmployees || "",
-                yearEstablished: yearEst,
-                productServices: survey.underConsideration || "",
-                // Split address if possible (very basic)
-                city: survey.address?.split(",")?.[1]?.trim() || "",
+                supplierName: assessment.supplierName || "",
+                address: assessment.addressLocation || "",
+                city: addressParts[addressParts.length - 1]?.trim() || "",
+                contactPerson: assessment.contactPerson || "",
+                productServices: assessment.suppliedProductService || "",
+                status: "Pending",
+                evaluationDate: new Date().toISOString().split("T")[0],
             });
-            showNotification(`Data imported from survey: ${survey.companyName}`, "success");
+            showNotification(`Data imported from Risk Assessment: ${assessment.supplierName}`, "success");
         }
     };
 
@@ -219,15 +228,15 @@ function SupplierEvaluationContent() {
             };
 
             if (id) {
-                await axiosInstance.put(`/suppliers/${id}`, payload);
+                await axiosInstance.put(`/evaluation/${id}`, payload);
                 showNotification("Supplier evaluation updated successfully!", "success");
             } else {
-                await axiosInstance.post("/suppliers", payload);
+                await axiosInstance.post("/evaluation", payload);
                 showNotification("Supplier evaluation created successfully!", "success");
             }
 
             setOpenPreview(false);
-            router.push("/suppliers");
+            router.push("/initial-evaluation");
         } catch (error) {
             console.error("Error saving evaluation:", error);
             showNotification("Failed to save evaluation", "error");
@@ -309,33 +318,34 @@ function SupplierEvaluationContent() {
                                             <SurveyIcon sx={{ fontSize: 20 }} />
                                         </Box>
                                         <Typography variant="h6" sx={{ color: "#0f172a", fontWeight: 800, letterSpacing: '-0.01em' }}>
-                                            Quick Start from Survey
+                                            Quick Start from Risk Assessment
                                         </Typography>
                                     </Stack>
                                     <Typography variant="body2" sx={{ color: '#64748b', mb: { xs: 2, md: 0 }, maxWidth: '500px' }}>
-                                        Search for an approved supplier survey to instantly pre-fill company details, operational capacities, and contact information.
+                                        Search for a completed risk assessment to instantly pre-fill company details, classification, and contact information.
                                     </Typography>
                                 </Box>
 
                                 <Box sx={{ width: { xs: '100%', md: '450px' } }}>
                                     <Autocomplete
-                                        options={completedSurveys}
-                                        getOptionLabel={(option) => option.companyName || ""}
-                                        loading={loadingSurveys}
-                                        value={selectedSurvey}
-                                        onChange={handleSurveySelect}
+                                        options={referenceData}
+                                        getOptionLabel={(option) => option.supplierName || ""}
+                                        loading={loadingRef}
+                                        value={selectedRef}
+                                        onChange={handleReferenceSelect}
                                         renderOption={(props, option) => (
                                             <Box component="li" {...props} sx={{ borderBottom: '1px solid #f1f5f9', p: 1.5 }}>
                                                 <Stack spacing={0.5}>
                                                     <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#1172ba' }}>
-                                                        {option.companyName}
+                                                        {option.supplierName}
+                                                        <Chip label={option.riskCategory} size="small" variant="outlined" sx={{ ml: 1, fontSize: '0.65rem' }} />
                                                     </Typography>
                                                     <Stack direction="row" spacing={2} divider={<Divider orientation="vertical" flexItem sx={{ height: 12, my: 'auto' }} />}>
                                                         <Typography variant="caption" sx={{ color: '#64748b' }}>
                                                             ID: <b>{option.id?.substring(0, 8)}</b>
                                                         </Typography>
                                                         <Typography variant="caption" sx={{ color: '#64748b' }}>
-                                                            Approved: <b>{option.scanboReview?.approvedDate || option.signOff?.date || 'N/A'}</b>
+                                                            Assessed: <b>{option.assessmentDate || 'N/A'}</b>
                                                         </Typography>
                                                     </Stack>
                                                 </Stack>
@@ -344,9 +354,9 @@ function SupplierEvaluationContent() {
                                         renderInput={(params) => (
                                             <TextField
                                                 {...params}
-                                                label="Import Data from Approved Survey"
+                                                label="Import Data from Risk Assessment"
                                                 variant="outlined"
-                                                placeholder="Type company name to search..."
+                                                placeholder="Type supplier name..."
                                                 InputProps={{
                                                     ...params.InputProps,
                                                     startAdornment: (
@@ -356,7 +366,7 @@ function SupplierEvaluationContent() {
                                                     ),
                                                     endAdornment: (
                                                         <React.Fragment>
-                                                            {loadingSurveys ? <CircularProgress color="inherit" size={20} /> : null}
+                                                            {loadingRef ? <CircularProgress color="inherit" size={20} /> : null}
                                                             {params.InputProps.endAdornment}
                                                         </React.Fragment>
                                                     ),
@@ -422,7 +432,7 @@ function SupplierEvaluationContent() {
                         <Box sx={{ display: "flex", gap: 2 }}>
                             <Button
                                 variant="outlined"
-                                onClick={() => router.push("/suppliers")}
+                                onClick={() => router.push("/initial-evaluation")}
                                 sx={{
                                     px: 4,
                                     py: 1.2,
@@ -433,7 +443,7 @@ function SupplierEvaluationContent() {
                                     color: "#64748b",
                                 }}
                             >
-                                Cancel
+                                Back to Initial Evaluation
                             </Button>
                             {activeStep === steps.length - 1 ? (
                                 <Button

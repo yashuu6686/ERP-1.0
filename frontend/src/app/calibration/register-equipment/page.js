@@ -1,6 +1,8 @@
 "use client";
-import React, { useState, Suspense } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, Suspense, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { mockEquipmentData } from "../mockData";
+import { useNotification } from "@/context/NotificationContext";
 import {
     Box,
     Button,
@@ -16,6 +18,7 @@ import { useFormik, FormikProvider } from "formik";
 import * as Yup from "yup";
 import CommonCard from "@/components/ui/CommonCard";
 import Loader from "@/components/ui/Loader";
+import CalibrationPreviewDialog from "./components/CalibrationPreviewDialog";
 import {
     PrecisionManufacturing,
     LocationOn,
@@ -57,7 +60,11 @@ const validationSchema = Yup.object().shape({
 
 function RegisterEquipmentContent() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const id = searchParams.get("id");
     const [loading, setLoading] = useState(false);
+    const [showPreview, setShowPreview] = useState(false);
+    const { showNotification } = useNotification();
 
     const formik = useFormik({
         initialValues: {
@@ -113,18 +120,67 @@ function RegisterEquipmentContent() {
                 // TODO: Replace with actual API call
                 // await axiosInstance.post("/calibration-equipment", finalData);
 
-                alert("Equipment Registered Successfully!");
+                // alert(id ? "Equipment Updated Successfully!" : "Equipment Registered Successfully!");
+                showNotification(id ? "Equipment Updated Successfully!" : "Equipment Registered Successfully!", "success");
                 router.push("/calibration");
             } catch (error) {
                 console.error("Registration Error:", error);
-                alert("Error registering equipment. Please try again.");
+                showNotification("Error registering equipment. Please try again.", "error");
             } finally {
                 setLoading(false);
             }
         }
     });
 
-    if (loading) return <Loader fullPage message="Registering Equipment..." />;
+
+
+    useEffect(() => {
+        if (id) {
+            const equipment = mockEquipmentData.find((e) => e.id === parseInt(id));
+            if (equipment) {
+                formik.setValues({
+                    equipmentName: equipment.equipmentName || "",
+                    masterId: equipment.masterId || "",
+                    subDeviceId: equipment.subDeviceId || "",
+                    serialNumber: equipment.serialNumber || "",
+                    manufacturer: equipment.manufacturer || "",
+                    model: equipment.model || "",
+                    frequency: equipment.frequency || "Annual",
+                    location: equipment.location || "",
+                    department: equipment.department || "",
+                    certificateNo: equipment.certificateNo || "",
+                    calibratedBy: equipment.calibratedBy || "",
+                    calibrationSource: equipment.calibrationSource || "",
+                    lastCalibrationDate: equipment.lastCalibrationDate || new Date().toISOString().split('T')[0],
+                    nextDueDate: equipment.nextDueDate || "",
+                    remarks: equipment.remarks || "",
+                    status: equipment.status || "Calibrated",
+                });
+            }
+        }
+    }, [id]);
+
+    if (loading) return <Loader fullPage message={id ? "Updating Equipment..." : "Registering Equipment..."} />;
+
+    const handlePreview = async () => {
+        const errors = await formik.validateForm();
+        if (Object.keys(errors).length === 0) {
+            setShowPreview(true);
+        } else {
+            // Mark all fields as touched to show errors
+            const touched = {};
+            Object.keys(errors).forEach(field => {
+                touched[field] = true;
+            });
+            formik.setTouched(touched);
+            showNotification("Please fill all required fields correctly.", "error");
+        }
+    };
+
+    const handleConfirm = () => {
+        setShowPreview(false);
+        formik.handleSubmit();
+    };
 
     const inputStyle = {
         "& .MuiOutlinedInput-root": {
@@ -136,7 +192,7 @@ function RegisterEquipmentContent() {
     return (
         <FormikProvider value={formik}>
             <Box>
-                <CommonCard title="Register New Equipment">
+                <CommonCard title={id ? "Update Equipment" : "Register New Equipment"}>
                     <Box sx={{ p: 1 }}>
                         <Grid container spacing={3} sx={{ mb: 4 }}>
                             {/* Equipment Identification */}
@@ -370,7 +426,7 @@ function RegisterEquipmentContent() {
                             <Button
                                 variant="contained"
                                 startIcon={<Save />}
-                                onClick={formik.handleSubmit}
+                                onClick={handlePreview}
                                 sx={{
                                     backgroundColor: "#1172ba",
                                     "&:hover": { backgroundColor: "#0d5a94" },
@@ -382,11 +438,19 @@ function RegisterEquipmentContent() {
                                     background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)"
                                 }}
                             >
-                                Register Equipment
+                                {id ? "Update Equipment" : "Register Equipment"}
                             </Button>
                         </Box>
                     </Box>
                 </CommonCard>
+
+                <CalibrationPreviewDialog
+                    open={showPreview}
+                    onClose={() => setShowPreview(false)}
+                    onConfirm={handleConfirm}
+                    data={formik.values}
+                    isEditMode={!!id}
+                />
             </Box>
         </FormikProvider>
     );

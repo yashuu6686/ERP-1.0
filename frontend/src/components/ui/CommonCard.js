@@ -19,19 +19,18 @@ const CommonCard = ({
     onSearchChange,
     children,
     searchExtra,
+    action, // Custom action component (e.g., extra buttons)
 }) => {
     return (
         <Box sx={{ mb: "var(--space-lg)" }}>
             <Paper
                 elevation={0}
                 sx={{
-
                     p: "var(--space-sm)",
                     borderRadius: "var(--card-radius)",
                     border: "1px solid var(--border-default)",
                     backgroundColor: "var(--bg-surface)",
                     boxShadow: "var(--card-shadow)",
-
                 }}
             >
                 {/* Header Section */}
@@ -40,7 +39,6 @@ const CommonCard = ({
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
-
                         mb: "var(--space-lg)",
                         backgroundColor: "var(--bg-page)",
                         p: "8px 16px",
@@ -63,28 +61,32 @@ const CommonCard = ({
                         <Box sx={{ width: 4, height: 20, bgcolor: "var(--brand-primary)", borderRadius: 1 }} />
                         {title}
                     </Typography>
-                    {onAdd && (
-                        <Button
-                            variant="contained"
-                            startIcon={<Add sx={{ fontSize: 20 }} />}
-                            onClick={onAdd}
-                            sx={{
-                                textTransform: "none",
-                                fontWeight: 600,
-                                borderRadius: "var(--btn-radius)",
-                                bgcolor: "var(--brand-primary)",
-                                color: "#ffffff",
-                                px: 3,
-                                py: 1,
-                                fontSize: 'var(--size-body)',
-                                boxShadow: "none",
-                                transition: "all 0.2s",
-                                fontFamily: "var(--font-manrope)",
-                            }}
-                        >
-                            {addText || "Add New"}
-                        </Button>
-                    )}
+
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                        {action}
+                        {onAdd && (
+                            <Button
+                                variant="contained"
+                                startIcon={<Add sx={{ fontSize: 20 }} />}
+                                onClick={onAdd}
+                                sx={{
+                                    textTransform: "none",
+                                    fontWeight: 600,
+                                    borderRadius: "var(--btn-radius)",
+                                    bgcolor: "var(--brand-primary)",
+                                    color: "#ffffff",
+                                    px: 3,
+                                    py: 1,
+                                    fontSize: 'var(--size-body)',
+                                    boxShadow: "none",
+                                    transition: "all 0.2s",
+                                    fontFamily: "var(--font-manrope)",
+                                }}
+                            >
+                                {addText || "Add New"}
+                            </Button>
+                        )}
+                    </Box>
                 </Box>
 
                 {/* Search Section */}

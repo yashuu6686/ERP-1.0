@@ -17,7 +17,8 @@ import {
     Container,
     Fade,
     Card,
-    CardContent
+    CardContent,
+    Button
 } from "@mui/material";
 import {
     ArrowBack,
@@ -28,8 +29,9 @@ import {
     CalendarMonth,
     FileDownload
 } from "@mui/icons-material";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import Loader from "@/components/ui/Loader";
+import { mockEquipmentData } from "../../mockData";
 
 // Gradient Card Component
 const GradientCard = ({ title, icon: Icon, children }) => (
@@ -55,25 +57,39 @@ const GradientCard = ({ title, icon: Icon, children }) => (
     </Card>
 );
 
-function EquipmentCalibrationRecordContent({ params }) {
+
+
+function EquipmentCalibrationRecordContent() {
     const router = useRouter();
+    const params = useParams();
     const { id } = params;
 
+    const equipmentData = mockEquipmentData.find(e => e.id === parseInt(id));
+
+    if (!equipmentData) {
+        return (
+            <Container sx={{ mt: 4 }}>
+                <Typography variant="h5" color="error">Equipment not found</Typography>
+                <Button onClick={() => router.push('/calibration')} sx={{ mt: 2 }} variant="outlined">Back to List</Button>
+            </Container>
+        );
+    }
+
     const equipment = {
-        name: "Digital Multimeter",
-        masterId: "SCAN-DMM-001",
-        serialNo: "SN7892341",
-        manufacturer: "Fluke",
-        model: "87V",
-        location: "Production Lab",
-        department: "Quality Control",
-        description: "6.5 Digit Precision Multimeter for testing PCBA",
-        calibrationInterval: "Annual",
-        lastCalibrated: "2023-08-15",
-        nextDue: "2024-08-15",
-        status: "Calibrated",
-        docNo: "FRM18-02",
-        revision: "00"
+        name: equipmentData.equipmentName,
+        masterId: equipmentData.masterId,
+        serialNo: equipmentData.serialNumber || "N/A",
+        manufacturer: equipmentData.manufacturer || "N/A",
+        model: equipmentData.model || "N/A",
+        location: equipmentData.location,
+        department: equipmentData.department || "N/A",
+        description: equipmentData.remarks || "No description provided",
+        calibrationInterval: equipmentData.frequency,
+        lastCalibrated: equipmentData.lastCalibration || equipmentData.lastCalibrationDate,
+        nextDue: equipmentData.dueDate || equipmentData.nextDueDate,
+        status: equipmentData.status,
+        docNo: equipmentData.certificateNo || "N/A",
+        revision: "00" // Mock revision
     };
 
     const records = [
@@ -378,6 +394,7 @@ function EquipmentCalibrationRecordContent({ params }) {
                                     <Chip
                                         label="Update Equipment Info"
                                         clickable
+                                        onClick={() => router.push(`/calibration/register-equipment?id=${id}`)}
                                         sx={{
                                             bgcolor: '#f1f5f9',
                                             color: '#475569',
@@ -411,7 +428,7 @@ function EquipmentCalibrationRecordContent({ params }) {
 export default function EquipmentCalibrationRecord({ params }) {
     return (
         <Suspense fallback={<Loader fullPage message="Loading Calibration Record..." />}>
-            <EquipmentCalibrationRecordContent params={params} />
+            <EquipmentCalibrationRecordContent />
         </Suspense>
     );
 }

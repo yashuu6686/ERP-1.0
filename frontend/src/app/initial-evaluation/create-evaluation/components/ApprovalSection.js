@@ -122,18 +122,21 @@ export default function ApprovalSection({ formik }) {
                         </FormControl>
                     </Grid>
 
-                    <Grid size={{ xs: 12 }}>
-                        <TextField
-                            fullWidth
-                            label="Comments"
-                            name="approvalComments"
-                            multiline
-                            rows={3}
-                            value={values.approvalComments}
-                            onChange={handleChange}
-                            sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
-                        />
-                    </Grid>
+                    {values.supplierApproved === "no" && (
+                        <Grid size={{ xs: 12 }}>
+                            <TextField
+                                fullWidth
+                                label="Explain Reason for Rejection"
+                                name="approvalComments"
+                                multiline
+                                rows={3}
+                                value={values.approvalComments}
+                                onChange={handleChange}
+                                sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
+                                required
+                            />
+                        </Grid>
+                    )}
 
                     <Grid size={{ xs: 12, md: 6 }}>
                         <TextField
