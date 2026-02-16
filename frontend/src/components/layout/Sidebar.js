@@ -17,18 +17,32 @@ import Footer from "./Footer";
 import Image from "next/image";
 // import '../../styles/globals.css'
 
-import { MENU_ITEMS } from "@/config/menuConfig";
+import { APP_MENU } from "@/config/menuConfig";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+import Collapse from "@mui/material/Collapse";
 
 const DRAWER_WIDTH = 264;
 const MINI_DRAWER_WIDTH = 56;
 
 export default function Sidebar({ children }) {
   const { user, logout, checkPermission } = useAuth();
+  const [openStates, setOpenStates] = React.useState({});
 
-  const menuItems = React.useMemo(() => {
+  const filteredMenu = React.useMemo(() => {
     if (!user) return [];
-    return MENU_ITEMS.filter(item => checkPermission(item.key, 'view'));
+    return APP_MENU.map(flow => {
+      if (flow.items) {
+        return {
+          ...flow,
+          items: flow.items.filter(item => checkPermission(item.key, 'view'))
+        };
+      }
+      // If standalone item
+      return checkPermission(flow.key, 'view') ? flow : null;
+    }).filter(flow => flow && (!flow.items || flow.items.length > 0));
   }, [user, checkPermission]);
+
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(true);
   const [hasMounted, setHasMounted] = React.useState(false);
 
@@ -46,11 +60,37 @@ export default function Sidebar({ children }) {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  const handleGroupClick = (groupName) => {
+    if (!isSidebarOpen && isLargeScreen) {
+      setIsSidebarOpen(true);
+    }
+    setOpenStates(prev => ({
+      ...prev,
+      [groupName]: !prev[groupName]
+    }));
+  };
+
   const handleListItemClick = () => {
     if (hasMounted && !isLargeScreen) {
       setIsSidebarOpen(false);
     }
   };
+
+  // Auto-expand groups based on current path
+  React.useEffect(() => {
+    if (pathname === "/") {
+      setOpenStates(prev => ({ ...prev, "Main": true }));
+      return;
+    }
+    filteredMenu.forEach(flow => {
+      const hasActiveChild = flow.items && flow.items.some(item =>
+        pathname === item.path || pathname?.startsWith(item.path + "/")
+      );
+      if (hasActiveChild) {
+        setOpenStates(prev => ({ ...prev, [flow.name]: true }));
+      }
+    });
+  }, [pathname, filteredMenu]);
 
   const drawerVariant = hasMounted ? (isLargeScreen ? "persistent" : "temporary") : "persistent";
   const drawerOpen = hasMounted ? (isLargeScreen ? true : isSidebarOpen) : true;
@@ -90,8 +130,6 @@ export default function Sidebar({ children }) {
           },
         }}
       >
-        {/* Profile Header Section */}
-
         <List
           className="sidebar-scroll"
           style={{
@@ -132,44 +170,98 @@ export default function Sidebar({ children }) {
 
           <Divider sx={{ borderColor: "var(--border-default)", mb: 1, }} />
 
-          {menuItems.map((item, index) => {
-            const isActive =
-              pathname === item.path ||
-              pathname?.startsWith(item.path + "/");
+          {filteredMenu.map((flow, flowIndex) => {
+            // Check if it's a standalone item or a flow group
+            if (!flow.items) {
+              const isActive = pathname === flow.path || pathname?.startsWith(flow.path + "/");
+              return (
+                <Tooltip
+                  key={flowIndex}
+                  title={!isSidebarOpen ? flow.text : ""}
+                  placement="right"
+                  arrow
+                  enterDelay={100}
+                >
+                  <Box sx={{ width: '100%', mb: 0.5 }}>
+                    <ListItemButton
+                      component={Link}
+                      href={flow.path}
+                      selected={isActive}
+                      onClick={handleListItemClick}
+                      sx={{
+                        position: 'relative',
+                        borderRadius: "8px",
+                        padding: isSidebarOpen ? "10px 12px" : "10px 0",
+                        backgroundColor: isActive ? "var(--brand-soft)" : "transparent",
+                        color: isActive ? "var(--brand-primary)" : "var(--text-primary)",
+                        justifyContent: isSidebarOpen ? 'initial' : 'center',
+                        minHeight: isSidebarOpen ? 'auto' : '48px',
+                        '&:hover': {
+                          backgroundColor: "rgba(17, 114, 186, 0.04)",
+                        },
+                        '&::before': isActive ? {
+                          content: '""',
+                          position: 'absolute',
+                          left: 0,
+                          top: '15%',
+                          height: '70%',
+                          width: '4px',
+                          backgroundColor: 'var(--brand-primary)',
+                          borderRadius: '0 4px 4px 0',
+                        } : {}
+                      }}
+                    >
+                      <Box
+                        style={{
+                          marginRight: isSidebarOpen ? "12px" : "0px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: 'center',
+                          color: isActive ? "var(--brand-primary)" : "rgb(17, 114, 186)",
+                        }}
+                      >
+                        {React.cloneElement(flow.icon, { fontSize: "small" })}
+                      </Box>
+
+                      {isSidebarOpen && (
+                        <ListItemText
+                          primary={flow.text}
+                          primaryTypographyProps={{
+                            fontSize: "14px",
+                            fontWeight: isActive ? 600 : 500,
+                            fontFamily: "var(--font-manrope)",
+                          }}
+                        />
+                      )}
+                    </ListItemButton>
+                  </Box>
+                </Tooltip>
+              );
+            }
+
+            const isExpanded = openStates[flow.name];
 
             return (
-              <Tooltip
-                key={index}
-                title={!isSidebarOpen ? item.text : ""}
-                placement="right"
-                arrow
-                enterDelay={100}
-              >
-                <Box sx={{ width: '100%' }}>
+              <Box key={flowIndex} sx={{ width: '100%', mb: 1 }}>
+                {/* Group Header */}
+                <Tooltip
+                  title={!isSidebarOpen ? flow.name : ""}
+                  placement="right"
+                  arrow
+                  enterDelay={100}
+                >
                   <ListItemButton
-                    component={Link}
-                    href={item.path}
-                    selected={isActive}
-                    onClick={handleListItemClick}
+                    onClick={() => handleGroupClick(flow.name)}
                     sx={{
-                      position: 'relative',
                       borderRadius: "8px",
-                      marginBottom: "4px",
                       padding: isSidebarOpen ? "10px 12px" : "10px 0",
-                      backgroundColor: isActive ? "var(--brand-soft)" : "transparent",
-                      color: isActive ? "var(--brand-primary)" : "var(--text-primary)",
                       justifyContent: isSidebarOpen ? 'initial' : 'center',
                       minHeight: isSidebarOpen ? 'auto' : '48px',
-                      '&::before': isActive ? {
-                        content: '""',
-                        position: 'absolute',
-                        left: 0,
-                        top: '15%',
-                        height: '70%',
-                        width: '4px',
-                        backgroundColor: 'var(--brand-primary)',
-                        borderRadius: '0 4px 4px 0',
-                      } : {}
+                      color: isExpanded ? "var(--brand-primary)" : "var(--text-primary)",
+                      backgroundColor: isExpanded ? "rgba(17, 114, 186, 0.04)" : "transparent",
+                      "&:hover": {
+                        backgroundColor: "var(--brand-soft)",
+                      }
                     }}
                   >
                     <Box
@@ -178,31 +270,92 @@ export default function Sidebar({ children }) {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: 'center',
-                        color: isActive ? "var(--brand-primary)" : "rgb(17, 114, 186)",
+                        color: isExpanded ? "var(--brand-primary)" : "rgb(17, 114, 186)",
                       }}
                     >
-                      {React.cloneElement(item.icon, { fontSize: "small" })}
+                      {flow.icon ? React.cloneElement(flow.icon, { fontSize: "small" }) : React.cloneElement(flow.items[0].icon, { fontSize: "small" })}
                     </Box>
 
                     {isSidebarOpen && (
-                      <ListItemText
-                        primary={item.text}
-                        primaryTypographyProps={{
-                          fontSize: "var(--size-body)",
-                          fontWeight: isActive ? 600 : 500,
-                          fontFamily: "var(--font-manrope)",
-                          noWrap: false,
-                          style: {
-                            lineHeight: 1.2,
-                            whiteSpace: 'normal',
-                            wordBreak: 'break-word'
-                          }
-                        }}
-                      />
+                      <>
+                        <ListItemText
+                          primary={flow.name}
+                          primaryTypographyProps={{
+                            fontSize: "14px",
+                            fontWeight: isExpanded ? 600 : 500,
+                            fontFamily: "var(--font-manrope)",
+                          }}
+                        />
+                        {isExpanded ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+                      </>
                     )}
                   </ListItemButton>
-                </Box>
-              </Tooltip>
+                </Tooltip>
+
+                {/* Sub Items */}
+                <Collapse in={isExpanded && isSidebarOpen} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding sx={{ mt: 0.5 }}>
+                    {flow.items.map((item, itemIndex) => {
+                      const isActive =
+                        pathname === item.path ||
+                        pathname?.startsWith(item.path + "/");
+
+                      return (
+                        <ListItemButton
+                          key={itemIndex}
+                          component={Link}
+                          href={item.path}
+                          selected={isActive}
+                          onClick={handleListItemClick}
+                          sx={{
+                            position: 'relative',
+                            borderRadius: "8px",
+                            marginBottom: "2px",
+                            ml: 2,
+                            padding: "8px 12px",
+                            backgroundColor: isActive ? "var(--brand-soft)" : "transparent",
+                            color: isActive ? "var(--brand-primary)" : "var(--text-primary)",
+                            '&:hover': {
+                              backgroundColor: "rgba(17, 114, 186, 0.04)",
+                            },
+                            '&::before': isActive ? {
+                              content: '""',
+                              position: 'absolute',
+                              left: 0,
+                              top: '20%',
+                              height: '60%',
+                              width: '3px',
+                              backgroundColor: 'var(--brand-primary)',
+                              borderRadius: '0 4px 4px 0',
+                            } : {}
+                          }}
+                        >
+                          <Box
+                            style={{
+                              marginRight: "10px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: 'center',
+                              color: isActive ? "var(--brand-primary)" : "rgb(17, 114, 186)",
+                            }}
+                          >
+                            {React.cloneElement(item.icon, { sx: { fontSize: "16px" } })}
+                          </Box>
+
+                          <ListItemText
+                            primary={item.text}
+                            primaryTypographyProps={{
+                              fontSize: "13px",
+                              fontWeight: isActive ? 600 : 500,
+                              fontFamily: "var(--font-manrope)",
+                            }}
+                          />
+                        </ListItemButton>
+                      );
+                    })}
+                  </List>
+                </Collapse>
+              </Box>
             );
           })}
 

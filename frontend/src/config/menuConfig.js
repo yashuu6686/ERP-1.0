@@ -23,11 +23,10 @@ import { PrecisionManufacturing } from "@mui/icons-material";
 
 export const APP_MENU = [
     {
-        name: "Main",
-        description: "Overview and analytics",
-        items: [
-            { text: "Dashboard", icon: <Home />, path: "/", key: "dashboard" },
-        ]
+        text: "Dashboard",
+        icon: <Home />,
+        path: "/",
+        key: "dashboard"
     },
     {
         name: "Supplier Management",
@@ -38,29 +37,31 @@ export const APP_MENU = [
         ]
     },
     {
-        name: "Purchase Flow",
+        name: "Purchase Management",
         description: "Procurement and inventory management",
         items: [
             { text: "Purchase", icon: <ShoppingCart />, path: "/purchase", key: "purchase" },
             { text: "Goods Receipt Note (GRN)", icon: <Inventory />, path: "/grn", key: "grn" },
             { text: "Incoming Inspection", icon: <Assignment />, path: "/incoming-inspection", key: "incoming_inspection" },
             { text: "Store", icon: <Store />, path: "/store", key: "store" },
+             { text: "Rejected Goods", icon: <Cancel />, path: "/rejected-goods", key: "rejected_goods" },
         ]
     },
     {
-        name: "Production Flow",
+        name: "Production Management",
         description: "Manufacturing and production control",
         items: [
             { text: "Bill of Materials", icon: <Build />, path: "/bom", key: "bom" },
+            { text: "Line Clearance Checklist", icon: <Assignment />, path: "/line-clearance-checklist", key: "line_clearance_checklist" },
             { text: "Production Plan", icon: <EventNote />, path: "/production-plan", key: "production_plan" },
-            { text: "Material Issue Request", icon: <Send />, path: "/material-issue", key: "material_issue" },
+            // { text: "Material Issue Request", icon: <Send />, path: "/material-issue", key: "material_issue" },
             { text: "Rejection Material Transfer Slip", icon: <Description />, path: "/rejection-transfer-slip", key: "rejection_transfer_slip" },
             { text: "After Production Inspection", icon: <CheckCircle />, path: "/production-inspection", key: "production_inspection" },
             { text: "Batch", icon: <Layers />, path: "/batch", key: "batch" },
         ]
     },
     {
-        name: "Sales Flow",
+        name: "Sales Management",
         description: "Customer orders and invoicing",
         items: [
             { text: "Customer Orders", icon: <People />, path: "/orders", key: "orders" },
@@ -71,28 +72,29 @@ export const APP_MENU = [
             { text: "Dispatch Details", icon: <LocalShipping />, path: "/dispatch", key: "dispatch" },
         ]
     },
-    {
-        name: "General & Settings",
-        description: "Administration and general operations",
-        items: [
-            { text: "Rejected Goods", icon: <Cancel />, path: "/rejected-goods", key: "rejected_goods" },
-            { text: "Role Management", icon: <Settings />, path: "/settings/roles", key: "role_management" },
-            { text: "User Management", icon: <People />, path: "/settings/users", key: "user_management" },
-        ]
-    },
-    {
+     {
         name: "Quality & Compliance",
         description: "Standards and equipment control",
         items: [
             { text: "Calibration", icon: <PrecisionManufacturing />, path: "/calibration", key: "calibration" },
         ]
-    }
+    },
+    {
+        name: "General & Settings",
+        description: "Administration and general operations",
+        items: [
+           
+            { text: "Role Management", icon: <Settings />, path: "/settings/roles", key: "role_management" },
+            { text: "User Management", icon: <People />, path: "/settings/users", key: "user_management" },
+        ]
+    },
+   
 ];
 
 
-export const MENU_ITEMS = APP_MENU.flatMap(flow => flow.items);
+export const MENU_ITEMS = APP_MENU.flatMap(flow => flow.items ? flow.items : [flow]);
 
 export const FLOWS = APP_MENU.map(flow => ({
-    name: flow.name,
-    items: flow.items.map(item => item.key)
+    name: flow.name || flow.text,
+    items: flow.items ? flow.items.map(item => item.key) : [flow.key]
 }));

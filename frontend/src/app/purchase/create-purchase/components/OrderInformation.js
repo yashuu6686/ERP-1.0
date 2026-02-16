@@ -21,7 +21,8 @@ const OrderInformation = () => {
                 mb: 4,
                 border: "1px solid #e9ecef",
                 borderRadius: 2,
-                overflow: "hidden"
+                overflow: "hidden",
+                boxShadow: "none"
             }}
         >
             <Box
@@ -39,7 +40,7 @@ const OrderInformation = () => {
                     Order Information
                 </Typography>
             </Box>
-            <CardContent>
+            <CardContent sx={{ boxShadow: "none" }}>
                 <Grid container spacing={3}>
                     <Grid size={{ xs: 12, md: 4 }}>
                         <TextField

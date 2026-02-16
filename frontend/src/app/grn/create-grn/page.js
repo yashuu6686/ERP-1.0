@@ -35,7 +35,7 @@ import * as Yup from "yup";
 
 // Helper component for the internal gradient cards
 const GradientCard = ({ title, icon: Icon, children }) => (
-    <Card sx={{ height: "100%", borderRadius: 2 }}>
+    <Card sx={{ height: "100%", borderRadius: 2, boxShadow: "none", border: "1px solid #e9ecef" }} elevation={0}>
         <Box
             sx={{
                 p: 2,

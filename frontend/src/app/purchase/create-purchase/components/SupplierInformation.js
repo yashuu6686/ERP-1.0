@@ -62,8 +62,10 @@ const SupplierInformation = () => {
             sx={{
                 height: "100%",
                 borderRadius: 2,
-                boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)"
+                boxShadow: "none",
+                border: "1px solid #e9ecef"
             }}
+            elevation={0}
         >
             <Box
                 sx={{
@@ -95,7 +97,7 @@ const SupplierInformation = () => {
                         <TextField
                             {...params}
                             label="Search Existing Supplier"
-                            placeholder="Type to search..."
+                            placeholder="Type to search and select supplier"
                             variant="outlined"
                             InputProps={{
                                 ...params.InputProps,
@@ -113,7 +115,7 @@ const SupplierInformation = () => {
                             }}
                             sx={{
                                 "& .MuiOutlinedInput-root": {
-                                    borderRadius: 2,
+                                    borderRadius: 1,
                                     bgcolor: "#f8fafc",
                                     "&:hover": { bgcolor: "#f1f5f9" }
                                 }
@@ -121,12 +123,10 @@ const SupplierInformation = () => {
                         />
                     )}
                 />
-                <Typography variant="caption" sx={{ color: "#64748b", mt: 1, display: "block", fontStyle: "italic" }}>
-                    Select a supplier from our list to automatically fill the details below.
-                </Typography>
+
             </Box>
 
-            <CardContent sx={{ p: 3 }}>
+            <CardContent sx={{ p: 3, }}>
                 <Grid container spacing={2}>
                     <Grid size={{ xs: 12, md: 6 }}>
                         <TextField
@@ -186,7 +186,7 @@ const SupplierInformation = () => {
                         <TextField
                             fullWidth
                             type="number"
-                            label="Phone"
+                            label="Supplier Phone"
                             placeholder="9876543210"
                             name="supplier.phone"
                             value={values.supplier.phone}

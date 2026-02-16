@@ -66,7 +66,7 @@ export default function ProductionPlanList() {
     const fetchPlans = async () => {
         try {
             setLoading(true);
-            const response = await axiosInstance.get("/productionPlans");
+            const response = await axiosInstance.get("/production-plans");
             setPlans(response.data || []);
         } catch (error) {
             console.error("Failed to fetch production plans:", error);
