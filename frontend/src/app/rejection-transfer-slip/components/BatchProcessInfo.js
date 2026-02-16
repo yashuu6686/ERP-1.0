@@ -22,8 +22,9 @@ const BatchProcessInfo = () => {
                 border: "1px solid #e9ecef",
                 borderRadius: 2,
                 overflow: "hidden",
-                boxShadow: "0 2px 10px rgba(0,0,0,0.05)"
+                boxShadow: "none"
             }}
+            elevation={0}
         >
             <Box
                 sx={{
@@ -42,7 +43,7 @@ const BatchProcessInfo = () => {
             </Box>
             <CardContent>
                 <Grid container spacing={3}>
-                    <Grid size={{ xs: 12, md: 3 }}>
+                    <Grid size={{ xs: 12, md: 2.4 }}>
                         <TextField
                             fullWidth
                             type="date"
@@ -64,7 +65,7 @@ const BatchProcessInfo = () => {
                             sx={{ "& .MuiOutlinedInput-root": { bgcolor: "white" } }}
                         />
                     </Grid>
-                    <Grid size={{ xs: 12, md: 3 }}>
+                    <Grid size={{ xs: 12, md: 2.4 }}>
                         <TextField
                             fullWidth
                             label="BMR No."
@@ -84,7 +85,7 @@ const BatchProcessInfo = () => {
                             }}
                         />
                     </Grid>
-                    <Grid size={{ xs: 12, md: 3 }}>
+                    <Grid size={{ xs: 12, md: 2.4 }}>
                         <TextField
                             fullWidth
                             label="Batch No."
@@ -104,17 +105,37 @@ const BatchProcessInfo = () => {
                             }}
                         />
                     </Grid>
-                    <Grid size={{ xs: 12, md: 3 }}>
+                    <Grid size={{ xs: 12, md: 2.4 }}>
                         <TextField
                             fullWidth
-                            label="Serial No."
-                            placeholder="Enter Serial No."
-                            name="serialNo"
-                            value={values.serialNo}
+                            label="Serial No. From"
+                            placeholder="Start No."
+                            name="serialNoFrom"
+                            value={values.serialNoFrom}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            error={touched.serialNo && Boolean(errors.serialNo)}
-                            helperText={touched.serialNo && errors.serialNo}
+                            error={touched.serialNoFrom && Boolean(errors.serialNoFrom)}
+                            helperText={touched.serialNoFrom && errors.serialNoFrom}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <Numbers sx={{ color: "#1172ba" }} />
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 2.4 }}>
+                        <TextField
+                            fullWidth
+                            label="Serial No. To"
+                            placeholder="End No."
+                            name="serialNoTo"
+                            value={values.serialNoTo}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            error={touched.serialNoTo && Boolean(errors.serialNoTo)}
+                            helperText={touched.serialNoTo && errors.serialNoTo}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">

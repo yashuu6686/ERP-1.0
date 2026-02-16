@@ -16,7 +16,10 @@ const DeliveryInformation = () => {
             sx={{
                 height: "100%",
                 borderRadius: 2,
+                boxShadow: "none",
+                border: "1px solid #e9ecef"
             }}
+            elevation={0}
         >
             <Box
                 sx={{
@@ -93,7 +96,7 @@ const DeliveryInformation = () => {
                         <TextField
                             fullWidth
                             type="number"
-                            label="Phone"
+                            label="Delivery Phone"
                             placeholder="9876543210"
                             name="delivery.phone"
                             value={values.delivery.phone}
