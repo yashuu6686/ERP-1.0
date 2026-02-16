@@ -19,7 +19,8 @@ import Business from "@mui/icons-material/Business";
 import RateReview from "@mui/icons-material/RateReview";
 import Assessment from "@mui/icons-material/Assessment";
 import EventNote from "@mui/icons-material/EventNote";
-import { PrecisionManufacturing } from "@mui/icons-material";
+import PrecisionManufacturing from "@mui/icons-material/PrecisionManufacturing";
+import Thermostat from "@mui/icons-material/Thermostat";
 
 export const APP_MENU = [
     {
@@ -44,7 +45,7 @@ export const APP_MENU = [
             { text: "Goods Receipt Note (GRN)", icon: <Inventory />, path: "/grn", key: "grn" },
             { text: "Incoming Inspection", icon: <Assignment />, path: "/incoming-inspection", key: "incoming_inspection" },
             { text: "Store", icon: <Store />, path: "/store", key: "store" },
-             { text: "Rejected Goods", icon: <Cancel />, path: "/rejected-goods", key: "rejected_goods" },
+            { text: "Rejected Goods", icon: <Cancel />, path: "/rejected-goods", key: "rejected_goods" },
         ]
     },
     {
@@ -72,7 +73,7 @@ export const APP_MENU = [
             { text: "Dispatch Details", icon: <LocalShipping />, path: "/dispatch", key: "dispatch" },
         ]
     },
-     {
+    {
         name: "Quality & Compliance",
         description: "Standards and equipment control",
         items: [
@@ -80,15 +81,22 @@ export const APP_MENU = [
         ]
     },
     {
+        name: "Environment Management",
+        description: "Monitoring and managing environment conditions",
+        items: [
+            { text: "Daily Monitoring Log", icon: <Assignment />, path: "/environment/monitoring-log", key: "environment_log" },
+        ]
+    },
+    {
         name: "General & Settings",
         description: "Administration and general operations",
         items: [
-           
+
             { text: "Role Management", icon: <Settings />, path: "/settings/roles", key: "role_management" },
             { text: "User Management", icon: <People />, path: "/settings/users", key: "user_management" },
         ]
     },
-   
+
 ];
 
 
