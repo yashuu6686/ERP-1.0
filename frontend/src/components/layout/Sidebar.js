@@ -258,7 +258,7 @@ export default function Sidebar({ children }) {
                       justifyContent: isSidebarOpen ? 'initial' : 'center',
                       minHeight: isSidebarOpen ? 'auto' : '48px',
                       color: isExpanded ? "var(--brand-primary)" : "var(--text-primary)",
-                      backgroundColor: isExpanded ? "rgba(17, 114, 186, 0.04)" : "transparent",
+                      backgroundColor: isExpanded ? "var(--brand-soft)" : "transparent",
                       "&:hover": {
                         backgroundColor: "var(--brand-soft)",
                       }
