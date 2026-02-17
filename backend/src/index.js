@@ -7,6 +7,7 @@ import userRoutes from "./routes/userRoutes.js";
 import roleRoutes from "./routes/settings/roleRoutes.js";
 import supplierRoutes from "./routes/supplierRoutes.js";
 import supplierSurveyRoutes from "./routes/supplierSurveyRoutes.js";
+import purchaseOrderRoutes from "./routes/purachase/purchaseOrderRoutes.js";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/roles", roleRoutes);
 app.use("/api/suppliers", supplierRoutes);
 app.use("/api/supplier-surveys", supplierSurveyRoutes);
+app.use("/api/purchase-orders", purchaseOrderRoutes);
 
 // Health Check
 app.get("/", (req, res) => {
