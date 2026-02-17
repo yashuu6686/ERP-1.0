@@ -17,9 +17,9 @@ const userSchema = new mongoose.Schema(
             required: true
         },
         role: {
-            type: String,
-            required: true,
-            default: "user"
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Role",
+            required: true
         },
         status: {
             type: String,
@@ -29,6 +29,10 @@ const userSchema = new mongoose.Schema(
         additionalPermissions: {
             type: Object,
             default: {}
+        },
+        refreshToken: {
+            type: String,
+            default: null
         }
     },
     {

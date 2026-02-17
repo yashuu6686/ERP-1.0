@@ -14,12 +14,12 @@ import { protect } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 router.post("/login", Login);
-router.post("/logout", Logout);
+router.post("/logout", protect, Logout);
 router.get("/me", protect, GetMe);
 
 // Admin/protected user management routes
-router.get("/", protect, GetAllUsers);
-router.post("/", protect, Register); // Same as /register but usually for admins
+router.get("/getallusers", protect, GetAllUsers);
+router.post("/registration", Register);
 router.get("/:id", protect, GetUserById);
 router.put("/:id", protect, UpdateUser);
 router.delete("/:id", protect, DeleteUser);
