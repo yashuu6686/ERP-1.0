@@ -431,7 +431,7 @@ export default function RoleForm({ initialValues, onSubmit, title, loadingText, 
                                         let menuItem = null;
                                         let flow = null;
                                         for (const f of APP_MENU) {
-                                            const item = f.items.find(i => i.key === mKey);
+                                            const item = f.items?.find(i => i.key === mKey);
                                             if (item) {
                                                 menuItem = item;
                                                 flow = f;
