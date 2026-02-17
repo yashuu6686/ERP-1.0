@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { mockEquipmentData } from "../mockData";
+import axiosInstance from "@/axios/axiosInstance";
 import { useNotification } from "@/context/NotificationContext";
 import {
     Box,
@@ -27,7 +27,7 @@ import {
 
 // Gradient Card Component (matching GRN style)
 const GradientCard = ({ title, icon: Icon, children }) => (
-    <Card sx={{ height: "100%", borderRadius: 2 }}>
+    <Card sx={{ height: "100%", borderRadius: 2, boxShadow: 'none', border: "1px solid #e2e8f0" }}>
         <Box
             sx={{
                 p: 2,
@@ -57,6 +57,13 @@ const validationSchema = Yup.object().shape({
     lastCalibrationDate: Yup.date().required("Last calibration date is required"),
     calibratedBy: Yup.string().required("Calibrated by is required")
 });
+
+const inputStyle = {
+    "& .MuiOutlinedInput-root": {
+        background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+        bgcolor: "white"
+    }
+};
 
 function RegisterEquipmentContent() {
     const router = useRouter();
@@ -117,11 +124,15 @@ function RegisterEquipmentContent() {
                 };
 
                 console.log("Registering Equipment:", finalData);
-                // TODO: Replace with actual API call
-                // await axiosInstance.post("/calibration-equipment", finalData);
 
-                // alert(id ? "Equipment Updated Successfully!" : "Equipment Registered Successfully!");
-                showNotification(id ? "Equipment Updated Successfully!" : "Equipment Registered Successfully!", "success");
+                if (id) {
+                    await axiosInstance.put(`/calibration-equipment/${id}`, finalData);
+                    showNotification("Equipment Updated Successfully!", "success");
+                } else {
+                    await axiosInstance.post("/calibration-equipment", finalData);
+                    showNotification("Equipment Registered Successfully!", "success");
+                }
+
                 router.push("/calibration");
             } catch (error) {
                 console.error("Registration Error:", error);
@@ -135,30 +146,44 @@ function RegisterEquipmentContent() {
 
 
     useEffect(() => {
-        if (id) {
-            const equipment = mockEquipmentData.find((e) => e.id === parseInt(id));
-            if (equipment) {
-                formik.setValues({
-                    equipmentName: equipment.equipmentName || "",
-                    masterId: equipment.masterId || "",
-                    subDeviceId: equipment.subDeviceId || "",
-                    serialNumber: equipment.serialNumber || "",
-                    manufacturer: equipment.manufacturer || "",
-                    model: equipment.model || "",
-                    frequency: equipment.frequency || "Annual",
-                    location: equipment.location || "",
-                    department: equipment.department || "",
-                    certificateNo: equipment.certificateNo || "",
-                    calibratedBy: equipment.calibratedBy || "",
-                    calibrationSource: equipment.calibrationSource || "",
-                    lastCalibrationDate: equipment.lastCalibrationDate || new Date().toISOString().split('T')[0],
-                    nextDueDate: equipment.nextDueDate || "",
-                    remarks: equipment.remarks || "",
-                    status: equipment.status || "Calibrated",
-                });
+        const fetchEquipmentDetails = async () => {
+            if (id) {
+                try {
+                    setLoading(true);
+                    const response = await axiosInstance.get(`/calibration-equipment/${id}`);
+                    const equipment = response.data;
+
+                    if (equipment) {
+                        formik.setValues({
+                            equipmentName: equipment.equipmentName || "",
+                            masterId: equipment.masterId || "",
+                            subDeviceId: equipment.subDeviceId || "",
+                            serialNumber: equipment.serialNumber || "",
+                            manufacturer: equipment.manufacturer || "",
+                            model: equipment.model || "",
+                            frequency: equipment.frequency || "Annual",
+                            location: equipment.location || "",
+                            department: equipment.department || "",
+                            certificateNo: equipment.certificateNo || "",
+                            calibratedBy: equipment.calibratedBy || "",
+                            calibrationSource: equipment.calibrationSource || "",
+                            lastCalibrationDate: equipment.lastCalibrationDate || new Date().toISOString().split('T')[0],
+                            nextDueDate: equipment.nextDueDate || "",
+                            remarks: equipment.remarks || "",
+                            status: equipment.status || "Calibrated",
+                        });
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch equipment details:", error);
+                    showNotification("Failed to load equipment details.", "error");
+                } finally {
+                    setLoading(false);
+                }
             }
-        }
-    }, [id, formik]);
+        };
+
+        fetchEquipmentDetails();
+    }, [id]);
 
     if (loading) return <Loader fullPage message={id ? "Updating Equipment..." : "Registering Equipment..."} />;
 
@@ -182,13 +207,6 @@ function RegisterEquipmentContent() {
         formik.handleSubmit();
     };
 
-    const inputStyle = {
-        "& .MuiOutlinedInput-root": {
-            background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
-            bgcolor: "white"
-        }
-    };
-
     return (
         <FormikProvider value={formik}>
             <Box>
@@ -196,7 +214,7 @@ function RegisterEquipmentContent() {
                     <Box sx={{ p: 1 }}>
                         <Grid container spacing={3} sx={{ mb: 4 }}>
                             {/* Equipment Identification */}
-                            <Grid item xs={12}>
+                            <Grid size={{ xs: 12 }}>
                                 <GradientCard title="Equipment Identification" icon={PrecisionManufacturing}>
                                     <Grid container spacing={2}>
                                         <Grid size={{ xs: 12, md: 4 }}>
@@ -295,15 +313,7 @@ function RegisterEquipmentContent() {
                                                 sx={inputStyle}
                                             />
                                         </Grid>
-                                    </Grid>
-                                </GradientCard>
-                            </Grid>
-
-                            {/* Location Information */}
-                            <Grid size={{ xs: 12 }}>
-                                <GradientCard title="Location Information" icon={LocationOn}>
-                                    <Grid container spacing={2}>
-                                        <Grid size={{ xs: 6 }}>
+                                        <Grid size={{ xs: 12, md: 4 }}>
                                             <TextField
                                                 fullWidth
                                                 label="Location"
@@ -318,7 +328,7 @@ function RegisterEquipmentContent() {
                                                 sx={inputStyle}
                                             />
                                         </Grid>
-                                        <Grid size={{ xs: 6 }}>
+                                        <Grid size={{ xs: 12, md: 4 }}>
                                             <TextField
                                                 fullWidth
                                                 label="Department"
@@ -333,6 +343,7 @@ function RegisterEquipmentContent() {
                                     </Grid>
                                 </GradientCard>
                             </Grid>
+
 
                             {/* Calibration Details */}
                             <Grid size={{ xs: 12 }}>

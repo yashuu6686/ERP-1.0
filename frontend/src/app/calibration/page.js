@@ -8,7 +8,8 @@ import {
     Tooltip,
     IconButton,
     Select,
-    MenuItem
+    MenuItem,
+    Button
 } from "@mui/material";
 import {
     Edit,
@@ -22,25 +23,44 @@ import {
 import GlobalTable from "@/components/ui/GlobalTable";
 import CommonCard from "@/components/ui/CommonCard";
 import { useRouter } from "next/navigation";
-import { mockEquipmentData } from "./mockData";
+import axiosInstance from "@/axios/axiosInstance";
+import NotificationService from "@/services/NotificationService";
+import Loader from "@/components/ui/Loader";
 
 export default function CalibrationMasterPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [filterStatus, setFilterStatus] = useState("All");
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [equipment, setEquipment] = useState([]);
+    const [loading, setLoading] = useState(true);
     const router = useRouter();
 
+    React.useEffect(() => {
+        const fetchEquipment = async () => {
+            try {
+                const response = await axiosInstance.get("/calibration-equipment");
+                setEquipment(response.data || []);
+            } catch (error) {
+                console.error("Failed to fetch equipment:", error);
+                NotificationService.notify("Error", "Failed to load equipment list", "error");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchEquipment();
+    }, []);
 
 
-    const filteredEquipment = mockEquipmentData.filter((equipment) => {
+
+    const filteredEquipment = equipment.filter((item) => {
         const matchesSearch =
-            equipment.equipmentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            equipment.masterId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            equipment.location.toLowerCase().includes(searchTerm.toLowerCase());
+            item.equipmentName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.masterId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.location?.toLowerCase().includes(searchTerm.toLowerCase());
 
         const matchesFilter =
-            filterStatus === "All" || equipment.status === filterStatus;
+            filterStatus === "All" || item.status === filterStatus;
 
         return matchesSearch && matchesFilter;
     });
@@ -232,35 +252,46 @@ export default function CalibrationMasterPage() {
                             <MenuItem value="Failed">Out of Service</MenuItem>
                         </Select>
                         <Tooltip title="View Document Revision History">
-                            <IconButton
-                                size="small"
+                            <Button
+                                variant="text"
+                                startIcon={<Description fontSize="small" />}
                                 onClick={() => router.push('/calibration/revision-history')}
+                                size="small"
                                 sx={{
-                                    color: "rgb(17, 114, 186)",
-                                    bgcolor: "#f1f5f9",
-                                    "&:hover": { bgcolor: "#e2e8f0" },
-                                    px: 2
+                                    bgcolor: "#eff6ff", // Blue-50
+                                    color: "#1172ba", // Primary Blue
+                                    textTransform: "none",
+                                    fontWeight: 600,
+                                    "&:hover": {
+                                        bgcolor: "#dbeafe", // Blue-100
+                                    },
+                                    height: "40px",
+                                    px: 2.5,
+                                    borderRadius: 2
                                 }}
                             >
-                                <Description fontSize="small" sx={{ mr: 0.5 }} />
-                                <Typography variant="caption" fontWeight={600}>Revisions</Typography>
-                            </IconButton>
+                                Revisions
+                            </Button>
                         </Tooltip>
                     </Box>
                 }
             >
-                <GlobalTable
-                    columns={columns}
-                    data={paginatedEquipment}
-                    totalCount={filteredEquipment.length}
-                    page={page}
-                    rowsPerPage={rowsPerPage}
-                    onPageChange={setPage}
-                    onRowsPerPageChange={(val) => {
-                        setRowsPerPage(val);
-                        setPage(0);
-                    }}
-                />
+                {loading ? (
+                    <Loader message="Loading equipment..." />
+                ) : (
+                    <GlobalTable
+                        columns={columns}
+                        data={paginatedEquipment}
+                        totalCount={filteredEquipment.length}
+                        page={page}
+                        rowsPerPage={rowsPerPage}
+                        onPageChange={setPage}
+                        onRowsPerPageChange={(val) => {
+                            setRowsPerPage(val);
+                            setPage(0);
+                        }}
+                    />
+                )}
             </CommonCard>
         </Box>
     );

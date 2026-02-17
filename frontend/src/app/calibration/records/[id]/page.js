@@ -1,415 +1,466 @@
 "use client";
-import React, { Suspense } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Box,
-    Paper,
     Typography,
     Grid,
-    Divider,
+    Paper,
+    Button,
+    Stack,
     Chip,
     Table,
+    TableBody,
+    TableCell,
+    TableContainer,
     TableHead,
     TableRow,
-    TableCell,
-    TableBody,
-    IconButton,
-    Tooltip,
     Container,
     Fade,
-    Card,
-    CardContent,
-    Button
+    Divider,
+    Tooltip
 } from "@mui/material";
 import {
     ArrowBack,
     Print,
-    VerifiedUser,
+    Download,
+    Edit,
+    CheckCircle,
+    Warning,
+    EventNote,
     PrecisionManufacturing,
-    LocationOn,
     CalendarMonth,
-    FileDownload
+    Place,
+    Business,
+    Badge,
+    Category,
+    Schedule,
+    Cancel,
+    VerifiedUser,
+    Description,
+    Notes
 } from "@mui/icons-material";
 import { useRouter, useParams } from "next/navigation";
+import axiosInstance from "@/axios/axiosInstance";
 import Loader from "@/components/ui/Loader";
-import { mockEquipmentData } from "../../mockData";
+import NotificationService from "@/services/NotificationService";
 
-// Gradient Card Component
-const GradientCard = ({ title, icon: Icon, children }) => (
-    <Card sx={{ height: "100%", borderRadius: 2 }}>
-        <Box
-            sx={{
-                p: 2,
-                background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
-                color: "white",
-                display: "flex",
-                alignItems: "center",
-                gap: 1.5,
-            }}
-        >
-            {Icon && <Icon />}
-            <Typography variant="h6" fontWeight={600} color={"white"}>
-                {title}
+// --- Styled Components (Internal) ---
+
+const InfoItem = ({ icon: Icon, label, value, color = "#1e293b" }) => (
+    <Stack direction="row" spacing={2} alignItems="flex-start">
+        <Box sx={{
+            width: 32,
+            height: 32,
+            borderRadius: "10px",
+            bgcolor: "rgba(17, 114, 186, 0.08)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            mt: 0.5
+        }}>
+            <Icon sx={{ color: "#1172ba", fontSize: 18 }} />
+        </Box>
+        <Box>
+            <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", display: "block", mb: 0.5 }}>
+                {label}
+            </Typography>
+            <Typography variant="body1" sx={{ color, fontWeight: 700, fontSize: "0.95rem" }}>
+                {value || "-"}
             </Typography>
         </Box>
-        <CardContent sx={{ p: 3 }}>
-            {children}
-        </CardContent>
-    </Card>
+    </Stack>
 );
 
+const SectionCard = ({ title, children }) => (
+    <Grid item xs={12} md={6}>
+        <Typography variant="subtitle2" sx={{ color: "#94a3b8", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", mb: 2.5 }}>
+            {title}
+        </Typography>
+        <Paper elevation={0} sx={{ p: 4, borderRadius: 4, border: '2px solid #f1f5f9', height: '100%' }}>
+            <Stack spacing={3}>
+                {children}
+            </Stack>
+        </Paper>
+    </Grid>
+);
 
+const SummaryRow = ({ label, value, isTotal = false, isAlert = false }) => (
+    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
+        <Typography variant={isTotal ? "subtitle1" : "body2"} color={isTotal ? "#0f172a" : "#64748b"} fontWeight={isTotal ? 800 : 500}>
+            {label}
+        </Typography>
+        <Typography
+            variant={isTotal ? "h6" : "body2"}
+            fontWeight={isTotal ? 900 : 700}
+            color={isAlert ? "#ef4444" : isTotal ? "#1172ba" : "#1e293b"}
+            sx={{ fontFamily: 'monospace' }}
+        >
+            {value || "-"}
+        </Typography>
+    </Box>
+);
 
-function EquipmentCalibrationRecordContent() {
+export default function ViewCalibrationRecord() {
     const router = useRouter();
     const params = useParams();
     const { id } = params;
+    const [equipment, setEquipment] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const equipmentData = mockEquipmentData.find(e => e.id === parseInt(id));
+    useEffect(() => {
+        const fetchEquipment = async () => {
+            if (!id) return;
+            try {
+                const response = await axiosInstance.get(`/calibration-equipment/${id}`);
+                setEquipment(response.data);
+            } catch (error) {
+                console.error("Failed to fetch equipment:", error);
+                NotificationService.notify("Error", "Failed to load equipment details", "error");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchEquipment();
+    }, [id]);
 
-    if (!equipmentData) {
-        return (
-            <Container sx={{ mt: 4 }}>
-                <Typography variant="h5" color="error">Equipment not found</Typography>
-                <Button onClick={() => router.push('/calibration')} sx={{ mt: 2 }} variant="outlined">Back to List</Button>
-            </Container>
-        );
-    }
+    if (loading) return <Loader fullPage message="Loading Record..." />;
+    if (!equipment) return (
+        <Box sx={{ p: 4, textAlign: "center", minHeight: "80vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+            <Typography variant="h5" color="error" fontWeight={600}>Record Not Found</Typography>
+            <Button variant="contained" startIcon={<ArrowBack />} onClick={() => router.push("/calibration")} sx={{ mt: 3, borderRadius: '12px', textTransform: 'none' }}>
+                Back to List
+            </Button>
+        </Box>
+    );
 
-    const equipment = {
-        name: equipmentData.equipmentName,
-        masterId: equipmentData.masterId,
-        serialNo: equipmentData.serialNumber || "N/A",
-        manufacturer: equipmentData.manufacturer || "N/A",
-        model: equipmentData.model || "N/A",
-        location: equipmentData.location,
-        department: equipmentData.department || "N/A",
-        description: equipmentData.remarks || "No description provided",
-        calibrationInterval: equipmentData.frequency,
-        lastCalibrated: equipmentData.lastCalibration || equipmentData.lastCalibrationDate,
-        nextDue: equipmentData.dueDate || equipmentData.nextDueDate,
-        status: equipmentData.status,
-        docNo: equipmentData.certificateNo || "N/A",
-        revision: "00" // Mock revision
+    const getStatusConfig = (status, dueDate) => {
+        const isOverdue = new Date(dueDate) < new Date();
+        const date = new Date(dueDate);
+        const today = new Date();
+        const diffTime = date - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const isDueSoon = diffDays <= 30 && diffDays > 0;
+
+        if (status === "Failed" || isOverdue) {
+            return { color: "#991b1b", bg: "#fee2e2", border: "#fecaca", icon: <Warning />, label: status === "Failed" ? "Out of Service" : "Overdue" };
+        } else if (isDueSoon || status === "Due Soon") {
+            return { color: "#92400e", bg: "#fef3c7", border: "#fde68a", icon: <EventNote />, label: "Due Soon" };
+        }
+        return { color: "#166534", bg: "#dcfce7", border: "#bbedc2", icon: <CheckCircle />, label: status || "Calibrated" };
     };
 
-    const records = [
-        {
-            nextDueDate: "2024-08-15",
-            dateCalibrated: "2023-08-15",
-            calibratedBy: "External (Fluke Calibration)",
-            source: "Calibration Standard #STD-01",
-            certificateNo: "CAL-2023-08-001",
-            condition: "Good"
-        },
-        {
-            nextDueDate: "2023-08-15",
-            dateCalibrated: "2023-02-10",
-            calibratedBy: "External (Fluke Calibration)",
-            source: "Calibration Standard #STD-01",
-            certificateNo: "CAL-2023-02-045",
-            condition: "Out of Tolerance"
-        },
-        {
-            nextDueDate: "2023-02-10",
-            dateCalibrated: "2022-08-14",
-            calibratedBy: "External (Fluke Calibration)",
-            source: "Calibration Standard #STD-01",
-            certificateNo: "CAL-2022-08-112",
-            condition: "Excellent"
-        }
-    ];
+    const statusConfig = getStatusConfig(equipment.status, equipment.nextDueDate);
 
     return (
-        <Fade in={true}>
+        <Fade in={!loading}>
             <Container maxWidth="xl" sx={{ mt: 2, mb: 4, px: { xs: 1, md: 1 } }}>
-                {/* Header Actions */}
-                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 3 }} className="no-print">
-                    <Tooltip title="Back to Calibration List">
-                        <IconButton
-                            onClick={() => router.push('/calibration')}
+                {/* Header Actions (Matches PurchaseViewHeader) */}
+                <Stack
+                    direction={{ xs: "column", sm: "row" }}
+                    justifyContent="space-between"
+                    alignItems={{ xs: "flex-start", sm: "center" }}
+                    spacing={2}
+                    sx={{ mb: 3 }}
+                    className="no-print"
+                >
+                    <Button
+                        startIcon={<ArrowBack />}
+                        onClick={() => router.push("/calibration")}
+                        sx={{
+                            color: "#64748b",
+                            fontWeight: 600,
+                            textTransform: "none",
+                            bgcolor: "rgba(255,255,255,0.8)",
+                            px: 2,
+                            borderRadius: '12px',
+                            backdropFilter: "blur(4px)",
+                            border: '1px solid #e2e8f0',
+                            "&:hover": { bgcolor: "#f1f5f9", borderColor: "#cbd5e1" },
+                        }}
+                    >
+                        Back to List
+                    </Button>
+
+                    <Stack direction="row" spacing={1.5}>
+                        <Tooltip title="Print Record">
+                            <Button
+                                variant="outlined"
+                                startIcon={<Print />}
+                                onClick={() => window.print()}
+                                sx={{
+                                    borderRadius: "12px",
+                                    textTransform: "none",
+                                    fontWeight: 600,
+                                    color: "#475569",
+                                    borderColor: "#e2e8f0",
+                                    bgcolor: "white",
+                                    "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" },
+                                }}
+                            >
+                                Print
+                            </Button>
+                        </Tooltip>
+                        <Tooltip title="Download PDF">
+                            <Button
+                                variant="outlined"
+                                startIcon={<Download />}
+                                sx={{
+                                    borderRadius: "12px",
+                                    textTransform: "none",
+                                    fontWeight: 600,
+                                    color: "#475569",
+                                    borderColor: "#e2e8f0",
+                                    bgcolor: "white",
+                                    "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" },
+                                }}
+                            >
+                                Download
+                            </Button>
+                        </Tooltip>
+                        <Button
+                            variant="contained"
+                            startIcon={<Edit />}
+                            onClick={() => router.push(`/calibration/register-equipment?id=${id}`)}
                             sx={{
-                                color: "rgb(17, 114, 186)",
-                                bgcolor: "#f1f5f9",
-                                "&:hover": { bgcolor: "#e2e8f0" }
+                                borderRadius: "12px",
+                                textTransform: "none",
+                                fontWeight: 600,
+                                background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
+                                boxShadow: "0 4px 12px rgba(17, 114, 186, 0.25)",
+                                "&:hover": {
+                                    background: "linear-gradient(135deg, #0d5a94 0%, #0a4571 100%)",
+                                    boxShadow: "0 6px 16px rgba(17, 114, 186, 0.35)",
+                                },
                             }}
                         >
-                            <ArrowBack />
-                        </IconButton>
-                    </Tooltip>
-                    <Box sx={{ flex: 1 }}>
-                        <Typography variant="h5" fontWeight={700} color="#1e293b">
-                            Equipment Calibration Record
-                        </Typography>
-                        <Typography variant="body2" color="#64748b">
-                            Viewing full calibration history for {equipment.masterId}
-                        </Typography>
-                    </Box>
-                    <Tooltip title="Print Record">
-                        <IconButton
-                            onClick={() => window.print()}
-                            sx={{
-                                color: "#0891b2",
-                                bgcolor: "#ecfeff",
-                                "&:hover": { bgcolor: "#cffafe" }
-                            }}
-                        >
-                            <Print />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Download PDF">
-                        <IconButton
-                            sx={{
-                                color: "#0891b2",
-                                bgcolor: "#ecfeff",
-                                "&:hover": { bgcolor: "#cffafe" }
-                            }}
-                        >
-                            <FileDownload />
-                        </IconButton>
-                    </Tooltip>
-                </Box>
+                            Edit Record
+                        </Button>
+                    </Stack>
+                </Stack>
 
                 <Grid container spacing={2}>
-                    {/* Main Document Area */}
-                    <Grid size={{ xs: 12, md: 9 }}>
+                    {/* Main Document Area (Matches Purchase Layout 9/12) */}
+                    <Grid item xs={12} lg={9} size={{ xs: 12, lg: 9 }}>
                         <Paper
                             elevation={0}
                             sx={{
                                 borderRadius: 4,
                                 border: "1px solid #e2e8f0",
                                 overflow: "hidden",
-                                bgcolor: "#fff"
+                                bgcolor: "#fff",
+                                position: 'relative'
                             }}
                         >
                             <Box sx={{ height: 6, background: "linear-gradient(90deg, #1172ba 0%, #60a5fa 100%)" }} />
 
                             <Box sx={{ p: { xs: 3, md: 5 } }}>
-                                {/* Equipment Header */}
-                                <Box sx={{ mb: 4 }}>
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                                        <Box>
-                                            <Typography variant="overline" sx={{ color: "#1172ba", fontWeight: 800, letterSpacing: 1.5 }}>
-                                                CALIBRATION RECORD - FRM18-02
-                                            </Typography>
-                                            <Typography variant="h4" fontWeight={800} color="#0f172a" sx={{ mt: 0.5 }}>
-                                                {equipment.name}
-                                            </Typography>
-                                            <Typography variant="body2" color="#64748b" sx={{ mt: 1, fontFamily: 'monospace' }}>
-                                                ID: {equipment.masterId} | S/N: {equipment.serialNo}
-                                            </Typography>
-                                        </Box>
-                                        <Chip
-                                            label={equipment.status}
-                                            size="medium"
-                                            sx={{
-                                                bgcolor: "#dcfce7",
-                                                color: "#15803d",
-                                                fontWeight: 800,
-                                                fontSize: "0.75rem",
-                                                textTransform: "uppercase",
-                                                letterSpacing: 0.5,
-                                                px: 2
-                                            }}
-                                        />
-                                    </Box>
-                                    <Divider />
-                                </Box>
-
-                                {/* Equipment Specifications */}
-                                <Box sx={{ mb: 4 }}>
-                                    <Typography variant="subtitle1" fontWeight={700} color="#1e293b" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        <PrecisionManufacturing sx={{ color: '#1172ba' }} /> Equipment Specifications
-                                    </Typography>
-                                    <Grid container spacing={3}>
-                                        <Grid size={{ xs: 12, md: 6 }}>
-                                            <Paper sx={{ p: 2, bgcolor: '#f8fafc', borderRadius: 2 }}>
-                                                <Typography variant="caption" color="#64748b" fontWeight={700}>MANUFACTURER</Typography>
-                                                <Typography variant="body1" fontWeight={600}>{equipment.manufacturer}</Typography>
-                                            </Paper>
-                                        </Grid>
-                                        <Grid size={{ xs: 12, md: 6 }}>
-                                            <Paper sx={{ p: 2, bgcolor: '#f8fafc', borderRadius: 2 }}>
-                                                <Typography variant="caption" color="#64748b" fontWeight={700}>MODEL</Typography>
-                                                <Typography variant="body1" fontWeight={600}>{equipment.model}</Typography>
-                                            </Paper>
-                                        </Grid>
-                                        <Grid size={{ xs: 12, md: 6 }}>
-                                            <Paper sx={{ p: 2, bgcolor: '#f8fafc', borderRadius: 2 }}>
-                                                <Typography variant="caption" color="#64748b" fontWeight={700}>LOCATION</Typography>
-                                                <Typography variant="body1" fontWeight={600}>{equipment.location}</Typography>
-                                            </Paper>
-                                        </Grid>
-                                        <Grid size={{ xs: 12, md: 6 }}>
-                                            <Paper sx={{ p: 2, bgcolor: '#f8fafc', borderRadius: 2 }}>
-                                                <Typography variant="caption" color="#64748b" fontWeight={700}>DEPARTMENT</Typography>
-                                                <Typography variant="body1" fontWeight={600}>{equipment.department}</Typography>
-                                            </Paper>
-                                        </Grid>
-                                        <Grid size={{ xs: 12 }}>
-                                            <Paper sx={{ p: 2, bgcolor: '#f8fafc', borderRadius: 2 }}>
-                                                <Typography variant="caption" color="#64748b" fontWeight={700}>DESCRIPTION</Typography>
-                                                <Typography variant="body2">{equipment.description}</Typography>
-                                            </Paper>
-                                        </Grid>
-                                    </Grid>
-                                </Box>
-
-                                {/* Calibration History Table */}
+                                {/* Title and Status Section (Matches PurchaseDetails) */}
                                 <Box>
-                                    <Typography variant="subtitle1" fontWeight={700} color="#1e293b" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        <VerifiedUser sx={{ color: '#1172ba' }} /> Calibration History Log
-                                    </Typography>
-                                    <Paper elevation={0} sx={{ border: '1px solid #e2e8f0', borderRadius: 2, overflow: 'hidden' }}>
+                                    <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between" alignItems="flex-start" spacing={4} sx={{ mb: 6 }}>
+                                        <Box>
+                                            <Typography variant="h3" fontWeight={900} sx={{ color: "#0f172a", letterSpacing: "-0.04em", mb: 1 }}>
+                                                {equipment.equipmentName}
+                                            </Typography>
+                                            <Typography variant="h6" fontWeight={600} sx={{ color: "#64748b", mb: 2.5 }}>
+                                                Calibration Record
+                                            </Typography>
+                                            <Stack direction="row" spacing={1} alignItems="center">
+                                                <Chip
+                                                    label={equipment.masterId}
+                                                    sx={{
+                                                        fontWeight: 700,
+                                                        bgcolor: "#f1f5f9",
+                                                        color: "#0f172a",
+                                                        borderRadius: '8px',
+                                                        fontSize: '0.95rem'
+                                                    }}
+                                                />
+                                                <Chip
+                                                    icon={React.cloneElement(statusConfig.icon, { sx: { fontSize: '18px !important' } })}
+                                                    label={statusConfig.label}
+                                                    sx={{
+                                                        fontWeight: 700,
+                                                        bgcolor: statusConfig.bg,
+                                                        color: statusConfig.color,
+                                                        borderRadius: '8px',
+                                                        fontSize: '0.85rem',
+                                                        border: `1px solid ${statusConfig.border}`,
+                                                        "& .MuiChip-icon": { color: statusConfig.color }
+                                                    }}
+                                                />
+                                            </Stack>
+                                        </Box>
+
+                                        <Stack spacing={2} sx={{ minWidth: 280 }}>
+                                            <InfoItem
+                                                icon={CalendarMonth}
+                                                label="Last Calibration"
+                                                value={new Date(equipment.lastCalibrationDate).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+                                            />
+                                            <InfoItem
+                                                icon={Schedule}
+                                                label="Next Due Date"
+                                                value={new Date(equipment.nextDueDate).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+                                                color={new Date(equipment.nextDueDate) < new Date() ? "#ef4444" : "#1172ba"}
+                                            />
+                                        </Stack>
+                                    </Stack>
+                                    <Divider sx={{ mb: 5, opacity: 0.6 }} />
+                                </Box>
+
+                                {/* Entity Information Section (Matches EntityInformation) */}
+                                <Grid container spacing={4} sx={{ mb: 6 }}>
+
+                                <Grid spacing={4} size={{ xs: 12, lg: 6 }} >
+                                    <SectionCard title="Equipment Details">
+                                        <Box>
+                                            <Typography variant="h6" fontWeight={800} color="#1e293b" sx={{ mb: 1 }}>{equipment.manufacturer}</Typography>
+                                            <Typography variant="body2" sx={{ color: "#64748b" }}>Model: {equipment.model}</Typography>
+                                        </Box>
+                                        <Stack spacing={1.5}>
+                                            <Stack direction="row" spacing={1.5} alignItems="center">
+                                                <Badge sx={{ color: "#94a3b8", fontSize: 18 }} />
+                                                <Typography variant="body2" fontWeight={600}>Serial: {equipment.serialNumber}</Typography>
+                                            </Stack>
+                                            <Stack direction="row" spacing={1.5} alignItems="center">
+                                                <Category sx={{ color: "#94a3b8", fontSize: 18 }} />
+                                                <Typography variant="body2" fontWeight={600}>Sub-ID: {equipment.subDeviceId}</Typography>
+                                            </Stack>
+                                        </Stack>
+                                    </SectionCard>
+                                </Grid>
+
+                                <Grid spacing={4} size={{ xs: 12, lg: 6 }} >
+
+                                    <SectionCard title="Location & Department">
+                                        <Box>
+                                            <Typography variant="h6" fontWeight={800} color="#1e293b" sx={{ mb: 1 }}>{equipment.department}</Typography>
+                                            <Typography variant="body2" sx={{ color: "#64748b" }}>Assigned Department</Typography>
+                                        </Box>
+                                        <Stack spacing={1.5}>
+                                            <Stack direction="row" spacing={1.5} alignItems="center">
+                                                <Place sx={{ color: "#94a3b8", fontSize: 18 }} />
+                                                <Typography variant="body2" fontWeight={600}>{equipment.location}</Typography>
+                                            </Stack>
+                                            <Stack direction="row" spacing={1.5} alignItems="center">
+                                                <Business sx={{ color: "#94a3b8", fontSize: 18 }} />
+                                                <Typography variant="body2" fontWeight={600}>Main Facility</Typography>
+                                            </Stack>
+                                        </Stack>
+                                    </SectionCard>
+                                </Grid>
+                                </Grid>
+
+
+                                {/* Items Table Section (Matches PurchaseItemsTable) */}
+                                <Box sx={{ mb: 6 }}>
+                                    <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+                                        <Typography variant="h6" fontWeight={800} color="#0f172a" sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                            <VerifiedUser sx={{ color: '#1172ba' }} /> Calibration History
+                                        </Typography>
+                                        <Typography variant="body2" color="#64748b" fontWeight={600}>
+                                            {equipment.history?.length || 0} Records Found
+                                        </Typography>
+                                    </Stack>
+
+                                    <TableContainer sx={{ borderRadius: 3, border: '1px solid #f1f5f9' }}>
                                         <Table>
-                                            <TableHead sx={{ bgcolor: '#f8fafc' }}>
-                                                <TableRow>
-                                                    <TableCell sx={{ fontWeight: 700, color: '#475569' }}>DATE CALIBRATED</TableCell>
-                                                    <TableCell sx={{ fontWeight: 700, color: '#475569' }}>BY / SOURCE</TableCell>
-                                                    <TableCell sx={{ fontWeight: 700, color: '#475569' }}>CERTIFICATE NO</TableCell>
-                                                    <TableCell align="center" sx={{ fontWeight: 700, color: '#475569' }}>CONDITION</TableCell>
-                                                    <TableCell align="center" sx={{ fontWeight: 700, color: '#475569' }}>NEXT DUE</TableCell>
+                                            <TableHead>
+                                                <TableRow sx={{ bgcolor: "#f1f5f9" }}>
+                                                    <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>DATE</TableCell>
+                                                    <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>CERTIFICATE NO</TableCell>
+                                                    <TableCell sx={{ fontWeight: 800, color: "#475569", py: 2 }}>PERFORMED BY</TableCell>
+                                                    <TableCell align="center" sx={{ fontWeight: 800, color: "#475569", py: 2 }}>RESULT</TableCell>
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                {records.map((row, idx) => (
-                                                    <TableRow key={idx} sx={{ '&:hover': { bgcolor: '#f8fafc' } }}>
-                                                        <TableCell>
-                                                            <Typography variant="body2" fontWeight={700} color="#1e293b">
-                                                                {new Date(row.dateCalibrated).toLocaleDateString("en-GB", {
-                                                                    day: "2-digit",
-                                                                    month: "short",
-                                                                    year: "numeric"
-                                                                })}
-                                                            </Typography>
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <Typography variant="body2" fontWeight={700} color="#1172ba">{row.calibratedBy}</Typography>
-                                                            <Typography variant="caption" color="#64748b">{row.source}</Typography>
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <Typography variant="caption" sx={{ fontFamily: 'monospace', color: '#64748b' }}>
-                                                                {row.certificateNo}
-                                                            </Typography>
-                                                        </TableCell>
-                                                        <TableCell align="center">
-                                                            <Chip
-                                                                label={row.condition}
-                                                                size="small"
-                                                                sx={{
-                                                                    bgcolor: row.condition.includes('Out') ? '#fee2e2' : '#dcfce7',
-                                                                    color: row.condition.includes('Out') ? '#b91c1c' : '#15803d',
-                                                                    fontWeight: 800,
-                                                                    fontSize: "0.65rem",
-                                                                    textTransform: "uppercase",
-                                                                    letterSpacing: 0.5,
-                                                                    borderRadius: 1.5
-                                                                }}
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell align="center">
-                                                            <Typography variant="body2" fontWeight={700} color="#0f172a">
-                                                                {new Date(row.nextDueDate).toLocaleDateString("en-GB", {
-                                                                    day: "2-digit",
-                                                                    month: "short",
-                                                                    year: "numeric"
-                                                                })}
-                                                            </Typography>
+                                                {equipment.history && equipment.history.length > 0 ? (
+                                                    equipment.history.map((hist, idx) => (
+                                                        <TableRow key={idx} sx={{ "&:hover": { bgcolor: "#f8fafc" } }}>
+                                                            <TableCell sx={{ color: "#1e293b", fontWeight: 700 }}>
+                                                                {new Date(hist.date).toLocaleDateString()}
+                                                            </TableCell>
+                                                            <TableCell sx={{ fontFamily: 'monospace', color: "#64748b", fontWeight: 600 }}>
+                                                                {hist.certificateNo}
+                                                            </TableCell>
+                                                            <TableCell sx={{ color: "#64748b", fontWeight: 600 }}>
+                                                                {hist.performedBy}
+                                                            </TableCell>
+                                                            <TableCell align="center">
+                                                                <Chip
+                                                                    label={hist.result || "Pass"}
+                                                                    size="small"
+                                                                    sx={{
+                                                                        fontWeight: 800,
+                                                                        bgcolor: hist.result === "Fail" ? "#fee2e2" : "#eff6ff",
+                                                                        color: hist.result === "Fail" ? "#b91c1c" : "#1172ba",
+                                                                        borderRadius: '6px'
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    ))
+                                                ) : (
+                                                    <TableRow>
+                                                        <TableCell colSpan={4} align="center" sx={{ py: 4, color: "#94a3b8" }}>
+                                                            No history available
                                                         </TableCell>
                                                     </TableRow>
-                                                ))}
+                                                )}
                                             </TableBody>
                                         </Table>
-                                    </Paper>
-                                </Box>
-
-                                {/* Document Footer */}
-                                <Box sx={{ mt: 4, pt: 3, borderTop: '2px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <Box>
-                                        <Typography variant="caption" color="#64748b">Document No</Typography>
-                                        <Typography variant="body2" fontWeight={700}>{equipment.docNo}</Typography>
-                                    </Box>
-                                    <Box sx={{ textAlign: 'right' }}>
-                                        <Typography variant="caption" color="#64748b">Revision</Typography>
-                                        <Typography variant="body2" fontWeight={700}>{equipment.revision}</Typography>
-                                    </Box>
+                                    </TableContainer>
                                 </Box>
                             </Box>
                         </Paper>
                     </Grid>
 
-                    {/* Sidebar */}
-                    <Grid size={{ xs: 12, md: 3 }}>
-                        <Box sx={{ position: 'sticky', top: 20 }}>
-                            {/* Calibration Status */}
-                            <GradientCard title="Calibration Status" icon={CalendarMonth}>
-                                <Box sx={{ mb: 2 }}>
-                                    <Typography variant="caption" color="#64748b" fontWeight={700}>LAST CALIBRATED</Typography>
-                                    <Typography variant="h6" fontWeight={700} color="#1e293b">
-                                        {new Date(equipment.lastCalibrated).toLocaleDateString("en-GB", {
-                                            day: "2-digit",
-                                            month: "short",
-                                            year: "numeric"
-                                        })}
-                                    </Typography>
-                                </Box>
-                                <Divider sx={{ my: 2 }} />
-                                <Box sx={{ mb: 2 }}>
-                                    <Typography variant="caption" color="#64748b" fontWeight={700}>NEXT DUE DATE</Typography>
-                                    <Typography variant="h6" fontWeight={700} color="#1172ba">
-                                        {new Date(equipment.nextDue).toLocaleDateString("en-GB", {
-                                            day: "2-digit",
-                                            month: "short",
-                                            year: "numeric"
-                                        })}
-                                    </Typography>
-                                </Box>
-                                <Divider sx={{ my: 2 }} />
-                                <Box>
-                                    <Typography variant="caption" color="#64748b" fontWeight={700}>FREQUENCY</Typography>
-                                    <Chip
-                                        label={equipment.calibrationInterval}
-                                        size="small"
-                                        sx={{ mt: 1, bgcolor: '#eff6ff', color: '#1172ba', fontWeight: 700 }}
-                                    />
-                                </Box>
-                            </GradientCard>
-
-                            {/* Quick Actions */}
-                            <Paper sx={{ p: 2, mt: 2, borderRadius: 2, border: '1px solid #e2e8f0' }}>
-                                <Typography variant="subtitle2" fontWeight={700} color="#64748b" sx={{ mb: 2 }}>
-                                    QUICK ACTIONS
+                    {/* Sidebar / Summary Area (Matches PurchaseSummarySidebar) */}
+                    <Grid item xs={12} lg={3} size={{ xs: 12, lg: 3 }}>
+                        <Stack spacing={2}>
+                            {/* Calibration Summary */}
+                            <Paper elevation={0} sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+                                <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <PrecisionManufacturing sx={{ color: '#1172ba', fontSize: 20 }} /> Summary
                                 </Typography>
-                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                    <Chip
-                                        label="Add Calibration Event"
-                                        clickable
-                                        sx={{
-                                            bgcolor: '#1172ba',
-                                            color: 'white',
-                                            fontWeight: 600,
-                                            height: 40,
-                                            '&:hover': { bgcolor: '#0d5a94' }
-                                        }}
+
+                                <Stack spacing={0.5}>
+                                    <SummaryRow
+                                        label="Frequency"
+                                        value={equipment.frequency}
+                                        isTotal
                                     />
-                                    <Chip
-                                        label="Update Equipment Info"
-                                        clickable
-                                        onClick={() => router.push(`/calibration/register-equipment?id=${id}`)}
-                                        sx={{
-                                            bgcolor: '#f1f5f9',
-                                            color: '#475569',
-                                            fontWeight: 600,
-                                            height: 40,
-                                            '&:hover': { bgcolor: '#e2e8f0' }
-                                        }}
-                                    />
-                                </Box>
+                                    <Divider sx={{ my: 2, borderStyle: 'dashed' }} />
+                                    <Box sx={{ p: 2, bgcolor: '#f0f9ff', borderRadius: 3, border: '1px solid #bae6fd', textAlign: 'center' }}>
+                                        <Typography variant="caption" sx={{ color: '#0369a1', fontWeight: 800, textTransform: 'uppercase', display: 'block', mb: 0.5 }}>
+                                            Certificate No
+                                        </Typography>
+                                        <Typography variant="subtitle1" fontWeight={900} color="#1172ba" sx={{ fontFamily: 'monospace' }}>
+                                            {equipment.certificateNo || "N/A"}
+                                        </Typography>
+                                    </Box>
+                                </Stack>
                             </Paper>
-                        </Box>
+
+                            {/* Remarks / Notes */}
+                            <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', bgcolor: '#fff' }}>
+                                <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <Notes sx={{ color: '#1172ba', fontSize: 20 }} /> Remarks
+                                </Typography>
+                                <Stack spacing={2.5}>
+                                    <Typography variant="body2" color="textSecondary" sx={{ fontStyle: 'italic' }}>
+                                        {equipment.remarks || "No additional remarks recorded for this equipment."}
+                                    </Typography>
+                                    <Divider />
+                                    <InfoItem icon={VerifiedUser} label="Calibrated By" value={equipment.calibratedBy} />
+                                </Stack>
+                            </Paper>
+                        </Stack>
                     </Grid>
                 </Grid>
 
-                {/* Print Styles */}
+                {/* Print Context Styles */}
                 <style jsx global>{`
                     @media print {
                         .no-print { display: none !important; }
@@ -422,13 +473,5 @@ function EquipmentCalibrationRecordContent() {
                 `}</style>
             </Container>
         </Fade>
-    );
-}
-
-export default function EquipmentCalibrationRecord({ params }) {
-    return (
-        <Suspense fallback={<Loader fullPage message="Loading Calibration Record..." />}>
-            <EquipmentCalibrationRecordContent />
-        </Suspense>
     );
 }
