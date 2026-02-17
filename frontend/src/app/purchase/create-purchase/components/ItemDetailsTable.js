@@ -138,7 +138,7 @@ const ItemDetailsTable = () => {
                                         }}
                                     />
                                 </TableCell>
-                                <TableCell align="center">
+                                <TableCell align="center" sx={{ p: 0 }}>
                                     <TextField
                                         fullWidth
                                         multiline
@@ -153,6 +153,7 @@ const ItemDetailsTable = () => {
                                         size="small"
                                         sx={{
                                             "& .MuiOutlinedInput-root": {
+                                                borderRadius: 0,
                                                 "&:hover fieldset": {
                                                     borderColor: "#1172ba",
                                                 },
@@ -160,8 +161,9 @@ const ItemDetailsTable = () => {
                                         }}
                                     />
                                 </TableCell>
-                                <TableCell align="center">
+                                <TableCell align="center" sx={{ p: 0 }}>
                                     <TextField
+                                        fullWidth
                                         type="number"
                                         placeholder="0"
                                         name={`items.${i}.qty`}
@@ -171,10 +173,12 @@ const ItemDetailsTable = () => {
                                         error={touched.items?.[i]?.qty && Boolean(errors.items?.[i]?.qty)}
                                         helperText={touched.items?.[i]?.qty && errors.items?.[i]?.qty}
                                         size="small"
+                                        sx={{ "& .MuiOutlinedInput-root": { borderRadius: 0 } }}
                                     />
                                 </TableCell>
-                                <TableCell align="center">
+                                <TableCell align="center" sx={{ p: 0 }}>
                                     <TextField
+                                        fullWidth
                                         type="number"
                                         placeholder="0.00"
                                         name={`items.${i}.price`}
@@ -189,6 +193,7 @@ const ItemDetailsTable = () => {
                                                 <InputAdornment position="start">₹</InputAdornment>
                                             ),
                                         }}
+                                        sx={{ "& .MuiOutlinedInput-root": { borderRadius: 0 } }}
                                     />
                                 </TableCell>
                                 <TableCell align="center">

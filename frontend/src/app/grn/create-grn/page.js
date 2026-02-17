@@ -333,8 +333,9 @@ function CreateGRNContent() {
                                                     <TableRow key={index} sx={{ "&:hover": { bgcolor: "#f8fafc" } }}>
                                                         <TableCell sx={{ fontWeight: 600, color: "#0f172a" }}>{item.name}</TableCell>
                                                         <TableCell align="center">{item.orderedQty}</TableCell>
-                                                        <TableCell align="center">
+                                                        <TableCell align="center" sx={{ p: 0 }}>
                                                             <TextField
+                                                                fullWidth
                                                                 size="small"
                                                                 type="number"
                                                                 name={`items.${index}.receivedQty`}
@@ -343,11 +344,14 @@ function CreateGRNContent() {
                                                                 onBlur={formik.handleBlur}
                                                                 error={formik.touched.items?.[index]?.receivedQty && Boolean(formik.errors.items?.[index]?.receivedQty)}
                                                                 helperText={formik.touched.items?.[index]?.receivedQty && formik.errors.items?.[index]?.receivedQty}
-                                                                sx={{ width: 100, ...inputStyle }}
+                                                                sx={{
+                                                                    ...inputStyle,
+                                                                    "& .MuiOutlinedInput-root": { borderRadius: 0 }
+                                                                }}
                                                             />
                                                         </TableCell>
                                                         <TableCell align="center">{item.unit || "Nos"}</TableCell>
-                                                        <TableCell>
+                                                        <TableCell sx={{ p: 0 }}>
                                                             <TextField
                                                                 size="small"
                                                                 fullWidth
@@ -356,7 +360,10 @@ function CreateGRNContent() {
                                                                 onChange={(e) => handleItemChange(index, "remark", e.target.value)}
                                                                 onBlur={formik.handleBlur}
                                                                 placeholder="Add note..."
-                                                                sx={inputStyle}
+                                                                sx={{
+                                                                    ...inputStyle,
+                                                                    "& .MuiOutlinedInput-root": { borderRadius: 0 }
+                                                                }}
                                                             />
                                                         </TableCell>
                                                     </TableRow>

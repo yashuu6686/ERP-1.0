@@ -121,7 +121,7 @@ export default function ProductDetailsTable({ formik }) {
                                         }}
                                     />
                                 </TableCell>
-                                <TableCell>
+                                <TableCell sx={{ p: 0 }}>
                                     <TextField
                                         fullWidth
                                         placeholder="Enter product name..."
@@ -134,6 +134,7 @@ export default function ProductDetailsTable({ formik }) {
                                         helperText={getError(i, "name")}
                                         sx={{
                                             "& .MuiOutlinedInput-root": {
+                                                borderRadius: 0,
                                                 "&:hover fieldset": {
                                                     borderColor: "#1172ba",
                                                 },
@@ -141,8 +142,9 @@ export default function ProductDetailsTable({ formik }) {
                                         }}
                                     />
                                 </TableCell>
-                                <TableCell>
+                                <TableCell sx={{ p: 0 }}>
                                     <TextField
+                                        fullWidth
                                         type="number"
                                         placeholder="0"
                                         value={product.quantity}
@@ -152,6 +154,11 @@ export default function ProductDetailsTable({ formik }) {
                                         size="small"
                                         error={Boolean(getError(i, "quantity"))}
                                         helperText={getError(i, "quantity")}
+                                        sx={{
+                                            "& .MuiOutlinedInput-root": {
+                                                borderRadius: 0,
+                                            },
+                                        }}
                                     />
                                 </TableCell>
                                 <TableCell>

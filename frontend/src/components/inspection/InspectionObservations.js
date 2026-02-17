@@ -158,7 +158,7 @@ const InspectionObservations = ({
                             return (
                                 <TableRow key={obs.id}>
                                     <TableCell>{index + 1}</TableCell>
-                                    <TableCell>
+                                    <TableCell sx={{ p: 0 }}>
                                         <TextField
                                             fullWidth
                                             size="small"
@@ -170,10 +170,10 @@ const InspectionObservations = ({
                                             onKeyDown={(e) => handleKeyDown(e, obs.id, 'parameter', index)}
                                             error={rowTouched?.parameter && Boolean(rowError?.parameter)}
                                             helperText={rowTouched?.parameter && rowError?.parameter}
-                                            sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
+                                            sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white", borderRadius: 0 } }}
                                         />
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell sx={{ p: 0 }}>
                                         <TextField
                                             fullWidth
                                             size="small"
@@ -185,10 +185,10 @@ const InspectionObservations = ({
                                             onKeyDown={(e) => handleKeyDown(e, obs.id, 'specification', index)}
                                             error={rowTouched?.specification && Boolean(rowError?.specification)}
                                             helperText={rowTouched?.specification && rowError?.specification}
-                                            sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
+                                            sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white", borderRadius: 0 } }}
                                         />
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell sx={{ p: 0 }}>
                                         <TextField
                                             fullWidth
                                             size="small"
@@ -200,11 +200,11 @@ const InspectionObservations = ({
                                             onKeyDown={(e) => handleKeyDown(e, obs.id, 'method', index)}
                                             error={rowTouched?.method && Boolean(rowError?.method)}
                                             helperText={rowTouched?.method && rowError?.method}
-                                            sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
+                                            sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white", borderRadius: 0 } }}
                                         />
                                     </TableCell>
                                     {observationColumns.map((col) => (
-                                        <TableCell key={col.id}>
+                                        <TableCell key={col.id} sx={{ p: 0 }}>
                                             <TextField
                                                 fullWidth
                                                 size="small"
@@ -216,11 +216,11 @@ const InspectionObservations = ({
                                                 onKeyDown={(e) => handleKeyDown(e, obs.id, col.id, index)}
                                                 error={rowTouched?.[col.id] && Boolean(rowError?.[col.id])}
                                                 helperText={rowTouched?.[col.id] && rowError?.[col.id]}
-                                                sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
+                                                sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white", borderRadius: 0 } }}
                                             />
                                         </TableCell>
                                     ))}
-                                    <TableCell>
+                                    <TableCell sx={{ p: 0 }}>
                                         <TextField
                                             fullWidth
                                             size="small"
@@ -232,7 +232,7 @@ const InspectionObservations = ({
                                             onKeyDown={(e) => handleKeyDown(e, obs.id, 'remarks', index)}
                                             error={rowTouched?.remarks && Boolean(rowError?.remarks)}
                                             helperText={rowTouched?.remarks && rowError?.remarks}
-                                            sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white" } }}
+                                            sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "white", borderRadius: 0 } }}
                                         />
                                     </TableCell>
                                     <TableCell>

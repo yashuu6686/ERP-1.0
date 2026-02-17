@@ -126,7 +126,7 @@ const TransferSlipTable = () => {
                                         }}
                                     />
                                 </TableCell>
-                                <TableCell>
+                                <TableCell sx={{ p: 0 }}>
                                     <TextField
                                         fullWidth
                                         multiline
@@ -140,10 +140,20 @@ const TransferSlipTable = () => {
                                         size="small"
                                         variant="standard"
                                         InputProps={{ disableUnderline: true }}
-                                        sx={{ "& .MuiInputBase-root": { fontSize: "0.9rem" } }}
+                                        sx={{
+                                            "& .MuiInputBase-root": {
+                                                fontSize: "0.9rem",
+                                                px: 2,
+                                                py: 1,
+                                                width: '100%',
+                                                height: '100%',
+                                                display: 'flex',
+                                                alignItems: 'center'
+                                            }
+                                        }}
                                     />
                                 </TableCell>
-                                <TableCell>
+                                <TableCell sx={{ p: 0 }}>
                                     <TextField
                                         fullWidth
                                         placeholder="Batch No"
@@ -154,10 +164,21 @@ const TransferSlipTable = () => {
                                         size="small"
                                         variant="standard"
                                         InputProps={{ disableUnderline: true }}
-                                        sx={{ "& .MuiInputBase-root": { fontSize: "0.9rem", textAlign: "center" } }}
+                                        sx={{
+                                            "& .MuiInputBase-root": {
+                                                fontSize: "0.9rem",
+                                                px: 2,
+                                                py: 1,
+                                                width: '100%',
+                                                height: '100%',
+                                                display: 'flex',
+                                                alignItems: 'center'
+                                            },
+                                            "& .MuiInputBase-input": { textAlign: "center" }
+                                        }}
                                     />
                                 </TableCell>
-                                <TableCell>
+                                <TableCell sx={{ p: 0 }}>
                                     <TextField
                                         fullWidth
                                         type="number"
@@ -169,10 +190,21 @@ const TransferSlipTable = () => {
                                         size="small"
                                         variant="standard"
                                         InputProps={{ disableUnderline: true }}
-                                        sx={{ "& .MuiInputBase-root": { fontSize: "0.9rem", textAlign: "center" } }}
+                                        sx={{
+                                            "& .MuiInputBase-root": {
+                                                fontSize: "0.9rem",
+                                                px: 2,
+                                                py: 1,
+                                                width: '100%',
+                                                height: '100%',
+                                                display: 'flex',
+                                                alignItems: 'center'
+                                            },
+                                            "& .MuiInputBase-input": { textAlign: "center" }
+                                        }}
                                     />
                                 </TableCell>
-                                <TableCell>
+                                <TableCell sx={{ p: 0 }}>
                                     <TextField
                                         fullWidth
                                         type="number"
@@ -184,10 +216,21 @@ const TransferSlipTable = () => {
                                         size="small"
                                         variant="standard"
                                         InputProps={{ disableUnderline: true }}
-                                        sx={{ "& .MuiInputBase-root": { fontSize: "0.9rem", textAlign: "center" } }}
+                                        sx={{
+                                            "& .MuiInputBase-root": {
+                                                fontSize: "0.9rem",
+                                                px: 2,
+                                                py: 1,
+                                                width: '100%',
+                                                height: '100%',
+                                                display: 'flex',
+                                                alignItems: 'center'
+                                            },
+                                            "& .MuiInputBase-input": { textAlign: "center" }
+                                        }}
                                     />
                                 </TableCell>
-                                <TableCell>
+                                <TableCell sx={{ p: 0 }}>
                                     <TextField
                                         fullWidth
                                         multiline
@@ -199,7 +242,17 @@ const TransferSlipTable = () => {
                                         size="small"
                                         variant="standard"
                                         InputProps={{ disableUnderline: true }}
-                                        sx={{ "& .MuiInputBase-root": { fontSize: "0.9rem" } }}
+                                        sx={{
+                                            "& .MuiInputBase-root": {
+                                                fontSize: "0.9rem",
+                                                px: 2,
+                                                py: 1,
+                                                width: '100%',
+                                                height: '100%',
+                                                display: 'flex',
+                                                alignItems: 'center'
+                                            }
+                                        }}
                                     />
                                 </TableCell>
                                 <TableCell align="center">

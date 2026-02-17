@@ -95,11 +95,12 @@ export default function UserForm({ initialValues, onSubmit, loadingText, buttonT
 
     const getAvailableFeatures = () => {
         if (!selectedFlow) return [];
-        const flow = APP_MENU.find(f => f.name === selectedFlow);
+        const flow = APP_MENU.find(f => (f.name || f.text) === selectedFlow);
         if (!flow) return [];
 
         const features = [];
-        flow.items.forEach(menuItem => {
+        const flowNodes = flow.items || [flow];
+        flowNodes.forEach(menuItem => {
             PRIVILEGES.forEach(p => {
                 if (menuItem.key === 'dashboard' && p.key !== 'view') return;
 
@@ -271,7 +272,7 @@ export default function UserForm({ initialValues, onSubmit, loadingText, buttonT
                                     disabled={!formik.values.roleId}
                                 >
                                     <MenuItem value="" disabled>-- Select Module --</MenuItem>
-                                    {APP_MENU.map(f => <MenuItem key={f.name} value={f.name}>{f.name}</MenuItem>)}
+                                    {APP_MENU.map(f => <MenuItem key={f.name || f.text} value={f.name || f.text}>{f.name || f.text}</MenuItem>)}
                                 </Select>
                             </FormControl>
                         </Box>
@@ -340,7 +341,7 @@ export default function UserForm({ initialValues, onSubmit, loadingText, buttonT
                                         const privs = formik.values.additionalPermissions[mKey];
                                         let menuItem = null; let flow = null;
                                         for (const f of APP_MENU) {
-                                            const item = f.items.find(i => i.key === mKey);
+                                            const item = f.items?.find(i => i.key === mKey) || (f.key === mKey ? f : null);
                                             if (item) { menuItem = item; flow = f; break; }
                                         }
                                         return Object.keys(privs).map(pKey => {
