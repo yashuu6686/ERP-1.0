@@ -58,8 +58,8 @@ export const APP_MENU = [
         name: "Production",
         description: "Manufacturing and production control",
         items: [
-            { text: "Line Clearance Checklist", icon: <Assignment />, path: "/line-clearance-checklist", key: "line_clearance_checklist" },
             { text: "Batch Manufacturing Record (BMR)", icon: <Assignment />, path: "/production/bmr", key: "bmr" },
+            { text: "Line Clearance Checklist", icon: <Assignment />, path: "/line-clearance-checklist", key: "line_clearance_checklist" },
             { text: "Bill of Materials", icon: <Build />, path: "/bom", key: "bom" },
             { text: "Production Plan", icon: <EventNote />, path: "/production-plan", key: "production_plan" },
             // { text: "Material Issue Request", icon: <Send />, path: "/material-issue", key: "material_issue" },
@@ -92,7 +92,7 @@ export const APP_MENU = [
         name: "Environment",
         description: "Monitoring and managing environment conditions",
         items: [
-            { text: "Daily Monitoring Log", icon: <Assignment />, path: "/environment/monitoring-log", key: "environment_log" },
+            { text: "Daily Monitoring Logs", icon: <Assignment />, path: "/environment/monitoring-logs", key: "environment_log" },
         ]
     },
     {

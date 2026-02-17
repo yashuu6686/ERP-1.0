@@ -24,6 +24,7 @@ import GlobalTable from "@/components/ui/GlobalTable";
 import Loader from "@/components/ui/Loader";
 import NotificationService from "@/services/NotificationService";
 import { useAuth } from "@/context/AuthContext";
+import axiosInstance from "@/axios/axiosInstance";
 
 const LOCATIONS = [
     "Finish Goods Store (FGS)",
@@ -37,10 +38,18 @@ const validationSchema = Yup.object().shape({
     date: Yup.string().required("Date is required"),
     time: Yup.string().required("Time is required"),
     location: Yup.string().required("Location is required"),
-    temperature: Yup.number().typeError("Must be a number").required("Required"),
-    humidity: Yup.number().typeError("Must be a number").required("Required"),
+    temperature: Yup.number()
+        .typeError("Must be a number")
+        .required("Required")
+        .min(-50, "Value too low")
+        .max(100, "Value too high"),
+    humidity: Yup.number()
+        .typeError("Must be a number")
+        .required("Required")
+        .min(0, "Cannot be less than 0")
+        .max(100, "Cannot exceed 100"),
     checkedBy: Yup.string().required("Required"),
-    verifiedBy: Yup.string(),
+    verifiedBy: Yup.string().required("Verified By is required"),
     status: Yup.string().required("Required"),
 });
 
@@ -53,18 +62,21 @@ export default function MonitoringLogPage() {
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
-        // Mock data for demonstration
-        const mockData = [
-            { id: 1, date: "2025-02-03", time: "11:00 AM", location: "Finish Goods Store", temperature: "22.89", humidity: "40.86", checkedBy: "Sarvang Shiroya", status: "Verified" },
-            { id: 2, date: "2025-02-03", time: "03:00 PM", location: "Finish Goods Store", temperature: "21.1", humidity: "43.73", checkedBy: "Sarvang Shiroya", status: "Verified" },
-            { id: 3, date: "2025-02-03", time: "07:00 PM", location: "Finish Goods Store", temperature: "20.96", humidity: "45.12", checkedBy: "Sarvang Shiroya", status: "Verified" },
-            { id: 4, date: "2025-02-04", time: "11:00 AM", location: "Raw Material Store", temperature: "22.25", humidity: "43.15", checkedBy: "Sarvang Shiroya", status: "Verified" },
-        ];
+        const fetchLogs = async () => {
+            try {
+                const response = await axiosInstance.get("/environmental-monitoring-logs");
+                setLogs(response.data || []);
+            } catch (error) {
+                console.error("Failed to fetch logs:", error);
+                NotificationService.notify("Error", "Failed to load monitoring logs", "error");
+                // Fallback to empty if error
+                setLogs([]);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        setTimeout(() => {
-            setLogs(mockData);
-            setLoading(false);
-        }, 500);
+        fetchLogs();
     }, []);
 
     const formik = useFormik({
@@ -82,21 +94,20 @@ export default function MonitoringLogPage() {
         onSubmit: async (values, { resetForm }) => {
             setSubmitting(true);
             try {
-                console.log("Submitting log via Dialog:", values);
-                await new Promise((resolve) => setTimeout(resolve, 800));
-
-                // Add to local state (simulation)
-                const newEntry = {
+                // Formatting time for display if needed, but saving raw values is usually better for consistency
+                const response = await axiosInstance.post("/environmental-monitoring-logs", {
                     ...values,
-                    id: logs.length + 1,
-                    time: new Date(`${values.date}T${values.time}`).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
-                };
-                setLogs([newEntry, ...logs]);
+                    createdAt: new Date().toISOString()
+                });
 
-                NotificationService.notify("Success", "Environment reading recorded", "success");
-                setDialogOpen(false);
-                resetForm();
+                if (response.data) {
+                    setLogs([response.data, ...logs]);
+                    NotificationService.notify("Success", "Environment reading recorded", "success");
+                    setDialogOpen(false);
+                    resetForm();
+                }
             } catch (error) {
+                console.error("Failed to save log:", error);
                 NotificationService.notify("Error", "Failed to record reading", "error");
             } finally {
                 setSubmitting(false);
@@ -132,6 +143,7 @@ export default function MonitoringLogPage() {
         { label: "Temp (°C)", align: "center", render: (row) => `${row.temperature}°C` },
         { label: "Humidity (%)", align: "center", render: (row) => `${row.humidity}%` },
         { label: "Checked By", align: "center", accessor: "checkedBy" },
+        { label: "Verified By", align: "center", accessor: "verifiedBy" },
         {
             label: "Status",
             align: "center",
@@ -294,6 +306,8 @@ export default function MonitoringLogPage() {
                                     name="verifiedBy"
                                     value={formik.values.verifiedBy}
                                     onChange={formik.handleChange}
+                                    error={formik.touched.verifiedBy && Boolean(formik.errors.verifiedBy)}
+                                    helperText={formik.touched.verifiedBy && formik.errors.verifiedBy}
                                 />
                             </Grid>
 
