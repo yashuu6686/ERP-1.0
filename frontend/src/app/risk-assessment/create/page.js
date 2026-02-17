@@ -146,7 +146,18 @@ function RiskAssessmentContent() {
         } else {
             formik.setFieldValue('weightedAverage', '');
         }
-    }, [formik]);
+    }, [
+        formik.values.qualitySystem?.score, formik.values.qualitySystem?.tierWeight,
+        formik.values.incomingInspection?.score, formik.values.incomingInspection?.tierWeight,
+        formik.values.delivery?.score, formik.values.delivery?.tierWeight,
+        formik.values.reliability?.score, formik.values.reliability?.tierWeight,
+        formik.values.processConsistency?.score, formik.values.processConsistency?.tierWeight,
+        formik.values.traceability?.score, formik.values.traceability?.tierWeight,
+        formik.values.changeControl?.score, formik.values.changeControl?.tierWeight,
+        formik.values.financialStability?.score, formik.values.financialStability?.tierWeight,
+        formik.values.geoPolitical?.score, formik.values.geoPolitical?.tierWeight,
+        formik.values.alternateSuppliers?.score, formik.values.alternateSuppliers?.tierWeight,
+    ]);
 
     if (loading) return <Loader fullPage message="Submitting Assessment..." />;
 
