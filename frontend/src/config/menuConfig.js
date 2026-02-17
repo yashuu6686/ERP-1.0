@@ -38,8 +38,8 @@ export const APP_MENU = [
             { text: "Risk Assessment", icon: <Assessment />, path: "/risk-assessment", key: "risk_assessment" },
             { text: "Initial Evaluation", icon: <Business />, path: "/initial-evaluation", key: "initial_evaluation" },
             { text: "Approved Suppliers", icon: <Verified />, path: "/approved-suppliers", key: "approved_suppliers" },
-            
-            
+
+
             { text: "Ongoing Evaluation", icon: <FactCheck />, path: "/ongoing-evaluation", key: "ongoing_evaluation" },
         ]
     },
@@ -59,6 +59,7 @@ export const APP_MENU = [
         description: "Manufacturing and production control",
         items: [
             { text: "Line Clearance Checklist", icon: <Assignment />, path: "/line-clearance-checklist", key: "line_clearance_checklist" },
+            { text: "Batch Manufacturing Record (BMR)", icon: <Assignment />, path: "/production/bmr", key: "bmr" },
             { text: "Bill of Materials", icon: <Build />, path: "/bom", key: "bom" },
             { text: "Production Plan", icon: <EventNote />, path: "/production-plan", key: "production_plan" },
             // { text: "Material Issue Request", icon: <Send />, path: "/material-issue", key: "material_issue" },
@@ -75,7 +76,7 @@ export const APP_MENU = [
             { text: "Customer Orders", icon: <People />, path: "/orders", key: "orders" },
             { text: "Invoices", icon: <Receipt />, path: "/invoices", key: "invoices" },
             { text: "Final Inspection", icon: <Verified />, path: "/final-inspection", key: "final_inspection" },
-           
+
             { text: "Standard Operating Procedures", icon: <Description />, path: "/sop", key: "sop" },
             { text: "Dispatch Details", icon: <LocalShipping />, path: "/dispatch", key: "dispatch" },
         ]
