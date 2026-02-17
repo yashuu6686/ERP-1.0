@@ -1,7 +1,4 @@
-import express from "express";
 import dotenv from "dotenv";
-import cors from "cors";
-import cookieParser from "cookie-parser";
 import connectDB from "./connectDB/connectDB.js";
 import userRoutes from "./routes/userRoutes.js";
 import roleRoutes from "./routes/settings/roleRoutes.js";
@@ -11,7 +8,6 @@ import purchaseOrderRoutes from "./routes/purachase/purchaseOrderRoutes.js";
 
 dotenv.config();
 
-const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
