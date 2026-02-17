@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import {
     Box,
     Typography,
@@ -15,7 +15,7 @@ import {
     MenuItem,
     Divider,
 } from "@mui/material";
-import { Visibility, Edit, Assignment, Close, Save, Thermostat, WaterDrop, CalendarMonth } from "@mui/icons-material";
+import { Visibility, Edit, Assignment, Close, Save, Thermostat } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { useFormik, FormikProvider } from "formik";
 import * as Yup from "yup";
@@ -60,29 +60,29 @@ export default function MonitoringLogPage() {
     const [loading, setLoading] = useState(true);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [submitting, setSubmitting] = useState(false);
+    const [selectedLog, setSelectedLog] = useState(null);
+
+    const fetchLogs = useCallback(async () => {
+        try {
+            const response = await axiosInstance.get("/environmental-monitoring-logs");
+            setLogs(response.data || []);
+        } catch (error) {
+            console.error("[Environment] Failed to fetch logs:", error);
+            NotificationService.notify("Error", "Failed to load monitoring logs", "error");
+            setLogs([]);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
-        const fetchLogs = async () => {
-            try {
-                const response = await axiosInstance.get("/environmental-monitoring-logs");
-                setLogs(response.data || []);
-            } catch (error) {
-                console.error("Failed to fetch logs:", error);
-                NotificationService.notify("Error", "Failed to load monitoring logs", "error");
-                // Fallback to empty if error
-                setLogs([]);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchLogs();
-    }, []);
+    }, [fetchLogs]);
 
     const formik = useFormik({
         initialValues: {
             date: new Date().toISOString().split("T")[0],
-            time: new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }),
+            time: new Date().toTimeString().split(" ")[0].slice(0, 5), // HH:mm format
             location: "",
             temperature: "",
             humidity: "",
@@ -93,29 +93,58 @@ export default function MonitoringLogPage() {
         validationSchema,
         onSubmit: async (values, { resetForm }) => {
             setSubmitting(true);
+            setDialogOpen(false); // Close dialog immediately on click
             try {
-                // Formatting time for display if needed, but saving raw values is usually better for consistency
-                const response = await axiosInstance.post("/environmental-monitoring-logs", {
-                    ...values,
-                    createdAt: new Date().toISOString()
-                });
+                if (selectedLog) {
+                    // Update existing log
+                    const response = await axiosInstance.put(`/environmental-monitoring-logs/${selectedLog.id}`, {
+                        ...values,
+                        updatedAt: new Date().toISOString()
+                    });
 
-                if (response.data) {
-                    setLogs([response.data, ...logs]);
-                    NotificationService.notify("Success", "Environment reading recorded", "success");
-                    setDialogOpen(false);
-                    resetForm();
+                    if (response.data) {
+                        setLogs(prev => prev.map(log => log.id === selectedLog.id ? response.data : log));
+                        NotificationService.notify("Success", "Environment reading updated", "success");
+                    }
+                } else {
+                    // Create new log
+                    const response = await axiosInstance.post("/environmental-monitoring-logs", {
+                        ...values,
+                        createdAt: new Date().toISOString()
+                    });
+
+                    if (response.data) {
+                        setLogs(prev => [response.data, ...prev]);
+                        NotificationService.notify("Success", "Environment reading recorded", "success");
+                    }
                 }
+                resetForm();
+                setSelectedLog(null);
             } catch (error) {
-                console.error("Failed to save log:", error);
-                NotificationService.notify("Error", "Failed to record reading", "error");
+                console.error("[Environment] Save Error:", error);
+                NotificationService.notify("Error", `Failed to ${selectedLog ? 'update' : 'record'} reading`, "error");
             } finally {
                 setSubmitting(false);
             }
         },
     });
 
-    const columns = [
+    const handleEdit = (log) => {
+        setSelectedLog(log);
+        formik.setValues({
+            date: log.date,
+            time: log.time,
+            location: log.location,
+            temperature: log.temperature,
+            humidity: log.humidity,
+            checkedBy: log.checkedBy,
+            verifiedBy: log.verifiedBy,
+            status: log.status,
+        });
+        setDialogOpen(true);
+    };
+
+    const columns = useMemo(() => [
         {
             label: "Sr.No.",
             align: "center",
@@ -166,16 +195,17 @@ export default function MonitoringLogPage() {
             align: "center",
             render: (row) => (
                 <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
-                    <IconButton size="small" sx={{ color: "var(--brand-primary)", bgcolor: "#f1f5f9" }}>
-                        <Visibility fontSize="small" />
-                    </IconButton>
-                    <IconButton size="small" sx={{ color: "var(--brand-primary)", bgcolor: "#f1f5f9" }}>
+                    <IconButton
+                        size="small"
+                        sx={{ color: "var(--brand-primary)", bgcolor: "#f1f5f9" }}
+                        onClick={() => handleEdit(row)}
+                    >
                         <Edit sx={{ fontSize: 16 }} />
                     </IconButton>
                 </Box>
             ),
         },
-    ];
+    ], []);
 
     return (
         <Box>
@@ -183,7 +213,11 @@ export default function MonitoringLogPage() {
                 title="Environmental Monitoring Logs"
                 icon={<Assignment sx={{ mr: 1, color: "var(--brand-primary)" }} />}
                 addText="Record New Reading"
-                onAdd={() => setDialogOpen(true)}
+                onAdd={() => {
+                    setSelectedLog(null);
+                    formik.resetForm();
+                    setDialogOpen(true);
+                }}
             >
                 {loading ? (
                     <Loader message="Loading logs..." />
@@ -212,7 +246,7 @@ export default function MonitoringLogPage() {
             >
                 <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 700 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Thermostat color="primary" /> Record Environment Reading
+                        <Thermostat color="primary" /> {selectedLog ? "Edit Environment Reading" : "Record Environment Reading"}
                     </Box>
                     <IconButton onClick={() => setDialogOpen(false)} disabled={submitting}>
                         <Close />
@@ -325,7 +359,7 @@ export default function MonitoringLogPage() {
                         disabled={submitting}
                         sx={{ px: 4, bgcolor: 'var(--brand-primary)', borderRadius: 2 }}
                     >
-                        {submitting ? "Saving..." : "Record Reading"}
+                        {submitting ? "Saving..." : selectedLog ? "Update Reading" : "Record Reading"}
                     </Button>
                 </DialogActions>
             </Dialog>

@@ -92,7 +92,7 @@ export const APP_MENU = [
         name: "Environment",
         description: "Monitoring and managing environment conditions",
         items: [
-            { text: "Daily Monitoring Logs", icon: <Assignment />, path: "/environment/monitoring-logs", key: "environment_log" },
+            { text: "Daily Monitoring Log", icon: <Assignment />, path: "/environment/monitoring-log", key: "environment_log" },
         ]
     },
     {

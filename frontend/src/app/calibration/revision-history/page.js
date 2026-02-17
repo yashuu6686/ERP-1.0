@@ -21,41 +21,31 @@ export default function RevisionHistoryPage() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
-    const mockRevisionData = [
-        {
-            id: 1,
-            revNo: "00",
-            author: "Quality Team",
-            description: "Initial release of QSP18 - Control of Measuring and Monitoring Equipment",
-            updatedAt: "2023-01-01",
-            approvedBy: "Quality Director",
-            formAffected: "FRM18-01, FRM18-02"
-        },
-        {
-            id: 2,
-            revNo: "01",
-            author: "Calibration Manager",
-            description: "Added external calibration laboratory requirements and certificate tracking",
-            updatedAt: "2023-06-15",
-            approvedBy: "Quality Director",
-            formAffected: "FRM18-01"
-        },
-        {
-            id: 3,
-            revNo: "02",
-            author: "Quality Team",
-            description: "Updated calibration frequency for temperature-sensitive equipment",
-            updatedAt: "2024-01-10",
-            approvedBy: "Quality Director",
-            formAffected: "FRM18-01"
-        }
-    ];
+    const [revisions, setRevisions] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const filteredRevisions = mockRevisionData.filter((rev) => {
+    React.useEffect(() => {
+        const fetchRevisions = async () => {
+            try {
+                // Assuming endpoint, if not exists it will fail gently or return empty
+                // In real scenario, check backend. Using generic endpoint for now.
+                const response = await import('@/axios/axiosInstance').then(m => m.default.get("/calibration-revisions"));
+                setRevisions(response.data || []);
+            } catch (error) {
+                console.error("Failed to fetch revisions:", error);
+                // NotificationService.notify("Error", "Failed to load revisions", "error");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchRevisions();
+    }, []);
+
+    const filteredRevisions = revisions.filter((rev) => {
         const matchesSearch =
-            rev.revNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            rev.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            rev.description.toLowerCase().includes(searchTerm.toLowerCase());
+            (rev.revNo?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+            (rev.author?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+            (rev.description?.toLowerCase() || "").includes(searchTerm.toLowerCase());
         return matchesSearch;
     });
 
