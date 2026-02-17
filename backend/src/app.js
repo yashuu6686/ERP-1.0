@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import userRoutes from "./routes/userRoutes.js";
-import roleRoutes from "./routes/roleRoutes.js";
+import roleRoutes from "./routes/settings/roleRoutes.js";
 import supplierRoutes from "./routes/supplierRoutes.js";
 import supplierSurveyRoutes from "./routes/supplierSurveyRoutes.js";
 
