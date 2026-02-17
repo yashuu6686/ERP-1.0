@@ -85,13 +85,7 @@ function OngoingEvaluationCreateContent() {
         },
     });
 
-    useEffect(() => {
-        if (supplierId) {
-            fetchSupplierInfo(supplierId);
-        }
-    }, [supplierId]);
-
-    const fetchSupplierInfo = async (id) => {
+    const fetchSupplierInfo = React.useCallback(async (id) => {
         try {
             setLoading(true);
             const response = await axiosInstance.get(`/evaluation/${id}`);
@@ -112,7 +106,13 @@ function OngoingEvaluationCreateContent() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [formik, showNotification]);
+
+    useEffect(() => {
+        if (supplierId) {
+            fetchSupplierInfo(supplierId);
+        }
+    }, [supplierId, fetchSupplierInfo]);
 
     const handleActualSubmit = async () => {
         setLoading(true);

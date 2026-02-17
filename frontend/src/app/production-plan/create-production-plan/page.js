@@ -140,23 +140,24 @@ export default function CreateProductionPlan() {
         fetchBOMs();
     }, []);
 
+    const fetchPlan = React.useCallback(async () => {
+        try {
+            setFetching(true);
+            const response = await axiosInstance.get(`/production-plans/${id}`);
+            formik.setValues(response.data);
+        } catch (error) {
+            console.error("Failed to fetch plan:", error);
+            showNotification("Failed to load plan details.", "error");
+        } finally {
+            setFetching(false);
+        }
+    }, [id, formik, showNotification]);
+
     useEffect(() => {
         if (id) {
-            const fetchPlan = async () => {
-                try {
-                    setFetching(true);
-                    const response = await axiosInstance.get(`/production-plans/${id}`);
-                    formik.setValues(response.data);
-                } catch (error) {
-                    console.error("Failed to fetch plan:", error);
-                    showNotification("Failed to load plan details.", "error");
-                } finally {
-                    setFetching(false);
-                }
-            };
             fetchPlan();
         }
-    }, [id]);
+    }, [id, fetchPlan]);
 
     if (fetching) return <Loader message="Fetching plan details..." />;
 

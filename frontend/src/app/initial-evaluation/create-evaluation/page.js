@@ -96,107 +96,42 @@ function SupplierEvaluationContent() {
     const [loadingRef, setLoadingRef] = useState(false);
     const [selectedRef, setSelectedRef] = useState(null);
 
-    const formik = useFormik({
-        initialValues: {
-            evaluationNo: "",
-            supplierName: "",
-            address: "",
-            city: "",
-            state: "",
-            zipCode: "",
-            contactPerson: "",
-            title: "",
-            phone: "",
-            yearEstablished: "",
-            totalSquareFootage: "",
-            numberOfEmployees: "",
-            qaTitle: "",
-            numberOfQAEmployees: "",
-            productServices: "",
-            questionnaire: {
-                q1: { answer: "", certificate: "", certCopy: false },
-                q2: { answer: "" },
-                q3: { answer: "" },
-                q4: { answer: "" },
-                q5: { answer: "" },
-                q6: { answer: "" },
-                q7: { answer: "" },
-                q8: { answer: "" },
-                q9: { answer: "" },
-                q10: { answer: "" },
-                q11: { answer: "" },
-                q12: { answer: "" },
-                q13: { answer: "" },
-                q14: { answer: "" },
-                q15: { answer: "" },
-                q16: { answer: "" },
-                q17: { answer: "" },
-                q18: { answer: "" },
-                q19: { answer: "" },
-                q20: { answer: "" },
-                q21: { answer: "" },
-                q22: { answer: "", description: "" },
-                q23: { answer: "" },
-                q24: { answer: "" },
-                q25: { answer: "" },
-                q26: { answer: "" },
-                q27: { answer: "" },
-            },
-            additionalComments: "",
-            completedBy: "",
-            completedByTitle: "",
-            completedDate: new Date().toISOString().split("T")[0],
-            supplierApproved: "",
-            approvalComments: "",
-            reviewedBy: "",
-            reviewedDate: "",
-            approvedBy: "",
-            approvedDate: "",
-            status: "Pending",
-            evaluationDate: new Date().toISOString().split("T")[0],
-        },
-        validationSchema: validationSchema[activeStep],
-        enableReinitialize: true,
-        onSubmit: async () => {
-            setOpenPreview(true);
-        },
-    });
+    const fetchReferenceData = React.useCallback(async () => {
+        try {
+            setLoadingRef(true);
+            const response = await axiosInstance.get("/risk-assessments");
+            // Only get completed risk assessments
+            const completed = (response.data || []).filter(s => s.status === "Completed");
+            setReferenceData(completed);
+        } catch (error) {
+            console.error("Error fetching risk assessments:", error);
+        } finally {
+            setLoadingRef(false);
+        }
+    }, []);
+
+    const fetchEvaluation = React.useCallback(async () => {
+        try {
+            setLoading(true);
+            const response = await axiosInstance.get(`/evaluation/${id}`);
+            if (response.data) {
+                formik.setValues(response.data);
+            }
+        } catch (error) {
+            console.error("Error fetching evaluation:", error);
+            showNotification("Failed to load evaluation data", "error");
+        } finally {
+            setLoading(false);
+        }
+    }, [id, formik, showNotification]);
 
     useEffect(() => {
-        const fetchReferenceData = async () => {
-            try {
-                setLoadingRef(true);
-                const response = await axiosInstance.get("/risk-assessments");
-                // Only get completed risk assessments
-                const completed = (response.data || []).filter(s => s.status === "Completed");
-                setReferenceData(completed);
-            } catch (error) {
-                console.error("Error fetching risk assessments:", error);
-            } finally {
-                setLoadingRef(false);
-            }
-        };
-
         fetchReferenceData();
 
         if (id) {
-            const fetchEvaluation = async () => {
-                try {
-                    setLoading(true);
-                    const response = await axiosInstance.get(`/evaluation/${id}`);
-                    if (response.data) {
-                        formik.setValues(response.data);
-                    }
-                } catch (error) {
-                    console.error("Error fetching evaluation:", error);
-                    showNotification("Failed to load evaluation data", "error");
-                } finally {
-                    setLoading(false);
-                }
-            };
             fetchEvaluation();
         }
-    }, [id]);
+    }, [id, fetchReferenceData, fetchEvaluation]);
 
     const handleReferenceSelect = (event, assessment) => {
         setSelectedRef(assessment);

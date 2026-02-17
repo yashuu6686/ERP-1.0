@@ -146,18 +146,7 @@ function RiskAssessmentContent() {
         } else {
             formik.setFieldValue('weightedAverage', '');
         }
-    }, [
-        formik.values.qualitySystem,
-        formik.values.incomingInspection,
-        formik.values.delivery,
-        formik.values.reliability,
-        formik.values.processConsistency,
-        formik.values.traceability,
-        formik.values.changeControl,
-        formik.values.financialStability,
-        formik.values.geoPolitical,
-        formik.values.alternateSuppliers
-    ]);
+    }, [formik]);
 
     if (loading) return <Loader fullPage message="Submitting Assessment..." />;
 

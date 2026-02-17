@@ -49,13 +49,7 @@ function OngoingChecklistContent() {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState(null);
 
-    useEffect(() => {
-        if (id) {
-            fetchChecklistData();
-        }
-    }, [id]);
-
-    const fetchChecklistData = async () => {
+    const fetchChecklistData = React.useCallback(async () => {
         try {
             setLoading(true);
             const response = await axiosInstance.get(`/ongoing-evaluation/${id}`);
@@ -98,7 +92,13 @@ function OngoingChecklistContent() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [id]);
+
+    useEffect(() => {
+        if (id) {
+            fetchChecklistData();
+        }
+    }, [id, fetchChecklistData]);
 
     if (loading) return <Loader fullPage message="Loading Checklist Details..." />;
     if (!data) return (

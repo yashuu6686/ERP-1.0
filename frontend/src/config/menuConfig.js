@@ -31,7 +31,7 @@ export const APP_MENU = [
         key: "dashboard"
     },
     {
-        name: "Supplier Management",
+        name: "Supplier",
         description: "Supplier management flow",
         items: [
             { text: "Supplier Survey", icon: <RateReview />, path: "/supplier-survey", key: "supplier_survey" },
@@ -44,18 +44,18 @@ export const APP_MENU = [
         ]
     },
     {
-        name: "Purchase Management",
+        name: "Purchase",
         description: "Procurement and inventory management",
         items: [
             { text: "Purchase Orders", icon: <ShoppingCart />, path: "/purchase", key: "purchase" },
             { text: "Goods Receipt Note (GRN)", icon: <Inventory />, path: "/grn", key: "grn" },
-            { text: "Incommingx Inspection", icon: <Assignment />, path: "/incoming-inspection", key: "incoming_inspection" },
+            { text: "Incoming Inspection", icon: <Assignment />, path: "/incoming-inspection", key: "incoming_inspection" },
             { text: "Store", icon: <Store />, path: "/store", key: "store" },
             { text: "Rejected Goods", icon: <Cancel />, path: "/rejected-goods", key: "rejected_goods" },
         ]
     },
     {
-        name: "Production Management",
+        name: "Production",
         description: "Manufacturing and production control",
         items: [
             { text: "Line Clearance Checklist", icon: <Assignment />, path: "/line-clearance-checklist", key: "line_clearance_checklist" },
@@ -70,7 +70,7 @@ export const APP_MENU = [
         ]
     },
     {
-        name: "Sales Management",
+        name: "Sales",
         description: "Customer orders and invoicing",
         items: [
             { text: "Customer Orders", icon: <People />, path: "/orders", key: "orders" },
@@ -89,7 +89,7 @@ export const APP_MENU = [
         ]
     },
     {
-        name: "Environment Management",
+        name: "Environment",
         description: "Monitoring and managing environment conditions",
         items: [
             { text: "Daily Monitoring Log", icon: <Assignment />, path: "/environment/monitoring-log", key: "environment_log" },

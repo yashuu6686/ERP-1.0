@@ -96,23 +96,24 @@ function CreateLineClearanceChecklistContent() {
         },
     });
 
+    const fetchChecklist = React.useCallback(async () => {
+        try {
+            setLoading(true);
+            const response = await axiosInstance.get(`/line-clearance-checklist/${id}`);
+            formik.setValues(response.data);
+        } catch (error) {
+            console.error("Fetch Error:", error);
+            showNotification("Failed to fetch checklist details.", "error");
+        } finally {
+            setLoading(false);
+        }
+    }, [id, formik, showNotification]);
+
     useEffect(() => {
         if (isEditMode && id) {
-            const fetchChecklist = async () => {
-                try {
-                    setLoading(true);
-                    const response = await axiosInstance.get(`/line-clearance-checklist/${id}`);
-                    formik.setValues(response.data);
-                } catch (error) {
-                    console.error("Fetch Error:", error);
-                    showNotification("Failed to fetch checklist details.", "error");
-                } finally {
-                    setLoading(false);
-                }
-            };
             fetchChecklist();
         }
-    }, [id, isEditMode]);
+    }, [id, isEditMode, fetchChecklist]);
 
     if (loading) return <Loader fullPage message="Saving Checklist..." />;
 

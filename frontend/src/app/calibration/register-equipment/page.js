@@ -158,7 +158,7 @@ function RegisterEquipmentContent() {
                 });
             }
         }
-    }, [id]);
+    }, [id, formik]);
 
     if (loading) return <Loader fullPage message={id ? "Updating Equipment..." : "Registering Equipment..."} />;
 

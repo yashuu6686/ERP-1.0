@@ -73,13 +73,7 @@ function ApprovedSupplierViewContent() {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        if (id) {
-            fetchSupplier();
-        }
-    }, [id]);
-
-    const fetchSupplier = async () => {
+    const fetchSupplier = React.useCallback(async () => {
         try {
             setLoading(true);
             const response = await axiosInstance.get(`/evaluation/${id}`);
@@ -97,7 +91,13 @@ function ApprovedSupplierViewContent() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [id, router, showNotification]);
+
+    useEffect(() => {
+        if (id) {
+            fetchSupplier();
+        }
+    }, [id, fetchSupplier]);
 
     if (loading) return <Loader fullPage message="Loading Supplier Profile..." />;
     if (!data) return null;
