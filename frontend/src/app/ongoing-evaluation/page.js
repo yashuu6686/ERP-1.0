@@ -115,7 +115,7 @@ export default function OngoingEvaluationListPage() {
                     variant="contained"
                     startIcon={<Add />}
                     onClick={() => router.push("/ongoing-evaluation/create")}
-                    sx={{ bgcolor: "#059669", "&:hover": { bgcolor: "#047857" }, textTransform: "none" }}
+                    sx={{ textTransform: "none" }}
                 >
                     New Ongoing Evaluation
                 </Button>
