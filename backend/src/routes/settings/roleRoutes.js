@@ -5,8 +5,8 @@ import {
     GetRoleById,
     UpdateRole,
     DeleteRole
-} from "../controller/roleController.js";
-import { protect } from "../middleware/authMiddleware.js";
+} from "../../controller/settings/roleController.js";
+import { protect } from "../../middleware/authMiddleware.js";
 
 const router = express.Router();
 
