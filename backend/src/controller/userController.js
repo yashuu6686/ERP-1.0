@@ -1,5 +1,5 @@
 import User from "../model/userModel.js";
-import Role from "../model/roleModel.js";
+import Role from "../model/settings/roleModel.js";
 import jwt from "jsonwebtoken";
 
 const generateToken = (userId) => {

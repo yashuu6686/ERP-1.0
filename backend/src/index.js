@@ -4,7 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import connectDB from "./connectDB/connectDB.js";
 import userRoutes from "./routes/userRoutes.js";
-import roleRoutes from "./routes/roleRoutes.js";
+import roleRoutes from "./routes/settings/roleRoutes.js";
 import supplierRoutes from "./routes/supplierRoutes.js";
 import supplierSurveyRoutes from "./routes/supplierSurveyRoutes.js";
 
