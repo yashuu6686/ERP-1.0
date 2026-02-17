@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Box, Typography, Grid, Card, CardContent, Paper, IconButton, Button, Divider, Container } from "@mui/material";
+import { Box, Typography, Grid, Card, CardContent, Paper, Button, } from "@mui/material";
 import { useRouter } from "next/navigation";
 import {
   ShoppingCart,
@@ -11,19 +11,19 @@ import {
   Verified,
   Factory,
   Description,
-  Science,
   Store,
   CallSplit,
   Layers,
   Cancel,
   ArrowForward,
-  Notifications,
-  Search,
   Add,
   TrendingUp,
   Warning,
   CheckCircle,
-  Schedule
+  RateReview,
+  Assessment,
+  Business,
+  FactCheck
 } from "@mui/icons-material";
 import { useAuth } from "@/context/AuthContext";
 import { MENU_ITEMS } from "@/config/menuConfig";
@@ -148,6 +148,14 @@ export default function DashboardPage() {
     return checkPermission(menuItem.key, 'view');
   };
 
+  const allSupplierFlow = [
+    { title: "Supplier Survey", icon: <RateReview />, path: "/supplier-survey" },
+    { title: "Risk Assessment", icon: <Assessment />, path: "/risk-assessment" },
+    { title: "Initial Evaluation", icon: <Business />, path: "/initial-evaluation" },
+    { title: "Approved Suppliers", icon: <Verified />, path: "/approved-suppliers" },
+    { title: "Ongoing Evaluation", icon: <FactCheck />, path: "/ongoing-evaluation" },
+  ];
+
   const allProcurementFlow = [
     { title: "Purchase Orders", icon: <ShoppingCart />, path: "/purchase" },
     { title: "Goods Receipt Note", icon: <Inventory />, path: "/grn" },
@@ -168,6 +176,8 @@ export default function DashboardPage() {
     { title: "Invoices", icon: <Receipt />, path: "/invoices" },
   ];
 
+
+
   const allOtherModules = [
     { title: "Standard Operating Procedures", icon: <Description />, path: "/sop", color: "#64748b" },
     { title: "Certificates of Analysis", icon: <Description />, path: "/coa", color: "#8b5cf6" },
@@ -178,6 +188,7 @@ export default function DashboardPage() {
   const procurementFlow = allProcurementFlow.filter(item => hasAccess(item.path));
   const productionFlow = allProductionFlow.filter(item => hasAccess(item.path));
   const salesFlow = allSalesFlow.filter(item => hasAccess(item.path));
+  const supplierFlow = allSupplierFlow.filter(item => hasAccess(item.path));
   const otherModules = allOtherModules.filter(item => hasAccess(item.path));
 
   return (
@@ -304,6 +315,9 @@ export default function DashboardPage() {
       </Grid>
 
       {/* Workflows */}
+      {supplierFlow.length > 0 && (
+        <WorkflowSection title="Supplier Management" steps={supplierFlow} color="#8b5cf6" />
+      )}
       {procurementFlow.length > 0 && (
         <WorkflowSection title="Procurement & Inward Flow" steps={procurementFlow} color="#2563eb" />
       )}
@@ -313,6 +327,7 @@ export default function DashboardPage() {
       {salesFlow.length > 0 && (
         <WorkflowSection title="Sales & Fulfillment Flow" steps={salesFlow} color="#d97706" />
       )}
+
       {otherModules.length > 0 && (
         <WorkflowSection title="Other Modules" steps={otherModules} color="#64748b" />
       )}

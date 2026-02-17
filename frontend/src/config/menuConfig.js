@@ -26,6 +26,7 @@ import FactCheck from "@mui/icons-material/FactCheck";
 export const APP_MENU = [
     {
         text: "Dashboard",
+        name: "Dashboard",
         icon: <Home />,
         path: "/",
         key: "dashboard"
