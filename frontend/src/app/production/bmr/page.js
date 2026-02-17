@@ -8,6 +8,8 @@ import {
 } from "@mui/material";
 import { Visibility, Edit, Assignment } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
+import axiosInstance from "@/axios/axiosInstance";
+import { useNotification } from "@/context/NotificationContext";
 import CommonCard from "@/components/ui/CommonCard";
 import GlobalTable from "@/components/ui/GlobalTable";
 import Loader from "@/components/ui/Loader";
@@ -16,20 +18,37 @@ export default function BMRListPage() {
     const router = useRouter();
     const [records, setRecords] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { showNotification } = useNotification();
+    const [search, setSearch] = useState("");
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
     useEffect(() => {
-        // Mock data based on BMR context
-        const mockData = [
-            { id: 1, bmrNo: "BMR/2025/001", batchNo: "BN20250210", productName: "Device Alpha", date: "2025-02-10", status: "Approved" },
-            { id: 2, bmrNo: "BMR/2025/002", batchNo: "BN20250212", productName: "Device Beta", date: "2025-02-12", status: "Reviewed" },
-            { id: 3, bmrNo: "BMR/2025/003", batchNo: "BN20250215", productName: "Device Gamma", date: "2025-02-15", status: "Pending" },
-        ];
-
-        setTimeout(() => {
-            setRecords(mockData);
-            setLoading(false);
-        }, 600);
+        fetchBMRRecords();
     }, []);
+
+    const fetchBMRRecords = async () => {
+        try {
+            setLoading(true);
+            const response = await axiosInstance.get("/production-bmr");
+            setRecords(response.data || []);
+        } catch (error) {
+            console.error("Error fetching BMR records:", error);
+            showNotification("Failed to fetch BMR records from server", "error");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const filteredRecords = records.filter((item) =>
+        (item.bmrNo || "").toLowerCase().includes(search.toLowerCase()) ||
+        (item.productName || "").toLowerCase().includes(search.toLowerCase())
+    );
+
+    const paginatedRecords = filteredRecords.slice(
+        page * rowsPerPage,
+        page * rowsPerPage + rowsPerPage
+    );
 
     const columns = [
         {
@@ -37,7 +56,7 @@ export default function BMRListPage() {
             align: "center",
             render: (row, index) => (
                 <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 500 }}>
-                    {index + 1}
+                    {page * rowsPerPage + index + 1}
                 </Typography>
             ),
         },
@@ -94,7 +113,11 @@ export default function BMRListPage() {
                     >
                         <Visibility fontSize="small" />
                     </IconButton>
-                    <IconButton size="small" sx={{ color: "var(--brand-primary)", bgcolor: "#f1f5f9" }}>
+                    <IconButton
+                        size="small"
+                        sx={{ color: "var(--brand-primary)", bgcolor: "#f1f5f9" }}
+                        onClick={() => router.push(`/production/bmr/create?id=${row.id}`)}
+                    >
                         <Edit sx={{ fontSize: 16 }} />
                     </IconButton>
                 </Box>
@@ -110,18 +133,20 @@ export default function BMRListPage() {
                 addText="Create New BMR"
                 onAdd={() => router.push("/production/bmr/create")}
                 searchPlaceholder="Search by BMR No or Product..."
+                searchValue={search}
+                onSearchChange={(e) => { setSearch(e.target.value); setPage(0); }}
             >
                 {loading ? (
                     <Loader message="Loading BMR records..." />
                 ) : (
                     <GlobalTable
                         columns={columns}
-                        data={records}
-                        totalCount={records.length}
-                        page={0}
-                        rowsPerPage={10}
-                        onPageChange={() => { }}
-                        onRowsPerPageChange={() => { }}
+                        data={paginatedRecords}
+                        totalCount={filteredRecords.length}
+                        page={page}
+                        rowsPerPage={rowsPerPage}
+                        onPageChange={setPage}
+                        onRowsPerPageChange={(val) => { setRowsPerPage(val); setPage(0); }}
                     />
                 )}
             </CommonCard>

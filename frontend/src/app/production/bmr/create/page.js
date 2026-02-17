@@ -1,5 +1,7 @@
 "use client";
-import React, { useState } from "react";
+
+export const dynamic = "force-dynamic";
+import React, { useState, useEffect, Suspense, useRef } from "react";
 import {
     Box,
     Typography,
@@ -7,7 +9,6 @@ import {
     TextField,
     Button,
     Divider,
-    Paper,
     Table,
     TableBody,
     TableCell,
@@ -21,13 +22,14 @@ import {
     Card,
     CardContent,
 } from "@mui/material";
-import { Save, ChevronLeft, Assignment, CheckCircle } from "@mui/icons-material";
-import { useRouter } from "next/navigation";
+import { Save, Assignment, CheckCircle } from "@mui/icons-material";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useFormik, FormikProvider } from "formik";
 import * as Yup from "yup";
-import NotificationService from "@/services/NotificationService";
+import { useNotification } from "@/context/NotificationContext";
 import CommonCard from "@/components/ui/CommonCard";
 import axiosInstance from "@/axios/axiosInstance";
+import Loader from "@/components/ui/Loader";
 
 const CHECKLIST_ITEMS = [
     { id: 1, label: "Batch Manufacturing Record", code: "" },
@@ -48,9 +50,38 @@ const validationSchema = Yup.object().shape({
     expiryDate: Yup.string().required("Expiry Date is Required"),
 });
 
-export default function CreateBMR() {
+function CreateBMRContent() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const id = searchParams.get("id");
+    const isEditMode = !!id;
     const [loading, setLoading] = useState(false);
+    const { showNotification } = useNotification();
+    const formContainerRef = useRef(null);
+
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+            if (e.target.tagName === "TEXTAREA" && e.shiftKey) {
+                return;
+            }
+
+            if (
+                (e.target.tagName === "INPUT" || e.target.tagName === "SELECT" || e.target.tagName === "TEXTAREA") &&
+                e.target.type !== "submit" &&
+                e.target.type !== "button"
+            ) {
+                e.preventDefault();
+                const allFocusable = Array.from(
+                    formContainerRef.current.querySelectorAll("input, select, textarea")
+                ).filter((el) => !el.disabled && el.tabIndex !== -1 && el.type !== "hidden" && !el.readOnly);
+
+                const currentIndex = allFocusable.indexOf(e.target);
+                if (currentIndex !== -1 && currentIndex < allFocusable.length - 1) {
+                    allFocusable[currentIndex + 1].focus();
+                }
+            }
+        }
+    };
 
     const formik = useFormik({
         initialValues: {
@@ -73,62 +104,103 @@ export default function CreateBMR() {
         onSubmit: async (values) => {
             setLoading(true);
             try {
-                const response = await axiosInstance.post("/production-bmr", {
-                    ...values,
-                    createdAt: new Date().toISOString()
-                });
+                const response = isEditMode
+                    ? await axiosInstance.put(`/production-bmr/${id}`, values)
+                    : await axiosInstance.post("/production-bmr", {
+                        ...values,
+                        createdAt: new Date().toISOString()
+                    });
 
                 if (response.data) {
-                    NotificationService.notify("Success", "BMR Saved Successfully", "success");
-                    router.push("/production/bmr");
+                    showNotification(`BMR ${isEditMode ? "Updated" : "Saved"} Successfully`, "success");
+                    const savedId = response.data.id || id;
+                    router.push(`/production/bmr`);
                 }
             } catch (error) {
                 console.error("Save Error:", error);
-                NotificationService.notify("Error", "Failed to save BMR", "error");
+                showNotification(`Failed to ${isEditMode ? "update" : "save"} BMR`, "error");
             } finally {
                 setLoading(false);
             }
         },
     });
 
+    useEffect(() => {
+        if (isEditMode && id) {
+            const fetchBMR = async () => {
+                try {
+                    setLoading(true);
+                    const response = await axiosInstance.get(`/production-bmr/${id}`);
+                    if (response.data) {
+                        const data = response.data;
+                        // Format dates for input type="date" (must be YYYY-MM-DD)
+                        const formattedData = {
+                            ...data,
+                            date: data.date ? new Date(data.date).toISOString().split("T")[0] : "",
+                            manufacturingDate: data.manufacturingDate ? new Date(data.manufacturingDate).toISOString().split("T")[0] : "",
+                            expiryDate: data.expiryDate ? new Date(data.expiryDate).toISOString().split("T")[0] : "",
+                            // Safety guard for checklist data
+                            checklist: data.checklist || CHECKLIST_ITEMS.reduce((acc, item) => {
+                                acc[item.id] = "Yes";
+                                return acc;
+                            }, {}),
+                        };
+                        formik.setValues(formattedData);
+                    }
+                } catch (error) {
+                    console.error("Fetch Error:", error);
+                    showNotification("Failed to load BMR data", "error");
+                } finally {
+                    setLoading(false);
+                }
+            };
+            fetchBMR();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id, isEditMode]);
+
+    if (loading && isEditMode) {
+        return <Loader fullPage message="Loading BMR Details..." />;
+    }
+
     return (
         <FormikProvider value={formik}>
-            <Box sx={{ pb: 6 }}>
+            <Box onKeyDown={handleKeyDown} ref={formContainerRef} sx={{ pb: 6 }}>
                 <CommonCard
-                    title="Batch Manufacturing Record"
+                    title={isEditMode ? "Edit Batch Manufacturing Record" : "Create Batch Manufacturing Record"}
                     icon={<Assignment sx={{ mr: 1, color: "var(--brand-primary)" }} />}
                 >
                     <Box sx={{ p: 1 }}>
                         {/* Basic Information Section */}
                         <Card sx={{ borderRadius: 3, boxShadow: "none", border: "1px solid #e2e8f0", mb: 4 }}>
                             <CardContent sx={{ p: 4 }}>
-                                <Typography variant="h6" sx={{ mb: 3, fontWeight: 700, color: "var(--brand-primary)", display: "flex", alignItems: "center", gap: 1 }}>
+                                <Typography variant="h6" sx={{ mb: 3, fontWeight: 700, color: "#1172ba", display: "flex", alignItems: "center", gap: 1 }}>
                                     <Assignment fontSize="small" /> Basic Information
                                 </Typography>
                                 <Grid container spacing={3}>
-                                    <Grid item xs={12} md={3} size={{ xs: 12, md: 3 }}>
+                                    <Grid item xs={12} md={3}>
                                         <TextField fullWidth label="Date" type="date" name="date" value={formik.values.date} onChange={formik.handleChange} InputLabelProps={{ shrink: true }} size="small" />
                                     </Grid>
-                                    <Grid item xs={12} md={3} size={{ xs: 12, md: 3 }}>
+                                    <Grid item xs={12} md={3}>
                                         <TextField fullWidth label="BMR No." name="bmrNo" value={formik.values.bmrNo} onChange={formik.handleChange} error={formik.touched.bmrNo && !!formik.errors.bmrNo} helperText={formik.touched.bmrNo && formik.errors.bmrNo} size="small" />
                                     </Grid>
-                                    <Grid item xs={12} md={3} size={{ xs: 12, md: 3 }}>
-                                        <TextField fullWidth label="Name of Product" name="productName" value={formik.values.productName} onChange={formik.handleChange} size="small" />
+                                    <Grid item xs={12} md={3}>
+                                        <TextField fullWidth label="Name of Product" name="productName" value={formik.values.productName} onChange={formik.handleChange} error={formik.touched.productName && !!formik.errors.productName} helperText={formik.touched.productName && formik.errors.productName} size="small" />
                                     </Grid>
-                                    <Grid item xs={12} md={3} size={{ xs: 12, md: 3 }}>
-                                        <TextField fullWidth label="Batch No." name="batchNo" value={formik.values.batchNo} onChange={formik.handleChange} size="small" />
+                                    <Grid item xs={12} md={3}>
+                                        <TextField fullWidth label="Batch No." name="batchNo" value={formik.values.batchNo} onChange={formik.handleChange} error={formik.touched.batchNo && !!formik.errors.batchNo} helperText={formik.touched.batchNo && formik.errors.batchNo} size="small" />
                                     </Grid>
-                                    <Grid item xs={12} md={3} size={{ xs: 12, md: 3 }}>
-                                        <TextField fullWidth label="Batch Qty" name="batchQty" value={formik.values.batchQty} onChange={formik.handleChange} size="small" />
+                                    <Grid item xs={12} md={3}>
+                                        <TextField fullWidth label="Batch Qty" name="batchQty" value={formik.values.batchQty} onChange={formik.handleChange} error={formik.touched.batchQty && !!formik.errors.batchQty} helperText={formik.touched.batchQty && formik.errors.batchQty} size="small" />
                                     </Grid>
-                                    <Grid item xs={12} md={3} size={{ xs: 12, md: 3 }}>
+                                    <Grid item xs={12} md={3}>
                                         <TextField fullWidth label="Serial No." name="serialNo" value={formik.values.serialNo} onChange={formik.handleChange} size="small" />
                                     </Grid>
-                                    <Grid item xs={12} md={3} size={{ xs: 12, md: 3 }}>
-                                        <TextField fullWidth label="Manufacturing Date" type="date" name="manufacturingDate" value={formik.values.manufacturingDate} onChange={formik.handleChange} InputLabelProps={{ shrink: true }} size="small" />
+                                    <Grid item xs={12} md={3}>
+                                        <TextField fullWidth label="Manufacturing Date" type="date" name="manufacturingDate" value={formik.values.manufacturingDate} onChange={formik.handleChange} InputLabelProps={{ shrink: true }} size="small" error={formik.touched.manufacturingDate && !!formik.errors.manufacturingDate} helperText={formik.touched.manufacturingDate && formik.errors.manufacturingDate} />
                                     </Grid>
-                                    <Grid item xs={12} md={3} size={{ xs: 12, md: 3 }}>
-                                        <TextField fullWidth label="Expiry Date" type="date" name="expiryDate" value={formik.values.expiryDate} onChange={formik.handleChange} InputLabelProps={{ shrink: true }} size="small" />
+                                    <Grid item xs={12} md={3}>
+                                        <TextField fullWidth label="Expiry Date" type="date" name="expiryDate" value={formik.values.expiryDate} onChange={formik.handleChange} InputLabelProps={{ shrink: true }} size="small" error={formik.touched.expiryDate && !!formik.errors.expiryDate} helperText={formik.touched.expiryDate && formik.errors.expiryDate} />
                                     </Grid>
                                 </Grid>
                             </CardContent>
@@ -138,7 +210,7 @@ export default function CreateBMR() {
                         <Card sx={{ borderRadius: 3, boxShadow: "none", border: "1px solid #e2e8f0", mb: 4 }}>
                             <CardContent sx={{ p: 0 }}>
                                 <Box sx={{ p: 4, pb: 2 }}>
-                                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 700, color: "var(--brand-primary)", display: "flex", alignItems: "center", gap: 1 }}>
+                                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 700, color: "#1172ba", display: "flex", alignItems: "center", gap: 1 }}>
                                         <CheckCircle fontSize="small" /> Checklist Verification
                                     </Typography>
                                 </Box>
@@ -183,10 +255,10 @@ export default function CreateBMR() {
                         <Card sx={{ borderRadius: 3, boxShadow: "none", border: "1px solid #e2e8f0", mb: 4 }}>
                             <CardContent sx={{ p: 4 }}>
                                 <Grid container spacing={4}>
-                                    <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+                                    <Grid item xs={12} md={6}>
                                         <TextField fullWidth label="Reviewed By" name="reviewedBy" value={formik.values.reviewedBy} onChange={formik.handleChange} size="small" placeholder="Enter name" />
                                     </Grid>
-                                    <Grid item xs={12} md={6} size={{ xs: 12, md: 6 }}>
+                                    <Grid item xs={12} md={6}>
                                         <TextField fullWidth label="Approved By" name="approvedBy" value={formik.values.approvedBy} onChange={formik.handleChange} size="small" placeholder="Enter name" />
                                     </Grid>
                                 </Grid>
@@ -198,7 +270,7 @@ export default function CreateBMR() {
                             <Button
                                 variant="outlined"
                                 onClick={() => router.push("/production/bmr")}
-                                sx={{ borderRadius: 2, px: 4, py: 1, textTransform: "none", fontWeight: 600, color: "#64748b", borderColor: "#cbd5e1" }}
+                                sx={{ borderRadius: 2, px: 4, py: 1.2, textTransform: "none", fontWeight: 700, color: "#64748b", borderColor: "#cbd5e1", "&:hover": { borderColor: "#94a3b8", bgcolor: "#f8fafc" } }}
                             >
                                 Cancel
                             </Button>
@@ -210,20 +282,28 @@ export default function CreateBMR() {
                                 sx={{
                                     borderRadius: 2,
                                     px: 6,
-                                    py: 1,
+                                    py: 1.2,
                                     textTransform: "none",
-                                    fontWeight: 600,
-                                    bgcolor: "#1172ba",
-                                    "&:hover": { bgcolor: "#0d5a94" },
+                                    fontWeight: 700,
+                                    background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
+                                    "&:hover": { background: "linear-gradient(135deg, #0d5a94 0%, #094676 100%)" },
                                     boxShadow: "0 4px 12px rgba(17, 114, 186, 0.2)"
                                 }}
                             >
-                                {loading ? "Saving..." : "Save Record"}
+                                {loading ? "Saving..." : (isEditMode ? "Update BMR" : "Save BMR Record")}
                             </Button>
                         </Box>
                     </Box>
                 </CommonCard>
             </Box>
         </FormikProvider>
+    );
+}
+
+export default function CreateBMR() {
+    return (
+        <Suspense fallback={<Loader fullPage message="Loading..." />}>
+            <CreateBMRContent />
+        </Suspense>
     );
 }

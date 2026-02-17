@@ -42,9 +42,9 @@ function LineClearanceChecklistListContent() {
     }, [fetchChecklists]);
 
     const filteredData = checklists.filter((item) =>
-        item.checklistNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.bmrNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.batchNo.toLowerCase().includes(searchTerm.toLowerCase())
+        (item.checklistNo || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (item.bmrNo || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (item.batchNo || "").toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const paginatedData = filteredData.slice(
