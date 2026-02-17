@@ -88,7 +88,7 @@ function CreatePurchaseOrderContent() {
         e.target.type !== "button"
       ) {
         e.preventDefault();
-        const allFocusable = Array.from( 
+        const allFocusable = Array.from(
           formContainerRef.current.querySelectorAll("input, select, textarea")
         ).filter((el) => !el.disabled && el.tabIndex !== -1 && el.type !== "hidden" && !el.readOnly);
 

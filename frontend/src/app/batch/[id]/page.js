@@ -174,24 +174,6 @@ export default function BatchDetails() {
                                     Print Log
                                 </Button>
                             </Tooltip>
-                            <Button
-                                variant="contained"
-                                startIcon={<Edit />}
-                                onClick={() => router.push(`/batch/edit-batch?id=${id}`)}
-                                sx={{
-                                    borderRadius: "12px",
-                                    textTransform: "none",
-                                    fontWeight: 600,
-                                    background: "linear-gradient(135deg, #1172ba 0%, #0d5a94 100%)",
-                                    boxShadow: "0 4px 12px rgba(17, 114, 186, 0.25)",
-                                    "&:hover": {
-                                        background: "linear-gradient(135deg, #0d5a94 0%, #0a4571 100%)",
-                                        boxShadow: "0 6px 16px rgba(17, 114, 186, 0.35)",
-                                    },
-                                }}
-                            >
-                                Modify Batch
-                            </Button>
                         </Stack>
                     </Stack>
 

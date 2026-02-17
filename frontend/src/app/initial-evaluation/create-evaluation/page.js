@@ -96,6 +96,37 @@ function SupplierEvaluationContent() {
     const [loadingRef, setLoadingRef] = useState(false);
     const [selectedRef, setSelectedRef] = useState(null);
 
+    const formik = useFormik({
+        initialValues: {
+            supplierName: "",
+            address: "",
+            city: "",
+            state: "",
+            zipCode: "",
+            contactPerson: "",
+            title: "",
+            phone: "",
+            yearEstablished: "",
+            totalSquareFootage: "",
+            numberOfEmployees: "",
+            qaTitle: "",
+            numberOfQAEmployees: "",
+            productServices: "",
+            questionnaire: {},
+            additionalComments: "",
+            completedBy: "",
+            completedByTitle: "",
+            completedDate: new Date().toISOString().split("T")[0],
+            evaluationNo: "",
+            status: "Pending",
+            evaluationDate: new Date().toISOString().split("T")[0],
+        },
+        validationSchema: validationSchema[activeStep],
+        onSubmit: () => {
+            setOpenPreview(true);
+        },
+    });
+
     const fetchReferenceData = React.useCallback(async () => {
         try {
             setLoadingRef(true);
@@ -123,7 +154,7 @@ function SupplierEvaluationContent() {
         } finally {
             setLoading(false);
         }
-    }, [id, formik, showNotification]);
+    }, [id, showNotification]); // Removed formik to avoid infinite loops
 
     useEffect(() => {
         fetchReferenceData();

@@ -52,6 +52,7 @@ const SupplierDetailsSection = ({ formik }) => {
 
     const handleSupplierChange = (event, newValue) => {
         if (newValue) {
+            formik.setFieldValue("supplierId", newValue.id || "");
             formik.setFieldValue("supplierName", newValue.supplierName || "");
             formik.setFieldValue("contactPerson", newValue.contactPerson || "");
             formik.setFieldValue("phone", newValue.phone || "");
@@ -61,6 +62,7 @@ const SupplierDetailsSection = ({ formik }) => {
                 formik.setFieldValue("supplierClassification", newValue.classification);
             }
         } else {
+            formik.setFieldValue("supplierId", "");
             formik.setFieldValue("supplierName", "");
             formik.setFieldValue("contactPerson", "");
             formik.setFieldValue("phone", "");
@@ -75,7 +77,7 @@ const SupplierDetailsSection = ({ formik }) => {
                     <Autocomplete
                         options={suppliers}
                         getOptionLabel={(option) => option.supplierName || ""}
-                        value={suppliers.find(s => s.supplierName === formik.values.supplierName) || null}
+                        value={suppliers.find(s => s.id === formik.values.supplierId || s.supplierName === formik.values.supplierName) || null}
                         loading={loading}
                         onChange={handleSupplierChange}
                         renderOption={(props, option) => {

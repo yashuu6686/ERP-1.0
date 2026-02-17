@@ -40,6 +40,7 @@ function OngoingEvaluationCreateContent() {
     const formik = useFormik({
         initialValues: {
             // Supplier Details
+            supplierId: "",
             supplierName: "",
             contactPerson: "",
             phone: "",
@@ -91,14 +92,17 @@ function OngoingEvaluationCreateContent() {
             const response = await axiosInstance.get(`/evaluation/${id}`);
             const data = response.data;
             if (data) {
-                formik.setValues({
-                    ...formik.values,
+                // Use a functional update to set many values safely if needed, 
+                // but since we want to overwrite specific fields, we can just do:
+                formik.setValues(prevValues => ({
+                    ...prevValues,
+                    supplierId: data.id || id,
                     supplierName: data.supplierName || "",
                     contactPerson: data.contactPerson || "",
                     phone: data.phone || "",
                     email: data.email || "",
                     supplierClassification: data.classification || "Critical",
-                });
+                }));
             }
         } catch (error) {
             console.error("Error auto-filling supplier info:", error);
@@ -106,7 +110,7 @@ function OngoingEvaluationCreateContent() {
         } finally {
             setLoading(false);
         }
-    }, [formik, showNotification]);
+    }, [showNotification]); // formik should be excluded to avoid infinite loops
 
     useEffect(() => {
         if (supplierId) {
