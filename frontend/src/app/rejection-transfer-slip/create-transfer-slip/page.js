@@ -79,23 +79,24 @@ function RejectionTransferSlipContent() {
         },
     });
 
+    const fetchSlip = React.useCallback(async () => {
+        try {
+            setLoading(true);
+            const response = await axiosInstance.get(`/rejection-transfer-slips/${id}`);
+            formik.setValues(response.data);
+        } catch (error) {
+            console.error("Fetch Error:", error);
+            showNotification("Failed to fetch transfer slip details.", "error");
+        } finally {
+            setLoading(false);
+        }
+    }, [id, formik, showNotification]);
+
     useEffect(() => {
         if (isEditMode && id) {
-            const fetchSlip = async () => {
-                try {
-                    setLoading(true);
-                    const response = await axiosInstance.get(`/rejection-transfer-slips/${id}`);
-                    formik.setValues(response.data);
-                } catch (error) {
-                    console.error("Fetch Error:", error);
-                    showNotification("Failed to fetch transfer slip details.", "error");
-                } finally {
-                    setLoading(false);
-                }
-            };
             fetchSlip();
         }
-    }, [id, isEditMode]);
+    }, [id, isEditMode, fetchSlip]);
 
     if (loading) return <Loader fullPage message={isEditMode ? "Loading Details..." : "Saving..."} />;
 

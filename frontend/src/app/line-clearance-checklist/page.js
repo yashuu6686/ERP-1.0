@@ -24,11 +24,7 @@ function LineClearanceChecklistListContent() {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const { showNotification } = useNotification();
 
-    useEffect(() => {
-        fetchChecklists();
-    }, []);
-
-    const fetchChecklists = async () => {
+    const fetchChecklists = React.useCallback(async () => {
         try {
             setLoading(true);
             const response = await axiosInstance.get("/line-clearance-checklist");
@@ -39,7 +35,11 @@ function LineClearanceChecklistListContent() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [showNotification]);
+
+    useEffect(() => {
+        fetchChecklists();
+    }, [fetchChecklists]);
 
     const filteredData = checklists.filter((item) =>
         item.checklistNo.toLowerCase().includes(searchTerm.toLowerCase()) ||

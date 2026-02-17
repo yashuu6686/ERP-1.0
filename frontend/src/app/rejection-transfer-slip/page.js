@@ -24,11 +24,7 @@ function RejectionTransferSlipListContent() {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const { showNotification } = useNotification();
 
-    useEffect(() => {
-        fetchSlips();
-    }, []);
-
-    const fetchSlips = async () => {
+    const fetchSlips = React.useCallback(async () => {
         try {
             setLoading(true);
             const response = await axiosInstance.get("/rejection-transfer-slips");
@@ -39,7 +35,11 @@ function RejectionTransferSlipListContent() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [showNotification]);
+
+    useEffect(() => {
+        fetchSlips();
+    }, [fetchSlips]);
 
     const filteredSlips = slips.filter((slip) =>
         slip.bmrNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
