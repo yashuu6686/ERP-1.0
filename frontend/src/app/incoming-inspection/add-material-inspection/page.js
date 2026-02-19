@@ -564,7 +564,7 @@ function MaterialInspectionFormContent() {
         return (
           <>
             <Grid container spacing={2}>
-              <Grid item xs={12} md={user?.role === 'admin' ? 12 : 8}>
+              <Grid item xs={12} md={user?.role === 'admin' ? 12 : 8} size={{ xs: 12, md: user?.role === 'admin' ? 12 : 8 }}>
                 <InspectionSummary
                   summaryData={formik.values.summaryData}
                   onChange={handleSummaryChange}
@@ -573,7 +573,7 @@ function MaterialInspectionFormContent() {
                   onBlur={formik.handleBlur}
                 />
               </Grid>
-              <Grid item xs={12} md={user?.role === 'admin' ? 12 : 4}>
+              <Grid item xs={12} md={user?.role === 'admin' ? 12 : 4} size={{ xs: 12, md: user?.role === 'admin' ? 12 : 4 }}>
                 <InspectionApproval
                   approvalData={formik.values.approvalData}
                   onChange={handleApprovalChange}

@@ -59,16 +59,16 @@ const GradientCard = ({ title, icon: Icon, children }) => (
 
 // Validation Schema
 const validationSchema = Yup.object().shape({
-    grnNumber: Yup.string().required("Required"),
-    poNumber: Yup.string().required("Required"),
-    invoiceNumber: Yup.string().required("Required"),
-    receivedDate: Yup.date().required("Required"),
-    receivedBy: Yup.string().required("Required"),
-    supplierName: Yup.string().required("Required"),
+    grnNumber: Yup.string().required("Grn number is Required"),
+    poNumber: Yup.string().required("Po Number is Required"),
+    invoiceNumber: Yup.string().required("Invoice Number is Required"),
+    receivedDate: Yup.date().required("Received Date is Required"),
+    receivedBy: Yup.string().required("Received By is Required"),
+    supplierName: Yup.string().required("Supplier Name is Required"),
     items: Yup.array().of(
         Yup.object().shape({
-            name: Yup.string().required("Required"),
-            receivedQty: Yup.number().positive("Must be > 0").required("Required"),
+            name: Yup.string().required("Item name is Required"),
+            receivedQty: Yup.number().positive("Must be > 0").required(" Required"),
         })
     ).min(1, "At least one item required"),
 });
